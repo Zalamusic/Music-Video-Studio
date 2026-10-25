@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zala Music Video Studio</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      background: #0b0b12;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    main {
+      max-width: 650px;
+      margin: 30px auto;
+      padding: 26px;
+      background: #171722;
+      border: 1px solid #333344;
+      border-radius: 18px;
+    }
+    h1 { margin-bottom: 8px; font-size: 30px; }
+    .sub { color: #b6b6c8; line-height: 1.5; }
+    label {
+      display: block;
+      margin: 20px 0 8px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #44445a;
+      border-radius: 9px;
+      background: #101019;
+      color: white;
+      font-size: 16px;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    input[type="file"] { font-size: 14px; }
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 15px;
+      border: 0;
+      border-radius: 9px;
+      background: #a855f7;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.6; cursor: wait; }
+    #status { margin-top: 18px; line-height: 1.5; overflow-wrap: anywhere; }
+    video { width: 100%; margin-top: 18px; border-radius: 10px; }
+    a { color: #c084fc; }
+    .note { color: #aaaabd; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Music Video Studio</h1>
+    <p class="sub">Turn your music into a cinematic music video.</p>
+
+    <form id="videoForm">
+      <label for="title">Song Title</label>
+      <input id="title" name="title" type="text"
+        maxlength="120" placeholder="Enter your song title">
+
+      <label for="audio">Upload Your Song (MP3 or WAV)</label>
+      <input id="audio" name="audio" type="file"
+        accept=".mp3,.wav,audio/mpeg,audio/wav" required>
+      <p class="note">Choose an audio file from your device.</p>
+
+      <label for="prompt">Describe Your Music Video</label>
+      <textarea id="prompt" name="prompt" required
+        placeholder="Describe the scenes, characters, locations, mood, and visual style you want..."></textarea>
+
+      <label for="format">Video Format</label>
+      <select id="format" name="format">
+        <option value="vertical">Vertical (TikTok, Reels, Shorts)</option>
+        <option value="landscape">Landscape (YouTube)</option>
+      </select>
+
+      <button id="createButton" type="submit">
+        Create Music Video
+      </button>
+    </form>
+
+    <div id="status" role="status" aria-live="polite"></div>
+    <div id="result"></div>
+  </main>
+
+  <script>
+    const form = document.getElementById("videoForm");
+    const button = document.getElementById("createButton");
+    const statusBox = document.getElementById("status");
+    const resultBox = document.getElementById("result");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      button.disabled = true;
+      statusBox.textContent = "Submitting your request...";
+      resultBox.replaceChildren();
+
+      try {
+        const response = await fetch("/api/create", {
+          method: "POST",
+          body: new FormData(form)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "The request failed.");
+        }
+
+        if (!data.url) {
+          throw new Error("The server did not return a video URL.");
+        }
+
+        statusBox.textContent = "Your video is ready!";
+
+        const video = document.createElement("video");
+        video.src = data.url;
+        video.controls = true;
+        video.playsInline = true;
+        resultBox.appendChild(video);
+
+        const download = document.createElement("a");
+        download.href = data.url;
+        download.target = "_blank";
+        download.rel = "noopener";
+        download.textContent = "Open or download your video";
+        download.style.display = "block";
+        download.style.marginTop = "16px";
+        resultBox.appendChild(download);
+
+      } catch (error) {
+        statusBox.textContent =
+          "Unable to create video: " + error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
