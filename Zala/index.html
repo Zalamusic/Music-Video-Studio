@@ -7,61 +7,133 @@
   <title>Zala Music Video Studio</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       padding: 24px 16px;
-      background: #0b0b12;
-      color: #fff;
+      background: #f0f2f5;
+      color: #1c1e21;
       font-family: Arial, sans-serif;
     }
+
     main {
       max-width: 650px;
       margin: 30px auto;
       padding: 26px;
-      background: #171722;
-      border: 1px solid #333344;
+      background: #ffffff;
+      border: 1px solid #dddfe2;
       border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
     }
-    h1 { margin-bottom: 8px; font-size: 30px; }
-    .sub { color: #b6b6c8; line-height: 1.5; }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: 30px;
+      color: #1877f2;
+    }
+
+    .sub {
+      color: #65676b;
+      line-height: 1.5;
+    }
+
     label {
       display: block;
       margin: 20px 0 8px;
       font-weight: bold;
+      color: #1c1e21;
     }
+
     input, textarea, select {
       width: 100%;
       padding: 13px;
-      border: 1px solid #44445a;
+      border: 1px solid #ccd0d5;
       border-radius: 9px;
-      background: #101019;
-      color: white;
+      background: #ffffff;
+      color: #1c1e21;
       font-size: 16px;
+      font-family: Arial, sans-serif;
     }
-    textarea { min-height: 120px; resize: vertical; }
-    input[type="file"] { font-size: 14px; }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #1877f2;
+      box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    input[type="file"] {
+      font-size: 14px;
+    }
+
     button {
       width: 100%;
       margin-top: 22px;
       padding: 15px;
       border: 0;
       border-radius: 9px;
-      background: #a855f7;
-      color: white;
+      background: #1877f2;
+      color: #ffffff;
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
+      transition: background 0.2s;
     }
-    button:disabled { opacity: 0.6; cursor: wait; }
-    #status { margin-top: 18px; line-height: 1.5; overflow-wrap: anywhere; }
-    video { width: 100%; margin-top: 18px; border-radius: 10px; }
-    a { color: #c084fc; }
-    .note { color: #aaaabd; font-size: 13px; }
+
+    button:hover {
+      background: #166fe5;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    #status {
+      margin-top: 18px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      color: #1c1e21;
+    }
+
+    video {
+      width: 100%;
+      margin-top: 18px;
+      border-radius: 10px;
+    }
+
+    a {
+      color: #1877f2;
+    }
+
+    .note {
+      color: #65676b;
+      font-size: 13px;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+
+      main {
+        margin: 12px auto;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+    }
   </style>
 </head>
 <body>
   <main>
-    <h1>Music Video Studio</h1>
+    <h1>Zala Music Video Studio</h1>
     <p class="sub">Turn your music into a cinematic music video.</p>
 
     <form id="videoForm">
