@@ -1,460 +1,633 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#090911">
-  <meta name="description" content="Zala QI's World — Create cinematic music videos from your songs and photos.">
-  <title>Zala QI's World | Music Video Creator</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    :root {
-      color-scheme: dark;
-      --purple: #b45cff;
-      --pink: #ed73db;
-      --muted: #b8b2c8;
-    }
-
-    body {
-      margin: 0;
-      padding: 28px 16px 50px;
-      background: radial-gradient(ellipse at top, #302044 0%, #10101b 42%, #08080e 100%);
-      color: #fff;
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-    }
-
-    main {
-      max-width: 720px;
-      margin: 18px auto;
-      padding: 30px;
-      background: rgba(23, 21, 34, 0.96);
-      border: 1px solid #40334f;
-      border-radius: 22px;
-      box-shadow: 0 20px 70px rgba(0,0,0,.38);
-    }
-
-    .brand { text-align: center; padding: 8px 0 26px; }
-
-    .brand-mark {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 16px;
-      display: grid;
-      place-items: center;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #a855f7, #ed73db);
-      font-size: 27px;
-      font-weight: 900;
-      box-shadow: 0 0 32px #a855f744;
-    }
-
-    h1 {
-      margin: 0 0 12px;
-      font-size: clamp(29px, 6vw, 43px);
-      letter-spacing: -1.2px;
-    }
-
-    .gradient {
-      background: linear-gradient(90deg, #d6a5ff, #ff9de9);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .sub {
-      color: var(--muted);
-      line-height: 1.6;
-      max-width: 470px;
-      margin: 0 auto;
-    }
-
-    .section-title {
-      margin-top: 26px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #373044;
-      font-size: 17px;
-      font-weight: bold;
-    }
-
-    label {
-      display: block;
-      margin: 20px 0 9px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #484057;
-      border-radius: 11px;
-      background: #0e0d16;
-      color: white;
-      font-size: 16px;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      outline: 2px solid var(--purple);
-      border-color: var(--purple);
-    }
-
-    textarea { min-height: 125px; resize: vertical; }
-    input[type="file"] { font-size: 14px; }
-
-    .note {
-      color: #a9a2b9;
-      font-size: 13px;
-      line-height: 1.5;
-      margin-top: 8px;
-    }
-
-    .estimate {
-      margin-top: 24px;
-      padding: 20px;
-      background: #241b32;
-      border: 1px solid #765099;
-      border-radius: 15px;
-    }
-
-    .estimate h2 {
-      margin: 0 0 12px;
-      font-size: 20px;
-      color: #e2baff;
-    }
-
-    .estimate p { margin: 10px 0; line-height: 1.5; }
-
-    .cost {
-      font-size: 30px;
-      font-weight: bold;
-      color: #ffb7e9;
-    }
-
-    .warning {
-      color: #e0d1b6;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 24px;
-      padding: 16px;
-      border: 0;
-      border-radius: 12px;
-      background: linear-gradient(100deg, #923cff, #d34fda);
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: opacity .2s, transform .2s;
-    }
-
-    button:hover:not(:disabled) { transform: translateY(-1px); }
-    button:disabled { opacity: .6; cursor: wait; }
-
-    #status {
-      margin-top: 20px;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
-    }
-
-    video {
-      display: block;
-      width: 100%;
-      margin-top: 20px;
-      border-radius: 12px;
-      background: #000;
-    }
-
-    a { color: #d6a5ff; }
-
-    .footer {
-      margin-top: 28px;
-      text-align: center;
-      color: #8e879e;
-      font-size: 12px;
-    }
-
-    @media (max-width: 480px) {
-      body { padding: 14px 10px 30px; }
-      main { padding: 21px 17px; border-radius: 17px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090911">
+<title>Zala QI's World | Music Video Creator</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --purple: #b45cff;
+  --pink: #ed73db;
+  --muted: #b8b2c8;
+}
+body {
+  margin: 0;
+  padding: 28px 16px 50px;
+  background: radial-gradient(ellipse at top, #302044 0%, #10101b 42%, #08080e 100%);
+  color: #fff;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+}
+main {
+  max-width: 720px;
+  margin: 18px auto;
+  padding: 30px;
+  background: rgba(23,21,34,.96);
+  border: 1px solid #40334f;
+  border-radius: 22px;
+  box-shadow: 0 20px 70px rgba(0,0,0,.38);
+}
+.brand { text-align: center; padding: 8px 0 26px; }
+.brand-mark {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: linear-gradient(135deg,#a855f7,#ed73db);
+  font-size: 27px;
+  font-weight: 900;
+}
+h1 {
+  margin: 0 0 12px;
+  font-size: clamp(29px,6vw,43px);
+}
+.gradient {
+  background: linear-gradient(90deg,#d6a5ff,#ff9de9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sub {
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 470px;
+  margin: auto;
+}
+.section-title {
+  margin-top: 26px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #373044;
+  font-size: 17px;
+  font-weight: bold;
+}
+label {
+  display: block;
+  margin: 20px 0 9px;
+  font-weight: bold;
+  font-size: 14px;
+}
+input, textarea, select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #484057;
+  border-radius: 11px;
+  background: #0e0d16;
+  color: white;
+  font-size: 16px;
+}
+textarea { min-height: 125px; resize: vertical; }
+input[type=file] { font-size: 14px; }
+.note {
+  color: #aaa3b9;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.panel {
+  margin-top: 24px;
+  padding: 20px;
+  background: #241b32;
+  border: 1px solid #765099;
+  border-radius: 15px;
+}
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  color: #e2baff;
+}
+.panel p { line-height: 1.5; }
+.cost {
+  font-size: 30px;
+  font-weight: bold;
+  color: #ffb7e9;
+}
+.warning {
+  color: #e0d1b6;
+  font-size: 13px;
+  line-height: 1.5;
+}
+button {
+  width: 100%;
+  margin-top: 22px;
+  padding: 16px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(100deg,#923cff,#d34fda);
+  color: #fff;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+.secondary {
+  background: #48345f;
+}
+#progressPanel { display: none; }
+.progress-track {
+  height: 19px;
+  background: #100e18;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 16px 0;
+}
+#progressFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,#923cff,#ed73db);
+  transition: width .4s ease;
+}
+#progressText {
+  font-size: 23px;
+  font-weight: bold;
+}
+#phase, #status {
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+#resumeButton { display: none; }
+#result video {
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 12px;
+  background: black;
+}
+#result a {
+  color: #e2baff;
+  display: block;
+  margin-top: 16px;
+}
+.footer {
+  margin-top: 28px;
+  text-align: center;
+  color: #8e879e;
+  font-size: 12px;
+}
+@media(max-width:480px) {
+  body { padding: 14px 10px 30px; }
+  main { padding: 21px 17px; }
+}
+</style>
 </head>
-
 <body>
-  <main>
-    <header class="brand">
-      <div class="brand-mark">ZQ</div>
-      <h1><span class="gradient">Zala QI's World</span></h1>
-      <p class="sub">
-        Your music. Your vision. Your world.
-        Create cinematic music videos from your songs and photos.
-      </p>
-    </header>
+<main>
+<header class="brand">
+  <div class="brand-mark">ZQ</div>
+  <h1><span class="gradient">Zala QI's World</span></h1>
+  <p class="sub">
+    Your music. Your vision. Your world.
+    Create cinematic music videos from your songs and photos.
+  </p>
+</header>
 
-    <div class="section-title">Create Your Music Video</div>
+<div class="section-title">Create Your Music Video</div>
 
-    <form id="videoForm">
-      <label for="title">Song Title (optional)</label>
-      <input id="title" name="title" type="text" maxlength="120"
-        placeholder="Enter your song title">
+<form id="videoForm">
+  <label for="title">Song Title (optional)</label>
+  <input id="title" name="title" type="text" maxlength="120"
+    placeholder="Enter your song title">
 
-      <label for="audio">Upload Your Song (MP3 or WAV)</label>
-      <input id="audio" name="audio" type="file"
-        accept=".mp3,.wav,audio/mpeg,audio/wav" required>
-      <p class="note">Choose the full song you want in your finished video.</p>
+  <label for="audio">Upload Your Song (MP3 or WAV)</label>
+  <input id="audio" name="audio" type="file"
+    accept=".mp3,.wav,audio/mpeg,audio/wav" required>
+  <p class="note">Choose the full song for your finished video.</p>
 
-      <label for="photo">Upload Your Artist Photo</label>
-      <input id="photo" name="photo" type="file"
-        accept="image/jpeg,image/png,image/webp" required>
-      <p class="note">Use a clear photo as the visual reference for your video.</p>
+  <label for="photo">Upload Your Artist Photo</label>
+  <input id="photo" name="photo" type="file"
+    accept="image/jpeg,image/png,image/webp" required>
+  <p class="note">Use a clear photo as the visual reference.</p>
 
-      <label for="prompt">Describe Your Music Video</label>
-      <textarea id="prompt" name="prompt" required
-        placeholder="Describe the scenes, locations, mood, outfits, camera movement, and visual style you want..."></textarea>
+  <label for="prompt">Describe Your Music Video</label>
+  <textarea id="prompt" name="prompt" required
+    placeholder="Describe the scenes, locations, mood, outfits, camera movement and visual style..."></textarea>
 
-      <label for="format">Video Format</label>
-      <select id="format" name="format">
-        <option value="vertical">Vertical — TikTok, Reels, Shorts</option>
-        <option value="landscape">Landscape — YouTube</option>
-      </select>
+  <label for="format">Video Format</label>
+  <select id="format" name="format">
+    <option value="vertical">Vertical — TikTok, Reels, Shorts</option>
+    <option value="landscape">Landscape — YouTube</option>
+  </select>
 
-      <section class="estimate" aria-live="polite">
-        <h2>Video Cost Calculator</h2>
-        <div id="estimateDetails">
-          <p>Upload your song to calculate its estimated video cost.</p>
-        </div>
-        <p class="warning">
-          Estimates cover video scene generation only.
-          Retries, additional processing, and lip-sync may cost extra.
-          Failed generations may still consume credits.
-        </p>
-      </section>
-
-      <button id="createButton" type="submit">
-        Create My Music Video
-      </button>
-    </form>
-
-    <div id="status" role="status" aria-live="polite"></div>
-    <div id="result"></div>
-
-    <div class="footer">
-      Zala QI's World · Create something unforgettable
+  <section class="panel" aria-live="polite">
+    <h2>Video Cost Calculator</h2>
+    <div id="estimateDetails">
+      <p>Upload your song to calculate the estimated video cost.</p>
     </div>
-  </main>
+    <p class="warning">
+      Estimates cover scene generation only.
+      Retries, lip-sync and other processing may cost extra.
+      Failed generations may still consume credits.
+    </p>
+  </section>
 
-  <script>
-    const form = document.getElementById("videoForm");
-    const button = document.getElementById("createButton");
-    const audioInput = document.getElementById("audio");
-    const statusBox = document.getElementById("status");
-    const resultBox = document.getElementById("result");
-    const estimateDetails = document.getElementById("estimateDetails");
+  <button id="createButton" type="submit">
+    Create My Music Video
+  </button>
+</form>
 
-    let songSeconds = null;
-    let estimatedCost = null;
-    let estimateReady = false;
-    let estimateRequest = 0;
+<section class="panel" id="progressPanel" aria-live="polite">
+  <h2>Music Video Progress</h2>
+  <div id="progressText">Preparing...</div>
+  <div class="progress-track"
+    role="progressbar"
+    id="progressTrack"
+    aria-label="Completed scenes"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0">
+    <div id="progressFill"></div>
+  </div>
+  <p id="phase">Waiting to start...</p>
+  <p id="jobNote" class="note"></p>
+  <button id="resumeButton" class="secondary" type="button">
+    Resume Video From Saved Scenes
+  </button>
+</section>
 
-    function formatDuration(seconds) {
-      const total = Math.ceil(seconds);
-      const minutes = Math.floor(total / 60);
-      const remainder = total % 60;
-      return minutes + ":" + String(remainder).padStart(2, "0");
-    }
+<div id="status" role="status" aria-live="polite"></div>
+<div id="result"></div>
 
-    function addEstimateLine(label, value, isCost = false) {
-      const p = document.createElement("p");
-      if (isCost) p.className = "cost";
-      p.textContent = label + value;
-      estimateDetails.appendChild(p);
-    }
+<div class="footer">
+  Zala QI's World · Create something unforgettable
+</div>
+</main>
 
-    async function updateEstimate() {
-      const requestId = ++estimateRequest;
-      const file = audioInput.files[0];
+<script>
+const form = document.getElementById('videoForm');
+const audioInput = document.getElementById('audio');
+const createButton = document.getElementById('createButton');
+const resumeButton = document.getElementById('resumeButton');
+const estimateDetails = document.getElementById('estimateDetails');
+const progressPanel = document.getElementById('progressPanel');
+const progressText = document.getElementById('progressText');
+const progressFill = document.getElementById('progressFill');
+const progressTrack = document.getElementById('progressTrack');
+const phaseBox = document.getElementById('phase');
+const jobNote = document.getElementById('jobNote');
+const statusBox = document.getElementById('status');
+const resultBox = document.getElementById('result');
 
-      songSeconds = null;
-      estimatedCost = null;
-      estimateReady = false;
-      estimateDetails.textContent = "";
+const STORAGE_KEY = 'zala-current-job';
+let currentJobId = null;
+let pollTimer = null;
+let estimateRequest = 0;
+let songSeconds = null;
+let estimatedCost = null;
+let estimateReady = false;
 
-      if (!file) {
-        addEstimateLine("", "Upload your song to calculate its estimated video cost.");
-        return;
-      }
+function setStatus(message) {
+  statusBox.textContent = message;
+}
 
-      addEstimateLine("", "Reading your song...");
+function formatDuration(seconds) {
+  const total = Math.ceil(seconds);
+  return Math.floor(total / 60) + ':' +
+    String(total % 60).padStart(2, '0');
+}
 
-      let objectUrl;
-      let audio;
+function estimateLine(label, value, large = false) {
+  const p = document.createElement('p');
+  p.textContent = label + value;
+  if (large) p.className = 'cost';
+  estimateDetails.appendChild(p);
+}
 
-      try {
-        objectUrl = URL.createObjectURL(file);
-        audio = document.createElement("audio");
-        audio.preload = "metadata";
+async function updateEstimate() {
+  const requestId = ++estimateRequest;
+  const file = audioInput.files[0];
 
-        const duration = await new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error("Could not read song duration."));
-          }, 15000);
+  songSeconds = null;
+  estimatedCost = null;
+  estimateReady = false;
+  estimateDetails.replaceChildren();
 
-          audio.onloadedmetadata = () => {
-            clearTimeout(timeout);
-            resolve(audio.duration);
-          };
+  if (!file) {
+    estimateLine('', 'Upload your song to see the estimated cost.');
+    return;
+  }
 
-          audio.onerror = () => {
-            clearTimeout(timeout);
-            reject(new Error("This audio file could not be read."));
-          };
+  estimateLine('', 'Reading your song...');
 
-          audio.src = objectUrl;
-        });
+  const url = URL.createObjectURL(file);
+  const audio = document.createElement('audio');
 
-        if (requestId !== estimateRequest) return;
+  try {
+    const seconds = await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        reject(new Error('Could not read song duration.'));
+      }, 15000);
 
-        if (!Number.isFinite(duration) || duration <= 0) {
-          throw new Error("Invalid song duration.");
-        }
+      audio.preload = 'metadata';
 
-        songSeconds = duration;
+      audio.onloadedmetadata = () => {
+        clearTimeout(timer);
+        resolve(audio.duration);
+      };
 
-        if (duration > 360) {
-          throw new Error("Songs must be 6 minutes or shorter.");
-        }
+      audio.onerror = () => {
+        clearTimeout(timer);
+        reject(new Error('Unable to read this audio file.'));
+      };
 
-        const response = await fetch(
-          "/api/estimate?seconds=" + encodeURIComponent(duration)
-        );
-
-        if (!response.ok) {
-          throw new Error("The cost calculator is unavailable.");
-        }
-
-        const data = await response.json();
-
-        if (requestId !== estimateRequest) return;
-
-        estimateDetails.textContent = "";
-
-        addEstimateLine("Song length: ", formatDuration(duration));
-        addEstimateLine("Scenes required: ", String(data.scenesRequired));
-
-        if (
-          data.estimatedGenerationCostUSD !== null &&
-          data.estimatedGenerationCostUSD !== undefined &&
-          Number.isFinite(Number(data.estimatedGenerationCostUSD))
-        ) {
-          estimatedCost = Number(data.estimatedGenerationCostUSD);
-          addEstimateLine(
-            "Estimated cost: $",
-            estimatedCost.toFixed(2),
-            true
-          );
-        } else {
-          addEstimateLine("", "Price estimate is currently unavailable.");
-        }
-
-        estimateReady = true;
-      } catch (error) {
-        if (requestId !== estimateRequest) return;
-        estimateDetails.textContent = "";
-        addEstimateLine("", error.message);
-      } finally {
-        if (audio) {
-          audio.removeAttribute("src");
-          audio.load();
-        }
-        if (objectUrl) URL.revokeObjectURL(objectUrl);
-      }
-    }
-
-    audioInput.addEventListener("change", updateEstimate);
-
-    form.addEventListener("submit", async function(event) {
-      event.preventDefault();
-
-      if (!estimateReady || songSeconds === null) {
-        statusBox.textContent =
-          "Please upload a valid song and wait for its cost estimate.";
-        return;
-      }
-
-      const costText = estimatedCost === null
-        ? "The generation cost is currently unavailable."
-        : "Estimated scene generation cost: $" +
-          estimatedCost.toFixed(2) + ".";
-
-      const confirmed = window.confirm(
-        costText +
-        "\n\nActual charges may be higher due to retries or extra processing." +
-        "\n\nStart creating your music video?"
-      );
-
-      if (!confirmed) return;
-
-      button.disabled = true;
-      statusBox.textContent =
-        "Creating your video. Please keep this page open...";
-      resultBox.replaceChildren();
-
-      try {
-        const response = await fetch("/api/create", {
-          method: "POST",
-          body: new FormData(form)
-        });
-
-        const contentType = response.headers.get("content-type") || "";
-
-        if (!contentType.includes("application/json")) {
-          throw new Error(
-            "The server returned an unexpected response. Check Render logs."
-          );
-        }
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "The request failed.");
-        }
-
-        if (!data.url) {
-          throw new Error("The server did not return a video URL.");
-        }
-
-        statusBox.textContent = "Your video is ready!";
-
-        const video = document.createElement("video");
-        video.src = data.url;
-        video.controls = true;
-        video.playsInline = true;
-        resultBox.appendChild(video);
-
-        const download = document.createElement("a");
-        download.href = data.url;
-        download.target = "_blank";
-        download.rel = "noopener";
-        download.textContent = "Open or download your finished video";
-        download.style.display = "block";
-        download.style.marginTop = "16px";
-        resultBox.appendChild(download);
-
-      } catch (error) {
-        statusBox.textContent =
-          "Unable to create video: " + error.message;
-      } finally {
-        button.disabled = false;
-      }
+      audio.src = url;
     });
-  </script>
+
+    if (requestId !== estimateRequest) return;
+
+    if (!Number.isFinite(seconds) ||
+        seconds <= 0 ||
+        seconds > 360) {
+      throw new Error('Song must be between 0 and 6 minutes.');
+    }
+
+    const response = await fetch(
+      '/api/estimate?seconds=' + encodeURIComponent(seconds)
+    );
+
+    if (!response.ok) {
+      throw new Error('Cost calculator is unavailable.');
+    }
+
+    const data = await response.json();
+
+    if (requestId !== estimateRequest) return;
+
+    songSeconds = seconds;
+    estimateDetails.replaceChildren();
+
+    estimateLine('Song length: ', formatDuration(seconds));
+    estimateLine('Scenes required: ', String(data.scenesRequired));
+
+    if (data.estimatedGenerationCostUSD != null &&
+        Number.isFinite(Number(data.estimatedGenerationCostUSD))) {
+      estimatedCost = Number(data.estimatedGenerationCostUSD);
+      estimateLine('Estimated cost: $', estimatedCost.toFixed(2), true);
+    } else {
+      estimateLine('', 'Price estimate unavailable.');
+    }
+
+    estimateReady = true;
+
+  } catch (error) {
+    if (requestId === estimateRequest) {
+      estimateDetails.replaceChildren();
+      estimateLine('', error.message);
+    }
+  } finally {
+    audio.removeAttribute('src');
+    audio.load();
+    URL.revokeObjectURL(url);
+  }
+}
+
+audioInput.addEventListener('change', updateEstimate);
+
+function stopPolling() {
+  if (pollTimer !== null) {
+    clearTimeout(pollTimer);
+    pollTimer = null;
+  }
+}
+
+function saveJob(id) {
+  currentJobId = id;
+  try {
+    localStorage.setItem(STORAGE_KEY, id);
+  } catch {}
+}
+
+function clearJob() {
+  currentJobId = null;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {}
+}
+
+function showResult(url) {
+  resultBox.replaceChildren();
+
+  const video = document.createElement('video');
+  video.src = url;
+  video.controls = true;
+  video.playsInline = true;
+  resultBox.appendChild(video);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  link.textContent = 'Open or download your finished video';
+  resultBox.appendChild(link);
+}
+
+function showJob(job) {
+  progressPanel.style.display = 'block';
+
+  const total = Number(job.totalScenes) || 0;
+  const done = Math.min(
+    total,
+    Math.max(0, Number(job.completedScenes) || 0)
+  );
+
+  const percent = total
+    ? Math.round(done / total * 100)
+    : 0;
+
+  progressText.textContent =
+    'Scenes completed: ' + done + ' of ' + total;
+
+  progressFill.style.width = percent + '%';
+  progressTrack.setAttribute('aria-valuenow', String(percent));
+  phaseBox.textContent = job.phase || job.status || 'Preparing';
+
+  resumeButton.style.display = 'none';
+
+  if (job.status === 'completed') {
+    stopPolling();
+    createButton.disabled = false;
+    setStatus('Your music video is ready!');
+
+    jobNote.textContent = 'All scenes completed.';
+
+    if (job.url) showResult(job.url);
+
+    clearJob();
+    return;
+  }
+
+  if (job.status === 'failed') {
+    stopPolling();
+    createButton.disabled = false;
+
+    setStatus('Video paused: ' + (job.error || 'Unknown error.'));
+
+    jobNote.textContent =
+      'Completed scenes may be reusable if the server still has them.';
+
+    resumeButton.style.display = 'block';
+    return;
+  }
+
+  createButton.disabled = true;
+  setStatus('Creating your music video...');
+
+  jobNote.textContent =
+    'You can leave this page and return later to check progress, ' +
+    'but server restarts may interrupt generation.';
+}
+
+async function checkJob() {
+  const id = currentJobId;
+  if (!id) return;
+
+  try {
+    const response = await fetch(
+      '/api/jobs/' + encodeURIComponent(id),
+      { cache: 'no-store' }
+    );
+
+    const job = await response.json();
+
+    if (id !== currentJobId) return;
+
+    if (!response.ok) {
+      throw new Error(job.error || 'Could not check progress.');
+    }
+
+    showJob(job);
+
+    if (job.status !== 'completed' && job.status !== 'failed') {
+      pollTimer = setTimeout(checkJob, 3000);
+    }
+
+  } catch (error) {
+    if (id !== currentJobId) return;
+
+    stopPolling();
+    createButton.disabled = false;
+    setStatus('Progress check: ' + error.message);
+
+    if (/not found/i.test(error.message)) {
+      clearJob();
+      resumeButton.style.display = 'none';
+    } else {
+      pollTimer = setTimeout(checkJob, 10000);
+    }
+  }
+}
+
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+
+  if (currentJobId) {
+    setStatus('Finish or resume your current job before starting another.');
+    return;
+  }
+
+  if (!estimateReady || songSeconds === null) {
+    setStatus('Please upload a valid song and wait for its cost estimate.');
+    return;
+  }
+
+  const costText = estimatedCost === null
+    ? 'Generation cost is unavailable.'
+    : 'Estimated scene cost: $' + estimatedCost.toFixed(2);
+
+  if (!window.confirm(
+    costText +
+    '\n\nActual charges may be higher.' +
+    '\nStart generating your music video?'
+  )) return;
+
+  createButton.disabled = true;
+  resultBox.replaceChildren();
+  setStatus('Uploading files and starting your video...');
+
+  try {
+    const response = await fetch('/api/create', {
+      method: 'POST',
+      body: new FormData(form)
+    });
+
+    const type = response.headers.get('content-type') || '';
+
+    if (!type.includes('application/json')) {
+      throw new Error('Unexpected server response. Check Render logs.');
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Could not start video.');
+    }
+
+    if (!data.jobId) {
+      throw new Error('The server did not return a job ID.');
+    }
+
+    saveJob(data.jobId);
+    showJob(data);
+    stopPolling();
+    pollTimer = setTimeout(checkJob, 1500);
+
+  } catch (error) {
+    createButton.disabled = false;
+    setStatus('Unable to start video: ' + error.message);
+  }
+});
+
+resumeButton.addEventListener('click', async () => {
+  if (!currentJobId) return;
+
+  if (!window.confirm(
+    'Resume this video? Missing scenes may incur new generation charges.'
+  )) return;
+
+  resumeButton.disabled = true;
+  setStatus('Resuming saved video...');
+
+  try {
+    const response = await fetch(
+      '/api/jobs/' + encodeURIComponent(currentJobId) + '/resume',
+      { method: 'POST' }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Could not resume.');
+    }
+
+    showJob(data);
+    stopPolling();
+    pollTimer = setTimeout(checkJob, 1500);
+
+  } catch (error) {
+    setStatus('Resume failed: ' + error.message);
+  } finally {
+    resumeButton.disabled = false;
+  }
+});
+
+try {
+  const savedId = localStorage.getItem(STORAGE_KEY);
+
+  if (savedId && /^[0-9a-f-]{36}$/i.test(savedId)) {
+    currentJobId = savedId;
+    progressPanel.style.display = 'block';
+    setStatus('Checking your previous video job...');
+    checkJob();
+  }
+} catch {}
+</script>
 </body>
 </html>
+
 
 
 
