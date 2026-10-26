@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,7 @@
   <title>Zala Music Video Studio</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       padding: 24px 16px;
@@ -14,6 +16,7 @@
       color: #fff;
       font-family: Arial, sans-serif;
     }
+
     main {
       max-width: 650px;
       margin: 30px auto;
@@ -22,13 +25,16 @@
       border: 1px solid #333344;
       border-radius: 18px;
     }
+
     h1 { margin-bottom: 8px; font-size: 30px; }
     .sub { color: #b6b6c8; line-height: 1.5; }
+
     label {
       display: block;
       margin: 20px 0 8px;
       font-weight: bold;
     }
+
     input, textarea, select {
       width: 100%;
       padding: 13px;
@@ -38,8 +44,10 @@
       color: white;
       font-size: 16px;
     }
+
     textarea { min-height: 120px; resize: vertical; }
     input[type="file"] { font-size: 14px; }
+
     button {
       width: 100%;
       margin-top: 22px;
@@ -52,31 +60,69 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     button:disabled { opacity: 0.6; cursor: wait; }
-    #status { margin-top: 18px; line-height: 1.5; overflow-wrap: anywhere; }
-    video { width: 100%; margin-top: 18px; border-radius: 10px; }
+
+    #status {
+      margin-top: 18px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    video {
+      width: 100%;
+      margin-top: 18px;
+      border-radius: 10px;
+    }
+
     a { color: #c084fc; }
     .note { color: #aaaabd; font-size: 13px; }
   </style>
 </head>
 <body>
   <main>
-    <h1>Music Video Studio</h1>
+    <h1>Zala Music Video Studio</h1>
     <p class="sub">Turn your music into a cinematic music video.</p>
 
     <form id="videoForm">
       <label for="title">Song Title</label>
-      <input id="title" name="title" type="text"
-        maxlength="120" placeholder="Enter your song title">
+      <input
+        id="title"
+        name="title"
+        type="text"
+        maxlength="120"
+        placeholder="Enter your song title"
+      >
 
       <label for="audio">Upload Your Song (MP3 or WAV)</label>
-      <input id="audio" name="audio" type="file"
-        accept=".mp3,.wav,audio/mpeg,audio/wav" required>
+      <input
+        id="audio"
+        name="audio"
+        type="file"
+        accept=".mp3,.wav,audio/mpeg,audio/wav"
+        required
+      >
       <p class="note">Choose an audio file from your device.</p>
 
+      <label for="photo">Upload a Photo (JPG or PNG)</label>
+      <input
+        id="photo"
+        name="photo"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        required
+      >
+      <p class="note">
+        Upload a photo of your artist to use as the visual reference for your music video.
+      </p>
+
       <label for="prompt">Describe Your Music Video</label>
-      <textarea id="prompt" name="prompt" required
-        placeholder="Describe the scenes, characters, locations, mood, and visual style you want..."></textarea>
+      <textarea
+        id="prompt"
+        name="prompt"
+        required
+        placeholder="Describe the scenes, characters, locations, mood, and visual style you want..."
+      ></textarea>
 
       <label for="format">Video Format</label>
       <select id="format" name="format">
@@ -149,3 +195,191 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
