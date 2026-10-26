@@ -1,4 +1,3 @@
-
 import express from 'express';
 import multer from 'multer';
 import { fal } from '@fal-ai/client';
@@ -15,6 +14,10 @@ const MODEL = 'minimax/h3-max-turbo/image-to-video';
 const MAX_SONG_SECONDS = 360;
 const SCENE_SECONDS = 15;
 
+// Set this in Render after verifying the actual MiniMax price.
+// No price is assumed until it has been configured.
+const SCENE_PRICE_USD = Number(process.env.SCENE_PRICE_USD);
+
 await fs.mkdir(OUT, { recursive: true });
 
 if (process.env.FAL_KEY) {
@@ -28,6 +31,44 @@ const upload = multer({
 
 app.use(express.static('public'));
 app.use('/outputs', express.static(OUT));
+
+// COST CALCULATOR
+// Example: /api/estimate?seconds=150
+app.get('/api/estimate', (req, res) => {
+  const duration = Number(req.query.seconds);
+
+  if (
+    !Number.isFinite(duration) ||
+    duration <= 0 ||
+    duration > MAX_SONG_SECONDS
+  ) {
+    return res.status(400).json({
+      error: 'Duration must be between 0 and 360 seconds.'
+    });
+  }
+
+  const scenes = Math.ceil(duration / SCENE_SECONDS);
+  const priceConfigured =
+    Number.isFinite(SCENE_PRICE_USD) &&
+    SCENE_PRICE_USD > 0;
+
+  const estimatedCost = priceConfigured
+    ? Number((scenes * SCENE_PRICE_USD).toFixed(2))
+    : null;
+
+  res.json({
+    ok: true,
+    songSeconds: duration,
+    sceneSeconds: SCENE_SECONDS,
+    scenesRequired: scenes,
+    model: MODEL,
+    estimatedGenerationCostUSD: estimatedCost,
+    priceConfigured,
+    message: priceConfigured
+      ? 'Estimate only. Actual provider billing may differ.'
+      : 'Configure SCENE_PRICE_USD after verifying model pricing.'
+  });
+});
 
 function run(command, args) {
   return new Promise((resolve, reject) => {
@@ -176,7 +217,9 @@ app.post(
         photo.buffer.toString('base64');
 
       const format =
-        req.body.format === 'landscape' ? 'landscape' : 'vertical';
+        req.body.format === 'landscape'
+          ? 'landscape'
+          : 'vertical';
 
       const width = format === 'landscape' ? 1280 : 720;
       const height = format === 'landscape' ? 720 : 1280;
@@ -185,7 +228,7 @@ app.post(
       let totalDuration = 0;
       let sceneNumber = 0;
 
-      // Generate fresh clips until there is enough unique footage.
+      // Generate unique footage for the song.
       while (totalDuration < audioDuration) {
         sceneNumber++;
 
@@ -244,7 +287,6 @@ app.post(
 
         await downloadFile(videoUrl, rawPath);
 
-        // Normalize each clip so all scenes can be joined.
         const filter =
           `scale=${width}:${height}:` +
           'force_original_aspect_ratio=increase,' +
@@ -279,7 +321,7 @@ app.post(
         );
       }
 
-      // Build the ordered list of unique clips. No scene looping.
+      // Join clips in their generated order.
       const listContent = clips.map(file =>
         `file '${file.replace(/'/g, "'\\''")}'`
       ).join('\n') + '\n';
@@ -297,7 +339,7 @@ app.post(
         joinedPath
       ]);
 
-      // Keep the original song and trim the video to its duration.
+      // Combine video with original song audio.
       await run('ffmpeg', [
         '-y',
         '-i', joinedPath,
