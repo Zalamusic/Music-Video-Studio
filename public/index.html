@@ -16,7 +16,12 @@
 body {
   margin: 0;
   padding: 28px 16px 50px;
-  background: radial-gradient(ellipse at top, #302044 0%, #10101b 42%, #08080e 100%);
+  background: radial-gradient(
+    ellipse at top,
+    #302044 0%,
+    #10101b 42%,
+    #08080e 100%
+  );
   color: #fff;
   font-family: Arial, sans-serif;
   min-height: 100vh;
@@ -110,6 +115,16 @@ input[type=file] { font-size: 14px; }
   font-size: 13px;
   line-height: 1.5;
 }
+.mode-note {
+  margin-top: 12px;
+  padding: 13px;
+  border: 1px solid #534168;
+  border-radius: 10px;
+  background: #21192c;
+  color: #d7cbe4;
+  font-size: 13px;
+  line-height: 1.6;
+}
 button {
   width: 100%;
   margin-top: 22px;
@@ -126,9 +141,7 @@ button:disabled {
   opacity: .6;
   cursor: wait;
 }
-.secondary {
-  background: #48345f;
-}
+.secondary { background: #48345f; }
 #progressPanel { display: none; }
 .progress-track {
   height: 19px;
@@ -189,6 +202,21 @@ button:disabled {
 <div class="section-title">Create Your Music Video</div>
 
 <form id="videoForm">
+  <label for="mode">Choose Your Video Experience</label>
+  <select id="mode" name="mode">
+    <option value="standard">
+      Standard — Cinematic Music Video
+    </option>
+    <option value="premium">
+      Premium — Singing Lip-Sync
+    </option>
+  </select>
+
+  <div id="modeNote" class="mode-note">
+    Standard creates cinematic scenes with varied locations,
+    lighting and camera angles. Singing lip-sync is not guaranteed.
+  </div>
+
   <label for="title">Song Title (optional)</label>
   <input id="title" name="title" type="text" maxlength="120"
     placeholder="Enter your song title">
@@ -196,21 +224,33 @@ button:disabled {
   <label for="audio">Upload Your Song (MP3 or WAV)</label>
   <input id="audio" name="audio" type="file"
     accept=".mp3,.wav,audio/mpeg,audio/wav" required>
-  <p class="note">Choose the full song for your finished video.</p>
+  <p class="note">
+    Start with a 15-second song clip when testing Premium.
+    Full-song generation may be limited by the provider.
+  </p>
 
   <label for="photo">Upload Your Artist Photo</label>
   <input id="photo" name="photo" type="file"
     accept="image/jpeg,image/png,image/webp" required>
-  <p class="note">Use a clear photo as the visual reference.</p>
+  <p class="note">
+    Premium works best with a clear, front-facing photograph.
+  </p>
 
   <label for="prompt">Describe Your Music Video</label>
   <textarea id="prompt" name="prompt" required
-    placeholder="Describe the scenes, locations, mood, outfits, camera movement and visual style..."></textarea>
+    placeholder="Describe the mood, lighting, location, outfit and visual style..."></textarea>
+  <p id="promptNote" class="note">
+    Standard uses this description to guide the cinematic scenes.
+  </p>
 
   <label for="format">Video Format</label>
   <select id="format" name="format">
-    <option value="vertical">Vertical — TikTok, Reels, Shorts</option>
-    <option value="landscape">Landscape — YouTube</option>
+    <option value="vertical">
+      Vertical — TikTok, Reels, Shorts
+    </option>
+    <option value="landscape">
+      Landscape — YouTube
+    </option>
   </select>
 
   <section class="panel" aria-live="polite">
@@ -219,9 +259,9 @@ button:disabled {
       <p>Upload your song to calculate the estimated video cost.</p>
     </div>
     <p class="warning">
-      Estimates cover scene generation only.
-      Retries, lip-sync and other processing may cost extra.
-      Failed generations may still consume credits.
+      Estimates depend on the pricing configured on the server.
+      Actual provider charges may differ.
+      Failed generations and retries may consume credits.
     </p>
   </section>
 
@@ -236,7 +276,7 @@ button:disabled {
   <div class="progress-track"
     role="progressbar"
     id="progressTrack"
-    aria-label="Completed scenes"
+    aria-label="Generation progress"
     aria-valuemin="0"
     aria-valuemax="100"
     aria-valuenow="0">
@@ -245,7 +285,7 @@ button:disabled {
   <p id="phase">Waiting to start...</p>
   <p id="jobNote" class="note"></p>
   <button id="resumeButton" class="secondary" type="button">
-    Resume Video From Saved Scenes
+    Resume Video
   </button>
 </section>
 
@@ -260,6 +300,9 @@ button:disabled {
 <script>
 const form = document.getElementById('videoForm');
 const audioInput = document.getElementById('audio');
+const modeInput = document.getElementById('mode');
+const modeNote = document.getElementById('modeNote');
+const promptNote = document.getElementById('promptNote');
 const createButton = document.getElementById('createButton');
 const resumeButton = document.getElementById('resumeButton');
 const estimateDetails = document.getElementById('estimateDetails');
@@ -279,6 +322,7 @@ let estimateRequest = 0;
 let songSeconds = null;
 let estimatedCost = null;
 let estimateReady = false;
+let durationFile = null;
 
 function setStatus(message) {
   statusBox.textContent = message;
@@ -297,27 +341,39 @@ function estimateLine(label, value, large = false) {
   estimateDetails.appendChild(p);
 }
 
-async function updateEstimate() {
-  const requestId = ++estimateRequest;
-  const file = audioInput.files[0];
+function updateModeNote() {
+  if (modeInput.value === 'premium') {
+    modeNote.textContent =
+      'Premium uses H3 Max to generate singing movements ' +
+      'from your artist photo and song. ' +
+      'The current version creates one continuous performance. ' +
+      'Cinematic cutaways will be added later.';
 
-  songSeconds = null;
-  estimatedCost = null;
-  estimateReady = false;
-  estimateDetails.replaceChildren();
+    promptNote.textContent =
+      'Premium currently uses your photograph and audio ' +
+      'for generation. The description is saved but does not ' +
+      'directly control the lip-sync model.';
 
-  if (!file) {
-    estimateLine('', 'Upload your song to see the estimated cost.');
-    return;
+    createButton.textContent = 'Create Premium Lip-Sync Video';
+  } else {
+    modeNote.textContent =
+      'Standard creates cinematic scenes with varied ' +
+      'locations, lighting and camera angles. ' +
+      'Singing lip-sync is not guaranteed.';
+
+    promptNote.textContent =
+      'Standard uses this description to guide the scenes.';
+
+    createButton.textContent = 'Create My Music Video';
   }
+}
 
-  estimateLine('', 'Reading your song...');
-
+async function readDuration(file) {
   const url = URL.createObjectURL(file);
   const audio = document.createElement('audio');
 
   try {
-    const seconds = await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         reject(new Error('Could not read song duration.'));
       }, 15000);
@@ -336,21 +392,64 @@ async function updateEstimate() {
 
       audio.src = url;
     });
+  } finally {
+    audio.removeAttribute('src');
+    audio.load();
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function updateEstimate() {
+  const requestId = ++estimateRequest;
+  const file = audioInput.files[0];
+  const mode = modeInput.value;
+
+  songSeconds = null;
+  estimatedCost = null;
+  estimateReady = false;
+  estimateDetails.replaceChildren();
+
+  if (!file) {
+    estimateLine(
+      '',
+      'Upload your song to see the estimated cost.'
+    );
+    return;
+  }
+
+  estimateLine('', 'Calculating video cost...');
+
+  try {
+    let seconds;
+
+    if (durationFile === file && cachedDuration !== null) {
+      seconds = cachedDuration;
+    } else {
+      seconds = await readDuration(file);
+      durationFile = file;
+      cachedDuration = seconds;
+    }
 
     if (requestId !== estimateRequest) return;
 
     if (!Number.isFinite(seconds) ||
         seconds <= 0 ||
         seconds > 360) {
-      throw new Error('Song must be between 0 and 6 minutes.');
+      throw new Error(
+        'Song must be between 0 and 6 minutes.'
+      );
     }
 
     const response = await fetch(
-      '/api/estimate?seconds=' + encodeURIComponent(seconds)
+      '/api/estimate?seconds=' +
+      encodeURIComponent(seconds) +
+      '&mode=' + encodeURIComponent(mode)
     );
 
     if (!response.ok) {
-      throw new Error('Cost calculator is unavailable.');
+      throw new Error(
+        'Cost calculator is unavailable.'
+      );
     }
 
     const data = await response.json();
@@ -360,15 +459,51 @@ async function updateEstimate() {
     songSeconds = seconds;
     estimateDetails.replaceChildren();
 
-    estimateLine('Song length: ', formatDuration(seconds));
-    estimateLine('Scenes required: ', String(data.scenesRequired));
+    estimateLine(
+      'Video mode: ',
+      mode === 'premium'
+        ? 'Premium Singing Lip-Sync'
+        : 'Standard Cinematic'
+    );
 
-    if (data.estimatedGenerationCostUSD != null &&
-        Number.isFinite(Number(data.estimatedGenerationCostUSD))) {
-      estimatedCost = Number(data.estimatedGenerationCostUSD);
-      estimateLine('Estimated cost: $', estimatedCost.toFixed(2), true);
+    estimateLine(
+      'Song length: ',
+      formatDuration(seconds)
+    );
+
+    if (mode === 'standard') {
+      estimateLine(
+        'Scenes required: ',
+        String(data.scenesRequired)
+      );
     } else {
-      estimateLine('', 'Price estimate unavailable.');
+      estimateLine(
+        'Performance: ',
+        'One continuous singing video'
+      );
+    }
+
+    if (
+      data.estimatedGenerationCostUSD != null &&
+      Number.isFinite(
+        Number(data.estimatedGenerationCostUSD)
+      )
+    ) {
+      estimatedCost = Number(
+        data.estimatedGenerationCostUSD
+      );
+
+      estimateLine(
+        'Estimated generation cost: $',
+        estimatedCost.toFixed(2),
+        true
+      );
+    } else {
+      estimateLine(
+        '',
+        'Price estimate unavailable. ' +
+        'Configure provider pricing before a paid test.'
+      );
     }
 
     estimateReady = true;
@@ -378,14 +513,23 @@ async function updateEstimate() {
       estimateDetails.replaceChildren();
       estimateLine('', error.message);
     }
-  } finally {
-    audio.removeAttribute('src');
-    audio.load();
-    URL.revokeObjectURL(url);
   }
 }
 
-audioInput.addEventListener('change', updateEstimate);
+let cachedDuration = null;
+
+audioInput.addEventListener('change', () => {
+  durationFile = null;
+  cachedDuration = null;
+  updateEstimate();
+});
+
+modeInput.addEventListener('change', () => {
+  updateModeNote();
+  updateEstimate();
+});
+
+updateModeNote();
 
 function stopPolling() {
   if (pollTimer !== null) {
@@ -396,6 +540,7 @@ function stopPolling() {
 
 function saveJob(id) {
   currentJobId = id;
+
   try {
     localStorage.setItem(STORAGE_KEY, id);
   } catch {}
@@ -403,6 +548,7 @@ function saveJob(id) {
 
 function clearJob() {
   currentJobId = null;
+
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch {}
@@ -428,6 +574,7 @@ function showResult(url) {
 function showJob(job) {
   progressPanel.style.display = 'block';
 
+  const premium = job.mode === 'premium';
   const total = Number(job.totalScenes) || 0;
   const done = Math.min(
     total,
@@ -438,12 +585,21 @@ function showJob(job) {
     ? Math.round(done / total * 100)
     : 0;
 
-  progressText.textContent =
-    'Scenes completed: ' + done + ' of ' + total;
+  progressText.textContent = premium
+    ? (job.status === 'completed'
+        ? 'Singing performance completed'
+        : 'Premium lip-sync processing')
+    : 'Scenes completed: ' + done + ' of ' + total;
 
   progressFill.style.width = percent + '%';
-  progressTrack.setAttribute('aria-valuenow', String(percent));
-  phaseBox.textContent = job.phase || job.status || 'Preparing';
+
+  progressTrack.setAttribute(
+    'aria-valuenow',
+    String(percent)
+  );
+
+  phaseBox.textContent =
+    job.phase || job.status || 'Preparing';
 
   resumeButton.style.display = 'none';
 
@@ -452,7 +608,10 @@ function showJob(job) {
     createButton.disabled = false;
     setStatus('Your music video is ready!');
 
-    jobNote.textContent = 'All scenes completed.';
+    jobNote.textContent =
+      premium
+        ? 'Premium singing performance completed.'
+        : 'All scenes completed.';
 
     if (job.url) showResult(job.url);
 
@@ -464,10 +623,13 @@ function showJob(job) {
     stopPolling();
     createButton.disabled = false;
 
-    setStatus('Video paused: ' + (job.error || 'Unknown error.'));
+    setStatus(
+      'Video paused: ' +
+      (job.error || 'Unknown error.')
+    );
 
     jobNote.textContent =
-      'Completed scenes may be reusable if the server still has them.';
+      'Saved work may be reusable if the server still has it.';
 
     resumeButton.style.display = 'block';
     return;
@@ -477,7 +639,7 @@ function showJob(job) {
   setStatus('Creating your music video...');
 
   jobNote.textContent =
-    'You can leave this page and return later to check progress, ' +
+    'You can return later to check progress, ' +
     'but server restarts may interrupt generation.';
 }
 
@@ -496,12 +658,17 @@ async function checkJob() {
     if (id !== currentJobId) return;
 
     if (!response.ok) {
-      throw new Error(job.error || 'Could not check progress.');
+      throw new Error(
+        job.error || 'Could not check progress.'
+      );
     }
 
     showJob(job);
 
-    if (job.status !== 'completed' && job.status !== 'failed') {
+    if (
+      job.status !== 'completed' &&
+      job.status !== 'failed'
+    ) {
       pollTimer = setTimeout(checkJob, 3000);
     }
 
@@ -510,7 +677,10 @@ async function checkJob() {
 
     stopPolling();
     createButton.disabled = false;
-    setStatus('Progress check: ' + error.message);
+
+    setStatus(
+      'Progress check: ' + error.message
+    );
 
     if (/not found/i.test(error.message)) {
       clearJob();
@@ -525,28 +695,44 @@ form.addEventListener('submit', async event => {
   event.preventDefault();
 
   if (currentJobId) {
-    setStatus('Finish or resume your current job before starting another.');
+    setStatus(
+      'Finish or resume your current job before starting another.'
+    );
     return;
   }
 
   if (!estimateReady || songSeconds === null) {
-    setStatus('Please upload a valid song and wait for its cost estimate.');
+    setStatus(
+      'Please upload a valid song and wait for its cost estimate.'
+    );
     return;
   }
 
+  const mode = modeInput.value;
+
+  const modeText = mode === 'premium'
+    ? 'Premium Singing Lip-Sync'
+    : 'Standard Cinematic Music Video';
+
   const costText = estimatedCost === null
-    ? 'Generation cost is unavailable.'
-    : 'Estimated scene cost: $' + estimatedCost.toFixed(2);
+    ? 'Generation cost estimate is unavailable.'
+    : 'Estimated generation cost: $' +
+      estimatedCost.toFixed(2);
 
   if (!window.confirm(
-    costText +
-    '\n\nActual charges may be higher.' +
-    '\nStart generating your music video?'
+    'Mode: ' + modeText +
+    '\n' + costText +
+    '\n\nActual charges may differ.' +
+    '\nFailed attempts and retries may consume credits.' +
+    '\n\nStart generating your music video?'
   )) return;
 
   createButton.disabled = true;
   resultBox.replaceChildren();
-  setStatus('Uploading files and starting your video...');
+
+  setStatus(
+    'Uploading files and starting your video...'
+  );
 
   try {
     const response = await fetch('/api/create', {
@@ -554,30 +740,41 @@ form.addEventListener('submit', async event => {
       body: new FormData(form)
     });
 
-    const type = response.headers.get('content-type') || '';
+    const type =
+      response.headers.get('content-type') || '';
 
     if (!type.includes('application/json')) {
-      throw new Error('Unexpected server response. Check Render logs.');
+      throw new Error(
+        'Unexpected server response. Check Render logs.'
+      );
     }
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Could not start video.');
+      throw new Error(
+        data.error || 'Could not start video.'
+      );
     }
 
     if (!data.jobId) {
-      throw new Error('The server did not return a job ID.');
+      throw new Error(
+        'The server did not return a job ID.'
+      );
     }
 
     saveJob(data.jobId);
     showJob(data);
     stopPolling();
+
     pollTimer = setTimeout(checkJob, 1500);
 
   } catch (error) {
     createButton.disabled = false;
-    setStatus('Unable to start video: ' + error.message);
+
+    setStatus(
+      'Unable to start video: ' + error.message
+    );
   }
 });
 
@@ -585,7 +782,7 @@ resumeButton.addEventListener('click', async () => {
   if (!currentJobId) return;
 
   if (!window.confirm(
-    'Resume this video? Missing scenes may incur new generation charges.'
+    'Resume this video? Retrying may incur new charges.'
   )) return;
 
   resumeButton.disabled = true;
@@ -593,22 +790,29 @@ resumeButton.addEventListener('click', async () => {
 
   try {
     const response = await fetch(
-      '/api/jobs/' + encodeURIComponent(currentJobId) + '/resume',
+      '/api/jobs/' +
+      encodeURIComponent(currentJobId) +
+      '/resume',
       { method: 'POST' }
     );
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Could not resume.');
+      throw new Error(
+        data.error || 'Could not resume.'
+      );
     }
 
     showJob(data);
     stopPolling();
+
     pollTimer = setTimeout(checkJob, 1500);
 
   } catch (error) {
-    setStatus('Resume failed: ' + error.message);
+    setStatus(
+      'Resume failed: ' + error.message
+    );
   } finally {
     resumeButton.disabled = false;
   }
@@ -617,19 +821,23 @@ resumeButton.addEventListener('click', async () => {
 try {
   const savedId = localStorage.getItem(STORAGE_KEY);
 
-  if (savedId && /^[0-9a-f-]{36}$/i.test(savedId)) {
+  if (
+    savedId &&
+    /^[0-9a-f-]{36}$/i.test(savedId)
+  ) {
     currentJobId = savedId;
     progressPanel.style.display = 'block';
-    setStatus('Checking your previous video job...');
+
+    setStatus(
+      'Checking your previous video job...'
+    );
+
     checkJob();
   }
 } catch {}
 </script>
 </body>
 </html>
-
-
-
 
 
 
