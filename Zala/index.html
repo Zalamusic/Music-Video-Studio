@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,10 +19,10 @@
       max-width: 650px;
       margin: 30px auto;
       padding: 26px;
-      background: #ffffff;
+      background: #fff;
       border: 1px solid #dddfe2;
       border-radius: 18px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 4px 16px rgba(0,0,0,.07);
     }
 
     h1 {
@@ -32,16 +31,17 @@
       color: #1877f2;
     }
 
-    .sub {
+    .sub, .note {
       color: #65676b;
       line-height: 1.5;
     }
+
+    .note { font-size: 13px; }
 
     label {
       display: block;
       margin: 20px 0 8px;
       font-weight: bold;
-      color: #1c1e21;
     }
 
     input, textarea, select {
@@ -49,7 +49,7 @@
       padding: 13px;
       border: 1px solid #ccd0d5;
       border-radius: 9px;
-      background: #ffffff;
+      background: #fff;
       color: #1c1e21;
       font-size: 16px;
       font-family: Arial, sans-serif;
@@ -58,7 +58,7 @@
     input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: #1877f2;
-      box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15);
+      box-shadow: 0 0 0 2px rgba(24,119,242,.15);
     }
 
     textarea {
@@ -66,8 +66,14 @@
       resize: vertical;
     }
 
-    input[type="file"] {
-      font-size: 14px;
+    #photoPreview {
+      display: none;
+      width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      margin-top: 12px;
+      border-radius: 10px;
+      background: #f0f2f5;
     }
 
     button {
@@ -77,27 +83,19 @@
       border: 0;
       border-radius: 9px;
       background: #1877f2;
-      color: #ffffff;
+      color: #fff;
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
-      transition: background 0.2s;
     }
 
-    button:hover {
-      background: #166fe5;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
+    button:hover { background: #166fe5; }
+    button:disabled { opacity: .6; cursor: wait; }
 
     #status {
       margin-top: 18px;
       line-height: 1.5;
       overflow-wrap: anywhere;
-      color: #1c1e21;
     }
 
     video {
@@ -106,28 +104,12 @@
       border-radius: 10px;
     }
 
-    a {
-      color: #1877f2;
-    }
-
-    .note {
-      color: #65676b;
-      font-size: 13px;
-    }
+    a { color: #1877f2; }
 
     @media (max-width: 480px) {
-      body {
-        padding: 12px;
-      }
-
-      main {
-        margin: 12px auto;
-        padding: 20px;
-      }
-
-      h1 {
-        font-size: 26px;
-      }
+      body { padding: 12px; }
+      main { margin: 12px auto; padding: 20px; }
+      h1 { font-size: 26px; }
     }
   </style>
 </head>
@@ -145,6 +127,14 @@
       <input id="audio" name="audio" type="file"
         accept=".mp3,.wav,audio/mpeg,audio/wav" required>
       <p class="note">Choose an audio file from your device.</p>
+
+      <label for="photo">Upload a Photo (JPG or PNG)</label>
+      <input id="photo" name="photo" type="file"
+        accept="image/jpeg,image/png,image/webp">
+      <p class="note">
+        Upload a photo of your artist or a visual reference for your music video.
+      </p>
+      <img id="photoPreview" alt="Preview of your uploaded photo">
 
       <label for="prompt">Describe Your Music Video</label>
       <textarea id="prompt" name="prompt" required
@@ -170,6 +160,34 @@
     const button = document.getElementById("createButton");
     const statusBox = document.getElementById("status");
     const resultBox = document.getElementById("result");
+    const photoInput = document.getElementById("photo");
+    const photoPreview = document.getElementById("photoPreview");
+    let previewUrl = null;
+
+    photoInput.addEventListener("change", function() {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+
+      const photo = photoInput.files[0];
+
+      if (!photo) {
+        photoPreview.removeAttribute("src");
+        photoPreview.style.display = "none";
+        return;
+      }
+
+      if (!["image/jpeg", "image/png", "image/webp"].includes(photo.type)) {
+        photoInput.value = "";
+        photoPreview.style.display = "none";
+        statusBox.textContent = "Please choose a JPG, PNG, or WebP image.";
+        return;
+      }
+
+      previewUrl = URL.createObjectURL(photo);
+      photoPreview.src = previewUrl;
+      photoPreview.style.display = "block";
+      statusBox.textContent = "Photo selected. It will be uploaded with your request.";
+    });
 
     form.addEventListener("submit", async function(event) {
       event.preventDefault();
