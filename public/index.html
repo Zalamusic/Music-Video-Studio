@@ -1,142 +1,219 @@
 
 
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Zala QI's World</title>
+  <meta name="theme-color" content="#090911">
+  <meta name="description" content="Zala QI's World — Create cinematic music videos from your songs and photos.">
+  <title>Zala QI's World | Music Video Creator</title>
   <style>
     * { box-sizing: border-box; }
 
+    :root {
+      color-scheme: dark;
+      --purple: #b45cff;
+      --pink: #ed73db;
+      --panel: #171522;
+      --muted: #b8b2c8;
+    }
+
     body {
       margin: 0;
-      padding: 24px 16px;
-      background: #0b0b12;
+      padding: 28px 16px 50px;
+      background:
+        radial-gradient(ellipse at top, #302044 0%, #10101b 42%, #08080e 100%);
       color: #fff;
       font-family: Arial, sans-serif;
+      min-height: 100vh;
     }
 
     main {
-      max-width: 650px;
-      margin: 30px auto;
-      padding: 26px;
-      background: #171722;
-      border: 1px solid #333344;
-      border-radius: 18px;
+      max-width: 720px;
+      margin: 18px auto;
+      padding: 30px;
+      background: rgba(23, 21, 34, 0.96);
+      border: 1px solid #40334f;
+      border-radius: 22px;
+      box-shadow: 0 20px 70px rgba(0,0,0,.38);
     }
 
-    h1 { margin-bottom: 8px; font-size: 30px; }
-    .sub { color: #b6b6c8; line-height: 1.5; }
+    .brand {
+      text-align: center;
+      padding: 8px 0 26px;
+    }
+
+    .brand-mark {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      display: grid;
+      place-items: center;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #a855f7, #ed73db);
+      font-size: 27px;
+      font-weight: 900;
+      box-shadow: 0 0 32px #a855f744;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(29px, 6vw, 43px);
+      letter-spacing: -1.2px;
+    }
+
+    .gradient {
+      background: linear-gradient(90deg, #d6a5ff, #ff9de9);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .sub {
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 470px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      margin-top: 26px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #373044;
+      font-size: 17px;
+      font-weight: bold;
+    }
 
     label {
       display: block;
-      margin: 20px 0 8px;
+      margin: 20px 0 9px;
       font-weight: bold;
+      font-size: 14px;
     }
 
     input, textarea, select {
       width: 100%;
-      padding: 13px;
-      border: 1px solid #44445a;
-      border-radius: 9px;
-      background: #101019;
+      padding: 14px;
+      border: 1px solid #484057;
+      border-radius: 11px;
+      background: #0e0d16;
       color: white;
       font-size: 16px;
     }
 
-    textarea { min-height: 120px; resize: vertical; }
+    input:focus, textarea:focus, select:focus {
+      outline: 2px solid var(--purple);
+      border-color: var(--purple);
+    }
+
+    textarea { min-height: 125px; resize: vertical; }
     input[type="file"] { font-size: 14px; }
+
+    .note {
+      color: #a9a2b9;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
 
     button {
       width: 100%;
-      margin-top: 22px;
-      padding: 15px;
+      margin-top: 24px;
+      padding: 16px;
       border: 0;
-      border-radius: 9px;
-      background: #a855f7;
+      border-radius: 12px;
+      background: linear-gradient(100deg, #923cff, #d34fda);
       color: white;
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
+      transition: opacity .2s, transform .2s;
     }
 
-    button:disabled { opacity: 0.6; cursor: wait; }
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:disabled { opacity: .6; cursor: wait; }
 
     #status {
-      margin-top: 18px;
-      line-height: 1.5;
+      margin-top: 20px;
+      line-height: 1.6;
       overflow-wrap: anywhere;
     }
 
     video {
+      display: block;
       width: 100%;
-      margin-top: 18px;
-      border-radius: 10px;
+      margin-top: 20px;
+      border-radius: 12px;
+      background: #000;
     }
 
-    a { color: #c084fc; }
-    .note { color: #aaaabd; font-size: 13px; }
+    a { color: #d6a5ff; }
+
+    .footer {
+      margin-top: 28px;
+      text-align: center;
+      color: #8e879e;
+      font-size: 12px;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 14px 10px 30px; }
+      main { padding: 21px 17px; border-radius: 17px; }
+    }
   </style>
 </head>
 <body>
   <main>
-    <h1>Zala Music Video Studio</h1>
-    <p class="sub">Turn your music into a cinematic music video.</p>
+    <header class="brand">
+      <div class="brand-mark">ZQ</div>
+      <h1><span class="gradient">Zala QI's World</span></h1>
+      <p class="sub">
+        Your music. Your vision. Your world.
+        Create cinematic music videos from your songs and photos.
+      </p>
+    </header>
+
+    <div class="section-title">Create Your Music Video</div>
 
     <form id="videoForm">
-      <label for="title">Song Title</label>
-      <input
-        id="title"
-        name="title"
-        type="text"
-        maxlength="120"
-        placeholder="Enter your song title"
-      >
+      <label for="title">Song Title (optional)</label>
+      <input id="title" name="title" type="text" maxlength="120"
+        placeholder="Enter your song title">
 
       <label for="audio">Upload Your Song (MP3 or WAV)</label>
-      <input
-        id="audio"
-        name="audio"
-        type="file"
-        accept=".mp3,.wav,audio/mpeg,audio/wav"
-        required
-      >
-      <p class="note">Choose an audio file from your device.</p>
+      <input id="audio" name="audio" type="file"
+        accept=".mp3,.wav,audio/mpeg,audio/wav" required>
+      <p class="note">Choose the full song you want in your finished video.</p>
 
-      <label for="photo">Upload a Photo (JPG or PNG)</label>
-      <input
-        id="photo"
-        name="photo"
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        required
-      >
-      <p class="note">
-        Upload a photo of your artist to use as the visual reference for your music video.
-      </p>
+      <label for="photo">Upload Your Artist Photo</label>
+      <input id="photo" name="photo" type="file"
+        accept="image/jpeg,image/png,image/webp" required>
+      <p class="note">Use a clear photo as the visual reference for your video.</p>
 
       <label for="prompt">Describe Your Music Video</label>
-      <textarea
-        id="prompt"
-        name="prompt"
-        required
-        placeholder="Describe the scenes, characters, locations, mood, and visual style you want..."
-      ></textarea>
+      <textarea id="prompt" name="prompt" required
+        placeholder="Describe the scenes, locations, mood, outfits, camera movement, and visual style you want..."></textarea>
 
       <label for="format">Video Format</label>
       <select id="format" name="format">
-        <option value="vertical">Vertical (TikTok, Reels, Shorts)</option>
-        <option value="landscape">Landscape (YouTube)</option>
+        <option value="vertical">Vertical — TikTok, Reels, Shorts</option>
+        <option value="landscape">Landscape — YouTube</option>
       </select>
 
-      <button id="createButton" type="submit">
-        Create Music Video
-      </button>
+      <button id="createButton" type="submit">Create My Music Video</button>
     </form>
 
     <div id="status" role="status" aria-live="polite"></div>
     <div id="result"></div>
+
+    <div class="footer">Zala QI's World · Create something unforgettable</div>
   </main>
 
   <script>
@@ -149,7 +226,7 @@
       event.preventDefault();
 
       button.disabled = true;
-      statusBox.textContent = "Submitting your request...";
+      statusBox.textContent = "Creating your video. Please keep this page open...";
       resultBox.replaceChildren();
 
       try {
@@ -180,14 +257,12 @@
         download.href = data.url;
         download.target = "_blank";
         download.rel = "noopener";
-        download.textContent = "Open or download your video";
+        download.textContent = "Open or download your finished video";
         download.style.display = "block";
         download.style.marginTop = "16px";
         resultBox.appendChild(download);
-
       } catch (error) {
-        statusBox.textContent =
-          "Unable to create video: " + error.message;
+        statusBox.textContent = "Unable to create video: " + error.message;
       } finally {
         button.disabled = false;
       }
@@ -195,6 +270,18 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
