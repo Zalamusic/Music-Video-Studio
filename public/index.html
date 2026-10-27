@@ -896,10 +896,15 @@ form.addEventListener('submit', async event => {
   );
 
   try {
-    const response = await fetch('/api/create', {
-      method: 'POST',
-      body: new FormData(form)
-    });
+    const key = adminKeyInput.value;
+
+const response = await fetch('/api/create', {
+  method: 'POST',
+  headers: {
+    'X-Video-Admin-Key': key
+  },
+  body: new FormData(form)
+});
 
     const type =
       response.headers.get('content-type') || '';
