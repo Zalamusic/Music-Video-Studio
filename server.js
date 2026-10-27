@@ -30,6 +30,9 @@ const VIDEO_ADMIN_KEY = process.env.VIDEO_ADMIN_KEY;
 console.log(
   'Admin key trailing whitespace:',
   /\s$/.test(VIDEO_ADMIN_KEY || '')
+);console.log(
+  'Admin key leading whitespace:',
+  /^\s/.test(VIDEO_ADMIN_KEY || '')
 );
 console.log(
   'Video admin key configured:',
