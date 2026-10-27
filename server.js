@@ -428,7 +428,7 @@ async function generatePremium(s, dir, imageUrl) {
         resolution: '768P',
         enable_transcription: false
       },
-      logs: false
+      logs: true
     });
 
     const url =
