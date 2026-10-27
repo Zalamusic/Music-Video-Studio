@@ -566,28 +566,28 @@ function stopPolling() {
 }
 function rememberVideo(job) {
   if (!job.id && !job.jobId) return;
-if (!job.url) return;
+
 job.jobId = job.jobId || job.id;
 
   try {
     const history = JSON.parse(
       localStorage.getItem(VIDEO_HISTORY_KEY) || '[]'
-    );displayMyVideos();
-displayMyVideos();
+    
     const updated = history.filter(
       item => item.jobId !== job.jobId
     );
 
     updated.unshift({
-      jobId: job.jobId,
-      url: job.url,
-      savedAt: new Date().toISOString()
-    });
+  jobId: job.jobId,
+  url: job.url || null,
+  title: job.title || 'Completed Music Video',
+  savedAt: new Date().toISOString()
+});
 
     localStorage.setItem(
       VIDEO_HISTORY_KEY,
       JSON.stringify(updated.slice(0, 50))
-    );
+    );displayMyVideos();
   } catch (error) {
     console.error('Could not save video history:', error);
   }
@@ -630,7 +630,7 @@ function displayMyVideos() {
   }
 
   history.forEach((video, index) => {
-    if (!video.url || !video.jobId) return;
+    if (!video.jobId) return;
 
     const item = document.createElement('div');
     item.style.marginBottom = '18px';
@@ -638,12 +638,19 @@ function displayMyVideos() {
     const title = document.createElement('p');
     title.textContent = 'Video ' + (index + 1);
 
-    const link = document.createElement('a');
-    link.href = video.url;
-    link.target = '_blank';
-    link.rel = 'noopener';
-    link.textContent = 'Open or Download Video';
-    link.style.color = '#0F6CBD';
+    const link = document.createElement('button');
+link.type = 'button';
+link.textContent = 'Select Video';
+link.style.marginTop = '10px';
+
+link.addEventListener('click', () => {
+  saveJob(video.jobId);
+  customerLinkStatus.textContent =
+    'Video selected. Enter your administrator password to create a download link.';
+  customerLinkResult.replaceChildren();
+  document.getElementById('customerLinkPanel')
+    .scrollIntoView({ behavior: 'smooth' });
+});
 const deleteButton = document.createElement('button');
 deleteButton.type = 'button';
 deleteButton.textContent = 'Delete Video';
