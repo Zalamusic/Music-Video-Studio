@@ -13,7 +13,9 @@ const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
 
 const PAYPAL_BASE_URL = PAYPAL_ENV === 'live'
   ? 'https://api-m.paypal.com'
-  async function getPayPalAccessToken() {
+  : 'https://api-m.sandbox.paypal.com';
+
+async function getPayPalAccessToken() {
   if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
     throw new Error('PayPal credentials are missing.');
   }
