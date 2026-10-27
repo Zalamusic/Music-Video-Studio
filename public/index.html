@@ -1031,7 +1031,19 @@ const key = adminKeyInput.value;
       }
     });
 
-    customerLinkResult.append(link, copyButton);
+    const downloadButton = document.createElement('a');
+downloadButton.href = data.url;
+downloadButton.textContent = '⬇ Download Video';
+downloadButton.setAttribute('download', 'Zala-QI-World-Video.mp4');
+downloadButton.style.display = 'inline-block';
+downloadButton.style.padding = '12px 18px';
+downloadButton.style.marginTop = '12px';
+downloadButton.style.background = '#b45cff';
+downloadButton.style.color = '#ffffff';
+downloadButton.style.borderRadius = '8px';
+downloadButton.style.textDecoration = 'none';
+
+customerLinkResult.append(link, copyButton, downloadButton);
     customerLinkStatus.textContent =
       'Private link created. Expires: ' +
       new Date(data.expiresAt).toLocaleString();
