@@ -13,6 +13,34 @@ const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
 
 const PAYPAL_BASE_URL = PAYPAL_ENV === 'live'
   ? 'https://api-m.paypal.com'
+  async function getPayPalAccessToken() {
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+    throw new Error('PayPal credentials are missing.');
+  }
+
+  const credentials = Buffer.from(
+    PAYPAL_CLIENT_ID + ':' + PAYPAL_CLIENT_SECRET
+  ).toString('base64');
+
+  const response = await fetch(
+    PAYPAL_BASE_URL + '/v1/oauth2/token',
+    {
+      method: 'POST',
+      headers: {
+        Authorization: 'Basic ' + credentials,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'grant_type=client_credentials'
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('PayPal authentication failed.');
+  }
+
+  const data = await response.json();
+  return data.access_token;
+}
   : 'https://api-m.sandbox.paypal.com';
 const PORT = process.env.PORT || 3000;
 const OUT = '/app/outputs';
