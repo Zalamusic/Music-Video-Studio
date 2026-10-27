@@ -7,6 +7,13 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 const app = express();
+const PAYPAL_ENV = process.env.PAYPAL_ENV || 'sandbox';
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
+
+const PAYPAL_BASE_URL = PAYPAL_ENV === 'live'
+  ? 'https://api-m.paypal.com'
+  : 'https://api-m.sandbox.paypal.com';
 const PORT = process.env.PORT || 3000;
 const OUT = '/app/outputs';
 const JOBS = '/app/outputs/jobs';
