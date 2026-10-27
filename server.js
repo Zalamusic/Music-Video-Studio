@@ -26,7 +26,7 @@ const LIP_PRICE_PER_SECOND = Number(
 const active = new Set();
 
 const DOWNLOAD_LINK_DAYS = 7;
-const VIDEO_ADMIN_KEY = process.env.VIDEO_ADMIN_KEY;
+const VIDEO_ADMIN_KEY = (process.env.VIDEO_ADMIN_KEY || '').replace(/\s/g, '');
 console.log(
   'Admin key trailing whitespace:',
   /\s$/.test(VIDEO_ADMIN_KEY || '')
