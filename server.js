@@ -876,7 +876,7 @@ app.post('/api/jobs/:id/customer-link', async (req, res) => {
 
     res.json({
       ok: true,
-      url: `${req.protocol}://${req.get('host')}/download/${token}`,
+      url: `${req.protocol}://${req.get('host')}/watch/${token}`,
       expiresAt
     });
   } catch (error) {
