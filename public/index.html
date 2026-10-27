@@ -322,6 +322,7 @@ const statusBox = document.getElementById('status');
 const resultBox = document.getElementById('result');
 
 const STORAGE_KEY = 'zala-current-job';
+  const VIDEO_HISTORY_KEY = 'zala-video-history';
 let currentJobId = null;
 let pollTimer = null;
 let estimateRequest = 0;
@@ -536,14 +537,39 @@ modeInput.addEventListener('change', () => {
 });
 
 updateModeNote();
-
+displayMyVideos();
 function stopPolling() {
   if (pollTimer !== null) {
     clearTimeout(pollTimer);
     pollTimer = null;
   }
 }
+function rememberVideo(job) {
+  if (!job.jobId || !job.url) return;
 
+  try {
+    const history = JSON.parse(
+      localStorage.getItem(VIDEO_HISTORY_KEY) || '[]'
+    );
+displayMyVideos();
+    const updated = history.filter(
+      item => item.jobId !== job.jobId
+    );
+
+    updated.unshift({
+      jobId: job.jobId,
+      url: job.url,
+      savedAt: new Date().toISOString()
+    });
+
+    localStorage.setItem(
+      VIDEO_HISTORY_KEY,
+      JSON.stringify(updated.slice(0, 50))
+    );
+  } catch (error) {
+    console.error('Could not save video history:', error);
+  }
+}
 function saveJob(id) {
   currentJobId = id;
 
@@ -559,7 +585,48 @@ function clearJob() {
     localStorage.removeItem(STORAGE_KEY);
   } catch {}
 }
+function displayMyVideos() {
+  const list = document.getElementById('myVideosList');
+  if (!list) return;
 
+  list.replaceChildren();
+
+  let history = [];
+
+  try {
+    history = JSON.parse(
+      localStorage.getItem(VIDEO_HISTORY_KEY) || '[]'
+    );
+    if (!Array.isArray(history)) history = [];
+  } catch {
+    history = [];
+  }
+
+  if (history.length === 0) {
+    list.textContent = 'No saved videos to display yet.';
+    return;
+  }
+
+  history.forEach((video, index) => {
+    if (!video.url || !video.jobId) return;
+
+    const item = document.createElement('div');
+    item.style.marginBottom = '18px';
+
+    const title = document.createElement('p');
+    title.textContent = 'Video ' + (index + 1);
+
+    const link = document.createElement('a');
+    link.href = video.url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = 'Open or Download Video';
+    link.style.color = '#0F6CBD';
+
+    item.append(title, link);
+    list.appendChild(item);
+  });
+}
 function showResult(url) {
   resultBox.replaceChildren();
 
@@ -620,6 +687,7 @@ function showJob(job) {
         : 'All scenes completed.';
 
     if (job.url) showResult(job.url);
+rememberVideo(job);
 
     
     return;
