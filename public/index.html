@@ -612,7 +612,7 @@ function showJob(job) {
 
     if (job.url) showResult(job.url);
 
-    clearJob();
+    
     return;
   }
 
@@ -692,11 +692,22 @@ form.addEventListener('submit', async event => {
   event.preventDefault();
 
   if (currentJobId) {
+  const response = await fetch(
+    '/api/jobs/' + encodeURIComponent(currentJobId)
+  );
+  const previousJob = response.ok
+    ? await response.json()
+    : null;
+
+  if (previousJob?.status === 'completed') {
+    clearJob();
+  } else {
     setStatus(
       'Finish or resume your current job before starting another.'
     );
     return;
   }
+}
 
   if (!estimateReady || songSeconds === null) {
     setStatus(
