@@ -591,7 +591,11 @@ app.post(
   ]),
   async (req, res) => {
     let dir;
-
+    if (!isVideoAdmin(req)) {
+      return res.status(403).json({
+        error: 'Administrator password required to create videos.'
+      });
+    }
     try {
       const audio = req.files?.audio?.[0];
       const photo = req.files?.photo?.[0];
