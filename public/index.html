@@ -294,6 +294,23 @@ button:disabled {
   <div id="myVideosList">
     <p>No saved videos to display yet.</p>
   </div>
+</section> <section class="panel" id="customerLinkPanel">
+  <h2>Create Customer Download Link</h2>
+  <p class="note">
+    Generate a private download link valid for 7 days.
+  </p>
+
+  <label for="adminKey">Administrator Password</label>
+  <input id="adminKey" type="password"
+    placeholder="Enter your private administrator key"
+    autocomplete="off">
+
+  <button id="customerLinkButton" type="button">
+    Create Customer Link
+  </button>
+
+  <p id="customerLinkStatus" class="note"></p>
+  <div id="customerLinkResult"></div>
 </section>
 <div id="status" role="status" aria-live="polite"></div>
 <div id="result"></div>
@@ -320,7 +337,10 @@ const phaseBox = document.getElementById('phase');
 const jobNote = document.getElementById('jobNote');
 const statusBox = document.getElementById('status');
 const resultBox = document.getElementById('result');
-
+const adminKeyInput = document.getElementById('adminKey');
+const customerLinkButton = document.getElementById('customerLinkButton');
+const customerLinkStatus = document.getElementById('customerLinkStatus');
+const customerLinkResult = document.getElementById('customerLinkResult');
 const STORAGE_KEY = 'zala-current-job';
   const VIDEO_HISTORY_KEY = 'zala-video-history';
 let currentJobId = null;
@@ -958,7 +978,71 @@ resumeButton.addEventListener('click', async () => {
     resumeButton.disabled = false;
   }
 });
+customerLinkButton.addEventListener('click', async () => {
+  const id = currentJobId;
+  const key = adminKeyInput.value.trim();
 
+  if (!id) {
+    customerLinkStatus.textContent =
+      'No video selected. Open a completed video first.';
+    return;
+  }
+
+  if (!key) {
+    customerLinkStatus.textContent =
+      'Enter your administrator password.';
+    return;
+  }
+
+  customerLinkButton.disabled = true;
+  customerLinkStatus.textContent = 'Creating private link...';
+  customerLinkResult.replaceChildren();
+
+  try {
+    const response = await fetch(
+      '/api/jobs/' + encodeURIComponent(id) + '/customer-link',
+      {
+        method: 'POST',
+        headers: { 'X-Video-Admin-Key': key }
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Link creation failed.');
+    }
+
+    const link = document.createElement('a');
+    link.href = data.url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = data.url;
+
+    const copyButton = document.createElement('button');
+    copyButton.type = 'button';
+    copyButton.textContent = 'Copy Customer Link';
+    copyButton.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(data.url);
+        customerLinkStatus.textContent = 'Link copied!';
+      } catch {
+        window.prompt('Copy this link:', data.url);
+      }
+    });
+
+    customerLinkResult.append(link, copyButton);
+    customerLinkStatus.textContent =
+      'Private link created. Expires: ' +
+      new Date(data.expiresAt).toLocaleString();
+
+  } catch (error) {
+    customerLinkStatus.textContent = error.message;
+  } finally {
+    adminKeyInput.value = '';
+    customerLinkButton.disabled = false;
+  }
+});
 try {
   const savedId = localStorage.getItem(STORAGE_KEY);
 
