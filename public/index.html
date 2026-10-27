@@ -959,7 +959,13 @@ resumeButton.addEventListener('click', async () => {
       '/api/jobs/' +
       encodeURIComponent(currentJobId) +
       '/resume',
-      { method: 'POST' }
+            '/resume',
+      {
+        method: 'POST',
+        headers: {
+          'X-Video-Admin-Key': adminKeyInput.value
+        }
+      }
     );
 
     const data = await response.json();
