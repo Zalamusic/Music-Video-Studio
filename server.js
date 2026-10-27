@@ -806,6 +806,11 @@ app.delete('/api/jobs/:id', async (req, res) => {
   }
 });
 app.post('/api/jobs/:id/resume', async (req, res) => {
+    if (!isVideoAdmin(req)) {
+    return res.status(403).json({
+      error: 'Administrator password required to resume videos.'
+    });
+  }
   if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) {
     return res.status(400).json({
       error: 'Invalid job ID.'
