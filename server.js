@@ -37,7 +37,7 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 30 * 1024 * 1024 }
 });
-
+app.use(express.json({ limit: '16kb' }));
 app.use(express.static('public'));
 app.use('/outputs', express.static(OUT));
 
