@@ -704,7 +704,7 @@ app.get('/api/jobs/:id', async (req, res) => {
 });
 app.delete('/api/jobs/:id', async (req, res) => {
     const expectedKey = process.env.VIDEO_DELETE_KEY;
-  const suppliedKey = req.get('X-Video-Delete-Key');
+  const suppliedKey = req.get('X-Video-Delete-Key') || req.body?.deleteKey;
 
   if (!expectedKey || suppliedKey !== expectedKey) {
     return res.status(403).json({
