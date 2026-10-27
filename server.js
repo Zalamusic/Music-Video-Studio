@@ -49,7 +49,12 @@ app.use(express.static('public'));
 
 function isVideoAdmin(req) {
   const supplied = req.get('X-Video-Admin-Key');
-
+console.log(
+  'Admin password check:',
+  supplied ? 'received' : 'missing',
+  'matches:',
+  Boolean(VIDEO_ADMIN_KEY && supplied === VIDEO_ADMIN_KEY)
+);
   return Boolean(
     VIDEO_ADMIN_KEY &&
     supplied === VIDEO_ADMIN_KEY
