@@ -884,6 +884,52 @@ app.post('/api/jobs/:id/customer-link', async (req, res) => {
       error: error.message
     });
   }
+});app.get('/watch/:token', (req, res) => {
+  const token = req.params.token;
+
+  if (!/^[0-9a-f-]{36}$/i.test(token)) {
+    return res.status(404).send('Invalid link.');
+  }
+
+  const downloadUrl = '/download/' + token;
+
+  res.type('html').send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+      <title>Zala QI's World - Your Video</title>
+      <style>
+        body {
+          background: #10101b;
+          color: white;
+          font-family: Arial, sans-serif;
+          text-align: center;
+          padding: 30px 15px;
+        }
+        a {
+          display: inline-block;
+          background: #b45cff;
+          color: white;
+          padding: 16px 24px;
+          border-radius: 10px;
+          text-decoration: none;
+          font-weight: bold;
+          margin: 12px;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Zala QI's World</h1>
+      <h2>Your Music Video Is Ready!</h2>
+      <p>Your private link expires after 7 days.</p>
+      <a href="${downloadUrl}">
+        ⬇ Download Your Video
+      </a>
+    </body>
+    </html>
+  `);
 });
 app.get('/download/:token', async (req, res) => {
   const token = req.params.token;
