@@ -54,6 +54,10 @@ console.log(
   supplied ? 'received' : 'missing',
   'matches:',
   Boolean(VIDEO_ADMIN_KEY && supplied === VIDEO_ADMIN_KEY)
+);console.log(
+  'Password lengths:',
+  'received:', supplied?.length ?? 0,
+  'stored:', VIDEO_ADMIN_KEY?.length ?? 0
 );
   return Boolean(
     VIDEO_ADMIN_KEY &&
