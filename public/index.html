@@ -537,7 +537,7 @@ modeInput.addEventListener('change', () => {
 });
 
 updateModeNote();
-displayMyVideos();
+
 function stopPolling() {
   if (pollTimer !== null) {
     clearTimeout(pollTimer);
@@ -545,12 +545,14 @@ function stopPolling() {
   }
 }
 function rememberVideo(job) {
-  if (!job.jobId || !job.url) return;
+  if (!job.id && !job.jobId) return;
+if (!job.url) return;
+job.jobId = job.jobId || job.id;
 
   try {
     const history = JSON.parse(
       localStorage.getItem(VIDEO_HISTORY_KEY) || '[]'
-    );
+    );displayMyVideos();
 displayMyVideos();
     const updated = history.filter(
       item => item.jobId !== job.jobId
