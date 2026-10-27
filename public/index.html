@@ -8,10 +8,10 @@
 <style>
 * { box-sizing: border-box; }
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --purple: #1DA1F2;
   --pink: #0F6CBD;
-  --muted: #b8b2c8;
+  --muted: #536471;
 }
 body {
   margin: 0;
@@ -38,7 +38,8 @@ main {
   display: grid;
   place-items: center;
   border-radius: 20px;
-  background: linear-gradient(135deg,#a855f7,#ed73db);
+  background: linear-gradient(135deg,#1DA1F2,#0F6CBD);
+color: #FFFFFF;
   font-size: 27px;
   font-weight: 900;
 }
@@ -46,8 +47,8 @@ h1 {
   margin: 0 0 12px;
   font-size: clamp(29px,6vw,43px);
 }
-.gradient {
-  background: linear-gradient(90deg,#d6a5ff,#ff9de9);
+
+  background: linear-gradient(90deg,#1DA1F2,#0F6CBD);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -61,7 +62,7 @@ h1 {
 .section-title {
   margin-top: 26px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #373044;
+  border-bottom: 1px solid #D6E8F5;
   font-size: 17px;
   font-weight: bold;
 }
@@ -74,49 +75,50 @@ label {
 input, textarea, select {
   width: 100%;
   padding: 14px;
-  border: 1px solid #484057;
+  border: 1px solid #B9D8EE;
   border-radius: 11px;
-  background: #0e0d16;
-  color: white;
+  background: #FFFFFF;
+color: #15202B;
   font-size: 16px;
 }
 textarea { min-height: 125px; resize: vertical; }
 input[type=file] { font-size: 14px; }
 .note {
-  color: #aaa3b9;
+  color: #536471;
   font-size: 13px;
   line-height: 1.5;
 }
 .panel {
   margin-top: 24px;
   padding: 20px;
-  background: #241b32;
-  border: 1px solid #765099;
+  background: #E8F4FD;
+border: 1px solid #B9D8EE;
   border-radius: 15px;
 }
 .panel h2 {
   margin: 0 0 12px;
   font-size: 20px;
-  color: #e2baff;
+  color: #0F6CBD;
 }
 .panel p { line-height: 1.5; }
 .cost {
   font-size: 30px;
   font-weight: bold;
-  color: #ffb7e9;
+  color: #0F6CBD;
 }
 .warning {
-  color: #e0d1b6;
+  color: #536471;
   font-size: 13px;
   line-height: 1.5;
 }
 .mode-note {
   margin-top: 12px;
   padding: 13px;
-  border: 1px solid #534168;
-  border-radius: 10px;
-  background: #21192c;
-  color: #d7cbe4;
+  
+border-radius: 10px;
+  border: 1px solid #B9D8EE;
+background: #E8F4FD;
+color: #15202B;
   font-size: 13px;
   line-height: 1.6;
 }
@@ -126,7 +128,7 @@ button {
   padding: 16px;
   border: 0;
   border-radius: 12px;
-  background: linear-gradient(100deg,#923cff,#d34fda);
+  background: linear-gradient(100deg,#1DA1F2,#0F6CBD);
   color: #fff;
   font-size: 17px;
   font-weight: bold;
@@ -136,11 +138,11 @@ button:disabled {
   opacity: .6;
   cursor: wait;
 }
-.secondary { background: #48345f; }
+.secondary { background: #0F6CBD; }
 #progressPanel { display: none; }
 .progress-track {
   height: 19px;
-  background: #100e18;
+  background: #D6E8F5;
   border-radius: 20px;
   overflow: hidden;
   margin: 16px 0;
@@ -148,7 +150,7 @@ button:disabled {
 #progressFill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg,#923cff,#ed73db);
+  background: linear-gradient(90deg,#1DA1F2,#0F6CBD);
   transition: width .4s ease;
 }
 #progressText {
@@ -167,14 +169,14 @@ button:disabled {
   background: black;
 }
 #result a {
-  color: #e2baff;
+  color: #0F6CBD;
   display: block;
   margin-top: 16px;
 }
 .footer {
   margin-top: 28px;
   text-align: center;
-  color: #8e879e;
+  color: #657786;
   font-size: 12px;
 }
 @media(max-width:480px) {
