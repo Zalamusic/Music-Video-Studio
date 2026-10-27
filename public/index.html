@@ -980,8 +980,8 @@ resumeButton.addEventListener('click', async () => {
 });
 customerLinkButton.addEventListener('click', async () => {
   const id = currentJobId;
-  const key = adminKeyInput.value.trim();
-
+  
+const key = adminKeyInput.value;
   if (!id) {
     customerLinkStatus.textContent =
       'No video selected. Open a completed video first.';
