@@ -702,7 +702,53 @@ app.get('/api/jobs/:id', async (req, res) => {
     });
   }
 });
+app.delete('/api/jobs/:id', async (req, res) => {
+    const expectedKey = process.env.VIDEO_DELETE_KEY;
+  const suppliedKey = req.get('X-Video-Delete-Key');
 
+  if (!expectedKey || suppliedKey !== expectedKey) {
+    return res.status(403).json({
+      error: 'Unauthorized video deletion.'
+    });
+  }
+  const id = req.params.id;
+
+  if (!/^[0-9a-f-]{36}$/i.test(id)) {
+    return res.status(400).json({
+      error: 'Invalid job ID.'
+    });
+  }
+
+  try {
+    const job = await readState(id);
+
+    if (active.has(id) || job.status !== 'completed') {
+      return res.status(409).json({
+        error: 'Only completed videos can be deleted.'
+      });
+    }
+
+    await fs.rm(
+      path.join(OUT, `${id}.mp4`),
+      { force: true }
+    );
+
+    await fs.rm(jobDir(id), {
+      recursive: true,
+      force: true
+    });
+
+    res.json({
+      ok: true,
+      message: 'Video and job files deleted.'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      error: 'Could not delete video.'
+    });
+  }
+});
 app.post('/api/jobs/:id/resume', async (req, res) => {
   if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) {
     return res.status(400).json({
