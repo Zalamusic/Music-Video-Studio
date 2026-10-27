@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000;
 const OUT = '/app/outputs';
 const JOBS = '/app/outputs/jobs';
 
+const LINKS = '/app/outputs/links';
 const MODEL = 'minimax/h3-max-turbo/image-to-video';
 const LIP_MODEL = 'minimax/h3-max/lip-sync/image-to-video';
 
@@ -24,11 +25,14 @@ const LIP_PRICE_PER_SECOND = Number(
 
 const active = new Set();
 
+const DOWNLOAD_LINK_DAYS = 7;
+const VIDEO_ADMIN_KEY = process.env.VIDEO_ADMIN_KEY;
+
 await Promise.all([
   fs.mkdir(OUT, { recursive: true }),
-  fs.mkdir(JOBS, { recursive: true })
+  fs.mkdir(JOBS, { recursive: true }),
+  fs.mkdir(LINKS, { recursive: true })
 ]);
-
 if (process.env.FAL_KEY) {
   fal.config({ credentials: process.env.FAL_KEY });
 }
@@ -39,8 +43,15 @@ const upload = multer({
 });
 app.use(express.json({ limit: '16kb' }));
 app.use(express.static('public'));
-app.use('/outputs', express.static(OUT));
 
+function isVideoAdmin(req) {
+  const supplied = req.get('X-Video-Admin-Key');
+
+  return Boolean(
+    VIDEO_ADMIN_KEY &&
+    supplied === VIDEO_ADMIN_KEY
+  );
+}
 const validPrice = p => Number.isFinite(p) && p > 0;
 
 function estimate(seconds, premium) {
@@ -184,7 +195,29 @@ function publicState(s) {
     mode
   };
 }
+async function createCustomerLink(id) {
+  const job = await readState(id);
 
+  if (job.status !== 'completed') {
+    throw new Error('Video is not completed.');
+  }
+
+  if (!(await exists(path.join(OUT, `${id}.mp4`)))) {
+    throw new Error('Video file is missing.');
+  }
+
+  const token = randomUUID();
+  const expiresAt = new Date(
+    Date.now() + DOWNLOAD_LINK_DAYS * 86400000
+  ).toISOString();
+
+  await fs.writeFile(
+    path.join(LINKS, `${token}.json`),
+    JSON.stringify({ id, expiresAt })
+  );
+
+  return { token, expiresAt };
+}
 async function downloadVideo(url, file) {
   const response = await fetch(url);
 
@@ -507,8 +540,8 @@ async function generate(id) {
 
     s.status = 'completed';
     s.phase = 'Video ready';
-    s.url = `/outputs/${id}.mp4`;
-
+    
+s.url = null;
     await saveState(s);
 
   } catch (e) {
@@ -803,7 +836,76 @@ app.post('/api/jobs/:id/resume', async (req, res) => {
     });
   }
 });
+app.post('/api/jobs/:id/customer-link', async (req, res) => {
+  if (!isVideoAdmin(req)) {
+    return res.status(403).json({
+      error: 'Unauthorized.'
+    });
+  }
 
+  const id = req.params.id;
+
+  if (!/^[0-9a-f-]{36}$/i.test(id)) {
+    return res.status(400).json({
+      error: 'Invalid job ID.'
+    });
+  }
+
+  try {
+    const { token, expiresAt } =
+      await createCustomerLink(id);
+
+    res.json({
+      ok: true,
+      url: `${req.protocol}://${req.get('host')}/download/${token}`,
+      expiresAt
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.message
+    });
+  }
+});
+app.get('/download/:token', async (req, res) => {
+  const token = req.params.token;
+
+  if (!/^[0-9a-f-]{36}$/i.test(token)) {
+    return res.status(404).send('Invalid download link.');
+  }
+
+  try {
+    const record = JSON.parse(
+      await fs.readFile(
+        path.join(LINKS, `${token}.json`),
+        'utf8'
+      )
+    );
+
+    if (Date.now() >= Date.parse(record.expiresAt)) {
+      return res.status(410).send(
+        'This download link has expired.'
+      );
+    }
+
+    if (!/^[0-9a-f-]{36}$/i.test(record.id)) {
+      return res.status(404).send('Invalid video.');
+    }
+
+    const video = path.join(OUT, `${record.id}.mp4`);
+
+    if (!(await exists(video))) {
+      return res.status(404).send(
+        'Video is no longer available.'
+      );
+    }
+
+    res.download(video, 'Zala-QI-World-Video.mp4');
+  } catch {
+    res.status(404).send(
+      'Download link not found.'
+    );
+  }
+});
 app.listen(PORT, () => {
   console.log(
     `Zala QI's World running on port ${PORT}`
