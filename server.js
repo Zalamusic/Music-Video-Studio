@@ -8,8 +8,8 @@ import { randomUUID } from 'node:crypto';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const OUT = path.resolve(process.env.OUTPUT_DIR || 'outputs');
-const JOBS = path.resolve(process.env.JOBS_DIR || 'jobs');
+const OUT = '/app/outputs';
+const JOBS = '/app/outputs/jobs';
 
 const MODEL = 'minimax/h3-max-turbo/image-to-video';
 const LIP_MODEL = 'minimax/h3-max/lip-sync/image-to-video';
