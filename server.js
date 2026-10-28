@@ -1211,14 +1211,25 @@ app.post(
     });
   }
     const song = req.files?.song?.[0];
-const photos = req.files?.photo || [];
-
+    const photos = req.files?.photo || [];
 if (!song || photos.length < 1 || photos.length > 5) {
   return res.status(400).json({
     error: 'Please upload 1 song and 1 to 5 photos.'
   });
 }
-     return res.status(503).json({
+    const allowedSongTypes = [
+  'audio/mpeg',
+  'audio/mp3',
+  'audio/wav',
+  'audio/x-wav',
+  'audio/wave'
+];
+    if (!allowedSongTypes.includes(song.mimetype)) {
+  return res.status(400).json({
+    error: 'Please upload an MP3 or WAV song.'
+  });
+}
+    return res.status(503).json({
     error: 'Order submissions are not enabled yet.'
   });
 }
