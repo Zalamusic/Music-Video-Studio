@@ -51,6 +51,19 @@ button {
 <body>
 <main>
 <h1>Customer Orders</h1>
+  <label for="adminKey">Administrator Password</label>
+<input
+  id="adminKey"
+  type="password"
+  placeholder="Enter your administrator password"
+  autocomplete="off"
+  style="width:100%;padding:14px;margin-top:10px;
+  border:1px solid #B9D8EE;border-radius:10px;"
+>
+
+<button type="button" id="loadOrdersButton">
+  View My Orders
+</button>
 <p class="note">Zala QI's World — Order Management</p>
 
 <section class="panel">
@@ -81,5 +94,74 @@ button {
   system is connected.
 </p>
 </main>
+  
+<script>
+const loadButton = document.getElementById('loadOrdersButton');
+
+loadButton.addEventListener('click', async () => {
+  const key = document.getElementById('adminKey').value;
+  const list = document.getElementById('ordersList');
+  const count = document.getElementById('waitingCount');
+
+  if (!key) {
+    alert('Please enter your administrator password.');
+    return;
+  }
+
+  loadButton.disabled = true;
+  list.textContent = 'Loading customer orders...';
+
+  try {
+    const response = await fetch('/api/customer-orders', {
+      headers: { 'X-Video-Admin-Key': key },
+      cache: 'no-store'
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Unable to load orders.');
+    }
+
+    const orders = data.orders || [];
+    const waiting = orders.filter(
+      order => order.paymentStatus === 'paid' &&
+        order.status !== 'completed'
+    );
+
+    count.textContent = waiting.length +
+      (waiting.length === 1 ? ' Order Waiting' : ' Orders Waiting');
+
+    list.replaceChildren();
+
+    if (orders.length === 0) {
+      list.textContent = 'No customer orders yet.';
+      return;
+    }
+
+    orders.forEach(order => {
+      const card = document.createElement('div');
+      card.className = 'panel';
+
+      const title = document.createElement('h3');
+      title.textContent = order.songTitle || 'Customer Order';
+
+      const details = document.createElement('p');
+      details.textContent =
+        'Customer: ' + (order.artist || 'Unknown') +
+        ' | Package: ' + (order.packageType || 'Unknown') +
+        ' | Status: ' + (order.status || 'Pending');
+
+      card.append(title, details);
+      list.appendChild(card);
+    });
+  } catch (error) {
+    list.textContent = error.message;
+  } finally {
+    loadButton.disabled = false;
+  }
+});
+</script>
+
 </body>
 </html>
