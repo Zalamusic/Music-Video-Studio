@@ -1186,6 +1186,13 @@ const CUSTOMER_UPLOADS = path.join(ORDERS, 'uploads');
 await fs.mkdir(CUSTOMER_UPLOADS, {
   recursive: true
 });
+const customerUpload = multer({
+  dest: CUSTOMER_UPLOADS,
+  limits: {
+    fileSize: 100 * 1024 * 1024,
+    files: 6
+  }
+});
 app.listen(PORT, () => {
   console.log(
     `Zala QI's World running on port ${PORT}`
