@@ -44,8 +44,11 @@
     <input id="song" name="song" type="file" accept=".mp3,.wav" required>
 
     <label for="photo">Upload Artist Photo</label>
-    <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
-
+    
+<input id="photo" name="photo" type="file"
+  accept="image/jpeg,image/png,image/webp"
+  multiple required>
+<p class="note">Upload up to 5 artist photos.</p>
     <label for="description">Describe Your Music Video</label>
     <textarea id="description" name="description" required></textarea>
 
@@ -88,6 +91,12 @@
   packageInput.addEventListener('change', updatePackage);
   updatePackage();
   document.getElementById('orderForm').addEventListener('submit', e => e.preventDefault());
+  document.getElementById('photo').addEventListener('change', function () {
+  if (this.files.length > 5) {
+    alert('Please select no more than 5 artist photos.');
+    this.value = '';
+  }
+});
 </script>
 </body>
 </html>
