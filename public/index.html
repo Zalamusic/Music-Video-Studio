@@ -570,9 +570,12 @@ function rememberVideo(job) {
 job.jobId = job.jobId || job.id;
 
   try {
-    const history = JSON.parse(
-      localStorage.getItem(VIDEO_HISTORY_KEY) || '[]'
     
+    
+const history = JSON.parse(
+  localStorage.getItem(VIDEO_HISTORY_KEY) || '[]'
+);
+
     const updated = history.filter(
       item => item.jobId !== job.jobId
     );
