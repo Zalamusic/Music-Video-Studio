@@ -1205,6 +1205,7 @@ app.post(
     { name: 'photo', maxCount: 5 }
   ]),
   async (req, res) => {
+    const emailIsValid = validCustomerEmail(req.body?.email);
     res.status(503).json({
       error: 'Order submissions are not enabled yet.'
     });
