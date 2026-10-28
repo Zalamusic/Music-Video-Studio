@@ -271,7 +271,15 @@ button:disabled {
       Failed generations and retries may consume credits.
     </p>
   </section>
-
+<label for="adminPassword">Administrator Password</label>
+<input
+  id="adminPassword"
+  name="adminPassword"
+  type="password"
+  placeholder="Enter administrator password"
+  autocomplete="off"
+  required
+>
   <button id="createButton" type="submit">
     Create My Music Video
   </button>
@@ -1012,7 +1020,7 @@ resumeButton.addEventListener('click', async () => {
 customerLinkButton.addEventListener('click', async () => {
   const id = currentJobId;
   
-const key = adminKeyInput.value;
+const key = document.getElementById('adminPassword').value;
   if (!id) {
     customerLinkStatus.textContent =
       'No video selected. Open a completed video first.';
