@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order a Music Video | Zala QI's World</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px 12px; background: #f4f8fc; color: #15202b; font-family: Arial, sans-serif; }
+    main { max-width: 680px; margin: auto; padding: 24px; background: white; border: 1px solid #d6e8f5; border-radius: 18px; }
+    h1 { color: #0f6cbd; font-size: 30px; }
+    h2 { margin-top: 26px; font-size: 19px; }
+    p { line-height: 1.5; }
+    label { display: block; margin: 18px 0 7px; font-weight: bold; }
+    input, select, textarea { display: block; width: 100%; padding: 12px; border: 1px solid #b9d8ee; border-radius: 10px; font: inherit; }
+    textarea { min-height: 115px; }
+    .panel { background: #e8f4fd; border: 1px solid #b9d8ee; padding: 18px; border-radius: 12px; margin-top: 22px; }
+    .price { color: #0f6cbd; font-size: 30px; font-weight: bold; }
+    .note { color: #536471; font-size: 13px; }
+    button { width: 100%; margin-top: 18px; padding: 15px; background: #0f6cbd; color: white; border: 0; border-radius: 10px; font-weight: bold; }
+    button:disabled { opacity: .6; }
+    @media(max-width:480px) { main { padding: 18px 15px; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Zala QI's World</h1>
+  <p>Order your custom music video. Upload your materials and choose your package.</p>
+
+  <form id="orderForm">
+    <h2>Your Information</h2>
+    <label for="artist">Artist or Customer Name</label>
+    <input id="artist" name="artist" required>
+
+    <label for="email">Email Address</label>
+    <input id="email" name="email" type="email" required>
+
+    <h2>Your Music Video</h2>
+    <label for="songTitle">Song Title</label>
+    <input id="songTitle" name="songTitle" required>
+
+    <label for="song">Upload Song (MP3 or WAV)</label>
+    <input id="song" name="song" type="file" accept=".mp3,.wav" required>
+
+    <label for="photo">Upload Artist Photo</label>
+    <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
+
+    <label for="description">Describe Your Music Video</label>
+    <textarea id="description" name="description" required></textarea>
+
+    <label for="format">Video Format</label>
+    <select id="format" name="format">
+      <option value="vertical">Vertical — TikTok, Reels, Shorts</option>
+      <option value="landscape">Landscape — YouTube</option>
+    </select>
+
+    <h2>Choose Your Package</h2>
+    <label for="packageType">Music Video Package</label>
+    <select id="packageType" name="packageType">
+      <option value="standard">Standard Cinematic Video — $59</option>
+      <option value="premium">Premium Singing Lip-Sync — $99</option>
+    </select>
+
+    <section class="panel" aria-live="polite">
+      <strong>Your Order Total</strong>
+      <div id="orderPrice" class="price">$59.00</div>
+      <p id="packageDescription">Cinematic scenes inspired by your music. Singing lip-sync is not guaranteed.</p>
+      <p class="note">Checkout preview only. Files are not uploaded and no payment will be taken yet.</p>
+    </section>
+
+    <button type="button" disabled>PayPal Checkout — Coming Soon</button>
+  </form>
+</main>
+<script>
+  const packageInput = document.getElementById('packageType');
+  const price = document.getElementById('orderPrice');
+  const description = document.getElementById('packageDescription');
+
+  function updatePackage() {
+    const premium = packageInput.value === 'premium';
+    price.textContent = premium ? '$99.00' : '$59.00';
+    description.textContent = premium
+      ? 'Singing lip-sync performance using your song and artist photo.'
+      : 'Cinematic scenes inspired by your music. Singing lip-sync is not guaranteed.';
+  }
+
+  packageInput.addEventListener('change', updatePackage);
+  updatePackage();
+  document.getElementById('orderForm').addEventListener('submit', e => e.preventDefault());
+</script>
+</body>
+</html>
