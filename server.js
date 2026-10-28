@@ -1193,6 +1193,11 @@ const customerUpload = multer({
     files: 6
   }
 });
+function validCustomerEmail(email) {
+  return typeof email === 'string' &&
+    email.length <= 254 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 app.post(
   '/api/customer-orders',
   customerUpload.fields([
