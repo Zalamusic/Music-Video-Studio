@@ -43,7 +43,7 @@ async function getPayPalAccessToken() {
   const data = await response.json();
   return data.access_token;
 }
-  : 'https://api-m.sandbox.paypal.com';
+  
 const PORT = process.env.PORT || 3000;
 const OUT = '/app/outputs';
 const JOBS = '/app/outputs/jobs';
