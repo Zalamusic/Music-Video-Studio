@@ -6,7 +6,11 @@
 <meta name="theme-color" content="#090911">
 <title>Zala QI's World | Music Video Creator</title>
 <style>
-* { box-sizing: border-box; }
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
 :root {
   color-scheme: light;
   --purple: #1DA1F2;
@@ -42,7 +46,6 @@ main {
 color: #FFFFFF;
   font-size: 27px;
   font-weight: 900;
-}
 h1 {
   margin: 0 0 12px;
   font-size: clamp(29px,6vw,43px);
@@ -969,7 +972,7 @@ resumeButton.addEventListener('click', async () => {
       '/api/jobs/' +
       encodeURIComponent(currentJobId) +
       '/resume',
-            '/resume',
+            
       {
         method: 'POST',
         headers: {
