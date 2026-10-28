@@ -1207,6 +1207,14 @@ app.post(
   async (req, res) => {
     const emailIsValid = validCustomerEmail(req.body?.email);
     if (!emailIsValid) {
+      const song = req.files?.song?.[0];
+const photos = req.files?.photo || [];
+
+if (!song || photos.length < 1 || photos.length > 5) {
+  return res.status(400).json({
+    error: 'Please upload 1 song and 1 to 5 photos.'
+  });
+}
   return res.status(400).json({
     error: 'Please enter a valid email address.'
   });
