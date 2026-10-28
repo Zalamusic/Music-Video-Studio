@@ -1017,6 +1017,72 @@ app.get('/download/:token', async (req, res) => {
     );
   }
 });
+
+app.post('/api/paypal/create-order', async (req, res) => {
+  try {
+    if (PAYPAL_ENV !== 'sandbox') {
+      return res.status(503).json({
+        error: 'Live payments are not enabled yet.'
+      });
+    }
+
+    const packageType = req.body?.packageType;
+
+    if (!['standard', 'premium'].includes(packageType)) {
+      return res.status(400).json({
+        error: 'Please select a valid video package.'
+      });
+    }
+
+    const amount = packageType === 'premium'
+      ? '99.00'
+      : '59.00';
+
+    const accessToken = await getPayPalAccessToken();
+
+    const response = await fetch(
+      PAYPAL_BASE_URL + '/v2/checkout/orders',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + accessToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          intent: 'CAPTURE',
+          purchase_units: [{
+            description: packageType === 'premium'
+              ? 'Premium Singing Music Video'
+              : 'Standard Cinematic Music Video',
+            amount: {
+              currency_code: 'USD',
+              value: amount
+            }
+          }]
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.id) {
+      throw new Error('PayPal could not create the order.');
+    }
+
+    res.json({
+      ok: true,
+      orderID: data.id,
+      amount,
+      currency: 'USD'
+    });
+  } catch (error) {
+    console.error('PayPal order error:', error.message);
+    res.status(500).json({
+      error: 'Unable to create PayPal test order.'
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(
     `Zala QI's World running on port ${PORT}`
