@@ -1083,6 +1083,66 @@ app.post('/api/paypal/create-order', async (req, res) => {
   }
 });
 
+app.post('/api/paypal/capture-order', async (req, res) => {
+  try {
+    if (PAYPAL_ENV !== 'sandbox') {
+      return res.status(503).json({
+        error: 'Live payments are not enabled yet.'
+      });
+    }
+
+    const orderID = req.body?.orderID;
+
+    if (
+      typeof orderID !== 'string' ||
+      !/^[A-Z0-9]{10,30}$/i.test(orderID)
+    ) {
+      return res.status(400).json({
+        error: 'Invalid PayPal order ID.'
+      });
+    }
+
+    const accessToken = await getPayPalAccessToken();
+
+    const response = await fetch(
+      PAYPAL_BASE_URL +
+        '/v2/checkout/orders/' +
+        encodeURIComponent(orderID) +
+        '/capture',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + accessToken,
+          'Content-Type': 'application/json',
+          'PayPal-Request-Id': 'capture-' + orderID
+        },
+        body: '{}'
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || data.status !== 'COMPLETED') {
+      return res.status(400).json({
+        error: 'Payment could not be confirmed.'
+      });
+    }
+
+    res.json({
+      ok: true,
+      orderID: data.id,
+      status: data.status
+    });
+
+  } catch (error) {
+    console.error('PayPal capture error:', error.message);
+
+    res.status(500).json({
+      error: 'Unable to confirm PayPal test payment.'
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(
     `Zala QI's World running on port ${PORT}`
