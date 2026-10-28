@@ -1200,6 +1200,9 @@ function validCustomerEmail(email) {
 }
 app.post(
   '/api/customer-orders',
+    (req, res) => res.status(503).json({
+    error: 'Customer orders are temporarily disabled.'
+  }),
   customerUpload.fields([
     { name: 'song', maxCount: 1 },
     { name: 'photo', maxCount: 5 }
