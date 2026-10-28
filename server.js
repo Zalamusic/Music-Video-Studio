@@ -1142,7 +1142,9 @@ app.post('/api/paypal/capture-order', async (req, res) => {
     });
   }
 });
+const ORDERS = path.join(OUT, 'customer-orders');
 
+await fs.mkdir(ORDERS, { recursive: true });
 app.listen(PORT, () => {
   console.log(
     `Zala QI's World running on port ${PORT}`
