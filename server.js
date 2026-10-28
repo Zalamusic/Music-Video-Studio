@@ -1205,6 +1205,11 @@ app.post(
     { name: 'photo', maxCount: 5 }
   ]),
   async (req, res) => {
+      if (!validCustomerEmail(req.body?.email)) {
+    return res.status(400).json({
+      error: 'Please enter a valid email address.'
+    });
+  }
      return res.status(503).json({
     error: 'Order submissions are not enabled yet.'
   });
