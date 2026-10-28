@@ -1145,6 +1145,42 @@ app.post('/api/paypal/capture-order', async (req, res) => {
 const ORDERS = path.join(OUT, 'customer-orders');
 
 await fs.mkdir(ORDERS, { recursive: true });
+app.get('/api/customer-orders', async (req, res) => {
+  if (!isVideoAdmin(req)) {
+    return res.status(403).json({
+      error: 'Administrator password required.'
+    });
+  }
+
+  try {
+    const files = await fs.readdir(ORDERS);
+    const orders = [];
+
+    for (const file of files) {
+      if (!file.endsWith('.json')) continue;
+
+      const order = JSON.parse(
+        await fs.readFile(
+          path.join(ORDERS, file),
+          'utf8'
+        )
+      );
+
+      orders.push(order);
+    }
+
+    orders.sort((a, b) =>
+      new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    res.json({ ok: true, orders });
+  } catch (error) {
+    console.error('Customer orders error:', error);
+    res.status(500).json({
+      error: 'Could not load customer orders.'
+    });
+  }
+});
 app.listen(PORT, () => {
   console.log(
     `Zala QI's World running on port ${PORT}`
