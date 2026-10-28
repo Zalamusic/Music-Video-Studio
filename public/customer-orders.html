@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Orders | Zala QI's World</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 20px 14px;
+  background: #F4F8FC;
+  color: #15202B;
+  font-family: Arial, sans-serif;
+}
+main {
+  max-width: 720px;
+  margin: 20px auto;
+  padding: 24px;
+  background: white;
+  border: 1px solid #D6E8F5;
+  border-radius: 18px;
+}
+h1 { color: #0F6CBD; }
+.panel {
+  padding: 20px;
+  background: #E8F4FD;
+  border: 1px solid #B9D8EE;
+  border-radius: 14px;
+  margin-top: 20px;
+}
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 12px;
+  background: #0F6CBD;
+  color: white;
+  border: 0;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.note {
+  color: #536471;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Customer Orders</h1>
+<p class="note">Zala QI's World — Order Management</p>
+
+<section class="panel">
+  <h2 id="waitingCount">0 Orders Waiting</h2>
+  <p class="note">
+    New paid customer orders will appear here.
+  </p>
+</section>
+
+<section class="panel">
+  <h2>All Orders</h2>
+  <div id="ordersList">
+    <p class="note">
+      No customer orders to display yet.
+    </p>
+  </div>
+</section>
+
+<button type="button"
+  onclick="window.location.href='/'">
+  Back to Music Video Creator
+</button>
+
+<p class="note">
+  Order details, customer files, messages,
+  payment status, and delivery deadlines
+  will be available after the secure order
+  system is connected.
+</p>
+</main>
+</body>
+</html>
