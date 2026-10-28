@@ -1193,6 +1193,18 @@ const customerUpload = multer({
     files: 6
   }
 });
+app.post(
+  '/api/customer-orders',
+  customerUpload.fields([
+    { name: 'song', maxCount: 1 },
+    { name: 'photo', maxCount: 5 }
+  ]),
+  async (req, res) => {
+    res.status(503).json({
+      error: 'Order submissions are not enabled yet.'
+    });
+  }
+);
 app.listen(PORT, () => {
   console.log(
     `Zala QI's World running on port ${PORT}`
