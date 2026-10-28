@@ -228,5 +228,18 @@ footer {
 <footer>
   © 2026 Zala QI's World. All rights reserved.
 </footer>
+  <script>
+const styleSelect = document.getElementById('style');
+const orderPrice = document.getElementById('orderPrice');
+
+function updateOrderPrice() {
+  const price = styleSelect.value === 'lipsync' ? 99 : 59;
+  orderPrice.textContent =
+    'Your Music Video: $' + price.toFixed(2);
+}
+
+styleSelect.addEventListener('change', updateOrderPrice);
+updateOrderPrice();
+</script>
 </body>
 </html>
