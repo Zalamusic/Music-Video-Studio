@@ -1181,6 +1181,11 @@ app.get('/api/customer-orders', async (req, res) => {
     });
   }
 });
+const CUSTOMER_UPLOADS = path.join(ORDERS, 'uploads');
+
+await fs.mkdir(CUSTOMER_UPLOADS, {
+  recursive: true
+});
 app.listen(PORT, () => {
   console.log(
     `Zala QI's World running on port ${PORT}`
