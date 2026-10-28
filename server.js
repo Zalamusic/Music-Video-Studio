@@ -1206,6 +1206,11 @@ app.post(
   ]),
   async (req, res) => {
     const emailIsValid = validCustomerEmail(req.body?.email);
+    if (!emailIsValid) {
+  return res.status(400).json({
+    error: 'Please enter a valid email address.'
+  });
+}
     res.status(503).json({
       error: 'Order submissions are not enabled yet.'
     });
