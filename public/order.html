@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order Your Music Video | Zala QI's World</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b0913;
+  color: white;
+}
+header {
+  padding: 35px 18px;
+  text-align: center;
+  background: linear-gradient(135deg,#28103f,#10101d);
+}
+.logo {
+  color: #d9a0ff;
+  font-size: 15px;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+h1 {
+  font-size: clamp(32px,7vw,54px);
+  line-height: 1.12;
+  margin: 22px 0;
+}
+h1 span { color: #dc91ff; }
+.subtitle {
+  color: #d4c8df;
+  line-height: 1.7;
+  max-width: 550px;
+  margin: 0 auto;
+}
+.hero-art {
+  margin: 28px auto 0;
+  max-width: 540px;
+  padding: 55px 20px;
+  border: 1px solid #7849a0;
+  border-radius: 20px;
+  background: radial-gradient(circle at top,#63348d,#181024 70%);
+  font-size: 65px;
+}
+.hero-art small {
+  display: block;
+  margin-top: 12px;
+  font-size: 16px;
+  color: #e8d7f6;
+}
+main {
+  max-width: 720px;
+  margin: auto;
+  padding: 35px 16px 70px;
+}
+section {
+  background: #181321;
+  border: 1px solid #392b4a;
+  border-radius: 20px;
+  padding: 25px 20px;
+  margin-bottom: 25px;
+}
+h2 { margin-top: 0; font-size: 24px; }
+p { line-height: 1.6; color: #c7bdd1; }
+label {
+  display: block;
+  margin: 22px 0 8px;
+  font-weight: bold;
+}
+input,textarea,select {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #5c496e;
+  background: #100d19;
+  color: white;
+  font: inherit;
+}
+textarea { min-height: 145px; resize: vertical; }
+input[type=file] { font-size: 14px; }
+.note { font-size: 13px; color: #aa9dbb; }
+.steps {
+  display: grid;
+  gap: 14px;
+}
+.step {
+  padding: 15px;
+  border-radius: 12px;
+  background: #241b31;
+}
+.step strong { color: #df9fff; }
+.price {
+  font-size: 26px;
+  font-weight: bold;
+  color: #e1a2ff;
+}
+button {
+  width: 100%;
+  padding: 17px;
+  font-size: 17px;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg,#8e42d5,#cb65ce);
+}
+button:disabled {
+  background: #50465c;
+  color: #c8c0d1;
+}
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #9387a3;
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">ZALA QI'S WORLD</div>
+  <h1>Turn Your Song Into<br><span>A Music Video</span></h1>
+  <p class="subtitle">
+    Bring your music to life with cinematic visuals,
+    artist imagery, and a video designed around your song.
+    Perfect for independent artists and Suno creators.
+  </p>
+  <div class="hero-art">
+    🎤 🎬 ✨
+    <small>Your music. Your vision. Your video.</small>
+  </div>
+</header>
+
+<main>
+<section>
+  <h2>How It Works</h2>
+  <div class="steps">
+    <div class="step">
+      <strong>01 — Submit</strong>
+      <p>Upload your song, artist photos, and video concept.</p>
+    </div>
+    <div class="step">
+      <strong>02 — Order</strong>
+      <p>Review your price and complete secure PayPal checkout once available.</p>
+    </div>
+    <div class="step">
+      <strong>03 — We Create</strong>
+      <p>We produce your music video using your submitted creative direction.</p>
+    </div>
+    <div class="step">
+      <strong>04 — Receive</strong>
+      <p>Get a private link to watch and download your finished video.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Start Your Music Video Order</h2>
+  <p>Tell us about your music and the video you want.</p>
+
+  <form id="orderForm">
+    <label for="artist">Artist or Stage Name</label>
+    <input id="artist" name="artist" required maxlength="100"
+      placeholder="Your artist name">
+
+    <label for="email">Email Address</label>
+    <input id="email" name="email" type="email" required
+      placeholder="Where we can contact you">
+
+    <label for="song">Upload Your Song</label>
+    <input id="song" name="song" type="file"
+      accept="audio/*,.mp3,.wav,.m4a" required>
+    <p class="note">MP3, WAV, or M4A recommended.</p>
+
+    <label for="photos">Upload Artist Photos</label>
+    <input id="photos" name="photos" type="file"
+      accept="image/*" multiple>
+    <p class="note">Select one or more photos for your video.</p>
+
+    <label for="prompt">Describe Your Music Video</label>
+    <textarea id="prompt" name="prompt" required
+      maxlength="4000"
+      placeholder="Describe the location, outfits, lighting, scenes, mood, camera movements, and story you want."></textarea>
+
+    <label for="format">Video Format</label>
+    <select id="format" name="format">
+      <option value="portrait">Portrait — TikTok / Reels / Shorts</option>
+      <option value="landscape">Landscape — YouTube / TV</option>
+    </select>
+
+    <label for="style">Video Style</label>
+    <select id="style" name="style">
+      <option value="cinematic">Cinematic Music Video</option>
+      <option value="lipsync">Singing / Lip-Sync Video</option>
+    </select>
+
+    <label for="notes">Additional Instructions (Optional)</label>
+    <textarea id="notes" name="notes"
+      placeholder="Anything else we should know?"></textarea>
+
+    <label>
+      <input type="checkbox" id="rights" required
+        style="width:auto;margin-right:8px">
+      I confirm that I have permission to use the music
+      and images I am submitting.
+    </label>
+
+    <h2>Payment</h2>
+    <p class="price">Price: To Be Announced</p>
+    <p>
+      PayPal checkout will become available after
+      pricing and secure order processing are configured.
+    </p>
+    <button type="button" disabled>
+      PayPal Checkout — Coming Soon
+    </button>
+    <p class="note">
+      This is a preview. Your files will not be uploaded,
+      and no payment will be taken yet.
+    </p>
+  </form>
+</section>
+</main>
+
+<footer>
+  © 2026 Zala QI's World. All rights reserved.
+</footer>
+</body>
+</html>
