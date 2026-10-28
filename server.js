@@ -7,7 +7,6 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 const PAYPAL_ENV = process.env.PAYPAL_ENV || 'sandbox';
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
