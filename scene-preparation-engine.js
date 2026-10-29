@@ -10,7 +10,7 @@
  */
 
 import { fal } from '@fal-ai/client';
-import { prepareSceneImage } from './scene-preparation-engine.js';
+
 const SCENE_IMAGE_MODEL = 'fal-ai/flux-kontext/dev';
 
 export async function prepareSceneImage({
