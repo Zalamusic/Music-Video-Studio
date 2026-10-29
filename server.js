@@ -404,6 +404,19 @@ async function generateStandard(s, dir, imageUrl) {
       `Do not change the person's identity or ethnicity. ` +
       `Use sophisticated cinematic framing, realistic ` +
 `lighting, natural movement and visual storytelling. ` +
+            `Direct believable human emotions, facial expressions, ` +
+      `body language, gestures and natural mannerisms. ` +
+      `Express the emotions requested by the customer with ` +
+      `realistic intensity and subtle emotional transitions. ` +
+      `Use natural blinking, breathing, posture, eye movement, ` +
+      `walking, running, dancing and physical reactions. ` +
+      `Simulate realistic tears, sweat, rain, wind, wet skin, ` +
+      `clothing movement and environmental interactions ` +
+      `when appropriate to the requested scene. ` +
+      `Maintain realistic anatomy, physics, facial consistency ` +
+      `and continuity of emotions throughout the shot. ` +
+      `Avoid robotic movement, unnatural gestures and ` +
+      `exaggerated expressions unless specifically requested. ` +
 `Begin immediately with a fully visible, clearly composed ` +
 `shot. No fade-in, no slow reveal, no gradual appearance. ` +
 `The opening frame should show the intended scene clearly. ` +
