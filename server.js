@@ -375,17 +375,40 @@ async function generateStandard(s, dir, imageUrl) {
       (i - 1) % sceneIdeas.length
     ];
 
+    
+    const cameraShots = [
+      'Sweeping aerial drone shot with cinematic depth',
+      'Smooth 360-degree orbit around the subject',
+      'Intimate close-up with shallow depth of field',
+      'Wide-angle cinematic tracking shot',
+      'Low-angle dramatic camera movement',
+      'Overhead crane shot revealing the environment',
+      'Slow cinematic dolly-in toward the subject',
+      'Side-tracking shot with layered foreground'
+    ];
+
+    const cameraDirection =
+      cameraShots[(i - 1) % cameraShots.length];
+
     const prompt =
-      `Music video for "${s.title}". ` +
+      `Professional cinematic music video for "${s.title}". ` +
       `Scene ${i} of ${s.totalScenes}. ` +
-      `Creative direction: ${s.concept}. ${idea}. ` +
-      `Preserve the uploaded person's recognizable ` +
-      `identity, face and hairstyle. ` +
-      `Create a visually distinct new shot. ` +
-      `Natural movement, cinematic composition, ` +
-      `professional lighting. ` +
+      `Director's creative vision: ${s.concept}. ` +
+      `Scene concept: ${idea}. ` +
+      `Camera direction: ${cameraDirection}. ` +
+      `Maintain the exact recognizable identity of the ` +
+      `person in the uploaded reference photograph. ` +
+      `Preserve facial features, skin tone, hairstyle, ` +
+      `hair length and overall appearance. ` +
+      `Do not change the person's identity or ethnicity. ` +
+      `Use sophisticated cinematic framing, realistic ` +
+      `lighting, natural movement and visual storytelling. ` +
+      `Each scene should feel like a distinct movie shot. ` +
+      `Allow imaginative environments, fantasy worlds, ` +
+      `science fiction and animation when requested. ` +
       `No text, captions, logos, watermarks, ` +
       `music or dialogue.`;
+
 
     const raw = path.join(
       dir,
