@@ -188,14 +188,28 @@ async function normalizeVideo(input, output, format) {
     ]);
   }
 }
+
 async function addOriginalSong(video, song, seconds, final) {
   await execute('ffmpeg', [
-    '-y', '-i', video, '-i', song, '-map', '0:v:0', '-map', '1:a:0',
-    '-t', String(seconds), '-c:v', 'libx264', '-preset', 'veryfast',
-    '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k',
-    '-movflags', '+faststart', '-shortest', final
+    '-y',
+    '-i', video,
+    '-i', song,
+    '-filter_complex',
+    `[0:v:0]tpad=stop_mode=clone:stop_duration=${seconds},` +
+      `trim=duration=${seconds},setpts=PTS-STARTPTS[v]`,
+    '-map', '[v]',
+    '-map', '1:a:0',
+    '-t', String(seconds),
+    '-c:v', 'libx264',
+    '-preset', 'veryfast',
+    '-pix_fmt', 'yuv420p',
+    '-c:a', 'aac',
+    '-b:a', '192k',
+    '-movflags', '+faststart',
+    final
   ]);
 }
+
 
 const sceneIdeas = [
   'Expressive close-up performance with dramatic studio lighting',
