@@ -221,8 +221,9 @@ a {
   <label for="adminPassword">Administrator Password</label>
   <input id="adminPassword" name="adminPassword"
     type="password" autocomplete="off"
-    placeholder="Enter administrator password" required>
-
+    
+placeholder="Enter administrator password" required
+onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
   <button id="createButton" type="submit">
     Create My Music Video
   </button>
