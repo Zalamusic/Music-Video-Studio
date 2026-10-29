@@ -306,7 +306,13 @@ function updateCreationType() {
     photoInput.value = '';
   }
 
-  updateModeNote();
+  
+creationTypeInput.addEventListener('change', () => {
+  updateCreationType();
+});
+
+updateCreationType();
+
 }
 
 const createButton = $('createButton');
