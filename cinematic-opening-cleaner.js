@@ -56,7 +56,7 @@ async function detectOpeningFlash(videoFile) {
   const output = await runFFmpeg([
     '-hide_banner',
     '-i', videoFile,
-    '-t', '0.35',
+    '-t', '1.2',
     '-vf',
     "select='gt(scene,0.35)',showinfo",
     '-an',
