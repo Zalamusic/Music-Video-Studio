@@ -375,15 +375,47 @@ async function generate(id) {
     s.phase = 'Video ready';
     s.url = null;
 
-    // Mark completed video for future realism evaluation.
+    
+    // REALISM ENGINE — FREE AUTOMATIC QUALITY CHECK
     s.realism = {
       status: 'pending',
       score: null,
-      threshold: 90,
-      message: 'Awaiting automatic visual evaluation'
+      threshold: 90
     };
-
     await saveState(s);
+
+    try {
+      const videoFile = path.join(OUT, `${s.id}.mp4`);
+      const quality = await checkVideoQuality(videoFile);
+
+      s.realism = {
+        status: 'completed',
+        score: quality.score,
+        category: 'technical-quality',
+        metrics: quality.metrics,
+        threshold: 90,
+        passedTechnicalThreshold: quality.passedTechnicalThreshold,
+        evaluatedAt: quality.evaluatedAt
+      };
+
+      console.log(
+        'Video technical quality score:',
+        s.id,
+        quality.score
+      );
+    } catch (qualityError) {
+      console.error('Video quality check failed:', qualityError);
+
+      s.realism = {
+        status: 'failed',
+        score: null,
+        error: 'Technical quality analysis unavailable'
+      };
+    }
+
+    await saveState(s).catch(error => {
+      console.error('Unable to save quality results:', error);
+    });
 
   } catch (e) {
     console.error('Video job failed:', id, e);
