@@ -1,3 +1,6 @@
+
+   
+
 import express from 'express';
 import multer from 'multer';
 import { fal } from '@fal-ai/client';
@@ -7,6 +10,27 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+const OUT = process.env.OUTPUT_DIR || '/app/outputs';
+const JOBS = process.env.JOBS_DIR || path.join(OUT, 'jobs');
+const LINKS = path.join(OUT, 'links');
+const ORDERS = path.join(OUT, 'customer-orders');
+const CUSTOMER_UPLOADS = path.join(ORDERS, 'uploads');
+
+const MODEL = 'minimax/h3-max-turbo/image-to-video';
+const TEXT_MODEL = 'minimax/h3-max/text-to-video';
+const LIP_MODEL = 'minimax/h3-max/lip-sync/image-to-video';
+
+const MAX_SONG_SECONDS = 360;
+const SCENE_SECONDS = 15;
+const DOWNLOAD_LINK_DAYS = 7;
+
+const SCENE_PRICE_USD = Number(process.env.SCENE_PRICE_USD);
+const TEXT_SCENE_PRICE_USD = Number(process.env.TEXT_SCENE_PRICE_USD);
+const LIP_PRICE_PER_SECOND = Number(process.env.LIP_PRICE_PER_SECOND_USD);
+
+const VIDEO_ADMIN_KEY = (process.env.VIDEO_ADMIN_KEY || '').trim();
+
 const PAYPAL_ENV = process.env.PAYPAL_ENV || 'sandbox';
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
@@ -15,72 +39,16 @@ const PAYPAL_BASE_URL = PAYPAL_ENV === 'live'
   ? 'https://api-m.paypal.com'
   : 'https://api-m.sandbox.paypal.com';
 
-async function getPayPalAccessToken() {
-  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
-    throw new Error('PayPal credentials are missing.');
-  }
-
-  const credentials = Buffer.from(
-    PAYPAL_CLIENT_ID + ':' + PAYPAL_CLIENT_SECRET
-  ).toString('base64');
-
-  const response = await fetch(
-    PAYPAL_BASE_URL + '/v1/oauth2/token',
-    {
-      method: 'POST',
-      headers: {
-        Authorization: 'Basic ' + credentials,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: 'grant_type=client_credentials'
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error('PayPal authentication failed.');
-  }
-
-  const data = await response.json();
-  return data.access_token;
-}
-  
-const PORT = process.env.PORT || 3000;
-const OUT = '/app/outputs';
-const JOBS = '/app/outputs/jobs';
-
-const LINKS = '/app/outputs/links';
-const MODEL = 'minimax/h3-max-turbo/image-to-video';
-const TEXT_MODEL = 'minimax/h3-max/text-to-video';
-const LIP_MODEL = 'minimax/h3-max/lip-sync/image-to-video';
-
-const MAX_SONG_SECONDS = 360;
-const SCENE_SECONDS = 15;
-
-const SCENE_PRICE_USD = Number(process.env.SCENE_PRICE_USD);
-const LIP_PRICE_PER_SECOND = Number(
-  process.env.LIP_PRICE_PER_SECOND_USD
-);
-
 const active = new Set();
 
-const DOWNLOAD_LINK_DAYS = 7;
-const VIDEO_ADMIN_KEY = (process.env.VIDEO_ADMIN_KEY || '').replace(/\s/g, '');
-console.log(
-  'Admin key trailing whitespace:',
-  /\s$/.test(VIDEO_ADMIN_KEY || '')
-);console.log(
-  'Admin key leading whitespace:',
-  /^\s/.test(VIDEO_ADMIN_KEY || '')
-);
-console.log(
-  'Video admin key configured:',
-  Boolean(VIDEO_ADMIN_KEY)
-);
 await Promise.all([
   fs.mkdir(OUT, { recursive: true }),
   fs.mkdir(JOBS, { recursive: true }),
-  fs.mkdir(LINKS, { recursive: true })
+  fs.mkdir(LINKS, { recursive: true }),
+  fs.mkdir(ORDERS, { recursive: true }),
+  fs.mkdir(CUSTOMER_UPLOADS, { recursive: true })
 ]);
+
 if (process.env.FAL_KEY) {
   fal.config({ credentials: process.env.FAL_KEY });
 }
@@ -89,49 +57,58 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 30 * 1024 * 1024 }
 });
+
+const customerUpload = multer({
+  dest: CUSTOMER_UPLOADS,
+  limits: { fileSize: 100 * 1024 * 1024, files: 6 }
+});
+
 app.use(express.json({ limit: '16kb' }));
 app.use(express.static('public'));
 
 function isVideoAdmin(req) {
-  const supplied = req.get('X-Video-Admin-Key');
-console.log(
-  'Admin password check:',
-  supplied ? 'received' : 'missing',
-  'matches:',
-  Boolean(VIDEO_ADMIN_KEY && supplied === VIDEO_ADMIN_KEY)
-);console.log(
-  'Password lengths:',
-  'received:', supplied?.length ?? 0,
-  'stored:', VIDEO_ADMIN_KEY?.length ?? 0
-);
   return Boolean(
     VIDEO_ADMIN_KEY &&
-    supplied === VIDEO_ADMIN_KEY
+    req.get('X-Video-Admin-Key') === VIDEO_ADMIN_KEY
   );
 }
-const validPrice = p => Number.isFinite(p) && p > 0;
 
-function estimate(seconds, premium) {
+function validPrice(n) {
+  return Number.isFinite(n) && n > 0;
+}
+
+function estimate(seconds, premium, creationType = 'photo') {
   const scenesRequired = premium
     ? 1
     : Math.ceil(seconds / SCENE_SECONDS);
 
-  const price = premium
-    ? LIP_PRICE_PER_SECOND * seconds
-    : SCENE_PRICE_USD * scenesRequired;
+  const model = premium
+    ? LIP_MODEL
+    : creationType === 'prompt'
+      ? TEXT_MODEL
+      : MODEL;
 
-  const priceConfigured = validPrice(
-    premium ? LIP_PRICE_PER_SECOND : SCENE_PRICE_USD
-  );
+  const unitPrice = premium
+    ? LIP_PRICE_PER_SECOND
+    : creationType === 'prompt'
+      ? TEXT_SCENE_PRICE_USD
+      : SCENE_PRICE_USD;
+
+  const priceConfigured = validPrice(unitPrice);
+
+  const cost = premium
+    ? unitPrice * seconds
+    : unitPrice * scenesRequired;
 
   return {
     songSeconds: seconds,
     sceneSeconds: SCENE_SECONDS,
     scenesRequired,
-    model: premium ? LIP_MODEL : MODEL,
+    model,
     mode: premium ? 'premium' : 'standard',
+    creationType,
     estimatedGenerationCostUSD: priceConfigured
-      ? Number(price.toFixed(2))
+      ? Number(cost.toFixed(2))
       : null,
     priceConfigured,
     message: 'Estimate only. Actual provider billing may differ.'
@@ -141,19 +118,30 @@ function estimate(seconds, premium) {
 app.get('/api/estimate', (req, res) => {
   const seconds = Number(req.query.seconds);
 
-  if (!Number.isFinite(seconds) ||
-      seconds <= 0 ||
-      seconds > MAX_SONG_SECONDS) {
+  if (
+    !Number.isFinite(seconds) ||
+    seconds <= 0 ||
+    seconds > MAX_SONG_SECONDS
+  ) {
     return res.status(400).json({
       error: 'Duration must be between 0 and 360 seconds.'
     });
   }
 
   const premium = req.query.mode === 'premium';
+  const creationType = req.query.creationType === 'prompt'
+    ? 'prompt'
+    : 'photo';
+
+  if (premium && creationType === 'prompt') {
+    return res.status(400).json({
+      error: 'Premium Lip-Sync requires an artist photo.'
+    });
+  }
 
   res.json({
     ok: true,
-    ...estimate(seconds, premium)
+    ...estimate(seconds, premium, creationType)
   });
 });
 
@@ -163,8 +151,13 @@ function execute(command, args, returnStdout = false) {
     let out = '';
     let err = '';
 
-    child.stdout.on('data', d => out += d.toString());
-    child.stderr.on('data', d => err += d.toString());
+    child.stdout.on('data', d => {
+      out += d.toString();
+    });
+
+    child.stderr.on('data', d => {
+      err += d.toString();
+    });
 
     child.on('error', reject);
 
@@ -181,14 +174,12 @@ function execute(command, args, returnStdout = false) {
 }
 
 async function duration(file) {
-  const result = await execute('ffprobe', [
+  const n = Number(await execute('ffprobe', [
     '-v', 'error',
     '-show_entries', 'format=duration',
     '-of', 'default=noprint_wrappers=1:nokey=1',
     file
-  ], true);
-
-  const n = Number(result);
+  ], true));
 
   if (!Number.isFinite(n) || n <= 0) {
     throw new Error('Could not read media duration.');
@@ -207,8 +198,7 @@ async function exists(file) {
 }
 
 const jobDir = id => path.join(JOBS, id);
-const statePath = id =>
-  path.join(jobDir(id), 'state.json');
+const statePath = id => path.join(jobDir(id), 'state.json');
 
 async function readState(id) {
   return JSON.parse(
@@ -227,31 +217,18 @@ async function saveState(s) {
 
 function publicState(s) {
   const {
-    id,
-    status,
-    phase,
-    completedScenes,
-    totalScenes,
-    estimatedGenerationCostUSD,
-    error,
-    url,
-    updatedAt,
-    mode
+    id, status, phase, completedScenes, totalScenes,
+    estimatedGenerationCostUSD, error, url, updatedAt,
+    mode, creationType
   } = s;
 
   return {
-    id,
-    status,
-    phase,
-    completedScenes,
-    totalScenes,
-    estimatedGenerationCostUSD,
-    error,
-    url,
-    updatedAt,
-    mode
+    id, status, phase, completedScenes, totalScenes,
+    estimatedGenerationCostUSD, error, url, updatedAt,
+    mode, creationType
   };
 }
+
 async function createCustomerLink(id) {
   const job = await readState(id);
 
@@ -275,6 +252,7 @@ async function createCustomerLink(id) {
 
   return { token, expiresAt };
 }
+
 async function downloadVideo(url, file) {
   const response = await fetch(url);
 
@@ -298,8 +276,7 @@ async function normalizeVideo(input, output, format) {
     '-y',
     '-i', input,
     '-vf',
-    `scale=${width}:${height}:` +
-    `force_original_aspect_ratio=increase,` +
+    `scale=${width}:${height}:force_original_aspect_ratio=increase,` +
     `crop=${width}:${height},setsar=1,fps=24`,
     '-an',
     '-c:v', 'libx264',
@@ -310,12 +287,7 @@ async function normalizeVideo(input, output, format) {
   ]);
 }
 
-async function addOriginalSong(
-  video,
-  song,
-  seconds,
-  final
-) {
+async function addOriginalSong(video, song, seconds, final) {
   await execute('ffmpeg', [
     '-y',
     '-i', video,
@@ -349,20 +321,81 @@ const sceneIdeas = [
   'Outdoor sunset scene with reflective mood'
 ];
 
+const cameraShots = [
+  'Sweeping aerial drone shot with cinematic depth',
+  'Smooth 360-degree orbit around the subject',
+  'Intimate close-up with shallow depth of field',
+  'Wide-angle cinematic tracking shot',
+  'Low-angle dramatic camera movement',
+  'Overhead crane shot revealing the environment',
+  'Slow cinematic dolly-in toward the subject',
+  'Side-tracking shot with layered foreground'
+];
+
+function scenePrompt(s, i) {
+  const idea = sceneIdeas[(i - 1) % sceneIdeas.length];
+  const cameraDirection =
+    cameraShots[(i - 1) % cameraShots.length];
+
+  const identity = s.creationType === 'prompt'
+    ? `Maintain consistent character appearance across scenes. ` +
+      `Follow the customer's character descriptions precisely. `
+    : `Preserve the recognizable identity of the person in the uploaded ` +
+      `reference photograph. `;
+
+  return (
+    `Professional cinematic music video for "${s.title}". ` +
+    `Scene ${i} of ${s.totalScenes}. ` +
+    `PRIMARY DIRECTOR INSTRUCTIONS: ${s.concept}. ` +
+    `Follow the customer's requested setting, actions, character behavior, ` +
+    `atmosphere and visual style. Customer instructions take priority over ` +
+    `suggestions. Do not introduce conflicting locations or actions. ` +
+    `Additional scene inspiration, only if compatible: ${idea}. ` +
+    `Camera direction: ${cameraDirection}. ` +
+    `ACTION SEQUENCE AND PHYSICAL REALISM: Follow the requested actions ` +
+    `in their described order. Show clear preparation, action, physical ` +
+    `reaction and natural recovery. Interact with the correct objects ` +
+    `and obstacles. Do not substitute unrelated actions or obstacles. ` +
+    `Use believable gravity, momentum, balance, weight shifts, foot ` +
+    `placement and coordinated movement. For running, show natural strides, ` +
+    `arm movement and realistic changes in speed and direction. For jumping, ` +
+    `show preparation, takeoff, airborne movement, instinctive arm reactions, ` +
+    `landing and balance recovery. For falling, show loss of balance, ` +
+    `protective reflexes, realistic impact and recovery. Maintain continuous ` +
+    `and physically believable motion. ` +
+    `NATURAL HUMAN PERFORMANCE: Direct believable facial expressions, ` +
+    `emotions, body language, gestures and human mannerisms. Show appropriate ` +
+    `surprise, fear, joy, sadness, anger, excitement, pain or relief when ` +
+    `requested. Include natural blinking, breathing, eye movement, posture ` +
+    `changes and subtle emotional transitions. Show instinctive reactions ` +
+    `to events and surroundings. Use realistic tears, sweat, trembling, ` +
+    `shivering, laughter and fatigue when appropriate. Respond naturally ` +
+    `to rain, wind, sunlight, water, temperature and physical contact. ` +
+    `Avoid robotic gestures and exaggerated expressions unless requested. ` +
+    `CHARACTER IDENTITY AND CONTINUITY: ${identity}` +
+    `Maintain consistent facial features, skin tone, hairstyle, hair length, ` +
+    `body proportions and clothing. Avoid face changes, distorted anatomy, ` +
+    `extra limbs, unnatural motion and sudden appearance changes. ` +
+    `CINEMATIC DIRECTION: Use professional composition, lighting, camera ` +
+    `movement and visual storytelling appropriate to the scene. Support ` +
+    `aerial views, sweeping camera movement, close-ups and dynamic perspectives ` +
+    `when requested. Allow realistic, fantasy, science fiction, anime, ` +
+    `3D animation and imaginative environments when requested. Begin with ` +
+    `a clearly composed opening frame. Avoid fade-ins or slow reveals unless ` +
+    `requested. Make each scene visually distinct while maintaining continuity ` +
+    `with the customer's creative vision. No text, captions, logos, ` +
+    `watermarks, music or dialogue.`
+  );
+}
+
 async function generateStandard(s, dir, imageUrl) {
   for (let i = 1; i <= s.totalScenes; i++) {
-    const clip = path.join(
-      dir,
-      `scene-${i}.mp4`
-    );
+    const clip = path.join(dir, `scene-${i}.mp4`);
 
     if (await exists(clip)) {
       try {
         if ((await duration(clip)) >= 2) {
-          s.completedScenes = Math.max(
-            s.completedScenes,
-            i
-          );
+          s.completedScenes = Math.max(s.completedScenes, i);
           await saveState(s);
           continue;
         }
@@ -372,320 +405,28 @@ async function generateStandard(s, dir, imageUrl) {
     s.phase = `Generating scene ${i} of ${s.totalScenes}`;
     await saveState(s);
 
-    const idea = sceneIdeas[
-      (i - 1) % sceneIdeas.length
-    ];
-
-    
-    const cameraShots = [
-      'Sweeping aerial drone shot with cinematic depth',
-      'Smooth 360-degree orbit around the subject',
-      'Intimate close-up with shallow depth of field',
-      'Wide-angle cinematic tracking shot',
-      'Low-angle dramatic camera movement',
-      'Overhead crane shot revealing the environment',
-      'Slow cinematic dolly-in toward the subject',
-      'Side-tracking shot with layered foreground'
-    ];
-
-    const cameraDirection =
-      cameraShots[(i - 1) % cameraShots.length];
-
-    
-
-
-
-
-
-
-    const prompt =
-      `Professional cinematic music video for "${s.title}". ` +
-      `Scene ${i} of ${s.totalScenes}. ` +
-
-      `PRIMARY DIRECTOR INSTRUCTIONS: ${s.concept}. ` +
-      `Follow the customer's requested setting, actions, ` +
-      `character behavior, atmosphere and visual style. ` +
-      `Customer instructions take priority over suggestions. ` +
-      `Do not introduce conflicting locations or actions. ` +
-
-      `Additional scene inspiration, only if compatible: ${idea}. ` +
-      `Camera direction: ${cameraDirection}. ` +
-
-      `ACTION SEQUENCE AND PHYSICAL REALISM: ` +
-      `Follow the requested actions in their described order. ` +
-      `Show clear preparation, action, physical reaction ` +
-      `and natural recovery. ` +
-      `Interact with the correct objects and obstacles. ` +
-      `Do not substitute unrelated actions or obstacles. ` +
-      `Use believable gravity, momentum, balance, weight ` +
-      `shifts, foot placement and coordinated movement. ` +
-      `For running, show natural strides, arm movement ` +
-      `and realistic changes in speed and direction. ` +
-      `For jumping, show preparation, takeoff, airborne ` +
-      `movement, instinctive arm reactions, landing ` +
-      `and balance recovery. ` +
-      `For falling, show loss of balance, protective ` +
-      `reflexes, realistic impact and recovery. ` +
-      `Maintain continuous and physically believable motion. ` +
-
-      `NATURAL HUMAN PERFORMANCE: ` +
-      `Direct believable facial expressions, emotions, ` +
-      `body language, gestures and human mannerisms. ` +
-      `Show appropriate surprise, fear, joy, sadness, ` +
-      `anger, excitement, pain or relief when requested. ` +
-      `Include natural blinking, breathing, eye movement, ` +
-      `posture changes and subtle emotional transitions. ` +
-      `Show instinctive reactions to events and surroundings. ` +
-      `Use realistic tears, sweat, trembling, shivering, ` +
-      `laughter and fatigue when appropriate. ` +
-      `Respond naturally to rain, wind, sunlight, water, ` +
-      `temperature and physical contact. ` +
-      `Avoid robotic gestures and exaggerated expressions ` +
-      `unless the customer specifically requests them. ` +
-
-      `CHARACTER IDENTITY AND CONTINUITY: ` +
-        (s.creationType === 'prompt'
-    ? `Maintain consistent character appearance across scenes. ` +
-      `Follow the customer's character descriptions precisely. `
-    : `Preserve the recognizable identity of the person ` +
-      `in the uploaded reference photograph. `) +
-      `Maintain consistent facial features, skin tone, ` +
-      `hairstyle, hair length, body proportions and clothing. ` +
-      `Avoid face changes, distorted anatomy, extra limbs, ` +
-      `unnatural motion and sudden appearance changes. ` +
-
-      `CINEMATIC DIRECTION: ` +
-      `Use professional composition, lighting, camera movement ` +
-      `and visual storytelling appropriate to the scene. ` +
-      `Support aerial views, sweeping camera movement, ` +
-      `close-ups and dynamic perspectives when requested. ` +
-      `Allow realistic, fantasy, science fiction, anime, ` +
-      `3D animation and imaginative environments when requested. ` +
-      `Begin with a clearly composed opening frame. ` +
-      `Avoid fade-ins or slow reveals unless requested. ` +
-      `Make each scene visually distinct while maintaining ` +
-      `continuity with the customer's creative vision. ` +
-      `No text, captions, logos, watermarks, ` +
-      `music or dialogue.`;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-    const raw = path.join(
-      dir,
-      `raw-${i}.mp4`
-    );
+    const raw = path.join(dir, `raw-${i}.mp4`);
 
     if (!(await exists(raw))) {
-      const result = await fal.subscribe(
-  s.creationType === 'prompt' ? TEXT_MODEL : MODEL,
-  {
-        input: {
-          prompt,
-          image_url: imageUrl,
-          duration: SCENE_SECONDS,
-          resolution: '480P',
-          prompt_expansion_mode: 'disabled'
-        },
+      const promptOnly = s.creationType === 'prompt';
+      const model = promptOnly ? TEXT_MODEL : MODEL;
+
+      const input = {
+        prompt: scenePrompt(s, i),
+        duration: SCENE_SECONDS,
+        resolution: '480P',
+        prompt_expansion_mode: 'disabled'
+      };
+
+      if (promptOnly) {
+        input.aspect_ratio =
+          s.format === 'landscape' ? '16:9' : '9:16';
+      } else {
+        input.image_url = imageUrl;
+      }
+
+      const result = await fal.subscribe(model, {
+        input,
         logs: false
       });
 
@@ -707,11 +448,7 @@ async function generateStandard(s, dir, imageUrl) {
 
     const temp = clip + '.partial.mp4';
 
-    await normalizeVideo(
-      raw,
-      temp,
-      s.format
-    );
+    await normalizeVideo(raw, temp, s.format);
 
     if ((await duration(temp)) < 2) {
       throw new Error(
@@ -723,7 +460,6 @@ async function generateStandard(s, dir, imageUrl) {
 
     s.completedScenes = i;
     await saveState(s);
-
     await fs.rm(raw, { force: true });
   }
 
@@ -735,12 +471,10 @@ async function generateStandard(s, dir, imageUrl) {
     (_, n) => `file 'scene-${n + 1}.mp4'`
   ).join('\n') + '\n';
 
-        if (creationType === 'photo') {
-        await fs.writeFile(
-          path.join(dir, 'reference'),
-          photo.buffer
-        );
-      }
+  await fs.writeFile(
+    path.join(dir, 'scenes.txt'),
+    list
+  );
 
   await execute('ffmpeg', [
     '-y',
@@ -760,19 +494,13 @@ async function generateStandard(s, dir, imageUrl) {
 }
 
 async function generatePremium(s, dir, imageUrl) {
-  const raw = path.join(
-    dir,
-    'premium-raw.mp4'
-  );
+  const raw = path.join(dir, 'premium-raw.mp4');
 
   if (!(await exists(raw))) {
     s.phase = 'Preparing singing audio';
     await saveState(s);
 
-    const mp3 = path.join(
-      dir,
-      'lip-sync-song.mp3'
-    );
+    const mp3 = path.join(dir, 'lip-sync-song.mp3');
 
     await execute('ffmpeg', [
       '-y',
@@ -793,17 +521,16 @@ async function generatePremium(s, dir, imageUrl) {
       )
     );
 
-    s.phase =
-      'Generating synchronized singing performance';
+    s.phase = 'Generating synchronized singing performance';
     await saveState(s);
 
-          const result = await fal.subscribe(LIP_MODEL, {
-  input: {
-    image_url: imageUrl,
-    audio_url: audioUrl
-  },
-  logs: false
-});
+    const result = await fal.subscribe(LIP_MODEL, {
+      input: {
+        image_url: imageUrl,
+        audio_url: audioUrl
+      },
+      logs: false
+    });
 
     const url =
       result?.data?.video?.url ||
@@ -821,16 +548,9 @@ async function generatePremium(s, dir, imageUrl) {
   s.phase = 'Preparing premium video';
   await saveState(s);
 
-  const clip = path.join(
-    dir,
-    'premium-normalized.mp4'
-  );
+  const clip = path.join(dir, 'premium-normalized.mp4');
 
-  await normalizeVideo(
-    raw,
-    clip,
-    s.format
-  );
+  await normalizeVideo(raw, clip, s.format);
 
   await addOriginalSong(
     clip,
@@ -847,12 +567,10 @@ async function generate(id) {
   if (active.has(id)) return;
 
   active.add(id);
-
   let s;
 
   try {
     s = await readState(id);
-
     s.status = 'running';
     s.error = null;
     await saveState(s);
@@ -864,12 +582,7 @@ async function generate(id) {
     }
 
     const dir = jobDir(id);
-
-    const imageBytes = await fs.readFile(
-      path.join(dir, 'reference')
-    );
-
-        let imageUrl = null;
+    let imageUrl = null;
 
     if (s.creationType !== 'prompt') {
       const imageBytes = await fs.readFile(
@@ -877,7 +590,7 @@ async function generate(id) {
       );
 
       imageUrl =
-        `data:${s.photoMime};base64,` +
+        `data:${s.photoMime || 'image/jpeg'};base64,` +
         imageBytes.toString('base64');
     }
 
@@ -889,29 +602,23 @@ async function generate(id) {
 
     s.status = 'completed';
     s.phase = 'Video ready';
-    
-s.url = null;
+    s.url = null;
     await saveState(s);
 
   } catch (e) {
-    console.error(
-      'Video job failed:',
-      id,
-      e
-    );
+    console.error('Video job failed:', id, e);
 
     if (s) {
       s.status = 'failed';
       s.phase = 'Paused — ready to retry';
-      s.error =
-        e.message || 'Video creation failed';
-
+      s.error = e.message || 'Video creation failed';
       await saveState(s).catch(() => {});
     }
   } finally {
     active.delete(id);
   }
 }
+
 
 app.post(
   '/api/create',
@@ -921,16 +628,18 @@ app.post(
   ]),
   async (req, res) => {
     let dir;
+
     if (!isVideoAdmin(req)) {
       return res.status(403).json({
         error: 'Administrator password required to create videos.'
       });
     }
+
     try {
       const audio = req.files?.audio?.[0];
       const photo = req.files?.photo?.[0];
 
-            const creationType =
+      const creationType =
         req.body.creationType === 'prompt'
           ? 'prompt'
           : 'photo';
@@ -955,14 +664,15 @@ app.post(
           error: 'Premium Lip-Sync requires an artist photo.'
         });
       }
-        
-      }
 
-            if (photo && ![
-        'image/jpeg',
-        'image/png',
-        'image/webp'
-      ].includes(photo.mimetype)) {
+      if (
+        photo &&
+        ![
+          'image/jpeg',
+          'image/png',
+          'image/webp'
+        ].includes(photo.mimetype)
+      ) {
         return res.status(400).json({
           error: 'Please upload a JPG, PNG or WebP image.'
         });
@@ -987,17 +697,19 @@ app.post(
       const id = randomUUID();
       dir = jobDir(id);
 
-      await fs.mkdir(dir);
+      await fs.mkdir(dir, { recursive: true });
 
       await fs.writeFile(
         path.join(dir, 'song'),
         audio.buffer
       );
 
-      await fs.writeFile(
-        path.join(dir, 'reference'),
-        photo.buffer
-      );
+      if (creationType === 'photo') {
+        await fs.writeFile(
+          path.join(dir, 'reference'),
+          photo.buffer
+        );
+      }
 
       const songSeconds = await duration(
         path.join(dir, 'song')
@@ -1008,6 +720,8 @@ app.post(
           recursive: true,
           force: true
         });
+
+        dir = null;
 
         return res.status(400).json({
           error: 'Songs must be 6 minutes or shorter.'
@@ -1020,7 +734,8 @@ app.post(
 
       const quote = estimate(
         songSeconds,
-        mode === 'premium'
+        mode === 'premium',
+        creationType
       );
 
       const s = {
@@ -1037,7 +752,7 @@ app.post(
         format: req.body.format === 'landscape'
           ? 'landscape'
           : 'vertical',
-                creationType,
+        creationType,
         photoMime: photo ? photo.mimetype : null,
         mode,
         estimatedGenerationCostUSD:
@@ -1058,7 +773,7 @@ app.post(
       void generate(id);
 
     } catch (e) {
-      console.error(e);
+      console.error('Video creation error:', e);
 
       if (dir) {
         await fs.rm(dir, {
@@ -1069,8 +784,7 @@ app.post(
 
       if (!res.headersSent) {
         res.status(500).json({
-          error:
-            e.message || 'Could not start video job.'
+          error: e.message || 'Could not start video job.'
         });
       }
     }
@@ -1106,20 +820,23 @@ app.get('/api/jobs/:id', async (req, res) => {
 
   } catch {
     res.status(404).json({
-      error:
-        'Job not found. Temporary storage may have been cleared.'
+      error: 'Job not found. Saved files may be unavailable.'
     });
   }
 });
+
 app.delete('/api/jobs/:id', async (req, res) => {
-    const expectedKey = process.env.VIDEO_DELETE_KEY;
-  const suppliedKey = req.get('X-Video-Delete-Key') || req.body?.deleteKey;
+  const expectedKey = process.env.VIDEO_DELETE_KEY;
+  const suppliedKey =
+    req.get('X-Video-Delete-Key') ||
+    req.body?.deleteKey;
 
   if (!expectedKey || suppliedKey !== expectedKey) {
     return res.status(403).json({
       error: 'Unauthorized video deletion.'
     });
   }
+
   const id = req.params.id;
 
   if (!/^[0-9a-f-]{36}$/i.test(id)) {
@@ -1152,18 +869,20 @@ app.delete('/api/jobs/:id', async (req, res) => {
       message: 'Video and job files deleted.'
     });
 
-  } catch (error) {
+  } catch {
     res.status(500).json({
       error: 'Could not delete video.'
     });
   }
 });
+
 app.post('/api/jobs/:id/resume', async (req, res) => {
-    if (!isVideoAdmin(req)) {
+  if (!isVideoAdmin(req)) {
     return res.status(403).json({
       error: 'Administrator password required to resume videos.'
     });
   }
+
   if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) {
     return res.status(400).json({
       error: 'Invalid job ID.'
@@ -1185,16 +904,19 @@ app.post('/api/jobs/:id/resume', async (req, res) => {
       });
     }
 
-    if (
-      !(await exists(
-        path.join(jobDir(s.id), 'song')
-      )) ||
-      !(await exists(
-        path.join(jobDir(s.id), 'reference')
-      ))
-    ) {
+    const dir = jobDir(s.id);
+
+    const songAvailable = await exists(
+      path.join(dir, 'song')
+    );
+
+    const referenceAvailable =
+      s.creationType === 'prompt' ||
+      await exists(path.join(dir, 'reference'));
+
+    if (!songAvailable || !referenceAvailable) {
       return res.status(410).json({
-        error: 'Uploaded files are no longer available.'
+        error: 'Required uploaded files are no longer available.'
       });
     }
 
@@ -1217,6 +939,7 @@ app.post('/api/jobs/:id/resume', async (req, res) => {
     });
   }
 });
+
 app.post('/api/jobs/:id/customer-link', async (req, res) => {
   if (!isVideoAdmin(req)) {
     return res.status(403).json({
@@ -1241,12 +964,15 @@ app.post('/api/jobs/:id/customer-link', async (req, res) => {
       url: `${req.protocol}://${req.get('host')}/watch/${token}`,
       expiresAt
     });
+
   } catch (error) {
     res.status(400).json({
       error: error.message
     });
   }
-});app.get('/watch/:token', (req, res) => {
+});
+
+app.get('/watch/:token', (req, res) => {
   const token = req.params.token;
 
   if (!/^[0-9a-f-]{36}$/i.test(token)) {
@@ -1274,6 +1000,7 @@ app.post('/api/jobs/:id/customer-link', async (req, res) => {
           display: inline-block;
           background: #b45cff;
           color: white;
+          font-family: Arial, sans-serif;
           padding: 16px 24px;
           border-radius: 10px;
           text-decoration: none;
@@ -1287,12 +1014,13 @@ app.post('/api/jobs/:id/customer-link', async (req, res) => {
       <h2>Your Music Video Is Ready!</h2>
       <p>Your private link expires after 7 days.</p>
       <a href="${downloadUrl}">
-        ⬇ Download Your Video
+        Download Your Video
       </a>
     </body>
     </html>
   `);
 });
+
 app.get('/download/:token', async (req, res) => {
   const token = req.params.token;
 
@@ -1318,7 +1046,10 @@ app.get('/download/:token', async (req, res) => {
       return res.status(404).send('Invalid video.');
     }
 
-    const video = path.join(OUT, `${record.id}.mp4`);
+    const video = path.join(
+      OUT,
+      `${record.id}.mp4`
+    );
 
     if (!(await exists(video))) {
       return res.status(404).send(
@@ -1326,13 +1057,48 @@ app.get('/download/:token', async (req, res) => {
       );
     }
 
-    res.download(video, 'Zala-QI-World-Video.mp4');
+    res.download(
+      video,
+      'Zala-QI-World-Video.mp4'
+    );
+
   } catch {
     res.status(404).send(
       'Download link not found.'
     );
   }
 });
+
+
+async function getPayPalAccessToken() {
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+    throw new Error('PayPal credentials are missing.');
+  }
+
+  const credentials = Buffer.from(
+    PAYPAL_CLIENT_ID + ':' + PAYPAL_CLIENT_SECRET
+  ).toString('base64');
+
+  const response = await fetch(
+    PAYPAL_BASE_URL + '/v1/oauth2/token',
+    {
+      method: 'POST',
+      headers: {
+        Authorization: 'Basic ' + credentials,
+        'Content-Type':
+          'application/x-www-form-urlencoded'
+      },
+      body: 'grant_type=client_credentials'
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('PayPal authentication failed.');
+  }
+
+  const data = await response.json();
+  return data.access_token;
+}
 
 app.post('/api/paypal/create-order', async (req, res) => {
   try {
@@ -1382,7 +1148,9 @@ app.post('/api/paypal/create-order', async (req, res) => {
     const data = await response.json();
 
     if (!response.ok || !data.id) {
-      throw new Error('PayPal could not create the order.');
+      throw new Error(
+        'PayPal could not create the order.'
+      );
     }
 
     res.json({
@@ -1391,8 +1159,13 @@ app.post('/api/paypal/create-order', async (req, res) => {
       amount,
       currency: 'USD'
     });
+
   } catch (error) {
-    console.error('PayPal order error:', error.message);
+    console.error(
+      'PayPal order error:',
+      error.message
+    );
+
     res.status(500).json({
       error: 'Unable to create PayPal test order.'
     });
@@ -1451,16 +1224,17 @@ app.post('/api/paypal/capture-order', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('PayPal capture error:', error.message);
+    console.error(
+      'PayPal capture error:',
+      error.message
+    );
 
     res.status(500).json({
       error: 'Unable to confirm PayPal test payment.'
     });
   }
 });
-const ORDERS = path.join(OUT, 'customer-orders');
 
-await fs.mkdir(ORDERS, { recursive: true });
 app.get('/api/customer-orders', async (req, res) => {
   if (!isVideoAdmin(req)) {
     return res.status(403).json({
@@ -1485,483 +1259,45 @@ app.get('/api/customer-orders', async (req, res) => {
       orders.push(order);
     }
 
-    orders.sort((a, b) =>
-      new Date(b.createdAt) - new Date(a.createdAt)
+    orders.sort(
+      (a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt)
     );
 
-    res.json({ ok: true, orders });
+    res.json({
+      ok: true,
+      orders
+    });
+
   } catch (error) {
     console.error('Customer orders error:', error);
+
     res.status(500).json({
       error: 'Could not load customer orders.'
     });
   }
 });
-const CUSTOMER_UPLOADS = path.join(ORDERS, 'uploads');
 
-await fs.mkdir(CUSTOMER_UPLOADS, {
-  recursive: true
-});
-const customerUpload = multer({
-  dest: CUSTOMER_UPLOADS,
-  limits: {
-    fileSize: 100 * 1024 * 1024,
-    files: 6
-  }
-});
 function validCustomerEmail(email) {
-  return typeof email === 'string' &&
+  return (
+    typeof email === 'string' &&
     email.length <= 254 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  );
 }
-app.post(
-  '/api/customer-orders',
-    (req, res) => res.status(503).json({
+
+// Customer submissions remain disabled until
+// payment verification and order handling are ready.
+// No customer files are accepted by this endpoint.
+
+app.post('/api/customer-orders', (req, res) => {
+  return res.status(503).json({
     error: 'Customer orders are temporarily disabled.'
-  }),
-  customerUpload.fields([
-    { name: 'song', maxCount: 1 },
-    { name: 'photo', maxCount: 5 }
-  ]),
-  async (req, res) => {
-      if (!validCustomerEmail(req.body?.email)) {
-    return res.status(400).json({
-      error: 'Please enter a valid email address.'
-    });
-  }
-    const song = req.files?.song?.[0];
-    const photos = req.files?.photo || [];
-if (!song || photos.length < 1 || photos.length > 5) {
-  return res.status(400).json({
-    error: 'Please upload 1 song and 1 to 5 photos.'
   });
-}
-    const allowedSongTypes = [
-  'audio/mpeg',
-  'audio/mp3',
-  'audio/wav',
-  'audio/x-wav',
-  'audio/wave'
-];
-    if (!allowedSongTypes.includes(song.mimetype)) {
-  return res.status(400).json({
-    error: 'Please upload an MP3 or WAV song.'
-  });
-}
-    return res.status(503).json({
-    error: 'Order submissions are not enabled yet.'
-  });
-}
-);
+});
+
 app.listen(PORT, () => {
   console.log(
     `Zala QI's World running on port ${PORT}`
   );
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
