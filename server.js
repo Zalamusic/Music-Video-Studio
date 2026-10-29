@@ -6,6 +6,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { checkVideoQuality } from './video-quality-checker.js';
+import { cleanOpening } from './cinematic-opening-cleaner.js';
 import {
   prepareCharacterReference,
   applyCharacterIdentityToPrompt
