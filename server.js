@@ -955,7 +955,7 @@ app.post(
         });
       }
 
-      if (![
+            if (photo && ![
         'image/jpeg',
         'image/png',
         'image/webp'
