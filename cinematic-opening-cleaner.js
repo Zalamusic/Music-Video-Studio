@@ -58,7 +58,7 @@ async function detectOpeningFlash(videoFile) {
     '-i', videoFile,
     '-t', '0.35',
     '-vf',
-    "select='gt(scene,0.45)',showinfo",
+    "select='gt(scene,0.35)',showinfo",
     '-an',
     '-f', 'null',
     '-'
