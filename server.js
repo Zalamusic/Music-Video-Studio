@@ -927,9 +927,31 @@ app.post(
       const audio = req.files?.audio?.[0];
       const photo = req.files?.photo?.[0];
 
-      if (!audio || !photo) {
+            const creationType =
+        req.body.creationType === 'prompt'
+          ? 'prompt'
+          : 'photo';
+
+      if (!audio) {
         return res.status(400).json({
-          error: 'Please upload your song and a photo.'
+          error: 'Please upload your song.'
+        });
+      }
+
+      if (creationType === 'photo' && !photo) {
+        return res.status(400).json({
+          error: 'Please upload your artist photo.'
+        });
+      }
+
+      if (
+        creationType === 'prompt' &&
+        req.body.mode === 'premium'
+      ) {
+        return res.status(400).json({
+          error: 'Premium Lip-Sync requires an artist photo.'
+        });
+      }
         });
       }
 
