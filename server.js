@@ -5,6 +5,7 @@ import { spawn } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { checkVideoQuality } from './video-quality-checker.js';
 import {
   recordEvaluation,
   getRealismStats,
