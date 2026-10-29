@@ -7,6 +7,10 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { checkVideoQuality } from './video-quality-checker.js';
 import {
+  prepareCharacterReference,
+  applyCharacterIdentityToPrompt
+} from './character-identity-engine.js';
+import {
   recordEvaluation,
   getRealismStats,
   recommendTechniques
