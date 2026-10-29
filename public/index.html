@@ -646,38 +646,6 @@ async function watchSavedVideo(id, container) {
   }
 }
 
-  container.textContent = 'Loading video...';
-
-  try {
-    const response = await fetch(
-      '/api/jobs/' + encodeURIComponent(id),
-      { cache: 'no-store' }
-    );
-
-    const job = await response.json();
-
-    if (!response.ok) {
-      throw new Error(job.error || 'Could not load video.');
-    }
-
-    if (job.status !== 'completed') {
-      throw new Error('This video is not completed yet.');
-    }
-
-    const history = getHistory();
-    const record = history.find(item => item.jobId === id);
-    const url = job.url || record?.url;
-
-    if (url) {
-      rememberVideo({ ...job, jobId: id, url });
-    }
-
-    createVideoPlayer(url, container);
-  } catch (error) {
-    container.textContent =
-      'Unable to play video: ' + error.message;
-  }
-}
 
 function displayMyVideos() {
   const list = $('myVideosList');
