@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,1088 +6,260 @@
 <meta name="theme-color" content="#F4F8FC">
 <title>Zala QI's World | Music Video Creator</title>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  padding: 20px 12px 45px;
-  background: #F4F8FC;
-  color: #15202B;
-  font-family: Arial, sans-serif;
-}
-main {
-  max-width: 720px;
-  margin: auto;
-  padding: 24px;
-  background: white;
-  border: 1px solid #D6E8F5;
-  border-radius: 20px;
-}
-.brand { text-align: center; }
-.brand-mark {
-  width: 65px;
-  height: 65px;
-  margin: auto;
-  display: grid;
-  place-items: center;
-  border-radius: 18px;
-  background: linear-gradient(135deg,#1DA1F2,#0F6CBD);
-  color: white;
-  font-size: 28px;
-  font-weight: bold;
-}
-h1 { color: #0F6CBD; }
-.sub, .note {
-  color: #536471;
-  line-height: 1.5;
-}
-.note { font-size: 13px; }
-.section-title {
-  margin-top: 25px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #D6E8F5;
-  font-size: 19px;
-  font-weight: bold;
-}
-label {
-  display: block;
-  margin: 18px 0 8px;
-  font-weight: bold;
-}
-input, select, textarea {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid #B9D8EE;
-  border-radius: 10px;
-  background: white;
-  color: #15202B;
-  font-size: 16px;
-}
-textarea {
-  min-height: 130px;
-  resize: vertical;
-}
-button {
-  width: 100%;
-  margin-top: 15px;
-  padding: 15px;
-  border: 0;
-  border-radius: 11px;
-  background: linear-gradient(100deg,#1DA1F2,#0F6CBD);
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-button:disabled { opacity: .6; }
-.secondary { background: #0F6CBD; }
-.danger { background: #DC3545; }
-.panel {
-  margin-top: 23px;
-  padding: 18px;
-  background: #E8F4FD;
-  border: 1px solid #B9D8EE;
-  border-radius: 14px;
-}
-.panel h2 {
-  margin-top: 0;
-  color: #0F6CBD;
-}
-.cost {
-  color: #0F6CBD;
-  font-size: 28px;
-  font-weight: bold;
-}
-#progressPanel { display: none; }
-.progress-track {
-  height: 19px;
-  background: #D6E8F5;
-  border-radius: 20px;
-  overflow: hidden;
-}
-#progressFill {
-  width: 0%;
-  height: 100%;
-  background: #1DA1F2;
-}
-video {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  margin-top: 15px;
-  border-radius: 12px;
-  background: black;
-}
-.video-item {
-  margin: 15px 0;
-  padding: 15px;
-  border: 1px solid #B9D8EE;
-  border-radius: 12px;
-  background: white;
-}
-.video-item p {
-  overflow-wrap: anywhere;
-}
-a {
-  color: #0F6CBD;
-  overflow-wrap: anywhere;
-}
-#status, #phase {
-  margin-top: 15px;
-  overflow-wrap: anywhere;
-  line-height: 1.6;
-}
-.footer {
-  text-align: center;
-  margin-top: 30px;
-  color: #657786;
-  font-size: 12px;
-}
-@media(max-width:480px) {
-  main { padding: 18px 14px; }
-}
+*{box-sizing:border-box}body{margin:0;padding:20px 12px 45px;background:#F4F8FC;color:#15202B;font-family:Arial,sans-serif}main{max-width:720px;margin:auto;padding:24px;background:#fff;border:1px solid #D6E8F5;border-radius:20px}.brand{text-align:center}.brand-mark{width:65px;height:65px;margin:auto;display:grid;place-items:center;border-radius:18px;background:linear-gradient(135deg,#1DA1F2,#0F6CBD);color:#fff;font-size:28px;font-weight:bold}h1{color:#0F6CBD}.sub,.note{color:#536471;line-height:1.5}.note{font-size:13px}.section-title{margin-top:25px;padding-bottom:12px;border-bottom:1px solid #D6E8F5;font-size:19px;font-weight:bold}label{display:block;margin:18px 0 8px;font-weight:bold}input,select,textarea{width:100%;padding:14px;border:1px solid #B9D8EE;border-radius:10px;background:#fff;color:#15202B;font-size:16px}textarea{min-height:130px;resize:vertical}button{width:100%;margin-top:15px;padding:15px;border:0;border-radius:11px;background:linear-gradient(100deg,#1DA1F2,#0F6CBD);color:#fff;font-size:16px;font-weight:bold;cursor:pointer}button:disabled{opacity:.6}.secondary{background:#0F6CBD}.danger{background:#DC3545}.panel{margin-top:23px;padding:18px;background:#E8F4FD;border:1px solid #B9D8EE;border-radius:14px}.panel h2{margin-top:0;color:#0F6CBD}.cost{color:#0F6CBD;font-size:28px;font-weight:bold}#progressPanel{display:none}.progress-track{height:19px;background:#D6E8F5;border-radius:20px;overflow:hidden}#progressFill{width:0%;height:100%;background:#1DA1F2}video{display:block;width:100%;max-width:100%;margin-top:15px;border-radius:12px;background:#000}.video-item{margin:15px 0;padding:15px;border:1px solid #B9D8EE;border-radius:12px;background:#fff}.video-item p{overflow-wrap:anywhere}a{color:#0F6CBD;overflow-wrap:anywhere}#status,#phase{margin-top:15px;overflow-wrap:anywhere;line-height:1.6}.footer{text-align:center;margin-top:30px;color:#657786;font-size:12px}@media(max-width:480px){main{padding:18px 14px}}
 </style>
 </head>
 <body>
 <main>
-
-<header class="brand">
-  <div class="brand-mark">ZQ</div>
-  <h1>Zala QI's World</h1>
-  <p class="sub">
-    Your music. Your vision. Your world.
-    Create cinematic music videos from your songs and photos.
-  </p>
-</header>
-
-<section class="panel" id="ordersPanel">
-  <h2>Customer Orders</h2>
-  <p id="ordersWaiting">0 Orders Waiting</p>
-  <button type="button"
-    onclick="location.href='/customer-orders.html'">
-    View Customer Orders
-  </button>
-</section>
-
+<header class="brand"><div class="brand-mark">ZQ</div><h1>Zala QI's World</h1><p class="sub">Your music. Your vision. Your world. Create cinematic music videos from your songs and photos or a written prompt.</p></header>
+<section class="panel"><h2>Customer Orders</h2><p class="note">Customer submissions are not enabled yet.</p><button type="button" onclick="location.href='/customer-orders.html'">View Customer Orders</button></section>
 <div class="section-title">Create Your Music Video</div>
-
 <form id="videoForm">
-  <label for="mode">Choose Your Video Experience</label>
-  <select id="mode" name="mode">
-    <option value="standard">
-      Standard — Cinematic Music Video
-    </option>
-    <option value="premium">
-      Premium — Singing Lip-Sync
-    </option>
-  </select>
-
-  <p class="note" id="modeNote"></p>
-
-  <label for="title">Song Title (optional)</label>
-  <input id="title" name="title" maxlength="120">
-
-  <label for="audio">Upload Your Song (MP3 or WAV)</label>
-  <input id="audio" name="audio" type="file"
-    accept=".mp3,.wav,audio/mpeg,audio/wav" required>
-
-  <label for="photo">Upload Your Artist Photo</label>
-  <input id="photo" name="photo" type="file"
-    accept="image/jpeg,image/png,image/webp" required>
-
-  <label for="prompt">Describe Your Music Video</label>
-  <textarea id="prompt" name="prompt" required
-    placeholder="Describe locations, aerial views, camera movements, outfits, lighting and mood..."></textarea>
-
-  <p id="promptNote" class="note"></p>
-
-  <label for="format">Video Format</label>
-  <select id="format" name="format">
-    <option value="vertical">Vertical — TikTok, Reels, Shorts</option>
-    <option value="landscape">Landscape — YouTube</option>
-  </select>
-
-  <section class="panel">
-    <h2>Video Cost Calculator</h2>
-    <div id="estimateDetails">
-      Upload a song to calculate cost.
-    </div>
-    <p class="note">
-      Actual charges may differ.
-      Failed attempts and retries may consume credits.
-    </p>
-  </section>
-
-  <label for="adminPassword">Administrator Password</label>
-  <input id="adminPassword" name="adminPassword"
-    type="password" autocomplete="off"
-    
-placeholder="Enter administrator password" required
-onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
-  <button id="createButton" type="submit">
-    Create My Music Video
-  </button>
+<label for="creationType">Director Mode — Video Starting Point</label>
+<select id="creationType" name="creationType"><option value="photo">Artist Photo — Image to Video</option><option value="prompt">Written Prompt — Text to Video</option></select>
+<p class="note">Prompt-only video is available in Standard mode. Premium Lip-Sync requires a photo.</p>
+<label for="mode">Choose Your Video Experience</label>
+<select id="mode" name="mode"><option value="standard">Standard — Cinematic Music Video</option><option value="premium">Premium — Singing Lip-Sync</option></select>
+<p class="note" id="modeNote"></p>
+<label for="title">Song Title (optional)</label><input id="title" name="title" maxlength="120">
+<label for="audio">Upload Your Song (MP3 or WAV)</label><input id="audio" name="audio" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" required>
+<div id="photoUploadSection"><label for="photo">Upload Your Artist Photo</label><input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required></div>
+<label for="prompt">Describe Your Music Video</label><textarea id="prompt" name="prompt" required maxlength="4000" placeholder="Describe characters, settings, actions, outfits, camera movements, aerial views, visual style and mood..."></textarea>
+<p id="promptNote" class="note"></p>
+<label for="format">Video Format</label><select id="format" name="format"><option value="vertical">Vertical — TikTok, Reels, Shorts</option><option value="landscape">Landscape — YouTube</option></select>
+<section class="panel"><h2>Video Cost Calculator</h2><div id="estimateDetails">Upload a song to calculate cost.</div><p class="note">Estimated provider generation cost, not a customer selling price. Actual charges may differ. Retries may consume credits.</p></section>
+<label for="adminPassword">Administrator Password</label><input id="adminPassword" type="password" autocomplete="off" placeholder="Enter administrator password" required>
+<button id="createButton" type="submit">Create My Music Video</button>
 </form>
-
-<section class="panel" id="progressPanel">
-  <h2>Music Video Progress</h2>
-  <div id="progressText">Preparing...</div>
-  <div class="progress-track">
-    <div id="progressFill"></div>
-  </div>
-  <p id="phase">Waiting...</p>
-  <p id="jobNote" class="note"></p>
-  <button id="resumeButton" type="button"
-    class="secondary" style="display:none">
-    Resume Video
-  </button>
-</section>
-
-<section class="panel">
-  <h2>My Videos</h2>
-  <p class="note">
-    Watch completed videos here, select them for customer
-    downloads, or delete them when no longer needed.
-  </p>
-  <div id="myVideosList"></div>
-</section>
-
-<section class="panel" id="customerLinkPanel">
-  <h2>Create Customer Download Link</h2>
-  <p class="note">
-    Generate a private download link valid for 7 days.
-  </p>
-  <p id="selectedVideoLabel" class="note">
-    No video selected.
-  </p>
-  <label for="adminKey">Administrator Password</label>
-  <input id="adminKey" type="password"
-    autocomplete="off"
-    placeholder="Enter administrator password">
-  <button id="customerLinkButton" type="button">
-    Create Customer Link
-  </button>
-  <p id="customerLinkStatus" class="note"></p>
-  <div id="customerLinkResult"></div>
-</section>
-
-<div id="status" role="status" aria-live="polite"></div>
-<div id="result"></div>
-
-<div class="footer">
-  Zala QI's World · Create something unforgettable
-</div>
-
+<section class="panel" id="progressPanel"><h2>Music Video Progress</h2><div id="progressText">Preparing...</div><div class="progress-track"><div id="progressFill"></div></div><p id="phase">Waiting...</p><p id="jobNote" class="note"></p><button id="resumeButton" type="button" class="secondary" style="display:none">Resume Video</button></section>
+<section class="panel"><h2>My Videos</h2><p class="note">Watch completed videos, select them for customer downloads, or delete them when no longer needed. This list is saved on this device.</p><div id="myVideosList"></div></section>
+<section class="panel" id="customerLinkPanel"><h2>Create Customer Download Link</h2><p class="note">Generate a private download link valid for 7 days.</p><p id="selectedVideoLabel" class="note">No video selected.</p><label for="adminKey">Administrator Password</label><input id="adminKey" type="password" autocomplete="off" placeholder="Enter administrator password"><button id="customerLinkButton" type="button">Create Customer Link</button><p id="customerLinkStatus" class="note"></p><div id="customerLinkResult"></div></section>
+<div id="status" role="status" aria-live="polite"></div><div id="result"></div><div class="footer">Zala QI's World · Create something unforgettable</div>
 </main>
-
 <script>
-const $ = id => document.getElementById(id);
-
-const form = $('videoForm');
-const audioInput = $('audio');
-const modeInput = $('mode');
-  
-const creationTypeInput = $('creationType');
-const photoInput = $('photo');
-
-function updateCreationType() {
-  const promptOnly = creationTypeInput.value === 'prompt';
-  const premium = modeInput.value === 'premium';
-
-  if (promptOnly && premium) {
-    modeInput.value = 'standard';
-  }
-
-  $('photoUploadSection').style.display =
-    promptOnly ? 'none' : 'block';
-
-  photoInput.required = !promptOnly;
-
-  if (promptOnly) {
-    photoInput.value = '';
-  }
-
-  
-creationTypeInput.addEventListener('change', () => {
-  updateCreationType();
-});
-
-updateCreationType();
-
+'use strict';
+const $=id=>document.getElementById(id);
+const form=$('videoForm'),audioInput=$('audio'),modeInput=$('mode'),creationTypeInput=$('creationType'),photoInput=$('photo'),createButton=$('createButton'),resumeButton=$('resumeButton'),adminPasswordInput=$('adminPassword'),adminKeyInput=$('adminKey');
+const STORAGE_KEY='zala-current-job',VIDEO_HISTORY_KEY='zala-video-history';
+let currentJobId=null,selectedVideoId=null,pollTimer=null,songSeconds=null,estimatedCost=null,estimateReady=false,estimateRequest=0,durationFile=null,cachedDuration=null;
+const validId=id=>typeof id==='string'&&/^[0-9a-f-]{36}$/i.test(id);
+function setStatus(message){$('status').textContent=message;}
+function updateCreationType(){
+ const promptOnly=creationTypeInput.value==='prompt';
+ if(promptOnly&&modeInput.value==='premium')modeInput.value='standard';
+ $('photoUploadSection').style.display=promptOnly?'none':'block';
+ photoInput.required=!promptOnly;
+ if(promptOnly)photoInput.value='';
+ updateModeNote();
 }
-
-const createButton = $('createButton');
-const resumeButton = $('resumeButton');
-const adminPasswordInput = $('adminPassword');
-const adminKeyInput = $('adminKey');
-
-const STORAGE_KEY = 'zala-current-job';
-const VIDEO_HISTORY_KEY = 'zala-video-history';
-
-let currentJobId = null;
-let pollTimer = null;
-let songSeconds = null;
-let estimatedCost = null;
-let estimateReady = false;
-let estimateRequest = 0;
-let durationFile = null;
-let cachedDuration = null;
-
-function setStatus(message) {
-  $('status').textContent = message;
+function updateModeNote(){
+ const premium=modeInput.value==='premium';
+ $('modeNote').textContent=premium?'Premium creates one continuous singing performance.':'Standard creates cinematic scenes with varied camera angles.';
+ $('promptNote').textContent=premium?'Premium currently uses the artist photo and audio. The prompt does not directly control lip-sync scenery.':'Standard uses your prompt to guide scenes, including requested aerial views.';
+ createButton.textContent=premium?'Create Premium Lip-Sync Video':'Create My Music Video';
 }
-
-function updateModeNote() {
-  const premium = modeInput.value === 'premium';
-
-  $('modeNote').textContent = premium
-    ? 'Premium creates one continuous singing performance.'
-    : 'Standard creates cinematic scenes with varied camera angles.';
-
-  $('promptNote').textContent = premium
-    ? 'Premium currently uses the artist photo and audio. The prompt does not directly control lip-sync scenery.'
-    : 'Standard uses your prompt to guide cinematic scenes, including requested aerial views.';
-
-  createButton.textContent = premium
-    ? 'Create Premium Lip-Sync Video'
-    : 'Create My Music Video';
+function formatDuration(seconds){const n=Math.ceil(seconds);return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');}
+function readDuration(file){
+ return new Promise((resolve,reject)=>{
+  const url=URL.createObjectURL(file),audio=document.createElement('audio');
+  const timer=setTimeout(()=>{cleanup();reject(new Error('Could not read song duration.'));},15000);
+  function cleanup(){clearTimeout(timer);audio.removeAttribute('src');audio.load();URL.revokeObjectURL(url);}
+  audio.preload='metadata';
+  audio.onloadedmetadata=()=>{const seconds=audio.duration;cleanup();resolve(seconds);};
+  audio.onerror=()=>{cleanup();reject(new Error('Unable to read this audio file.'));};
+  audio.src=url;
+ });
 }
-
-function formatDuration(seconds) {
-  const total = Math.ceil(seconds);
-  return Math.floor(total / 60) + ':' +
-    String(total % 60).padStart(2, '0');
+async function updateEstimate(){
+ const requestId=++estimateRequest,file=audioInput.files[0];
+ estimateReady=false;songSeconds=null;estimatedCost=null;
+ $('estimateDetails').textContent=file?'Calculating video cost...':'Upload your song.';
+ if(!file)return;
+ try{
+  const seconds=durationFile===file&&cachedDuration!==null?cachedDuration:await readDuration(file);
+  durationFile=file;cachedDuration=seconds;
+  if(requestId!==estimateRequest)return;
+  if(!Number.isFinite(seconds)||seconds<=0||seconds>360)throw new Error('Song must be between 0 and 6 minutes.');
+  const params=new URLSearchParams({seconds:String(seconds),mode:modeInput.value,creationType:creationTypeInput.value});
+  const response=await fetch('/api/estimate?'+params.toString());
+  const data=await response.json();
+  if(requestId!==estimateRequest)return;
+  if(!response.ok)throw new Error(data.error||'Cost calculator unavailable.');
+  songSeconds=seconds;
+  const box=$('estimateDetails');box.replaceChildren();
+  function addLine(text,cssClass=''){const p=document.createElement('p');p.textContent=text;if(cssClass)p.className=cssClass;box.appendChild(p);}
+  addLine('Song length: '+formatDuration(seconds));
+  addLine('Mode: '+(modeInput.value==='premium'?'Premium Singing Lip-Sync':'Standard Cinematic'));
+  if(modeInput.value==='standard')addLine('Scenes required: '+data.scenesRequired);
+  else addLine('One continuous singing performance');
+  if(data.estimatedGenerationCostUSD!=null&&Number.isFinite(Number(data.estimatedGenerationCostUSD))){
+   estimatedCost=Number(data.estimatedGenerationCostUSD);addLine('Estimated generation cost: $'+estimatedCost.toFixed(2),'cost');
+  }else addLine('Generation cost estimate unavailable. Check the applicable Render price setting.');
+  estimateReady=true;
+ }catch(error){if(requestId===estimateRequest)$('estimateDetails').textContent=error.message;}
 }
-
-function readDuration(file) {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const audio = document.createElement('audio');
-
-    const cleanup = () => {
-      clearTimeout(timer);
-      audio.removeAttribute('src');
-      audio.load();
-      URL.revokeObjectURL(url);
-    };
-
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error('Could not read song duration.'));
-    }, 15000);
-
-    audio.preload = 'metadata';
-
-    audio.onloadedmetadata = () => {
-      const seconds = audio.duration;
-      cleanup();
-      resolve(seconds);
-    };
-
-    audio.onerror = () => {
-      cleanup();
-      reject(new Error('Unable to read this audio file.'));
-    };
-
-    audio.src = url;
+audioInput.addEventListener('change',()=>{durationFile=null;cachedDuration=null;updateEstimate();});
+creationTypeInput.addEventListener('change',()=>{updateCreationType();updateEstimate();});
+modeInput.addEventListener('change',()=>{if(modeInput.value==='premium'&&creationTypeInput.value==='prompt')creationTypeInput.value='photo';updateCreationType();updateEstimate();});
+function getHistory(){try{const data=JSON.parse(localStorage.getItem(VIDEO_HISTORY_KEY)||'[]');return Array.isArray(data)?data:[];}catch{return [];}}
+function saveHistory(history){try{localStorage.setItem(VIDEO_HISTORY_KEY,JSON.stringify(history));}catch{}}
+function saveJob(id){currentJobId=id;try{localStorage.setItem(STORAGE_KEY,id);}catch{}}
+function clearJob(){currentJobId=null;try{localStorage.removeItem(STORAGE_KEY);}catch{}}
+function rememberVideo(job){
+ const id=job.jobId||job.id;if(!validId(id))return;
+ const history=getHistory(),existing=history.find(item=>item.jobId===id);
+ const updated=history.filter(item=>item.jobId!==id);
+ updated.unshift({jobId:id,title:job.title||existing?.title||'Completed Music Video',savedAt:existing?.savedAt||new Date().toISOString()});
+ saveHistory(updated.slice(0,50));displayMyVideos();
+}
+function createVideoPlayer(url,container){
+ container.replaceChildren();
+ if(!url){container.textContent='Video address unavailable.';return;}
+ const video=document.createElement('video');video.src=url;video.controls=true;video.playsInline=true;video.preload='metadata';
+ const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener';link.textContent='Open video';
+ container.append(video,link);
+}
+function selectVideo(id){selectedVideoId=id;$('selectedVideoLabel').textContent='Selected video: '+id;$('customerLinkStatus').textContent='Enter your administrator password to create a download link.';$('customerLinkResult').replaceChildren();}
+async function watchSavedVideo(id,container){
+ container.textContent='Loading video...';
+ try{
+  const response=await fetch('/api/jobs/'+encodeURIComponent(id),{cache:'no-store'}),job=await response.json();
+  if(!response.ok)throw new Error(job.error||'Could not load video.');
+  if(job.status!=='completed')throw new Error('This video is not completed yet.');
+  let key=adminKeyInput.value.trim()||adminPasswordInput.value.trim();
+  if(!key)key=(window.prompt('Enter your administrator password to watch this video:')||'').trim();
+  if(!key)throw new Error('Administrator password is required.');
+  const previewResponse=await fetch('/api/jobs/'+encodeURIComponent(id)+'/preview-link',{method:'POST',headers:{'X-Video-Admin-Key':key}});
+  const preview=await previewResponse.json();
+  if(!previewResponse.ok)throw new Error(preview.error||'Unable to create video preview.');
+  if(!preview.url)throw new Error('Preview address unavailable.');
+  createVideoPlayer(preview.url,container);
+ }catch(error){container.textContent='Unable to play video: '+error.message;}
+}
+function displayMyVideos(){
+ const list=$('myVideosList');list.replaceChildren();const history=getHistory();
+ if(!history.length){list.textContent='No saved videos yet.';return;}
+ history.forEach((item,index)=>{
+  if(!validId(item.jobId))return;
+  const card=document.createElement('div');card.className='video-item';
+  const title=document.createElement('h3');title.textContent=item.title||'Video '+(index+1);
+  const date=document.createElement('p');date.className='note';date.textContent=item.savedAt?'Saved: '+new Date(item.savedAt).toLocaleString():'Completed video';
+  const playerArea=document.createElement('div');
+  const watchButton=document.createElement('button');watchButton.type='button';watchButton.textContent='▶ Watch Video';watchButton.addEventListener('click',()=>watchSavedVideo(item.jobId,playerArea));
+  const selectButton=document.createElement('button');selectButton.type='button';selectButton.className='secondary';selectButton.textContent='Select for Customer Download';selectButton.addEventListener('click',()=>{$('customerLinkPanel').scrollIntoView({behavior:'smooth'});selectVideo(item.jobId);});
+  const deleteButton=document.createElement('button');deleteButton.type='button';deleteButton.className='danger';deleteButton.textContent='Delete Video';
+  deleteButton.addEventListener('click',async()=>{
+   const deleteKey=window.prompt('Enter your private video deletion password:');if(!deleteKey)return;
+   if(!window.confirm('Delete this video from the server? This cannot be undone.'))return;
+   deleteButton.disabled=true;
+   try{
+    const response=await fetch('/api/jobs/'+encodeURIComponent(item.jobId),{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({deleteKey})});
+    const data=await response.json();if(!response.ok)throw new Error(data.error||'Deletion failed.');
+    saveHistory(getHistory().filter(video=>video.jobId!==item.jobId));if(currentJobId===item.jobId)clearJob();if(selectedVideoId===item.jobId)selectedVideoId=null;
+    displayMyVideos();alert('Video deleted successfully.');
+   }catch(error){alert('Deletion failed: '+error.message);deleteButton.disabled=false;}
   });
+  card.append(title,date,watchButton,playerArea,selectButton,deleteButton);list.appendChild(card);
+ });
 }
-
-async function updateEstimate() {
-  const requestId = ++estimateRequest;
-  const file = audioInput.files[0];
-
-  estimateReady = false;
-  songSeconds = null;
-  estimatedCost = null;
-
-  $('estimateDetails').textContent =
-    file ? 'Calculating video cost...' : 'Upload your song.';
-
-  if (!file) return;
-
-  try {
-    let seconds;
-
-    if (durationFile === file && cachedDuration !== null) {
-      seconds = cachedDuration;
-    } else {
-      seconds = await readDuration(file);
-      durationFile = file;
-      cachedDuration = seconds;
-    }
-
-    if (requestId !== estimateRequest) return;
-
-    if (!Number.isFinite(seconds) ||
-        seconds <= 0 || seconds > 360) {
-      throw new Error('Song must be between 0 and 6 minutes.');
-    }
-
-    const response = await fetch(
-      '/api/estimate?seconds=' +
-      encodeURIComponent(seconds) +
-      '&mode=' + encodeURIComponent(modeInput.value)
-    );
-
-    if (!response.ok) {
-      throw new Error('Cost calculator unavailable.');
-    }
-
-    const data = await response.json();
-    if (requestId !== estimateRequest) return;
-
-    songSeconds = seconds;
-    const box = $('estimateDetails');
-    box.replaceChildren();
-
-    function addLine(text, cssClass = '') {
-      const p = document.createElement('p');
-      p.textContent = text;
-      if (cssClass) p.className = cssClass;
-      box.appendChild(p);
-    }
-
-    addLine('Song length: ' + formatDuration(seconds));
-    addLine('Mode: ' + (
-      modeInput.value === 'premium'
-        ? 'Premium Singing Lip-Sync'
-        : 'Standard Cinematic'
-    ));
-
-    if (modeInput.value === 'standard') {
-      addLine('Scenes required: ' + data.scenesRequired);
-    } else {
-      addLine('One continuous singing performance');
-    }
-
-    if (data.estimatedGenerationCostUSD != null &&
-        Number.isFinite(Number(data.estimatedGenerationCostUSD))) {
-      estimatedCost = Number(data.estimatedGenerationCostUSD);
-      addLine(
-        'Estimated generation cost: $' +
-        estimatedCost.toFixed(2),
-        'cost'
-      );
-    } else {
-      addLine('Generation cost estimate unavailable.');
-    }
-
-    estimateReady = true;
-  } catch (error) {
-    if (requestId === estimateRequest) {
-      $('estimateDetails').textContent = error.message;
-    }
-  }
+function stopPolling(){if(pollTimer!==null){clearTimeout(pollTimer);pollTimer=null;}}
+function showJob(job){
+ $('progressPanel').style.display='block';
+ const total=Number(job.totalScenes)||0,done=Math.min(total,Math.max(0,Number(job.completedScenes)||0));
+ const percent=job.status==='completed'?100:total?Math.round(done/total*100):0;
+ $('progressFill').style.width=percent+'%';
+ $('progressText').textContent=job.mode==='premium'?'Premium Singing Performance':'Scenes completed: '+done+' of '+total;
+ $('phase').textContent=job.phase||job.status||'Preparing';resumeButton.style.display='none';
+ if(job.status==='completed'){
+  stopPolling();createButton.disabled=false;setStatus('Your music video is ready!');$('jobNote').textContent='Video completed. Use My Videos to watch or create a download link.';
+  rememberVideo(job);if(job.url)createVideoPlayer(job.url,$('result'));return;
+ }
+ if(job.status==='failed'){
+  stopPolling();createButton.disabled=false;setStatus('Video paused: '+(job.error||'Unknown error.'));
+  $('jobNote').textContent='You can resume this job or start a new one. Retrying may incur charges.';
+  resumeButton.style.display='block';return;
+ }
+ createButton.disabled=true;setStatus('Creating your music video...');
 }
-
-audioInput.addEventListener('change', () => {
-  durationFile = null;
-  cachedDuration = null;
-  updateEstimate();
+async function checkJob(){
+ const id=currentJobId;if(!id)return;
+ try{
+  const response=await fetch('/api/jobs/'+encodeURIComponent(id),{cache:'no-store'}),job=await response.json();
+  if(id!==currentJobId)return;
+  if(!response.ok)throw new Error(job.error||'Progress check failed.');
+  showJob(job);
+  if(job.status!=='completed'&&job.status!=='failed')pollTimer=setTimeout(checkJob,3000);
+ }catch(error){
+  if(id!==currentJobId)return;stopPolling();createButton.disabled=false;setStatus('Progress check: '+error.message);
+  if(/not found/i.test(error.message))clearJob();else pollTimer=setTimeout(checkJob,10000);
+ }
+}
+form.addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(currentJobId){
+  try{
+   const response=await fetch('/api/jobs/'+encodeURIComponent(currentJobId),{cache:'no-store'});
+   if(response.status===404)clearJob();
+   else if(!response.ok)throw new Error('Could not check previous video.');
+   else{
+    const previousJob=await response.json();
+    if(previousJob.status==='completed'||previousJob.status==='failed'){
+     if(previousJob.status==='failed'&&!window.confirm('Your previous video is paused. Start a new video instead of resuming it?'))return;
+     clearJob();stopPolling();
+    }else{setStatus('Finish your current video before starting another.');return;}
+   }
+  }catch(error){setStatus('Unable to check previous video: '+error.message);return;}
+ }
+ if(!estimateReady||songSeconds===null){setStatus('Upload a valid song and wait for the estimate.');return;}
+ const key=adminPasswordInput.value.trim();if(!key){setStatus('Administrator password required.');adminPasswordInput.focus();return;}
+ const modeText=modeInput.value==='premium'?'Premium Singing Lip-Sync':'Standard Cinematic';
+ const costText=estimatedCost===null?'unavailable':'$'+estimatedCost.toFixed(2);
+ if(!window.confirm('Mode: '+modeText+'\nEstimated generation cost: '+costText+'\n\nActual charges may differ. Retries may consume credits.\n\nStart generating?'))return;
+ createButton.disabled=true;$('result').replaceChildren();setStatus('Uploading and starting video...');
+ try{
+  const dataToSend=new FormData(form);
+  const response=await fetch('/api/create',{method:'POST',headers:{'X-Video-Admin-Key':key},body:dataToSend});
+  const type=response.headers.get('content-type')||'';
+  if(!type.includes('application/json'))throw new Error('Unexpected server response.');
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Video creation failed.');
+  if(!validId(data.jobId))throw new Error('Server did not return a valid job ID.');
+  saveJob(data.jobId);showJob(data);stopPolling();pollTimer=setTimeout(checkJob,1500);
+ }catch(error){createButton.disabled=false;setStatus('Unable to start video: '+error.message);}
 });
-
-
-modeInput.addEventListener('change', () => {
-  updateCreationType();
-  updateEstimate();
+resumeButton.addEventListener('click',async()=>{
+ if(!currentJobId)return;
+ const key=adminPasswordInput.value.trim();if(!key){setStatus('Enter your administrator password to resume.');adminPasswordInput.focus();return;}
+ if(!window.confirm('Resume video? Retrying may incur charges.'))return;
+ resumeButton.disabled=true;
+ try{
+  const response=await fetch('/api/jobs/'+encodeURIComponent(currentJobId)+'/resume',{method:'POST',headers:{'X-Video-Admin-Key':key}});
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Resume failed.');
+  showJob(data);stopPolling();pollTimer=setTimeout(checkJob,1500);
+ }catch(error){setStatus('Resume failed: '+error.message);}finally{resumeButton.disabled=false;}
 });
-
+$('customerLinkButton').addEventListener('click',async()=>{
+ const id=selectedVideoId,key=adminKeyInput.value.trim();
+ if(!id){$('customerLinkStatus').textContent='Select a completed video first.';return;}
+ if(!key){$('customerLinkStatus').textContent='Enter your administrator password.';return;}
+ const button=$('customerLinkButton');button.disabled=true;$('customerLinkStatus').textContent='Creating private link...';$('customerLinkResult').replaceChildren();
+ try{
+  const response=await fetch('/api/jobs/'+encodeURIComponent(id)+'/customer-link',{method:'POST',headers:{'X-Video-Admin-Key':key}});
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Link creation failed.');
+  const result=$('customerLinkResult'),link=document.createElement('a');
+  link.href=data.url;link.target='_blank';link.rel='noopener';link.textContent=data.url;
+  const copyButton=document.createElement('button');copyButton.type='button';copyButton.textContent='Copy Customer Link';
+  copyButton.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(data.url);$('customerLinkStatus').textContent='Link copied!';}catch{window.prompt('Copy this link:',data.url);}});
+  const download=document.createElement('a');download.href=data.url;download.target='_blank';download.rel='noopener';download.textContent='Open Customer Download Page';
+  download.style.cssText='display:block;margin-top:15px;padding:14px;background:#0F6CBD;color:white;border-radius:10px;text-align:center';
+  result.append(link,copyButton,download);
+  $('customerLinkStatus').textContent='Private link created. Expires: '+new Date(data.expiresAt).toLocaleString();
+ }catch(error){$('customerLinkStatus').textContent=error.message;}finally{adminKeyInput.value='';button.disabled=false;}
 });
-
-updateModeNote();
-
-function getHistory() {
-  try {
-    const data = JSON.parse(
-      localStorage.getItem(VIDEO_HISTORY_KEY) || '[]'
-    );
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveHistory(history) {
-  localStorage.setItem(
-    VIDEO_HISTORY_KEY,
-    JSON.stringify(history)
-  );
-}
-
-function saveJob(id) {
-  currentJobId = id;
-  localStorage.setItem(STORAGE_KEY, id);
-}
-
-function clearJob() {
-  currentJobId = null;
-  localStorage.removeItem(STORAGE_KEY);
-}
-
-function rememberVideo(job) {
-  const id = job.jobId || job.id;
-  if (!id) return;
-
-  const history = getHistory();
-  const existing = history.find(
-    item => item.jobId === id
-  );
-
-  const updated = history.filter(
-    item => item.jobId !== id
-  );
-
-  updated.unshift({
-    jobId: id,
-    url: job.url || existing?.url || null,
-    title: job.title || existing?.title || 'Completed Music Video',
-    savedAt: existing?.savedAt || new Date().toISOString()
-  });
-
-  saveHistory(updated.slice(0, 50));
-  displayMyVideos();
-}
-
-function createVideoPlayer(url, container) {
-  container.replaceChildren();
-
-  if (!url) {
-    container.textContent =
-      'Video address unavailable. Try selecting this video and creating a customer download link.';
-    return;
-  }
-
-  const video = document.createElement('video');
-  video.src = url;
-  video.controls = true;
-  video.playsInline = true;
-  video.preload = 'metadata';
-
-  const link = document.createElement('a');
-  link.href = url;
-  link.target = '_blank';
-  link.rel = 'noopener';
-  link.textContent = 'Open or download video';
-
-  container.append(video, link);
-}
-
-function showResult(url) {
-  createVideoPlayer(url, $('result'));
-}
-
-function selectVideo(id) {
-  saveJob(id);
-
-  $('selectedVideoLabel').textContent =
-    'Selected video: ' + id;
-
-  $('customerLinkStatus').textContent =
-    'Video selected. Enter your administrator password to create a download link.';
-
-  $('customerLinkResult').replaceChildren();
-}
-
-
-async function watchSavedVideo(id, container) {
-  container.textContent = 'Loading video...';
-
-  try {
-    const response = await fetch(
-      '/api/jobs/' + encodeURIComponent(id),
-      { cache: 'no-store' }
-    );
-
-    const job = await response.json();
-
-    if (!response.ok) {
-      throw new Error(job.error || 'Could not load video.');
-    }
-
-    if (job.status !== 'completed') {
-      throw new Error('This video is not completed yet.');
-    }
-
-         const adminKey = adminKeyInput.value.trim();
-
-    if (!adminKey) {
-      throw new Error('Administrator password is required.');
-    }
-
-    const previewResponse = await fetch(
-      '/api/jobs/' + encodeURIComponent(id) + '/preview-link',
-      {
-        method: 'POST',
-        headers: {
-          'X-Video-Admin-Key': adminKey
-        }
-      }
-    );
-
-    const preview = await previewResponse.json();
-
-    if (!previewResponse.ok) {
-      throw new Error(
-        preview.error || 'Unable to create video preview.'
-      );
-    }
-
-    const url = preview.url;
-
-    if (!url) {
-      throw new Error('Preview address unavailable.');
-    }
-
-    createVideoPlayer(url, container);
-
-  } catch (error) {
-    container.textContent =
-      'Unable to play video: ' + error.message;
-  }
-}
-
-
-function displayMyVideos() {
-  const list = $('myVideosList');
-  list.replaceChildren();
-
-  const history = getHistory();
-
-  if (!history.length) {
-    list.textContent = 'No saved videos yet.';
-    return;
-  }
-
-  history.forEach((item, index) => {
-    if (!item.jobId) return;
-
-    const card = document.createElement('div');
-    card.className = 'video-item';
-
-    const title = document.createElement('h3');
-    title.textContent = item.title || 'Video ' + (index + 1);
-
-    const date = document.createElement('p');
-    date.className = 'note';
-    date.textContent = item.savedAt
-      ? 'Saved: ' + new Date(item.savedAt).toLocaleString()
-      : 'Completed video';
-
-    const playerArea = document.createElement('div');
-
-    const watchButton = document.createElement('button');
-    watchButton.type = 'button';
-    watchButton.textContent = '▶ Watch Video';
-
-    watchButton.addEventListener('click', () => {
-      watchSavedVideo(item.jobId, playerArea);
-    });
-
-    const selectButton = document.createElement('button');
-    selectButton.type = 'button';
-    selectButton.className = 'secondary';
-    selectButton.textContent = 'Select for Customer Download';
-
-    selectButton.addEventListener('click', () => {
-      selectVideo(item.jobId);
-      $('customerLinkPanel').scrollIntoView({
-        behavior: 'smooth'
-      });
-    });
-
-    const deleteButton = document.createElement('button');
-    deleteButton.type = 'button';
-    deleteButton.className = 'danger';
-    deleteButton.textContent = 'Delete Video';
-
-    deleteButton.addEventListener('click', async () => {
-      const deleteKey = window.prompt(
-        'Enter your private video deletion password:'
-      );
-
-      if (!deleteKey) return;
-
-      if (!window.confirm(
-        'Delete this video from the server? This cannot be undone.'
-      )) return;
-
-      deleteButton.disabled = true;
-
-      try {
-        const response = await fetch(
-          '/api/jobs/' + encodeURIComponent(item.jobId),
-          {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ deleteKey })
-          }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Deletion failed.');
-        }
-
-        saveHistory(
-          getHistory().filter(
-            video => video.jobId !== item.jobId
-          )
-        );
-
-        if (currentJobId === item.jobId) clearJob();
-
-        displayMyVideos();
-        alert('Video deleted successfully.');
-      } catch (error) {
-        alert('Deletion failed: ' + error.message);
-        deleteButton.disabled = false;
-      }
-    });
-
-    card.append(
-      title, date, watchButton, playerArea,
-      selectButton, deleteButton
-    );
-
-    list.appendChild(card);
-  });
-}
-
-function stopPolling() {
-  if (pollTimer !== null) {
-    clearTimeout(pollTimer);
-    pollTimer = null;
-  }
-}
-
-function showJob(job) {
-  $('progressPanel').style.display = 'block';
-
-  const premium = job.mode === 'premium';
-  const total = Number(job.totalScenes) || 0;
-  const done = Math.min(
-    total,
-    Math.max(0, Number(job.completedScenes) || 0)
-  );
-
-  const percent = total
-    ? Math.round(done / total * 100)
-    : job.status === 'completed' ? 100 : 0;
-
-  $('progressFill').style.width = percent + '%';
-
-  $('progressText').textContent = premium
-    ? 'Premium Singing Performance'
-    : 'Scenes completed: ' + done + ' of ' + total;
-
-  $('phase').textContent =
-    job.phase || job.status || 'Preparing';
-
-  resumeButton.style.display = 'none';
-
-  if (job.status === 'completed') {
-    stopPolling();
-    createButton.disabled = false;
-
-    setStatus('Your music video is ready!');
-    $('jobNote').textContent = 'Video completed.';
-
-    if (job.url) showResult(job.url);
-    rememberVideo(job);
-    return;
-  }
-
-  if (job.status === 'failed') {
-    stopPolling();
-    createButton.disabled = false;
-
-    setStatus(
-      'Video paused: ' + (job.error || 'Unknown error.')
-    );
-
-    resumeButton.style.display = 'block';
-    return;
-  }
-
-  createButton.disabled = true;
-  setStatus('Creating your music video...');
-}
-
-async function checkJob() {
-  const id = currentJobId;
-  if (!id) return;
-
-  try {
-    const response = await fetch(
-      '/api/jobs/' + encodeURIComponent(id),
-      { cache: 'no-store' }
-    );
-
-    const job = await response.json();
-
-    if (id !== currentJobId) return;
-
-    if (!response.ok) {
-      throw new Error(job.error || 'Progress check failed.');
-    }
-
-    showJob(job);
-
-    if (job.status !== 'completed' &&
-        job.status !== 'failed') {
-      pollTimer = setTimeout(checkJob, 3000);
-    }
-  } catch (error) {
-    if (id !== currentJobId) return;
-
-    stopPolling();
-    createButton.disabled = false;
-    setStatus('Progress check: ' + error.message);
-
-    if (/not found/i.test(error.message)) {
-      clearJob();
-    } else {
-      pollTimer = setTimeout(checkJob, 10000);
-    }
-  }
-}
-
-form.addEventListener('submit', async event => {
-  event.preventDefault();
-
-  if (currentJobId) {
-    try {
-      const response = await fetch(
-        '/api/jobs/' + encodeURIComponent(currentJobId)
-      );
-
-      const previousJob = response.ok
-        ? await response.json()
-        : null;
-
-      if (previousJob?.status === 'completed') {
-        clearJob();
-      } else {
-        setStatus(
-          'Finish or resume your current job before starting another.'
-        );
-        return;
-      }
-    } catch (error) {
-      setStatus('Unable to check previous video.');
-      return;
-    }
-  }
-
-  if (!estimateReady || songSeconds === null) {
-    setStatus('Upload a valid song and wait for the estimate.');
-    return;
-  }
-
-  const key = adminPasswordInput.value.trim();
-
-  if (!key) {
-    setStatus('Administrator password required.');
-    adminPasswordInput.focus();
-    return;
-  }
-
-  const modeText = modeInput.value === 'premium'
-    ? 'Premium Singing Lip-Sync'
-    : 'Standard Cinematic';
-
-  const costText = estimatedCost === null
-    ? 'Cost estimate unavailable'
-    : '$' + estimatedCost.toFixed(2);
-
-  if (!window.confirm(
-    'Mode: ' + modeText +
-    '\nEstimated generation cost: ' + costText +
-    '\n\nActual charges may differ.' +
-    '\nRetries may consume credits.' +
-    '\n\nStart generating?'
-  )) return;
-
-  createButton.disabled = true;
-  $('result').replaceChildren();
-  setStatus('Uploading and starting video...');
-
-  try {
-    const dataToSend = new FormData(form);
-    dataToSend.set('adminPassword', key);
-
-    const response = await fetch('/api/create', {
-      method: 'POST',
-      headers: { 'X-Video-Admin-Key': key },
-      body: dataToSend
-    });
-
-    const type = response.headers.get('content-type') || '';
-
-    if (!type.includes('application/json')) {
-      throw new Error('Unexpected server response.');
-    }
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Video creation failed.');
-    }
-
-    if (!data.jobId) {
-      throw new Error('Server did not return a job ID.');
-    }
-
-    saveJob(data.jobId);
-    showJob(data);
-    stopPolling();
-    pollTimer = setTimeout(checkJob, 1500);
-  } catch (error) {
-    createButton.disabled = false;
-    setStatus('Unable to start video: ' + error.message);
-  }
-});
-
-resumeButton.addEventListener('click', async () => {
-  if (!currentJobId) return;
-
-  const key = adminPasswordInput.value.trim();
-
-  if (!key) {
-    setStatus('Enter your administrator password to resume.');
-    adminPasswordInput.focus();
-    return;
-  }
-
-  if (!window.confirm(
-    'Resume video? Retrying may incur charges.'
-  )) return;
-
-  resumeButton.disabled = true;
-
-  try {
-    const response = await fetch(
-      '/api/jobs/' + encodeURIComponent(currentJobId) + '/resume',
-      {
-        method: 'POST',
-        headers: { 'X-Video-Admin-Key': key }
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Resume failed.');
-    }
-
-    showJob(data);
-    stopPolling();
-    pollTimer = setTimeout(checkJob, 1500);
-  } catch (error) {
-    setStatus('Resume failed: ' + error.message);
-  } finally {
-    resumeButton.disabled = false;
-  }
-});
-
-$('customerLinkButton').addEventListener('click', async () => {
-  const id = currentJobId;
-  const key = adminKeyInput.value.trim();
-
-  if (!id) {
-    $('customerLinkStatus').textContent =
-      'Select a completed video first.';
-    return;
-  }
-
-  if (!key) {
-    $('customerLinkStatus').textContent =
-      'Enter your administrator password.';
-    return;
-  }
-
-  const button = $('customerLinkButton');
-  button.disabled = true;
-
-  $('customerLinkStatus').textContent =
-    'Creating private link...';
-
-  $('customerLinkResult').replaceChildren();
-
-  try {
-    const response = await fetch(
-      '/api/jobs/' + encodeURIComponent(id) + '/customer-link',
-      {
-        method: 'POST',
-        headers: { 'X-Video-Admin-Key': key }
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Link creation failed.');
-    }
-
-    const result = $('customerLinkResult');
-
-    const link = document.createElement('a');
-    link.href = data.url;
-    link.target = '_blank';
-    link.rel = 'noopener';
-    link.textContent = data.url;
-
-    const copyButton = document.createElement('button');
-    copyButton.type = 'button';
-    copyButton.textContent = 'Copy Customer Link';
-
-    copyButton.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(data.url);
-        $('customerLinkStatus').textContent = 'Link copied!';
-      } catch {
-        window.prompt('Copy this link:', data.url);
-      }
-    });
-
-    const download = document.createElement('a');
-    download.href = data.url;
-    download.target = '_blank';
-    download.rel = 'noopener';
-    download.textContent = '⬇ Download Video';
-    download.style.display = 'block';
-    download.style.marginTop = '15px';
-    download.style.padding = '14px';
-    download.style.background = '#0F6CBD';
-    download.style.color = 'white';
-    download.style.borderRadius = '10px';
-    download.style.textAlign = 'center';
-
-    result.append(link, copyButton, download);
-
-    $('customerLinkStatus').textContent =
-      'Private link created. Expires: ' +
-      new Date(data.expiresAt).toLocaleString();
-  } catch (error) {
-    $('customerLinkStatus').textContent = error.message;
-  } finally {
-    adminKeyInput.value = '';
-    button.disabled = false;
-  }
-});
-
-displayMyVideos();
-
-try {
-  const savedId = localStorage.getItem(STORAGE_KEY);
-
-  if (savedId && /^[0-9a-f-]{36}$/i.test(savedId)) {
-    currentJobId = savedId;
-    $('progressPanel').style.display = 'block';
-    checkJob();
-  }
-} catch {}
+updateCreationType();displayMyVideos();
+try{
+ const savedId=localStorage.getItem(STORAGE_KEY);
+ if(validId(savedId)){currentJobId=savedId;$('progressPanel').style.display='block';checkJob();}
+}catch{}
 </script>
 </body>
 </html>
