@@ -588,7 +588,64 @@ function selectVideo(id) {
   $('customerLinkResult').replaceChildren();
 }
 
+
 async function watchSavedVideo(id, container) {
+  container.textContent = 'Loading video...';
+
+  try {
+    const response = await fetch(
+      '/api/jobs/' + encodeURIComponent(id),
+      { cache: 'no-store' }
+    );
+
+    const job = await response.json();
+
+    if (!response.ok) {
+      throw new Error(job.error || 'Could not load video.');
+    }
+
+    if (job.status !== 'completed') {
+      throw new Error('This video is not completed yet.');
+    }
+
+         const adminKey = adminKeyInput.value.trim();
+
+    if (!adminKey) {
+      throw new Error('Administrator password is required.');
+    }
+
+    const previewResponse = await fetch(
+      '/api/jobs/' + encodeURIComponent(id) + '/preview-link',
+      {
+        method: 'POST',
+        headers: {
+          'X-Video-Admin-Key': adminKey
+        }
+      }
+    );
+
+    const preview = await previewResponse.json();
+
+    if (!previewResponse.ok) {
+      throw new Error(
+        preview.error || 'Unable to create video preview.'
+      );
+    }
+
+    const url = preview.url;
+
+    if (!url) {
+      throw new Error('Preview address unavailable.');
+    }
+
+    createVideoPlayer(url, container);
+
+  } catch (error) {
+    container.textContent =
+      'Unable to play video: ' + error.message;
+  }
+}
+
   container.textContent = 'Loading video...';
 
   try {
