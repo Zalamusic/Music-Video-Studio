@@ -417,6 +417,7 @@ async function generateStandard(s, dir, imageUrl) {
       `and continuity of emotions throughout the shot. ` +
       `Avoid robotic movement, unnatural gestures and ` +
             `Use believable human biomechanics and natural gravity. ` +
+      
       `Show realistic weight shifts, balance, momentum, ` +
       `foot placement and coordinated body movements. ` +
       `When falling, show natural loss of balance, impact, ` +
@@ -435,7 +436,18 @@ async function generateStandard(s, dir, imageUrl) {
       `No text, captions, logos, watermarks, ` +
       `music or dialogue.`;
 
-
+      `Follow the customer's requested physical actions precisely. ` +
+      `Perform actions in the exact sequence described. ` +
+      `Show natural anticipation, preparation, movement, ` +
+      `physical reaction and recovery for each action. ` +
+      `Interact with the exact objects and obstacles requested. ` +
+      `Do not substitute a different action or obstacle. ` +
+      `For jumps, show realistic takeoff, airborne movement, ` +
+      `arm reactions, landing and balance recovery. ` +
+      `For falls, show natural stumbling, loss of balance, ` +
+      `protective reflexes, impact and recovery. ` +
+      `Preserve realistic timing, gravity and momentum. ` +
+      `Keep movements physically connected and believable. ` +
     const raw = path.join(
       dir,
       `raw-${i}.mp4`
