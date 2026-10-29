@@ -187,58 +187,65 @@ const cameraShots = [
   'Slow cinematic dolly-in toward the subject',
   'Side-tracking shot with layered foreground'
 ];
+
 function scenePrompt(s, i) {
   const idea = sceneIdeas[(i - 1) % sceneIdeas.length];
   const cameraDirection = cameraShots[(i - 1) % cameraShots.length];
+
   const identity = s.creationType === 'prompt'
-    ? `Maintain consistent character appearance across scenes. ` +
-      `Follow the customer's character descriptions precisely. `
-    : `Preserve the recognizable identity of the person in the uploaded ` +
-      `reference photograph. `;
+    ? `CHARACTER CONTINUITY: Keep every recurring character
+       visually consistent throughout the scene and across
+       subsequent scenes.`
+    : `CRITICAL CHARACTER IDENTITY LOCK:
+       The uploaded reference photograph is the authoritative
+       visual identity of the main character.
+       Reproduce the same recognizable person throughout
+       every frame of this video.
+       Preserve facial structure, eyes, nose, lips, jawline,
+       skin tone, hair color, hairstyle, hair length and
+       body proportions.
+       Do not invent a replacement actor.
+       Do not redesign the character when the camera moves,
+       the lighting changes, or the location changes.
+       The character seen in the opening frame must be
+       the exact same character in every subsequent frame.
+       Maintain identity during camera pans, zooms,
+       close-ups, rotations and scene transitions.
+       Clothing may change only when requested.
+       No face morphing, hairstyle changes or identity drift.`;
+
   return (
     `Professional cinematic music video for "${s.title}". ` +
     `Scene ${i} of ${s.totalScenes}. ` +
+    `${identity} ` +
     `PRIMARY DIRECTOR INSTRUCTIONS: ${s.concept}. ` +
-    `Follow the customer's requested setting, actions, character behavior, ` +
-    `atmosphere and visual style. Customer instructions take priority over ` +
-    `suggestions. Do not introduce conflicting locations or actions. ` +
+    `Follow the customer's requested setting, actions, character ` +
+    `behavior, atmosphere and visual style. ` +
+    `Do not introduce conflicting locations or actions. ` +
     `Additional scene inspiration, only if compatible: ${idea}. ` +
     `Camera direction: ${cameraDirection}. ` +
-    `ACTION SEQUENCE AND PHYSICAL REALISM: Follow the requested actions ` +
-    `in their described order. Show clear preparation, action, physical ` +
-    `reaction and natural recovery. Interact with the correct objects ` +
-    `and obstacles. Do not substitute unrelated actions or obstacles. ` +
-    `Use believable gravity, momentum, balance, weight shifts, foot ` +
-    `placement and coordinated movement. For running, show natural strides, ` +
-    `arm movement and realistic changes in speed and direction. For jumping, ` +
-    `show preparation, takeoff, airborne movement, instinctive arm reactions, ` +
-    `landing and balance recovery. For falling, show loss of balance, ` +
-    `protective reflexes, realistic impact and recovery. Maintain continuous ` +
-    `and physically believable motion. ` +
-    `NATURAL HUMAN PERFORMANCE: Direct believable facial expressions, ` +
-    `emotions, body language, gestures and human mannerisms. Show appropriate ` +
-    `surprise, fear, joy, sadness, anger, excitement, pain or relief when ` +
-    `requested. Include natural blinking, breathing, eye movement, posture ` +
-    `changes and subtle emotional transitions. Show instinctive reactions ` +
-    `to events and surroundings. Use realistic tears, sweat, trembling, ` +
-    `shivering, laughter and fatigue when appropriate. Respond naturally ` +
-    `to rain, wind, sunlight, water, temperature and physical contact. ` +
-    `Avoid robotic gestures and exaggerated expressions unless requested. ` +
-    `CHARACTER IDENTITY AND CONTINUITY: ${identity}` +
-    `Maintain consistent facial features, skin tone, hairstyle, hair length, ` +
-    `body proportions and clothing. Avoid face changes, distorted anatomy, ` +
-    `extra limbs, unnatural motion and sudden appearance changes. ` +
-    `CINEMATIC DIRECTION: Use professional composition, lighting, camera ` +
-    `movement and visual storytelling appropriate to the scene. Support ` +
-    `aerial views, sweeping camera movement, close-ups and dynamic perspectives ` +
-    `when requested. Allow realistic, fantasy, science fiction, anime, ` +
-    `3D animation and imaginative environments when requested. Begin with ` +
-    `a clearly composed opening frame. Avoid fade-ins or slow reveals unless ` +
-    `requested. Make each scene visually distinct while maintaining continuity ` +
-    `with the customer's creative vision. No text, captions, logos, ` +
-    `watermarks, music or dialogue.`
+    `ACTION SEQUENCE AND PHYSICAL REALISM: Follow requested ` +
+    `actions in their described order. Show natural preparation, ` +
+    `movement, reaction and recovery. Maintain realistic gravity, ` +
+    `momentum, balance, posture and physical interactions. ` +
+    `NATURAL HUMAN PERFORMANCE: Show believable facial ` +
+    `expressions, breathing, blinking, eye movement, gestures, ` +
+    `emotions and body language. Avoid robotic movements. ` +
+    `CHARACTER CONTINUITY: Preserve consistent facial features, ` +
+    `skin tone, hairstyle, body proportions and clothing. ` +
+    `Avoid distorted anatomy, extra limbs and sudden changes. ` +
+    `CINEMATIC DIRECTION: Use professional composition, lighting, ` +
+    `camera movement and visual storytelling. Support aerial ` +
+    `views, sweeping movements, close-ups and dynamic perspectives ` +
+    `when requested. Support realistic, fantasy, science fiction, ` +
+    `anime and 3D animation environments. ` +
+    `Begin with a clearly composed opening frame. ` +
+    `Avoid fade-ins unless requested. ` +
+    `Make each scene visually distinct while preserving continuity. ` +
+    `No text, captions, logos, watermarks, music or dialogue.`
   );
 }
+
 
 async function generateStandard(s, dir, imageUrl) {
   for (let i = 1; i <= s.totalScenes; i++) {
