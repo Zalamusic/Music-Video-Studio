@@ -270,7 +270,10 @@ async function generateStandard(s, dir, imageUrl) {
       const promptOnly = s.creationType === 'prompt';
       const model = promptOnly ? TEXT_MODEL : MODEL;
       const input = {
-        prompt: scenePrompt(s, i),
+        prompt: applyCharacterIdentityToPrompt(
+  scenePrompt(s, i),
+  { hasReferencePhoto: s.creationType !== 'prompt' }
+),
         duration: SCENE_SECONDS,
         resolution: '480P',
         prompt_expansion_mode: 'disabled'
