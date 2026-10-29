@@ -359,6 +359,29 @@ async function generate(id) {
   } catch (e) {
     console.error('Video job failed:', id, e);
     if (s) {
+      
+    s.status = 'completed';
+    s.phase = 'Video ready';
+    s.url = null;
+    await saveState(s);
+
+    // REALISM ENGINE — VIDEO READY FOR EVALUATION
+    try {
+      s.realism = {
+        status: 'pending',
+        score: null,
+        threshold: 90,
+        message: 'Awaiting automatic visual evaluation'
+      };
+
+      await saveState(s);
+      console.log('Realism evaluation pending for job:', id);
+    } catch (realismError) {
+      console.error('Realism preparation error:', realismError);
+    }
+  } catch (e) {
+    console.error('Video job failed:', id, e);
+    if (s) {
       s.status = 'failed';
       s.phase = 'Paused — ready to retry';
       s.error = e.message || 'Video creation failed';
@@ -368,6 +391,7 @@ async function generate(id) {
     active.delete(id);
   }
 }
+
 
 app.post('/api/create', upload.fields([
   { name: 'audio', maxCount: 1 },
