@@ -722,7 +722,43 @@ function validCustomerEmail(email) {
 app.post('/api/customer-orders', (req, res) => {
   res.status(503).json({ error: 'Customer orders are temporarily disabled.' });
 });
+// REALISM ENGINE — ADMINISTRATOR DASHBOARD
 
+app.get('/api/realism/stats', async (req, res) => {
+  if (!isVideoAdmin(req)) {
+    return res.status(403).json({
+      error: 'Administrator password required.'
+    });
+  }
+
+  try {
+    const stats = await getRealismStats();
+    res.json({ ok: true, ...stats });
+  } catch (error) {
+    console.error('Realism stats error:', error);
+    res.status(500).json({
+      error: 'Unable to load realism statistics.'
+    });
+  }
+});
+
+app.get('/api/realism/recommendations', async (req, res) => {
+  if (!isVideoAdmin(req)) {
+    return res.status(403).json({
+      error: 'Administrator password required.'
+    });
+  }
+
+  try {
+    const recommendations = await recommendTechniques(5);
+    res.json({ ok: true, recommendations });
+  } catch (error) {
+    console.error('Realism recommendations error:', error);
+    res.status(500).json({
+      error: 'Unable to load recommendations.'
+    });
+  }
+});
 app.listen(PORT, () => {
   console.log(`Zala QI's World running on port ${PORT}`);
 });
