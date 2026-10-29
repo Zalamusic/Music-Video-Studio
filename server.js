@@ -294,10 +294,38 @@ async function generateStandard(s, dir, imageUrl) {
     const temp = clip + '.partial.mp4';
     await normalizeVideo(raw, temp, s.format);
     if ((await duration(temp)) < 2) throw new Error(`Generated scene ${i} was too short.`);
-    await fs.rename(temp, clip);
-    s.completedScenes = i;
-    await saveState(s);
-    await fs.rm(raw, { force: true });
+    
+await fs.rename(temp, clip);
+s.completedScenes = i;
+await saveState(s);
+
+// VISUAL CONTINUITY ENGINE
+// Capture sample frames without interrupting video creation.
+try {
+  const sceneDuration = await duration(clip);
+
+  await captureSceneFrames({
+    jobDirectory: dir,
+    sceneNumber: i,
+    videoFile: clip,
+    durationSeconds: sceneDuration
+  });
+
+  console.log(
+    'Visual continuity frames captured:',
+    s.id,
+    'scene',
+    i
+  );
+} catch (continuityError) {
+  console.error(
+    'Visual continuity capture failed:',
+    continuityError
+  );
+}
+
+await fs.rm(raw, { force: true });
+
   }
   s.phase = 'Combining scenes and adding song audio';
   await saveState(s);
