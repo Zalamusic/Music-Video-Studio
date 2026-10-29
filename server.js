@@ -416,6 +416,15 @@ async function generateStandard(s, dir, imageUrl) {
       `Maintain realistic anatomy, physics, facial consistency ` +
       `and continuity of emotions throughout the shot. ` +
       `Avoid robotic movement, unnatural gestures and ` +
+            `Use believable human biomechanics and natural gravity. ` +
+      `Show realistic weight shifts, balance, momentum, ` +
+      `foot placement and coordinated body movements. ` +
+      `When falling, show natural loss of balance, impact, ` +
+      `body reactions and believable recovery movements. ` +
+      `Maintain consistent facial identity, skin tone, ` +
+      `hairstyle, body proportions and clothing throughout. ` +
+      `Avoid unnatural limb movements, distorted anatomy, ` +
+      `sudden appearance changes and unrealistic motion. ` +
       `exaggerated expressions unless specifically requested. ` +
 `Begin immediately with a fully visible, clearly composed ` +
 `shot. No fade-in, no slow reveal, no gradual appearance. ` +
