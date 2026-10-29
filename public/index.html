@@ -285,6 +285,30 @@ const $ = id => document.getElementById(id);
 const form = $('videoForm');
 const audioInput = $('audio');
 const modeInput = $('mode');
+  
+const creationTypeInput = $('creationType');
+const photoInput = $('photo');
+
+function updateCreationType() {
+  const promptOnly = creationTypeInput.value === 'prompt';
+  const premium = modeInput.value === 'premium';
+
+  if (promptOnly && premium) {
+    modeInput.value = 'standard';
+  }
+
+  $('photoUploadSection').style.display =
+    promptOnly ? 'none' : 'block';
+
+  photoInput.required = !promptOnly;
+
+  if (promptOnly) {
+    photoInput.value = '';
+  }
+
+  updateModeNote();
+}
+
 const createButton = $('createButton');
 const resumeButton = $('resumeButton');
 const adminPasswordInput = $('adminPassword');
