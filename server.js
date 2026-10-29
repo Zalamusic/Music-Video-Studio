@@ -390,64 +390,282 @@ async function generateStandard(s, dir, imageUrl) {
     const cameraDirection =
       cameraShots[(i - 1) % cameraShots.length];
 
+    
+
+
+
+
+
+
     const prompt =
       `Professional cinematic music video for "${s.title}". ` +
       `Scene ${i} of ${s.totalScenes}. ` +
-      `Director's creative vision: ${s.concept}. ` +
-            `The customer's requested location and actions take priority. ` +
-      `Scene concept (use only if compatible with the customer's vision): ${idea}. ` +
+
+      `PRIMARY DIRECTOR INSTRUCTIONS: ${s.concept}. ` +
+      `Follow the customer's requested setting, actions, ` +
+      `character behavior, atmosphere and visual style. ` +
+      `Customer instructions take priority over suggestions. ` +
+      `Do not introduce conflicting locations or actions. ` +
+
+      `Additional scene inspiration, only if compatible: ${idea}. ` +
       `Camera direction: ${cameraDirection}. ` +
-      `Maintain the exact recognizable identity of the ` +
-      `person in the uploaded reference photograph. ` +
-      `Preserve facial features, skin tone, hairstyle, ` +
-      `hair length and overall appearance. ` +
-      `Do not change the person's identity or ethnicity. ` +
-      `Use sophisticated cinematic framing, realistic ` +
-`lighting, natural movement and visual storytelling. ` +
-            `Direct believable human emotions, facial expressions, ` +
-      `body language, gestures and natural mannerisms. ` +
-      `Express the emotions requested by the customer with ` +
-      `realistic intensity and subtle emotional transitions. ` +
-      `Use natural blinking, breathing, posture, eye movement, ` +
-      `walking, running, dancing and physical reactions. ` +
-      `Simulate realistic tears, sweat, rain, wind, wet skin, ` +
-      `clothing movement and environmental interactions ` +
-      `when appropriate to the requested scene. ` +
-      `Maintain realistic anatomy, physics, facial consistency ` +
-      `and continuity of emotions throughout the shot. ` +
-      `Avoid robotic movement, unnatural gestures and ` +
-            `Use believable human biomechanics and natural gravity. ` +
-      
-      `Show realistic weight shifts, balance, momentum, ` +
-      `foot placement and coordinated body movements. ` +
-      `When falling, show natural loss of balance, impact, ` +
-      `body reactions and believable recovery movements. ` +
-      `Maintain consistent facial identity, skin tone, ` +
-      `hairstyle, body proportions and clothing throughout. ` +
-      `Avoid unnatural limb movements, distorted anatomy, ` +
-      `sudden appearance changes and unrealistic motion. ` +
-      `exaggerated expressions unless specifically requested. ` +
-`Begin immediately with a fully visible, clearly composed ` +
-`shot. No fade-in, no slow reveal, no gradual appearance. ` +
-`The opening frame should show the intended scene clearly. ` +
-`Each scene should feel like a distinct movie shot. ` +
-      `Allow imaginative environments, fantasy worlds, ` +
-      `science fiction and animation when requested. ` +
+
+      `ACTION SEQUENCE AND PHYSICAL REALISM: ` +
+      `Follow the requested actions in their described order. ` +
+      `Show clear preparation, action, physical reaction ` +
+      `and natural recovery. ` +
+      `Interact with the correct objects and obstacles. ` +
+      `Do not substitute unrelated actions or obstacles. ` +
+      `Use believable gravity, momentum, balance, weight ` +
+      `shifts, foot placement and coordinated movement. ` +
+      `For running, show natural strides, arm movement ` +
+      `and realistic changes in speed and direction. ` +
+      `For jumping, show preparation, takeoff, airborne ` +
+      `movement, instinctive arm reactions, landing ` +
+      `and balance recovery. ` +
+      `For falling, show loss of balance, protective ` +
+      `reflexes, realistic impact and recovery. ` +
+      `Maintain continuous and physically believable motion. ` +
+
+      `NATURAL HUMAN PERFORMANCE: ` +
+      `Direct believable facial expressions, emotions, ` +
+      `body language, gestures and human mannerisms. ` +
+      `Show appropriate surprise, fear, joy, sadness, ` +
+      `anger, excitement, pain or relief when requested. ` +
+      `Include natural blinking, breathing, eye movement, ` +
+      `posture changes and subtle emotional transitions. ` +
+      `Show instinctive reactions to events and surroundings. ` +
+      `Use realistic tears, sweat, trembling, shivering, ` +
+      `laughter and fatigue when appropriate. ` +
+      `Respond naturally to rain, wind, sunlight, water, ` +
+      `temperature and physical contact. ` +
+      `Avoid robotic gestures and exaggerated expressions ` +
+      `unless the customer specifically requests them. ` +
+
+      `CHARACTER IDENTITY AND CONTINUITY: ` +
+      `Preserve the recognizable identity of the person ` +
+      `in the uploaded reference photograph. ` +
+      `Maintain consistent facial features, skin tone, ` +
+      `hairstyle, hair length, body proportions and clothing. ` +
+      `Avoid face changes, distorted anatomy, extra limbs, ` +
+      `unnatural motion and sudden appearance changes. ` +
+
+      `CINEMATIC DIRECTION: ` +
+      `Use professional composition, lighting, camera movement ` +
+      `and visual storytelling appropriate to the scene. ` +
+      `Support aerial views, sweeping camera movement, ` +
+      `close-ups and dynamic perspectives when requested. ` +
+      `Allow realistic, fantasy, science fiction, anime, ` +
+      `3D animation and imaginative environments when requested. ` +
+      `Begin with a clearly composed opening frame. ` +
+      `Avoid fade-ins or slow reveals unless requested. ` +
+      `Make each scene visually distinct while maintaining ` +
+      `continuity with the customer's creative vision. ` +
       `No text, captions, logos, watermarks, ` +
       `music or dialogue.`;
 
-      `Follow the customer's requested physical actions precisely. ` +
-      `Perform actions in the exact sequence described. ` +
-      `Show natural anticipation, preparation, movement, ` +
-      `physical reaction and recovery for each action. ` +
-      `Interact with the exact objects and obstacles requested. ` +
-      `Do not substitute a different action or obstacle. ` +
-      `For jumps, show realistic takeoff, airborne movement, ` +
-      `arm reactions, landing and balance recovery. ` +
-      `For falls, show natural stumbling, loss of balance, ` +
-      `protective reflexes, impact and recovery. ` +
-      `Preserve realistic timing, gravity and momentum. ` +
-      `Keep movements physically connected and believable. ` +
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
     const raw = path.join(
       dir,
       `raw-${i}.mp4`
