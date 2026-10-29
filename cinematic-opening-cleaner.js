@@ -1,4 +1,12 @@
 
+/**
+ * Zala QI's World
+ * Cinematic Opening Cleaner v2
+ *
+ * Detects abrupt opening-frame changes and short freezes.
+ * Uses FFmpeg only; no paid API.
+ */
+
 import { spawn } from 'node:child_process';
 
 function runFFmpeg(args) {
@@ -8,27 +16,82 @@ function runFFmpeg(args) {
     });
 
     let stderr = '';
+    let settled = false;
 
     child.stderr.on('data', chunk => {
-      stderr = (stderr + chunk.toString()).slice(-10000);
+      stderr = (
+        stderr + chunk.toString()
+      ).slice(-20000);
     });
 
-    child.on('error', reject);
+    child.on('error', error => {
+      if (!settled) {
+        settled = true;
+        reject(error);
+      }
+    });
 
     child.on('close', code => {
-      if (code === 0) resolve(stderr);
-      else reject(new Error(stderr.slice(-1500)));
+      if (settled) return;
+      settled = true;
+
+      if (code === 0) {
+        resolve(stderr);
+      } else {
+        reject(new Error(
+          stderr.slice(-2000) || 'FFmpeg failed'
+        ));
+      }
     });
   });
 }
 
+/**
+ * Detect a strong visual cut near the beginning.
+ *
+ * This catches cases where the uploaded photograph
+ * appears for one frame before the generated scene.
+ */
+async function detectOpeningFlash(videoFile) {
+  const output = await runFFmpeg([
+    '-hide_banner',
+    '-i', videoFile,
+    '-t', '0.35',
+    '-vf',
+    "select='gt(scene,0.45)',showinfo",
+    '-an',
+    '-f', 'null',
+    '-'
+  ]);
+
+  const match = output.match(
+    /Parsed_showinfo[^\n]*pts_time:\s*([\d.]+)/
+  );
+
+  if (!match) return 0;
+
+  const time = Number(match[1]);
+
+  if (!Number.isFinite(time)) return 0;
+
+  // Avoid removing intentional opening sequences.
+  if (time < 0.02 || time > 0.25) {
+    return 0;
+  }
+
+  return time;
+}
+
+/**
+ * Detect a short frozen opening.
+ */
 async function detectOpeningFreeze(videoFile) {
   const output = await runFFmpeg([
     '-hide_banner',
     '-i', videoFile,
+    '-t', '2',
     '-vf',
     'freezedetect=n=-50dB:d=0.15',
-    '-t', '2',
     '-an',
     '-f', 'null',
     '-'
@@ -53,16 +116,46 @@ async function detectOpeningFreeze(videoFile) {
   }
 
   if (freezeStart > 0.12) return 0;
-  if (freezeEnd < 0.2 || freezeEnd > 1.5) return 0;
+  if (freezeEnd < 0.2 || freezeEnd > 1.5) {
+    return 0;
+  }
 
   return Math.min(freezeEnd + 0.04, 1.5);
 }
 
+/**
+ * Clean and normalize a generated video.
+ */
 async function cleanOpening(input, output, format) {
-  const trimSeconds = await detectOpeningFreeze(input);
+  let trimSeconds = 0;
+  let reason = 'none';
 
-  const width = format === 'landscape' ? 1280 : 720;
-  const height = format === 'landscape' ? 720 : 1280;
+  try {
+    const flash = await detectOpeningFlash(input);
+
+    if (flash > 0) {
+      trimSeconds = flash;
+      reason = 'opening-frame-change';
+    } else {
+      const freeze = await detectOpeningFreeze(input);
+
+      if (freeze > 0) {
+        trimSeconds = freeze;
+        reason = 'frozen-opening';
+      }
+    }
+  } catch (error) {
+    console.error(
+      'Opening detection unavailable:',
+      error.message
+    );
+  }
+
+  const width = format === 'landscape'
+    ? 1280 : 720;
+
+  const height = format === 'landscape'
+    ? 720 : 1280;
 
   const args = [
     '-hide_banner',
@@ -70,7 +163,10 @@ async function cleanOpening(input, output, format) {
   ];
 
   if (trimSeconds > 0) {
-    args.push('-ss', trimSeconds.toFixed(3));
+    args.push(
+      '-ss',
+      trimSeconds.toFixed(6)
+    );
   }
 
   args.push(
@@ -90,8 +186,13 @@ async function cleanOpening(input, output, format) {
 
   return {
     trimmed: trimSeconds > 0,
-    trimSeconds
+    trimSeconds,
+    reason
   };
 }
 
-export { cleanOpening, detectOpeningFreeze };
+export {
+  cleanOpening,
+  detectOpeningFlash,
+  detectOpeningFreeze
+};
