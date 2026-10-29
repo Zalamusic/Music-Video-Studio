@@ -1036,7 +1036,8 @@ app.post(
         format: req.body.format === 'landscape'
           ? 'landscape'
           : 'vertical',
-        photoMime: photo.mimetype,
+                creationType,
+        photoMime: photo ? photo.mimetype : null,
         mode,
         estimatedGenerationCostUSD:
           quote.estimatedGenerationCostUSD,
