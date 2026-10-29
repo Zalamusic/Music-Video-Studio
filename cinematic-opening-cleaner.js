@@ -75,7 +75,7 @@ async function detectOpeningFlash(videoFile) {
   if (!Number.isFinite(time)) return 0;
 
   // Avoid removing intentional opening sequences.
-  if (time < 0.02 || time > 0.25) {
+  if (time < 0.02 || time > 0.65) {
     return 0;
   }
 
