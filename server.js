@@ -149,16 +149,46 @@ async function downloadVideo(url, file) {
   if (!response.ok) throw new Error(`Could not download generated video (${response.status}).`);
   await fs.writeFile(file, Buffer.from(await response.arrayBuffer()));
 }
+
 async function normalizeVideo(input, output, format) {
-  const width = format === 'landscape' ? 1280 : 720;
-  const height = format === 'landscape' ? 720 : 1280;
-  await execute('ffmpeg', [
-    '-y', '-i', input, '-vf',
-    `scale=${width}:${height}:force_original_aspect_ratio=increase,` +
-      `crop=${width}:${height},setsar=1,fps=24`,
-    '-an', '-c:v', 'libx264', '-preset', 'veryfast',
-    '-pix_fmt', 'yuv420p', '-movflags', '+faststart', output
-  ]);
+  try {
+    const result = await cleanOpening(
+      input,
+      output,
+      format
+    );
+
+    console.log(
+      'Cinematic Opening Cleaner:',
+      result.trimmed
+        ? `Removed ${result.trimSeconds.toFixed(2)} seconds`
+        : 'No unwanted frozen opening detected'
+    );
+  } catch (error) {
+    console.error(
+      'Opening cleaner unavailable; using normal processing:',
+      error
+    );
+
+    const width = format === 'landscape' ? 1280 : 720;
+    const height = format === 'landscape' ? 720 : 1280;
+
+    await execute('ffmpeg', [
+      '-y',
+      '-i', input,
+      '-vf',
+      `scale=${width}:${height}:force_original_aspect_ratio=increase,` +
+        `crop=${width}:${height},setsar=1,fps=24`,
+      '-an',
+      '-c:v', 'libx264',
+      '-preset', 'veryfast',
+      '-pix_fmt', 'yuv420p',
+      '-movflags', '+faststart',
+      output
+    ]);
+  }
+}
+
 }
 async function addOriginalSong(video, song, seconds, final) {
   await execute('ffmpeg', [
