@@ -323,11 +323,62 @@ async function generateStandard(s, dir, imageUrl) {
         resolution: '480P',
         prompt_expansion_mode: 'disabled'
       };
-      if (promptOnly) {
-        input.aspect_ratio = s.format === 'landscape' ? '16:9' : '9:16';
-      } else {
-        input.image_url = imageUrl;
+      
+if (promptOnly) {
+  input.aspect_ratio =
+    s.format === 'landscape' ? '16:9' : '9:16';
+} else {
+  s.phase = `Preparing cinematic image for scene ${i}`;
+  await saveState(s);
+
+  const preparedImageFile = path.join(
+    dir,
+    `prepared-scene-${i}.json`
+  );
+
+  let preparedImageUrl = null;
+
+  if (await exists(preparedImageFile)) {
+    try {
+      const saved = JSON.parse(
+        await fs.readFile(preparedImageFile, 'utf8')
+      );
+
+      if (
+        typeof saved.imageUrl === 'string' &&
+        saved.imageUrl.startsWith('https://')
+      ) {
+        preparedImageUrl = saved.imageUrl;
       }
+    } catch (error) {
+      console.error(
+        'Unable to read prepared image:',
+        error
+      );
+    }
+  }
+
+  if (!preparedImageUrl) {
+    const prepared = await prepareSceneImage({
+      referenceImageUrl: imageUrl,
+      sceneDescription: scenePrompt(s, i),
+      format: s.format
+    });
+
+    preparedImageUrl = prepared.imageUrl;
+
+    await fs.writeFile(
+      preparedImageFile,
+      JSON.stringify({
+        imageUrl: preparedImageUrl,
+        createdAt: new Date().toISOString()
+      })
+    );
+  }
+
+  input.image_url = preparedImageUrl;
+}
+
       const result = await fal.subscribe(model, { input, logs: false });
       const url = result?.data?.video?.url || result?.video?.url;
       if (!url) throw new Error(`Provider returned no video for scene ${i}.`);
