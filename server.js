@@ -444,8 +444,11 @@ async function generateStandard(s, dir, imageUrl) {
       `unless the customer specifically requests them. ` +
 
       `CHARACTER IDENTITY AND CONTINUITY: ` +
-      `Preserve the recognizable identity of the person ` +
-      `in the uploaded reference photograph. ` +
+        (s.creationType === 'prompt'
+    ? `Maintain consistent character appearance across scenes. ` +
+      `Follow the customer's character descriptions precisely. `
+    : `Preserve the recognizable identity of the person ` +
+      `in the uploaded reference photograph. `) +
       `Maintain consistent facial features, skin tone, ` +
       `hairstyle, hair length, body proportions and clothing. ` +
       `Avoid face changes, distorted anatomy, extra limbs, ` +
