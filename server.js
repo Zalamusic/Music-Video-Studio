@@ -673,7 +673,9 @@ async function generateStandard(s, dir, imageUrl) {
     );
 
     if (!(await exists(raw))) {
-      const result = await fal.subscribe(MODEL, {
+      const result = await fal.subscribe(
+  s.creationType === 'prompt' ? TEXT_MODEL : MODEL,
+  {
         input: {
           prompt,
           image_url: imageUrl,
