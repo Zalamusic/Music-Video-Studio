@@ -188,8 +188,6 @@ async function normalizeVideo(input, output, format) {
     ]);
   }
 }
-
-}
 async function addOriginalSong(video, song, seconds, final) {
   await execute('ffmpeg', [
     '-y', '-i', video, '-i', song, '-map', '0:v:0', '-map', '1:a:0',
