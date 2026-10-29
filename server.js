@@ -364,17 +364,25 @@ async function generate(id) {
       throw new Error('FAL_KEY is missing in Render settings.');
     }
 
-    const dir = jobDir(id);
-    let imageUrl = null;
+    
+const dir = jobDir(id);
+let imageUrl = null;
 
-    if (s.creationType !== 'prompt') {
-      const imageBytes = await fs.readFile(
-        path.join(dir, 'reference')
-      );
-      imageUrl =
-        `data:${s.photoMime || 'image/jpeg'};base64,` +
-        imageBytes.toString('base64');
-    }
+if (s.creationType !== 'prompt') {
+  const character = await prepareCharacterReference({
+    jobDirectory: dir,
+    mimeType: s.photoMime || 'image/jpeg'
+  });
+
+  imageUrl = character.imageUrl;
+
+  console.log(
+    'Character reference prepared for job:',
+    s.id
+  );
+}
+
+    
 
     if (s.mode === 'premium') {
       await generatePremium(s, dir, imageUrl);
