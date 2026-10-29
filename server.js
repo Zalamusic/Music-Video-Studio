@@ -866,9 +866,17 @@ async function generate(id) {
       path.join(dir, 'reference')
     );
 
-    const imageUrl =
-      `data:${s.photoMime};base64,` +
-      imageBytes.toString('base64');
+        let imageUrl = null;
+
+    if (s.creationType !== 'prompt') {
+      const imageBytes = await fs.readFile(
+        path.join(dir, 'reference')
+      );
+
+      imageUrl =
+        `data:${s.photoMime};base64,` +
+        imageBytes.toString('base64');
+    }
 
     if (s.mode === 'premium') {
       await generatePremium(s, dir, imageUrl);
