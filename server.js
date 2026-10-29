@@ -797,25 +797,13 @@ async function generatePremium(s, dir, imageUrl) {
       'Generating synchronized singing performance';
     await saveState(s);
 
-          const promptOnly = s.creationType === 'prompt';
-
-      const model = promptOnly ? TEXT_MODEL : MODEL;
-
-      const input = {
-        prompt,
-        duration: SCENE_SECONDS,
-        resolution: '480P',
-        prompt_expansion_mode: 'disabled'
-      };
-
-      if (!promptOnly) {
-        input.image_url = imageUrl;
-      }
-
-      const result = await fal.subscribe(model, {
-        input,
-        logs: false
-      });
+          const result = await fal.subscribe(LIP_MODEL, {
+  input: {
+    image_url: imageUrl,
+    audio_url: audioUrl
+  },
+  logs: false
+});
 
     const url =
       result?.data?.video?.url ||
