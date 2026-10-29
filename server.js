@@ -955,7 +955,7 @@ app.post(
           error: 'Premium Lip-Sync requires an artist photo.'
         });
       }
-        });
+        
       }
 
             if (photo && ![
