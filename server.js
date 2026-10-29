@@ -732,10 +732,12 @@ async function generateStandard(s, dir, imageUrl) {
     (_, n) => `file 'scene-${n + 1}.mp4'`
   ).join('\n') + '\n';
 
-  await fs.writeFile(
-    path.join(dir, 'scenes.txt'),
-    list
-  );
+        if (creationType === 'photo') {
+        await fs.writeFile(
+          path.join(dir, 'reference'),
+          photo.buffer
+        );
+      }
 
   await execute('ffmpeg', [
     '-y',
