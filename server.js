@@ -5,7 +5,11 @@ import { spawn } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-
+import {
+  recordEvaluation,
+  getRealismStats,
+  recommendTechniques
+} from './realism-engine.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 const OUT = process.env.OUTPUT_DIR || '/app/outputs';
