@@ -402,8 +402,11 @@ async function generateStandard(s, dir, imageUrl) {
       `hair length and overall appearance. ` +
       `Do not change the person's identity or ethnicity. ` +
       `Use sophisticated cinematic framing, realistic ` +
-      `lighting, natural movement and visual storytelling. ` +
-      `Each scene should feel like a distinct movie shot. ` +
+`lighting, natural movement and visual storytelling. ` +
+`Begin immediately with a fully visible, clearly composed ` +
+`shot. No fade-in, no slow reveal, no gradual appearance. ` +
+`The opening frame should show the intended scene clearly. ` +
+`Each scene should feel like a distinct movie shot. ` +
       `Allow imaginative environments, fantasy worlds, ` +
       `science fiction and animation when requested. ` +
       `No text, captions, logos, watermarks, ` +
