@@ -50,6 +50,7 @@ const JOBS = '/app/outputs/jobs';
 
 const LINKS = '/app/outputs/links';
 const MODEL = 'minimax/h3-max-turbo/image-to-video';
+const TEXT_MODEL = 'minimax/video-01-director';
 const LIP_MODEL = 'minimax/h3-max/lip-sync/image-to-video';
 
 const MAX_SONG_SECONDS = 360;
