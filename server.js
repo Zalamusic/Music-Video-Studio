@@ -394,7 +394,8 @@ async function generateStandard(s, dir, imageUrl) {
       `Professional cinematic music video for "${s.title}". ` +
       `Scene ${i} of ${s.totalScenes}. ` +
       `Director's creative vision: ${s.concept}. ` +
-      `Scene concept: ${idea}. ` +
+            `The customer's requested location and actions take priority. ` +
+      `Scene concept (use only if compatible with the customer's vision): ${idea}. ` +
       `Camera direction: ${cameraDirection}. ` +
       `Maintain the exact recognizable identity of the ` +
       `person in the uploaded reference photograph. ` +
