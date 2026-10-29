@@ -10,6 +10,7 @@ import {
   prepareCharacterReference,
   applyCharacterIdentityToPrompt
 } from './character-identity-engine.js';
+import { captureSceneFrames } from './visual-continuity-engine.js';
 import {
   recordEvaluation,
   getRealismStats,
