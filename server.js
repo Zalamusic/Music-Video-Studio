@@ -334,59 +334,66 @@ async function generatePremium(s, dir, imageUrl) {
   await saveState(s);
 }
 
+
+
 async function generate(id) {
   if (active.has(id)) return;
   active.add(id);
+
   let s;
+
   try {
     s = await readState(id);
     s.status = 'running';
     s.error = null;
     await saveState(s);
-    if (!process.env.FAL_KEY) throw new Error('FAL_KEY is missing in Render settings.');
+
+    if (!process.env.FAL_KEY) {
+      throw new Error('FAL_KEY is missing in Render settings.');
+    }
+
     const dir = jobDir(id);
     let imageUrl = null;
+
     if (s.creationType !== 'prompt') {
-      const imageBytes = await fs.readFile(path.join(dir, 'reference'));
-      imageUrl = `data:${s.photoMime || 'image/jpeg'};base64,` + imageBytes.toString('base64');
+      const imageBytes = await fs.readFile(
+        path.join(dir, 'reference')
+      );
+      imageUrl =
+        `data:${s.photoMime || 'image/jpeg'};base64,` +
+        imageBytes.toString('base64');
     }
-    if (s.mode === 'premium') await generatePremium(s, dir, imageUrl);
-    else await generateStandard(s, dir, imageUrl);
+
+    if (s.mode === 'premium') {
+      await generatePremium(s, dir, imageUrl);
+    } else {
+      await generateStandard(s, dir, imageUrl);
+    }
+
     s.status = 'completed';
     s.phase = 'Video ready';
     s.url = null;
-    await saveState(s);
-  } catch (e) {
-    console.error('Video job failed:', id, e);
-    if (s) {
-      
-    s.status = 'completed';
-    s.phase = 'Video ready';
-    s.url = null;
+
+    // Mark completed video for future realism evaluation.
+    s.realism = {
+      status: 'pending',
+      score: null,
+      threshold: 90,
+      message: 'Awaiting automatic visual evaluation'
+    };
+
     await saveState(s);
 
-    // REALISM ENGINE — VIDEO READY FOR EVALUATION
-    try {
-      s.realism = {
-        status: 'pending',
-        score: null,
-        threshold: 90,
-        message: 'Awaiting automatic visual evaluation'
-      };
-
-      await saveState(s);
-      console.log('Realism evaluation pending for job:', id);
-    } catch (realismError) {
-      console.error('Realism preparation error:', realismError);
-    }
   } catch (e) {
     console.error('Video job failed:', id, e);
+
     if (s) {
       s.status = 'failed';
       s.phase = 'Paused — ready to retry';
       s.error = e.message || 'Video creation failed';
       await saveState(s).catch(() => {});
     }
+
   } finally {
     active.delete(id);
   }
