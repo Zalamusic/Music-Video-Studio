@@ -620,7 +620,9 @@ app.post('/api/create', upload.fields([
       dir = null;
       return res.status(400).json({ error: 'Songs must be 6 minutes or shorter.' });
     }
-    const mode = req.body.mode === 'premium' ? 'premium' : 'standard';
+    const mode = ['standard', 'premium', 'director'].includes(req.body.mode)
+  ? req.body.mode
+  : 'standard';
     const quote = estimate(songSeconds, mode === 'premium', creationType);
     const s = {
       id, status: 'queued', phase: 'Waiting to start',
