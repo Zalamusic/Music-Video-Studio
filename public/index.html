@@ -163,7 +163,7 @@ const durationLabel = document.createElement('p');
 const seconds = Number(item.duration);
 durationLabel.textContent =
   Number.isFinite(seconds) && seconds > 0
-    ? 'Video Length: ' + formatDuration(seconds)
+    ? 'Video Length: ' + Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0')
     : 'Video length unavailable';
 durationLabel.style.cssText =
   'color:#526575;font-size:14px;margin:8px 0';
@@ -186,6 +186,7 @@ durationLabel.style.cssText =
    }catch(error){alert('Deletion failed: '+error.message);deleteButton.disabled=false;}
   });
   card.append(title, durationLabel, date, watchButton, playerArea, selectButton, deleteButton);
+  list.appendChild(card);
  });
 }
 function stopPolling(){if(pollTimer!==null){clearTimeout(pollTimer);pollTimer=null;}}
