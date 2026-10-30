@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { fal } from '@fal-ai/client';
 import { prepareSceneImage } from './scene-preparation-engine.js';
+import { createDirectorPlan } from './director-mode-engine.js';
 import { spawn } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
