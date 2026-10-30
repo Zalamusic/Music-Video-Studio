@@ -142,7 +142,16 @@ function displayMyVideos(){
  history.forEach((item,index)=>{
   if(!validId(item.jobId))return;
   const card=document.createElement('div');card.className='video-item';
-  const title=document.createElement('h3');title.textContent=item.title||'Video '+(index+1);
+  
+const title=document.createElement('h3');
+title.style.cssText='display:flex;align-items:center;gap:12px';
+const number=document.createElement('span');
+number.textContent='#'+(index+1);
+number.style.cssText='display:inline-grid;place-items:center;min-width:40px;height:40px;padding:5px;border-radius:50%;background:#0F6CBD;color:white;font-size:15px';
+const name=document.createElement('span');
+name.textContent=item.title||'Completed Music Video';
+title.append(number,name);
+
   const date=document.createElement('p');date.className='note';date.textContent=item.savedAt?'Saved: '+new Date(item.savedAt).toLocaleString():'Completed video';
   const playerArea=document.createElement('div');
   const watchButton=document.createElement('button');watchButton.type='button';watchButton.textContent='▶ Watch Video';watchButton.addEventListener('click',()=>watchSavedVideo(item.jobId,playerArea));
