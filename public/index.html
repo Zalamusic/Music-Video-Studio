@@ -282,7 +282,7 @@ $('customerLinkButton').addEventListener('click',async()=>{
   $('customerLinkStatus').textContent='Private link created. Expires: '+new Date(data.expiresAt).toLocaleString();
  }catch(error){$('customerLinkStatus').textContent=error.message;}finally{adminKeyInput.value='';button.disabled=false;}
 });
-updateCreationType();displayMyVideos();
+updateCreationType();displayMyVideos();recoverThirdVideo();
 try{
  const savedId=localStorage.getItem(STORAGE_KEY);
  if(validId(savedId)){currentJobId=savedId;$('progressPanel').style.display='block';checkJob();}
