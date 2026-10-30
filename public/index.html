@@ -109,7 +109,14 @@ function rememberVideo(job){
  const id=job.jobId||job.id;if(!validId(id))return;
  const history=getHistory(),existing=history.find(item=>item.jobId===id);
  const updated=history.filter(item=>item.jobId!==id);
- updated.unshift({jobId:id,title:job.title||existing?.title||'Completed Music Video',savedAt:existing?.savedAt||new Date().toISOString()});
+ 
+updated.unshift({
+  jobId: id,
+  title: job.title || existing?.title || titleInput.value.trim() || 'Completed Music Video',
+  duration: Number(job.songSeconds || existing?.duration || songSeconds) || null,
+  savedAt: existing?.savedAt || new Date().toISOString()
+});
+
  saveHistory(updated.slice(0,50));displayMyVideos();
 }
 function createVideoPlayer(url,container){
@@ -152,6 +159,16 @@ const name=document.createElement('span');
 name.textContent=item.title||'Completed Music Video';
 title.append(number,name);
 
+const durationLabel = document.createElement('p');
+const seconds = Number(item.duration);
+durationLabel.textContent =
+  Number.isFinite(seconds) && seconds > 0
+    ? 'Video Length: ' + formatDuration(seconds)
+    : 'Video length unavailable';
+durationLabel.style.cssText =
+  'color:#526575;font-size:14px;margin:8px 0';
+
+
   const date=document.createElement('p');date.className='note';date.textContent=item.savedAt?'Saved: '+new Date(item.savedAt).toLocaleString():'Completed video';
   const playerArea=document.createElement('div');
   const watchButton=document.createElement('button');watchButton.type='button';watchButton.textContent='▶ Watch Video';watchButton.addEventListener('click',()=>watchSavedVideo(item.jobId,playerArea));
@@ -168,7 +185,7 @@ title.append(number,name);
     displayMyVideos();alert('Video deleted successfully.');
    }catch(error){alert('Deletion failed: '+error.message);deleteButton.disabled=false;}
   });
-  card.append(title,date,watchButton,playerArea,selectButton,deleteButton);list.appendChild(card);
+  card.append(title, durationLabel, date, watchButton, playerArea, selectButton, deleteButton);
  });
 }
 function stopPolling(){if(pollTimer!==null){clearTimeout(pollTimer);pollTimer=null;}}
