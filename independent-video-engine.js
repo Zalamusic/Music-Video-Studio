@@ -8,6 +8,13 @@ const WIDTH = 720;
 const HEIGHT = 1280;
 const MAX_SECONDS = 360;
 
+const MOTIONS = new Set([
+  'zoom',
+  'zoomOut',
+  'panLeft',
+  'panRight'
+]);
+
 function runFFmpeg(args) {
   return new Promise((resolve, reject) => {
     const child = spawn('ffmpeg', [
@@ -22,6 +29,7 @@ function runFFmpeg(args) {
 
     child.stderr.on('data', data => {
       errorText += data.toString();
+
       if (errorText.length > 12000) {
         errorText = errorText.slice(-12000);
       }
@@ -43,37 +51,73 @@ function runFFmpeg(args) {
 }
 
 function makeMotionFilter(style, seconds) {
-  const frames = Math.max(1, Math.ceil(seconds * FPS));
+  const frames = Math.max(
+    1,
+    Math.ceil(seconds * FPS)
+  );
 
-  const motion = {
+  const last = Math.max(1, frames - 1);
+
+  // Normalized progress from 0 to 1.
+  const progress = `(on/${last})`;
+
+  // Smooth acceleration and deceleration.
+  const smooth =
+    `(${progress}*${progress}*` +
+    `(3-2*${progress}))`;
+
+  // Motion repeats every 15 seconds for longer videos,
+  // preventing a long clip from appearing stationary.
+  const cycleFrames = 15 * FPS;
+  const cycleLast = cycleFrames - 1;
+  const cycleProgress =
+    `(mod(on,${cycleFrames})/${cycleLast})`;
+
+  const cycleSmooth =
+    `(${cycleProgress}*${cycleProgress}*` +
+    `(3-2*${cycleProgress}))`;
+
+  const p = frames > cycleFrames
+    ? cycleSmooth
+    : smooth;
+
+  // A noticeable 30% zoom range.
+  const zoomIn = `1.02+0.30*${p}`;
+  const zoomOut = `1.32-0.30*${p}`;
+
+  const motions = {
     zoom: {
-      z: "min(zoom+0.0007,1.18)",
-      x: "iw/2-(iw/zoom/2)",
-      y: "ih/2-(ih/zoom/2)"
+      z: zoomIn,
+      x: 'iw/2-(iw/zoom/2)',
+      y: 'ih/2-(ih/zoom/2)'
     },
-    panLeft: {
-      z: "1.16",
-      x: "max(0,(iw-iw/zoom)*(1-on/" + frames + "))",
-      y: "ih/2-(ih/zoom/2)"
-    },
-    panRight: {
-      z: "1.16",
-      x: "(iw-iw/zoom)*on/" + frames,
-      y: "ih/2-(ih/zoom/2)"
-    },
+
     zoomOut: {
-      z: "max(1.0,1.18-on*0.0007)",
-      x: "iw/2-(iw/zoom/2)",
-      y: "ih/2-(ih/zoom/2)"
+      z: zoomOut,
+      x: 'iw/2-(iw/zoom/2)',
+      y: 'ih/2-(ih/zoom/2)'
+    },
+
+    panLeft: {
+      z: '1.32',
+      x: `(iw-iw/zoom)*(1-${p})`,
+      y: 'ih/2-(ih/zoom/2)'
+    },
+
+    panRight: {
+      z: '1.32',
+      x: `(iw-iw/zoom)*${p}`,
+      y: 'ih/2-(ih/zoom/2)'
     }
   };
 
-  const selected = motion[style] || motion.zoom;
+  const selected = motions[style] || motions.zoom;
 
   return [
     `scale=${WIDTH * 2}:${HEIGHT * 2}:force_original_aspect_ratio=increase`,
     `crop=${WIDTH * 2}:${HEIGHT * 2}`,
-    `zoompan=z='${selected.z}':x='${selected.x}':y='${selected.y}':d=${frames}:s=${WIDTH}x${HEIGHT}:fps=${FPS}`,
+    'setsar=1',
+    `zoompan=z='${selected.z}':x='${selected.x}':y='${selected.y}':d=1:s=${WIDTH}x${HEIGHT}:fps=${FPS}`,
     `trim=duration=${seconds}`,
     'setpts=PTS-STARTPTS',
     'format=yuv420p'
@@ -95,11 +139,19 @@ export async function createIndependentVideo({
 
   seconds = Number(seconds);
 
-  if (!Number.isFinite(seconds) ||
-      seconds <= 0 ||
-      seconds > MAX_SECONDS) {
+  if (
+    !Number.isFinite(seconds) ||
+    seconds <= 0 ||
+    seconds > MAX_SECONDS
+  ) {
     throw new Error(
       `Video duration must be between 0 and ${MAX_SECONDS} seconds.`
+    );
+  }
+
+  if (!MOTIONS.has(motion)) {
+    throw new Error(
+      'Unsupported camera motion: ' + motion
     );
   }
 
@@ -122,7 +174,7 @@ export async function createIndependentVideo({
     '-map', '1:a:0',
     '-c:v', 'libx264',
     '-preset', 'veryfast',
-    '-crf', '23',
+    '-crf', '21',
     '-pix_fmt', 'yuv420p',
     '-r', String(FPS),
     '-c:a', 'aac',
@@ -141,7 +193,7 @@ export async function createIndependentVideo({
 
   return {
     ok: true,
-    engine: 'Zala Independent Video Engine v1',
+    engine: 'Zala Independent Video Engine v2',
     outputPath,
     durationSeconds: seconds,
     resolution: `${WIDTH}x${HEIGHT}`,
