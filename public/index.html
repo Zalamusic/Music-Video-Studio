@@ -210,6 +210,56 @@ a{color:#0F6CBD;overflow-wrap:anywhere}
   </button>
 </div>
 
+<section class="panel" id="videoIntelligencePanel"
+         style="display:none;">
+  <h2>🎬 Video Intelligence Studio</h2>
+
+  <p class="note">
+    Upload an existing MP4 video to analyze
+    technical quality, scene changes, and timing.
+    No new video generation is required.
+  </p>
+
+  <label for="videoTestFile">
+    Upload Video (MP4)
+  </label>
+  <input
+    id="videoTestFile"
+    type="file"
+    accept=".mp4,video/mp4"
+  >
+
+  <label for="videoTestAdminPassword">
+    Administrator Password
+  </label>
+  <input
+    id="videoTestAdminPassword"
+    type="password"
+    placeholder="Enter administrator password"
+    autocomplete="off"
+  >
+
+  <button
+    id="videoTestButton"
+    type="button"
+    class="secondary"
+  >
+    🎬 Analyze My Video
+  </button>
+
+  <p
+    id="videoTestStatus"
+    role="status"
+    aria-live="polite"
+    style="margin-top:15px"
+  ></p>
+
+  <div
+    id="videoTestResults"
+    style="margin-top:15px;overflow-wrap:anywhere"
+  ></div>
+</section>
+
 <script>
 (function () {
   'use strict';
