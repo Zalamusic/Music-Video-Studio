@@ -336,64 +336,6 @@ function scenePrompt(s, i) {
   );
 }
 
-  const idea = sceneIdeas[(i - 1) % sceneIdeas.length];
-  const cameraDirection = cameraShots[(i - 1) % cameraShots.length];
-
-  const identity = s.creationType === 'prompt'
-    ? `CHARACTER CONTINUITY: Keep every recurring character
-       visually consistent throughout the scene and across
-       subsequent scenes.`
-    : `CRITICAL CHARACTER IDENTITY LOCK:
-       The uploaded reference photograph is the authoritative
-       visual identity of the main character.
-       Reproduce the same recognizable person throughout
-       every frame of this video.
-       Preserve facial structure, eyes, nose, lips, jawline,
-       skin tone, hair color, hairstyle, hair length and
-       body proportions.
-       Do not invent a replacement actor.
-       Do not redesign the character when the camera moves,
-       the lighting changes, or the location changes.
-       The character seen in the opening frame must be
-       the exact same character in every subsequent frame.
-       Maintain identity during camera pans, zooms,
-       close-ups, rotations and scene transitions.
-       Clothing may change only when requested.
-       No face morphing, hairstyle changes or identity drift.`;
-
-  return (
-    `Professional cinematic music video for "${s.title}". ` +
-    `Scene ${i} of ${s.totalScenes}. ` +
-    `${identity} ` +
-    `PRIMARY DIRECTOR INSTRUCTIONS: ${s.concept}. ` +
-    `Follow the customer's requested setting, actions, character ` +
-    `behavior, atmosphere and visual style. ` +
-    `Do not introduce conflicting locations or actions. ` +
-    `Additional scene inspiration, only if compatible: ${idea}. ` +
-    `Camera direction: ${cameraDirection}. ` +
-    `ACTION SEQUENCE AND PHYSICAL REALISM: Follow requested ` +
-    `actions in their described order. Show natural preparation, ` +
-    `movement, reaction and recovery. Maintain realistic gravity, ` +
-    `momentum, balance, posture and physical interactions. ` +
-    `NATURAL HUMAN PERFORMANCE: Show believable facial ` +
-    `expressions, breathing, blinking, eye movement, gestures, ` +
-    `emotions and body language. Avoid robotic movements. ` +
-    `CHARACTER CONTINUITY: Preserve consistent facial features, ` +
-    `skin tone, hairstyle, body proportions and clothing. ` +
-    `Avoid distorted anatomy, extra limbs and sudden changes. ` +
-    `CINEMATIC DIRECTION: Use professional composition, lighting, ` +
-    `camera movement and visual storytelling. Support aerial ` +
-    `views, sweeping movements, close-ups and dynamic perspectives ` +
-    `when requested. Support realistic, fantasy, science fiction, ` +
-    `anime and 3D animation environments. ` +
-    `Begin with a clearly composed opening frame. ` +
-    `Avoid fade-ins unless requested. ` +
-    `Make each scene visually distinct while preserving continuity. ` +
-    `No text, captions, logos, watermarks, music or dialogue.`
-  );
-}
-
-
 async function generateStandard(s, dir, imageUrl) {
   for (let i = 1; i <= s.totalScenes; i++) {
     const clip = path.join(dir, `scene-${i}.mp4`);
