@@ -148,6 +148,271 @@ a{color:#0F6CBD;overflow-wrap:anywhere}
 <div id="result"></div>
 <div class="footer">Zala QI's World · Create something unforgettable</div>
 
+<section class="panel" id="musicIntelligencePanel">
+  <h2>🎵 Music Intelligence Studio</h2>
+  <p class="note">
+    Analyze your song's rhythm, energy, and cinematic
+    scene timing before generating a music video.
+    No video generation is required for this test.
+  </p>
+
+  <label for="musicTestAudio">
+    Upload Song (MP3 or WAV)
+  </label>
+  <input
+    id="musicTestAudio"
+    type="file"
+    accept=".mp3,.wav,audio/mpeg,audio/wav"
+  >
+
+  <label for="musicTestAdminPassword">
+    Administrator Password
+  </label>
+  <input
+    id="musicTestAdminPassword"
+    type="password"
+    placeholder="Enter administrator password"
+    autocomplete="off"
+  >
+
+  <button
+    id="musicTestButton"
+    type="button"
+    class="secondary"
+  >
+    🎵 Analyze My Song
+  </button>
+
+  <p
+    id="musicTestStatus"
+    role="status"
+    aria-live="polite"
+    style="margin-top:15px"
+  ></p>
+
+  <div
+    id="musicTestResults"
+    style="margin-top:15px;overflow-wrap:anywhere"
+  ></div>
+</section>
+
+<script>
+(function () {
+  'use strict';
+
+  const audio = document.getElementById(
+    'musicTestAudio'
+  );
+  const password = document.getElementById(
+    'musicTestAdminPassword'
+  );
+  const button = document.getElementById(
+    'musicTestButton'
+  );
+  const status = document.getElementById(
+    'musicTestStatus'
+  );
+  const results = document.getElementById(
+    'musicTestResults'
+  );
+
+  function addText(parent, tag, value) {
+    const element = document.createElement(tag);
+    element.textContent = String(value);
+    element.style.marginBottom = '10px';
+    parent.appendChild(element);
+    return element;
+  }
+
+  function seconds(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return 'Unknown';
+
+    const m = Math.floor(n / 60);
+    const s = Math.floor(n % 60);
+
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
+  function displayPlan(plan) {
+    results.replaceChildren();
+
+    addText(
+      results,
+      'h3',
+      '🎬 Your Music Intelligence Report'
+    );
+
+    addText(
+      results,
+      'p',
+      'Song duration: ' + seconds(plan.durationSeconds)
+    );
+
+    addText(
+      results,
+      'p',
+      'Estimated BPM: ' +
+      (plan.bpmEstimate ?? 'Not estimated')
+    );
+
+    const accents = plan.detectedAccents;
+
+    addText(
+      results,
+      'p',
+      'Detected accents: ' +
+      (Array.isArray(accents)
+        ? accents.length
+        : (accents ?? 'Unavailable'))
+    );
+
+    const scenes = Array.isArray(plan.scenes)
+      ? plan.scenes
+      : [];
+
+    addText(
+      results,
+      'h3',
+      'Suggested Cinematic Scenes: ' + scenes.length
+    );
+
+    scenes.slice(0, 12).forEach(function (scene, i) {
+      const card = document.createElement('div');
+
+      card.style.cssText =
+        'padding:12px;margin:10px 0;' +
+        'border:1px solid #d6e8f5;' +
+        'border-radius:12px;' +
+        'background:#f4f9ff;';
+
+      addText(
+        card,
+        'strong',
+        'Scene ' + (scene.scene ?? (i + 1))
+      );
+
+      addText(
+        card,
+        'p',
+        'Timing: ' +
+        seconds(scene.startSeconds) +
+        ' – ' +
+        seconds(scene.endSeconds)
+      );
+
+      addText(
+        card,
+        'p',
+        'Energy: ' + (scene.intensity ?? 'Unknown')
+      );
+
+      addText(
+        card,
+        'p',
+        'Camera: ' +
+        (scene.suggestedShot ?? 'Director choice')
+      );
+
+      addText(
+        card,
+        'p',
+        'Transition: ' +
+        (scene.transition ?? 'Director choice')
+      );
+
+      results.appendChild(card);
+    });
+
+    if (scenes.length > 12) {
+      addText(
+        results,
+        'p',
+        'Showing the first 12 of ' +
+        scenes.length + ' suggested scenes.'
+      );
+    }
+
+    if (plan.notes) {
+      addText(results, 'p', 'Note: ' + plan.notes);
+    }
+  }
+
+  button.addEventListener('click', async function () {
+    const file = audio.files && audio.files[0];
+    const adminKey = password.value.trim();
+
+    if (!file) {
+      status.textContent =
+        'Please select an MP3 or WAV song.';
+      return;
+    }
+
+    if (!adminKey) {
+      status.textContent =
+        'Please enter your administrator password.';
+      return;
+    }
+
+    button.disabled = true;
+    status.textContent =
+      '🎵 Analyzing your music. Please wait...';
+
+    results.replaceChildren();
+
+    try {
+      const data = new FormData();
+      data.append('audio', file);
+
+      const response = await fetch(
+        '/api/test-music-intelligence',
+        {
+          method: 'POST',
+          headers: {
+            'X-Video-Admin-Key': adminKey
+          },
+          body: data
+        }
+      );
+
+      const raw = await response.text();
+      let result;
+
+      try {
+        result = JSON.parse(raw);
+      } catch {
+        throw new Error(
+          'Server returned an unexpected response.'
+        );
+      }
+
+      if (!response.ok || !result.ok) {
+        throw new Error(
+          result.error || 'Music analysis failed.'
+        );
+      }
+
+      if (!result.plan) {
+        throw new Error(
+          'The server did not return an analysis plan.'
+        );
+      }
+
+      displayPlan(result.plan);
+
+      status.textContent =
+        '✅ Music analysis completed successfully!';
+
+    } catch (error) {
+      status.textContent =
+        'Unable to analyze music: ' + error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+})();
+</script>
+
 </main>
 
 <script>
