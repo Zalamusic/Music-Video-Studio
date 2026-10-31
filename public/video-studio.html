@@ -220,11 +220,77 @@ document.getElementById('fullscreenButton').onclick = () => {
 form.addEventListener('submit', async event => {
   event.preventDefault();
 
+  
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const photo = document.getElementById('photo').files[0];
+  const audio = document.getElementById('audio').files[0];
+  const password = document.getElementById('adminPassword').value;
+
+  if (!photo || !audio || !password) {
+    statusText.textContent =
+      'Please upload a photo, upload a song, and enter your administrator password.';
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append('photo', photo);
+  formData.append('audio', audio);
+  formData.append(
+    'seconds',
+    document.getElementById('seconds').value
+  );
+  formData.append(
+    'motion',
+    document.getElementById('motion').value
+  );
+  formData.append(
+    'title',
+    document.getElementById('title').value
+  );
+  formData.append(
+    'concept',
+    document.getElementById('concept').value
+  );
+
+  generateButton.disabled = true;
+  result.style.display = 'none';
+
   statusText.textContent =
-    'Video Studio interface restored. ' +
-    'The independent generation endpoint ' +
-    'still needs to be connected.';
+    'Generating your independent video. Please keep this page open.';
+
+  try {
+    const response = await fetch(
+      '/api/independent-video/create',
+      {
+        method: 'POST',
+        headers: {
+          'X-Video-Admin-Key': password
+        },
+        body: formData
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok || !data.url) {
+      throw new Error(
+        data.error || 'Video generation failed.'
+      );
+    }
+
+    loadVideo(data.url);
+
+    statusText.textContent =
+      'Your video is ready! You can play, replay, or download it.';
+
+  } catch (error) {
+    statusText.textContent =
+      'Unable to generate video: ' + error.message;
+  } finally {
+    generateButton.disabled = false;
+  }
 });
-</script>
-</body>
-</html>
+
