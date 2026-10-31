@@ -308,6 +308,106 @@ app.post(
   }
 );
 
+app.post(
+  '/api/independent-video/create',
+  (req, res, next) => {
+    if (!isVideoAdmin(req)) {
+      return res.status(403).json({
+        error: 'Administrator password required.'
+      });
+    }
+    next();
+  },
+  upload.fields([
+    { name: 'photo', maxCount: 1 },
+    { name: 'audio', maxCount: 1 }
+  ]),
+  async (req, res) => {
+    const photo = req.files?.photo?.[0];
+    const audio = req.files?.audio?.[0];
+    const seconds = Number(req.body?.seconds || 15);
+    const motion = String(req.body?.motion || 'zoom');
+
+    if (!photo || !audio) {
+      return res.status(400).json({
+        error: 'Please upload a photo and a song.'
+      });
+    }
+
+    if (![15, 30, 60].includes(seconds)) {
+      return res.status(400).json({
+        error: 'Choose 15, 30, or 60 seconds.'
+      });
+    }
+
+    if (!['zoom', 'zoomOut', 'panLeft', 'panRight'].includes(motion)) {
+      return res.status(400).json({
+        error: 'Invalid camera motion.'
+      });
+    }
+
+    const id = randomUUID();
+    const dir = path.join(JOBS, 'independent-' + id);
+    const photoPath = path.join(dir, 'photo');
+    const audioPath = path.join(dir, 'song');
+    const outputPath = path.join(dir, 'video.mp4');
+
+    try {
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(photoPath, photo.buffer);
+      await fs.writeFile(audioPath, audio.buffer);
+
+      const video = await createIndependentVideo({
+        photoPath,
+        audioPath,
+        outputPath,
+        seconds,
+        motion
+      });
+
+      res.json({
+        ok: true,
+        id,
+        url: '/api/independent-video/' + id,
+        durationSeconds: video.durationSeconds,
+        resolution: video.resolution
+      });
+    } catch (error) {
+      console.error('Independent video failed:', error);
+      await fs.rm(dir, {
+        recursive: true,
+        force: true
+      }).catch(() => {});
+
+      res.status(500).json({
+        error: 'Video generation failed: ' + error.message
+      });
+    }
+  }
+);
+
+app.get('/api/independent-video/:id', async (req, res) => {
+  const id = String(req.params.id || '');
+
+  if (!/^[0-9a-f-]{36}$/i.test(id)) {
+    return res.status(400).send('Invalid video ID.');
+  }
+
+  const outputPath = path.join(
+    JOBS,
+    'independent-' + id,
+    'video.mp4'
+  );
+
+  try {
+    await fs.access(outputPath);
+    res.type('mp4');
+    res.sendFile(outputPath);
+  } catch {
+    res.status(404).send('Video not found.');
+  }
+});
+
 app.get('/api/estimate', (req, res) => {
   const seconds = Number(req.query.seconds);
 
