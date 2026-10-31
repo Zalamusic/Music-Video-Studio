@@ -230,6 +230,83 @@ app.post(
     }
   }
 );
+
+app.post(
+  '/api/test-video-intelligence',
+  (req, res, next) => {
+    if (!isVideoAdmin(req)) {
+      return res.status(403).json({
+        error: 'Administrator password required.'
+      });
+    }
+    next();
+  },
+  upload.single('video'),
+  async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({
+        error: 'Please upload an MP4 video.'
+      });
+    }
+
+    const filename = String(
+      req.file.originalname || ''
+    ).toLowerCase();
+
+    if (
+      !filename.endsWith('.mp4') ||
+      req.file.mimetype !== 'video/mp4'
+    ) {
+      return res.status(400).json({
+        error: 'Only MP4 video uploads are supported.'
+      });
+    }
+
+    const testDir = path.join(
+      JOBS,
+      'video-test-' + randomUUID()
+    );
+
+    try {
+      await fs.mkdir(testDir, {
+        recursive: true
+      });
+
+      const videoFile = path.join(
+        testDir,
+        'test-video.mp4'
+      );
+
+      await fs.writeFile(
+        videoFile,
+        req.file.buffer
+      );
+
+      const report = await analyzeVideo(videoFile);
+
+      res.json({
+        ok: true,
+        message: 'Video analysis completed.',
+        report
+      });
+    } catch (error) {
+      console.error(
+        'Video intelligence test failed:',
+        error
+      );
+
+      res.status(500).json({
+        error: error.message
+      });
+    } finally {
+      await fs.rm(testDir, {
+        recursive: true,
+        force: true
+      }).catch(() => {});
+    }
+  }
+);
+
 app.get('/api/estimate', (req, res) => {
   const seconds = Number(req.query.seconds);
 
