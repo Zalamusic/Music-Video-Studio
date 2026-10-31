@@ -8,90 +8,24 @@
 <title>Zala QI's World | Video Studio</title>
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:linear-gradient(145deg,#07152b,#123e78);
-  color:#fff;
-  font-family:Arial,sans-serif;
-  min-height:100vh;
-  padding:20px 14px 50px;
-}
-main{
-  max-width:680px;
-  margin:auto;
-}
+body{margin:0;background:linear-gradient(145deg,#07152b,#123e78);color:#fff;font-family:Arial,sans-serif;min-height:100vh;padding:20px 14px 50px}
+main{max-width:680px;margin:auto}
 header{text-align:center;padding:20px 0}
-.logo{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:65px;height:65px;
-  border-radius:18px;
-  background:#2498ff;
-  font-weight:bold;font-size:26px;
-}
+.logo{display:inline-flex;align-items:center;justify-content:center;width:65px;height:65px;border-radius:18px;background:#2498ff;font-weight:bold;font-size:26px}
 h1{font-size:28px;margin:15px 0 6px}
 .subtitle{color:#bbd9ff;line-height:1.6}
-.panel{
-  background:#fff;
-  color:#162c48;
-  padding:24px;
-  border-radius:20px;
-  margin:20px 0;
-  box-shadow:0 10px 35px #0003;
-}
+.panel{background:#fff;color:#162c48;padding:24px;border-radius:20px;margin:20px 0;box-shadow:0 10px 35px #0003}
 h2{margin-top:0;font-size:21px}
-label{
-  display:block;
-  font-weight:bold;
-  margin:20px 0 8px;
-}
-input,select,textarea{
-  display:block;
-  width:100%;
-  padding:14px;
-  border:1px solid #b8cbe0;
-  border-radius:10px;
-  font:inherit;
-  background:#f7fbff;
-  color:#162c48;
-}
+label{display:block;font-weight:bold;margin:20px 0 8px}
+input,select,textarea{display:block;width:100%;padding:14px;border:1px solid #b8cbe0;border-radius:10px;font:inherit;background:#f7fbff;color:#162c48}
 textarea{min-height:110px;resize:vertical}
 input[type=file]{padding:12px}
-button,.button{
-  display:block;
-  width:100%;
-  padding:16px;
-  background:#1269c7;
-  color:#fff;
-  border:0;
-  border-radius:11px;
-  font-size:16px;
-  font-weight:bold;
-  text-align:center;
-  text-decoration:none;
-  cursor:pointer;
-  margin-top:14px;
-}
+button,.button{display:block;width:100%;padding:16px;background:#1269c7;color:#fff;border:0;border-radius:11px;font-size:16px;font-weight:bold;text-align:center;text-decoration:none;cursor:pointer;margin-top:14px}
 button:disabled{opacity:.55;cursor:wait}
 button.secondary{background:#24476e}
-.note{
-  font-size:13px;
-  color:#61758e;
-  line-height:1.6;
-}
-#status{
-  margin-top:16px;
-  line-height:1.6;
-  overflow-wrap:anywhere;
-}
-video{
-  display:block;
-  width:100%;
-  max-height:520px;
-  background:#000;
-  border-radius:12px;
-}
+.note{font-size:13px;color:#61758e;line-height:1.6}
+#status{margin-top:16px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap}
+video{display:block;width:100%;max-height:520px;background:#000;border-radius:12px}
 #videoResult{display:none}
 .actions{display:grid;gap:10px}
 footer{text-align:center;color:#bbd9ff;padding:20px}
@@ -100,71 +34,69 @@ footer{text-align:center;color:#bbd9ff;padding:20px}
 <body>
 <main>
 <header>
-  <div class="logo">ZQ</div>
-  <h1>Zala QI's World</h1>
-  <div class="subtitle">
-    Independent Video Studio<br>
-    Your music. Your vision. Your world.
-  </div>
+<div class="logo">ZQ</div>
+<h1>Zala QI's World</h1>
+<div class="subtitle">
+Independent Video Studio<br>
+Your music. Your vision. Your world.
+</div>
 </header>
 
 <section class="panel">
 <h2>Create Your Video</h2>
 <p class="note">
-  Upload your photo and music to create a video
-  with cinematic camera movement.
+Upload your photo and music to create a video
+with cinematic camera movement.
 </p>
 
-<form id="videoForm">
+<form id="videoForm" enctype="multipart/form-data">
 <label for="title">Video Title</label>
-<input id="title" name="title"
-  placeholder="Enter your video title" required>
+<input id="title" name="title" placeholder="Enter your video title" required>
 
 <label for="photo">Artist Photo</label>
 <input id="photo" name="photo" type="file"
-  accept="image/jpeg,image/png,image/webp" required>
+accept="image/jpeg,image/png,image/webp" required>
 
 <label for="audio">Song (MP3 or WAV)</label>
 <input id="audio" name="audio" type="file"
-  accept=".mp3,.wav,audio/mpeg,audio/wav" required>
+accept=".mp3,.wav,audio/mpeg,audio/wav" required>
 
 <label for="motion">Camera Motion</label>
 <select id="motion" name="motion">
-  <option value="zoom">Cinematic Zoom In</option>
-  <option value="zoomOut">Cinematic Zoom Out</option>
-  <option value="panLeft">Pan Left</option>
-  <option value="panRight">Pan Right</option>
+<option value="zoom">Cinematic Zoom In</option>
+<option value="zoomOut">Cinematic Zoom Out</option>
+<option value="panLeft">Pan Left</option>
+<option value="panRight">Pan Right</option>
 </select>
 
 <label for="seconds">Video Duration</label>
 <select id="seconds" name="seconds">
-  <option value="15">15 Seconds</option>
-  <option value="30">30 Seconds</option>
-  <option value="60">60 Seconds</option>
+<option value="15">15 Seconds</option>
+<option value="30">30 Seconds</option>
+<option value="60">60 Seconds</option>
 </select>
 
 <label for="concept">Creative Direction</label>
 <textarea id="concept" name="concept"
-  placeholder="Describe your video concept, location, mood, or visual style."></textarea>
+placeholder="Describe your video concept, location, mood, or visual style."></textarea>
 
 <p class="note">
-  Independent Engine v1 animates a photograph.
-  Creative direction is saved for future engine
-  capabilities and does not yet generate new scenes.
+Independent Engine v1 animates a photograph.
+Creative direction is saved for future capabilities;
+it does not yet generate new scenes.
 </p>
 
 <label for="adminPassword">Administrator Password</label>
 <input id="adminPassword" type="password"
-  autocomplete="off" required
-  placeholder="Enter administrator password">
+autocomplete="off" required placeholder="Enter administrator password">
 
-<button id="generateButton" type="submit">
-  🎬 Generate Video
+<button id="generateButton" type="button">
+🎬 Generate Video
 </button>
 </form>
 
 <div id="status" role="status" aria-live="polite">
-  Ready to create your video.
+Ready to create your video.
 </div>
 </section>
 
@@ -172,31 +104,35 @@ footer{text-align:center;color:#bbd9ff;padding:20px}
 <h2>Your Finished Video</h2>
 <video id="player" controls playsinline preload="metadata"></video>
 <div class="actions">
-  <button type="button" class="secondary"
-    id="replayButton">↻ Replay Video</button>
-  <button type="button" class="secondary"
-    id="fullscreenButton">⛶ Fullscreen</button>
-  <a id="downloadButton" class="button" download="zala-video.mp4">
-    Download Video
-  </a>
+<button type="button" class="secondary" id="replayButton">↻ Replay Video</button>
+<button type="button" class="secondary" id="fullscreenButton">⛶ Fullscreen</button>
+<a id="downloadButton" class="button" download="zala-video.mp4">
+Download Video
+</a>
 </div>
 </section>
 
-<a href="/" class="button"
-  style="background:#ffffff;color:#1269c7">
-  Return to Zala QI's World
+<a href="/" class="button" style="background:#ffffff;color:#1269c7">
+Return to Zala QI's World
 </a>
-
 <footer>© Zala QI's World — Video Studio</footer>
 </main>
 
 <script>
+'use strict';
+
 const form = document.getElementById('videoForm');
 const statusText = document.getElementById('status');
 const generateButton = document.getElementById('generateButton');
 const result = document.getElementById('videoResult');
 const player = document.getElementById('player');
 const downloadButton = document.getElementById('downloadButton');
+
+let generating = false;
+
+function setStatus(message) {
+  statusText.textContent = message;
+}
 
 function loadVideo(url) {
   player.src = url;
@@ -206,87 +142,107 @@ function loadVideo(url) {
   result.scrollIntoView({behavior:'smooth'});
 }
 
-document.getElementById('replayButton').onclick = () => {
+document.getElementById('replayButton').addEventListener('click', () => {
   player.currentTime = 0;
   player.play().catch(() => {});
-};
+});
 
-document.getElementById('fullscreenButton').onclick = () => {
+document.getElementById('fullscreenButton').addEventListener('click', () => {
   if (player.requestFullscreen) {
     player.requestFullscreen();
   }
-};
+});
 
-form.addEventListener('submit', async event => {
+form.addEventListener('submit', event => {
   event.preventDefault();
+});
+
+generateButton.addEventListener('click', async () => {
+  if (generating) return;
+
+  if (!form.reportValidity()) return;
 
   const photo = document.getElementById('photo').files[0];
   const audio = document.getElementById('audio').files[0];
-  const password = document.getElementById('adminPassword').value;
+  const password = document.getElementById('adminPassword').value.trim();
 
   if (!photo || !audio || !password) {
-    statusText.textContent =
-      'Please upload a photo, upload a song, and enter your administrator password.';
+    setStatus('Please upload a photo, upload a song, and enter your administrator password.');
+    return;
+  }
+
+  const allowedImages = ['image/jpeg','image/png','image/webp'];
+  const audioName = audio.name.toLowerCase();
+
+  if (!allowedImages.includes(photo.type)) {
+    setStatus('Please choose a JPG, PNG, or WebP photo.');
+    return;
+  }
+
+  if (!audioName.endsWith('.mp3') && !audioName.endsWith('.wav')) {
+    setStatus('Please choose an MP3 or WAV song.');
+    return;
+  }
+
+  const maxBytes = 30 * 1024 * 1024;
+
+  if (photo.size > maxBytes || audio.size > maxBytes) {
+    setStatus('Each uploaded file must be 30 MB or smaller.');
     return;
   }
 
   const formData = new FormData();
-
   formData.append('photo', photo);
   formData.append('audio', audio);
-  formData.append(
-    'seconds',
-    document.getElementById('seconds').value
-  );
-  formData.append(
-    'motion',
-    document.getElementById('motion').value
-  );
-  formData.append(
-    'title',
-    document.getElementById('title').value
-  );
-  formData.append(
-    'concept',
-    document.getElementById('concept').value
-  );
+  formData.append('seconds', document.getElementById('seconds').value);
+  formData.append('motion', document.getElementById('motion').value);
+  formData.append('title', document.getElementById('title').value);
+  formData.append('concept', document.getElementById('concept').value);
 
+  generating = true;
   generateButton.disabled = true;
   result.style.display = 'none';
 
-  statusText.textContent =
-    'Generating your independent video. Please keep this page open.';
+  setStatus('Uploading files and generating your video. Please keep this page open.');
 
   try {
-    const response = await fetch(
-      '/api/independent-video/create',
-      {
-        method: 'POST',
-        headers: {
-          'X-Video-Admin-Key': password
-        },
-        body: formData
-      }
-    );
+    const response = await fetch('/api/independent-video/create', {
+      method: 'POST',
+      headers: {
+        'X-Video-Admin-Key': password
+      },
+      body: formData
+    });
 
-    const data = await response.json();
+    const raw = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      throw new Error(
+        'The server returned an unexpected response (HTTP ' +
+        response.status + '). Check Render logs.'
+      );
+    }
 
     if (!response.ok || !data.ok || !data.url) {
       throw new Error(
-        data.error || 'Video generation failed.'
+        data.error ||
+        'Video generation failed (HTTP ' + response.status + ').'
       );
     }
 
     loadVideo(data.url);
-
-    statusText.textContent =
-      'Your video is ready! You can play, replay, or download it.';
+    setStatus('Your video is ready! You can play, replay, or download it.');
 
   } catch (error) {
-    statusText.textContent =
-      'Unable to generate video: ' + error.message;
+    setStatus('Unable to generate video: ' + (error.message || 'Unknown error.'));
   } finally {
+    generating = false;
     generateButton.disabled = false;
   }
 });
-
+</script>
+</body>
+</html>
