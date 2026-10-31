@@ -1,6 +1,6 @@
 
 import { spawn } from 'node:child_process';
-import { mkdir, stat } from 'node:fs/promises';
+import { mkdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 function run(command, args) {
@@ -22,10 +22,9 @@ function run(command, args) {
     });
 
     child.on('error', error => {
-      if (!settled) {
-        settled = true;
-        reject(error);
-      }
+      if (settled) return;
+      settled = true;
+      reject(error);
     });
 
     child.on('close', code => {
@@ -63,95 +62,104 @@ async function mediaDuration(file) {
   return seconds;
 }
 
-function sceneDuration(scene) {
-  if (!scene || typeof scene !== 'object') {
-    return NaN;
-  }
-
-  const start = Number(scene.startSeconds);
-  const end = Number(scene.endSeconds);
-
-  if (
-    Number.isFinite(start) &&
-    Number.isFinite(end) &&
-    end > start
-  ) {
-    return end - start;
-  }
-
-  const duration = Number(scene.durationSeconds);
-
-  return Number.isFinite(duration) &&
-    duration > 0
-    ? duration
-    : NaN;
-}
-
-function getMusicTimings(plan, count, target) {
-  if (!Array.isArray(plan?.scenes)) {
+function getMusicTimings(plan, target) {
+  if (!Array.isArray(plan?.scenes) ||
+      plan.scenes.length === 0) {
     return null;
   }
 
-  if (plan.scenes.length !== count) {
-    throw new Error(
-      'Music plan scene count does not match ' +
-      'the generated footage; use standard ' +
-      'assembly fallback.'
-    );
-  }
-
-  const timings = plan.scenes.map(sceneDuration);
-
-  if (
-    timings.some(value =>
-      !Number.isFinite(value) || value <= 0
-    )
-  ) {
-    throw new Error(
-      'Music plan contains invalid scene timings.'
-    );
-  }
-
+  const scenes = plan.scenes;
+  const timings = [];
   let position = 0;
 
-  for (let i = 0; i < plan.scenes.length; i++) {
-    const scene = plan.scenes[i];
+  for (const scene of scenes) {
+    const start = Number(scene.startSeconds);
+    const end = Number(scene.endSeconds);
+
+    let length;
 
     if (
-      scene.startSeconds != null &&
-      scene.endSeconds != null
+      Number.isFinite(start) &&
+      Number.isFinite(end) &&
+      end > start
     ) {
-      const start = Number(scene.startSeconds);
-      const end = Number(scene.endSeconds);
-
-      if (
-        !Number.isFinite(start) ||
-        !Number.isFinite(end) ||
-        Math.abs(start - position) > 0.15
-      ) {
+      if (Math.abs(start - position) > 0.15) {
         throw new Error(
-          'Music plan has gaps or overlapping scenes.'
+          'Music plan has gaps or overlaps.'
         );
       }
 
+      length = end - start;
       position = end;
     } else {
-      position += timings[i];
+      length = Number(scene.durationSeconds);
+
+      if (!Number.isFinite(length) || length <= 0) {
+        throw new Error(
+          'Music plan has invalid scene duration.'
+        );
+      }
+
+      position += length;
     }
+
+    timings.push(length);
   }
 
-  const total = timings.reduce(
-    (sum, value) => sum + value,
-    0
-  );
-
-  if (Math.abs(total - target) > 0.15) {
+  if (Math.abs(position - target) > 0.25) {
     throw new Error(
-      'Music plan duration does not match the song.'
+      'Music plan duration does not match song.'
     );
   }
 
   return timings;
+}
+
+function makeSegments(durations, target, musicTimings) {
+  if (musicTimings) {
+    return musicTimings.map((length, index) => {
+      const sourceIndex = Math.min(
+        durations.length - 1,
+        Math.floor(
+          index * durations.length / musicTimings.length
+        )
+      );
+
+      return {
+        sourceIndex,
+        seconds: length
+      };
+    });
+  }
+
+  const segments = [];
+  let remaining = target;
+
+  for (let index = 0;
+       index < durations.length && remaining > 0.001;
+       index++) {
+    const take = Math.min(
+      durations[index],
+      remaining
+    );
+
+    if (take > 0.001) {
+      segments.push({
+        sourceIndex: index,
+        seconds: take
+      });
+
+      remaining -= take;
+    }
+  }
+
+  if (remaining > 0.05) {
+    throw new Error(
+      'Insufficient scene footage; use standard assembly fallback.'
+    );
+  }
+
+  return segments;
 }
 
 export async function createCinematicEdit({
@@ -199,35 +207,16 @@ export async function createCinematicEdit({
 
   const musicTimings = getMusicTimings(
     plan,
-    sceneFiles.length,
     target
   );
 
   const usingMusicPlan = musicTimings !== null;
 
-  const available = durations.reduce(
-    (sum, value) => sum + value,
-    0
+  const segmentsToCreate = makeSegments(
+    durations,
+    target,
+    musicTimings
   );
-
-  if (available + 0.05 < target) {
-    throw new Error(
-      'Insufficient scene footage for cinematic edit; ' +
-      'use standard assembly fallback.'
-    );
-  }
-
-  if (usingMusicPlan) {
-    for (let i = 0; i < musicTimings.length; i++) {
-      if (durations[i] + 0.05 < musicTimings[i]) {
-        throw new Error(
-          `Scene ${i + 1} is too short for its ` +
-          'music-directed timing; use standard ' +
-          'assembly fallback.'
-        );
-      }
-    }
-  }
 
   const work = workDirectory || path.join(
     path.dirname(outputFile),
@@ -248,21 +237,29 @@ export async function createCinematicEdit({
     ? 720
     : 1280;
 
-  const segments = [];
-  let remaining = target;
+  const fps = 24;
+  const segmentFiles = [];
 
-  for (
-    let index = 0;
-    index < sceneFiles.length && remaining > 0.04;
-    index++
-  ) {
-    const take = usingMusicPlan
-      ? musicTimings[index]
-      : Math.min(durations[index], remaining);
+  // Each segment is cut to its planned length.
+  // If the source clip is too short, it is looped.
+  // Looping avoids frozen frames but may repeat action.
 
-    if (take < 0.05) {
+  for (let index = 0;
+       index < segmentsToCreate.length;
+       index++) {
+    const item = segmentsToCreate[index];
+
+    const source = sceneFiles[item.sourceIndex];
+    const sourceDuration = durations[item.sourceIndex];
+
+    const take = item.seconds;
+
+    if (
+      !Number.isFinite(take) ||
+      take <= 0
+    ) {
       throw new Error(
-        `Scene ${index + 1} is too short to edit.`
+        `Invalid duration for scene ${index + 1}.`
       );
     }
 
@@ -271,63 +268,94 @@ export async function createCinematicEdit({
       `segment-${String(index + 1).padStart(3, '0')}.mp4`
     );
 
+    const requiresLoop =
+      take > sourceDuration - 0.05;
+
+    const inputArgs = requiresLoop
+      ? ['-stream_loop', '-1', '-i', source]
+      : ['-i', source];
+
     await run('ffmpeg', [
       '-y',
-      '-i', sceneFiles[index],
-      '-t', String(take),
+      ...inputArgs,
       '-vf',
       `scale=${width}:${height}:force_original_aspect_ratio=increase,` +
-      `crop=${width}:${height},setsar=1,fps=24`,
+      `crop=${width}:${height},setsar=1,` +
+      `fps=${fps},setpts=PTS-STARTPTS`,
+      '-t', String(take),
       '-an',
       '-c:v', 'libx264',
       '-preset', 'veryfast',
       '-crf', '19',
       '-pix_fmt', 'yuv420p',
+      '-r', String(fps),
       '-movflags', '+faststart',
       segment
     ]);
 
-    segments.push(segment);
-    remaining -= take;
+    const actual = await mediaDuration(segment);
+
+    if (Math.abs(actual - take) > 0.15) {
+      throw new Error(
+        `Scene ${index + 1} duration mismatch.`
+      );
+    }
+
+    segmentFiles.push(segment);
   }
 
-  if (remaining > 0.05) {
-    throw new Error(
-      'Scene footage was insufficient after trimming.'
-    );
-  }
+  // Use the concat demuxer with standardized clips.
+  // This avoids a very large filter graph for long songs.
 
-  const joined = path.join(work, 'joined.mp4');
-
-  const concatInputs = segments.flatMap(
-    file => ['-i', file]
+  const manifest = path.join(
+    work,
+    'cinematic-scenes.txt'
   );
 
-  const filter =
-    segments.map((_, i) => `[${i}:v:0]`).join('') +
-    `concat=n=${segments.length}:v=1:a=0[v]`;
+  const escapePath = file =>
+    file.replace(/'/g, "'\\''");
+
+  await writeFile(
+    manifest,
+    segmentFiles.map(
+      file => `file '${escapePath(file)}'`
+    ).join('\n') + '\n'
+  );
+
+  const joined = path.join(
+    work,
+    'joined.mp4'
+  );
 
   await run('ffmpeg', [
     '-y',
-    ...concatInputs,
-    '-filter_complex', filter,
-    '-map', '[v]',
+    '-f', 'concat',
+    '-safe', '0',
+    '-i', manifest,
     '-an',
-    '-c:v', 'libx264',
-    '-preset', 'veryfast',
-    '-crf', '19',
-    '-pix_fmt', 'yuv420p',
+    '-c:v', 'copy',
+    '-movflags', '+faststart',
     joined
   ]);
+
+  // Restore the uploaded song as the soundtrack.
+  // Pad the last video frame only if rounding creates
+  // a small gap at the end of the video.
 
   await run('ffmpeg', [
     '-y',
     '-i', joined,
     '-i', songFile,
-    '-map', '0:v:0',
+    '-filter_complex',
+    `[0:v:0]tpad=stop_mode=clone:stop_duration=1,` +
+    `trim=duration=${target},setpts=PTS-STARTPTS[v]`,
+    '-map', '[v]',
     '-map', '1:a:0',
     '-t', String(target),
-    '-c:v', 'copy',
+    '-c:v', 'libx264',
+    '-preset', 'veryfast',
+    '-crf', '19',
+    '-pix_fmt', 'yuv420p',
     '-c:a', 'aac',
     '-b:a', '192k',
     '-movflags', '+faststart',
@@ -347,8 +375,8 @@ export async function createCinematicEdit({
   }
 
   return {
-    engine: 'Zala Cinematic Editing v2',
-    scenesUsed: segments.length,
+    engine: 'Zala Cinematic Editing v3',
+    scenesUsed: segmentFiles.length,
     usedMusicPlan: usingMusicPlan,
     musicPlanCompatible: usingMusicPlan,
     durationSeconds: finalDuration,
