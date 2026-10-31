@@ -30,7 +30,7 @@ import {
 import {
   analyzeMusic
 } from './music-intelligence-engine.js';
-
+import { analyzeVideo } from './video-intelligence-engine.js';
 import {
   createCinematicEdit
 } from './cinematic-editing-engine.js';
