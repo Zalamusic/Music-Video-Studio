@@ -111,7 +111,7 @@ function execute(command, args, returnStdout = false) {
     child.on('close', code => code === 0
       ? resolve(returnStdout ? out.trim() : undefined)
       : reject(new Error(err.slice(-1600) || `${command} failed`)));
-  });⅚
+  });
 }
 async function duration(file) {
   const n = Number(await execute('ffprobe', [
