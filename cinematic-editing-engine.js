@@ -11,6 +11,7 @@ function run(command, args) {
 
     let stdout = '';
     let stderr = '';
+    let settled = false;
 
     child.stdout.on('data', chunk => {
       stdout += chunk.toString();
@@ -20,15 +21,25 @@ function run(command, args) {
       stderr = (stderr + chunk.toString()).slice(-3000);
     });
 
-    child.on('error', reject);
+    child.on('error', error => {
+      if (!settled) {
+        settled = true;
+        reject(error);
+      }
+    });
 
-    child.on('close', code =>
-      code === 0
-        ? resolve(stdout.trim())
-        : reject(new Error(
-            stderr || `${command} failed`
-          ))
-    );
+    child.on('close', code => {
+      if (settled) return;
+      settled = true;
+
+      if (code === 0) {
+        resolve(stdout.trim());
+      } else {
+        reject(new Error(
+          stderr || `${command} failed`
+        ));
+      }
+    });
   });
 }
 
@@ -43,16 +54,104 @@ async function mediaDuration(file) {
 
   const seconds = Number(result);
 
-  if (
-    !Number.isFinite(seconds) ||
-    seconds <= 0
-  ) {
+  if (!Number.isFinite(seconds) || seconds <= 0) {
     throw new Error(
       `Invalid media duration: ${file}`
     );
   }
 
   return seconds;
+}
+
+function sceneDuration(scene) {
+  if (!scene || typeof scene !== 'object') {
+    return NaN;
+  }
+
+  const start = Number(scene.startSeconds);
+  const end = Number(scene.endSeconds);
+
+  if (
+    Number.isFinite(start) &&
+    Number.isFinite(end) &&
+    end > start
+  ) {
+    return end - start;
+  }
+
+  const duration = Number(scene.durationSeconds);
+
+  return Number.isFinite(duration) &&
+    duration > 0
+    ? duration
+    : NaN;
+}
+
+function getMusicTimings(plan, count, target) {
+  if (!Array.isArray(plan?.scenes)) {
+    return null;
+  }
+
+  if (plan.scenes.length !== count) {
+    throw new Error(
+      'Music plan scene count does not match ' +
+      'the generated footage; use standard ' +
+      'assembly fallback.'
+    );
+  }
+
+  const timings = plan.scenes.map(sceneDuration);
+
+  if (
+    timings.some(value =>
+      !Number.isFinite(value) || value <= 0
+    )
+  ) {
+    throw new Error(
+      'Music plan contains invalid scene timings.'
+    );
+  }
+
+  let position = 0;
+
+  for (let i = 0; i < plan.scenes.length; i++) {
+    const scene = plan.scenes[i];
+
+    if (
+      scene.startSeconds != null &&
+      scene.endSeconds != null
+    ) {
+      const start = Number(scene.startSeconds);
+      const end = Number(scene.endSeconds);
+
+      if (
+        !Number.isFinite(start) ||
+        !Number.isFinite(end) ||
+        Math.abs(start - position) > 0.15
+      ) {
+        throw new Error(
+          'Music plan has gaps or overlapping scenes.'
+        );
+      }
+
+      position = end;
+    } else {
+      position += timings[i];
+    }
+  }
+
+  const total = timings.reduce(
+    (sum, value) => sum + value,
+    0
+  );
+
+  if (Math.abs(total - target) > 0.15) {
+    throw new Error(
+      'Music plan duration does not match the song.'
+    );
+  }
+
+  return timings;
 }
 
 export async function createCinematicEdit({
@@ -98,6 +197,14 @@ export async function createCinematicEdit({
 
   await stat(songFile);
 
+  const musicTimings = getMusicTimings(
+    plan,
+    sceneFiles.length,
+    target
+  );
+
+  const usingMusicPlan = musicTimings !== null;
+
   const available = durations.reduce(
     (sum, value) => sum + value,
     0
@@ -110,12 +217,25 @@ export async function createCinematicEdit({
     );
   }
 
+  if (usingMusicPlan) {
+    for (let i = 0; i < musicTimings.length; i++) {
+      if (durations[i] + 0.05 < musicTimings[i]) {
+        throw new Error(
+          `Scene ${i + 1} is too short for its ` +
+          'music-directed timing; use standard ' +
+          'assembly fallback.'
+        );
+      }
+    }
+  }
+
   const work = workDirectory || path.join(
     path.dirname(outputFile),
     `edit-${path.parse(outputFile).name}`
   );
 
   await mkdir(work, { recursive: true });
+
   await mkdir(path.dirname(outputFile), {
     recursive: true
   });
@@ -136,12 +256,15 @@ export async function createCinematicEdit({
     index < sceneFiles.length && remaining > 0.04;
     index++
   ) {
-    const take = Math.min(
-      durations[index],
-      remaining
-    );
+    const take = usingMusicPlan
+      ? musicTimings[index]
+      : Math.min(durations[index], remaining);
 
-    if (take < 0.05) break;
+    if (take < 0.05) {
+      throw new Error(
+        `Scene ${index + 1} is too short to edit.`
+      );
+    }
 
     const segment = path.join(
       work,
@@ -218,41 +341,16 @@ export async function createCinematicEdit({
     Math.abs(finalDuration - target) > 0.25
   ) {
     throw new Error(
-      `Final video duration mismatch: ` +
+      'Final video duration mismatch: ' +
       `${finalDuration.toFixed(2)} seconds.`
     );
   }
 
-  const compatiblePlan =
-    Array.isArray(plan?.scenes) &&
-    plan.scenes.length === segments.length &&
-    Math.abs(
-      plan.scenes.reduce(
-        (sum, scene) =>
-          sum + Number(scene.durationSeconds || 0),
-        0
-      ) - target
-    ) < 0.25 &&
-    plan.scenes.every(
-      (scene, index) =>
-        Math.abs(
-          Number(scene.durationSeconds) -
-          Math.min(
-            durations[index],
-            target -
-            durations.slice(0, index).reduce(
-              (a, b) => a + b,
-              0
-            )
-          )
-        ) < 0.25
-    );
-
   return {
-    engine: 'Zala Cinematic Editing v1',
+    engine: 'Zala Cinematic Editing v2',
     scenesUsed: segments.length,
-    usedMusicPlan: false,
-    musicPlanCompatible: compatiblePlan,
+    usedMusicPlan: usingMusicPlan,
+    musicPlanCompatible: usingMusicPlan,
     durationSeconds: finalDuration,
     outputFile
   };
