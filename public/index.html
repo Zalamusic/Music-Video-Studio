@@ -261,6 +261,48 @@ a{color:#0F6CBD;overflow-wrap:anywhere}
 </section>
 
 <script>
+  
+<script>
+(function () {
+  function setupIntelligenceStudio() {
+    const audioPanel = document.getElementById('musicIntelligencePanel');
+    const videoPanel = document.getElementById('videoIntelligencePanel');
+    const audioButton = document.getElementById('showAudioAnalyzer');
+    const videoButton = document.getElementById('showVideoAnalyzer');
+
+    if (!audioPanel || !videoPanel || !audioButton || !videoButton) {
+      return;
+    }
+
+    function showAnalyzer(type) {
+      const showVideo = type === 'video';
+
+      videoPanel.style.display = showVideo ? '' : 'none';
+      audioPanel.style.display = showVideo ? 'none' : '';
+
+      videoButton.setAttribute('aria-pressed', String(showVideo));
+      audioButton.setAttribute('aria-pressed', String(!showVideo));
+    }
+
+    videoButton.addEventListener('click', function () {
+      showAnalyzer('video');
+    });
+
+    audioButton.addEventListener('click', function () {
+      showAnalyzer('audio');
+    });
+
+    showAnalyzer('audio');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupIntelligenceStudio);
+  } else {
+    setupIntelligenceStudio();
+  }
+})();
+</script>
+<script>
 (function () {
   'use strict';
 
