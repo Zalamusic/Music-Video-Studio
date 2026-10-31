@@ -947,18 +947,48 @@ async function assembleStandardVideo(
   await saveState(state);
 
   try {
-    const result = await createCinematicEdit({
-      sceneFiles,
-      songFile,
-      outputFile: finalFile,
-      songSeconds: state.songSeconds,
-      format: state.format,
-      plan: musicPlan,
-      workDirectory: path.join(
-        dir,
-        'cinematic-edit-work'
-      )
-    });
+    
+
+    let result;
+
+    try {
+      result = await createCinematicEdit({
+        sceneFiles,
+        songFile,
+        outputFile: finalFile,
+        songSeconds: state.songSeconds,
+        format: state.format,
+        plan: musicPlan,
+        workDirectory: path.join(
+          dir,
+          'cinematic-edit-work'
+        )
+      });
+    } catch (cinematicError) {
+      console.error(
+        'Cinematic editor failed; trying Hybrid Engine:',
+        cinematicError.message
+      );
+
+      await fs.rm(finalFile, {
+        force: true
+      });
+
+      result = await createHybridVideo({
+        clips: sceneFiles,
+        songFile,
+        outputFile: finalFile,
+        songSeconds: state.songSeconds,
+        format: state.format,
+        workDirectory: path.join(
+          dir,
+          'hybrid-edit-work'
+        )
+      });
+
+      result.scenesUsed = result.clipsUsed;
+      result.usedMusicPlan = false;
+    }
 
     state.editing = {
       status: 'completed',
