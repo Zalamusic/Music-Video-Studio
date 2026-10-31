@@ -8,6 +8,10 @@ const WIDTH = 720;
 const HEIGHT = 1280;
 const MAX_SECONDS = 360;
 
+// Conservative zoom limits to help preserve framing.
+const MIN_ZOOM = 1.02;
+const MAX_ZOOM = 1.12;
+
 const MOTIONS = new Set([
   'zoom',
   'zoomOut',
@@ -26,6 +30,7 @@ function runFFmpeg(args) {
     ]);
 
     let errorText = '';
+    let settled = false;
 
     child.stderr.on('data', data => {
       errorText += data.toString();
@@ -35,9 +40,18 @@ function runFFmpeg(args) {
       }
     });
 
-    child.on('error', reject);
+    child.on('error', error => {
+      if (!settled) {
+        settled = true;
+        reject(error);
+      }
+    });
 
     child.on('close', code => {
+      if (settled) return;
+
+      settled = true;
+
       if (code === 0) {
         resolve();
       } else {
@@ -58,34 +72,28 @@ function makeMotionFilter(style, seconds) {
 
   const last = Math.max(1, frames - 1);
 
-  // Normalized progress from 0 to 1.
+  // Progress from 0 to 1.
   const progress = `(on/${last})`;
 
-  // Smooth acceleration and deceleration.
+  // Smoothstep creates gentle acceleration
+  // and deceleration.
   const smooth =
     `(${progress}*${progress}*` +
     `(3-2*${progress}))`;
 
-  // Motion repeats every 15 seconds for longer videos,
-  // preventing a long clip from appearing stationary.
-  const cycleFrames = 15 * FPS;
-  const cycleLast = cycleFrames - 1;
-  const cycleProgress =
-    `(mod(on,${cycleFrames})/${cycleLast})`;
+  const zoomRange = MAX_ZOOM - MIN_ZOOM;
 
-  const cycleSmooth =
-    `(${cycleProgress}*${cycleProgress}*` +
-    `(3-2*${cycleProgress}))`;
+  const zoomIn =
+    `${MIN_ZOOM}+${zoomRange}*${smooth}`;
 
-  const p = frames > cycleFrames
-    ? cycleSmooth
-    : smooth;
+  const zoomOut =
+    `${MAX_ZOOM}-${zoomRange}*${smooth}`;
 
-  // A noticeable 30% zoom range.
-  const zoomIn = `1.02+0.30*${p}`;
-  const zoomOut = `1.32-0.30*${p}`;
+  // Use a limited horizontal pan.
+  const panZoom = 1.12;
+  const panFraction = 0.65;
 
-  const motions = {
+  const motion = {
     zoom: {
       z: zoomIn,
       x: 'iw/2-(iw/zoom/2)',
@@ -99,19 +107,25 @@ function makeMotionFilter(style, seconds) {
     },
 
     panLeft: {
-      z: '1.32',
-      x: `(iw-iw/zoom)*(1-${p})`,
+      z: String(panZoom),
+      x:
+        `(iw-iw/zoom)*` +
+        `(0.5+${panFraction / 2}-` +
+        `${panFraction}*${smooth})`,
       y: 'ih/2-(ih/zoom/2)'
     },
 
     panRight: {
-      z: '1.32',
-      x: `(iw-iw/zoom)*${p}`,
+      z: String(panZoom),
+      x:
+        `(iw-iw/zoom)*` +
+        `(0.5-${panFraction / 2}+` +
+        `${panFraction}*${smooth})`,
       y: 'ih/2-(ih/zoom/2)'
     }
   };
 
-  const selected = motions[style] || motions.zoom;
+  const selected = motion[style] || motion.zoom;
 
   return [
     `scale=${WIDTH * 2}:${HEIGHT * 2}:force_original_aspect_ratio=increase`,
@@ -188,12 +202,14 @@ export async function createIndependentVideo({
   const info = await fs.stat(outputPath);
 
   if (info.size === 0) {
-    throw new Error('Generated video is empty.');
+    throw new Error(
+      'Generated video is empty.'
+    );
   }
 
   return {
     ok: true,
-    engine: 'Zala Independent Video Engine v2',
+    engine: 'Zala Independent Video Engine v3',
     outputPath,
     durationSeconds: seconds,
     resolution: `${WIDTH}x${HEIGHT}`,
