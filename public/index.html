@@ -302,6 +302,123 @@ a{color:#0F6CBD;overflow-wrap:anywhere}
   }
 })();
 </script>
+  
+<script>
+(function () {
+  'use strict';
+
+  const videoFile = document.getElementById('videoTestFile');
+  const password = document.getElementById('videoTestAdminPassword');
+  const button = document.getElementById('videoTestButton');
+  const status = document.getElementById('videoTestStatus');
+  const results = document.getElementById('videoTestResults');
+
+  if (!videoFile || !password || !button || !status || !results) {
+    return;
+  }
+
+  function addLine(label, value) {
+    const paragraph = document.createElement('p');
+    paragraph.textContent = label + ': ' + String(value ?? 'Unknown');
+    results.appendChild(paragraph);
+  }
+
+  button.addEventListener('click', async function () {
+    const file = videoFile.files?.[0];
+
+    if (!file) {
+      status.textContent = 'Please select an MP4 video.';
+      return;
+    }
+
+    if (!file.name.toLowerCase().endsWith('.mp4')) {
+      status.textContent = 'Only MP4 videos are supported.';
+      return;
+    }
+
+    if (!password.value.trim()) {
+      status.textContent = 'Enter your administrator password.';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('video', file);
+
+    button.disabled = true;
+    results.replaceChildren();
+    status.textContent = 'Analyzing your video. Please wait...';
+
+    try {
+      const response = await fetch('/api/test-video-intelligence', {
+        method: 'POST',
+        headers: {
+          'X-Video-Admin-Key': password.value
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'Video analysis failed.');
+      }
+
+      const report = data.report;
+      const media = report.media || {};
+      const quality = report.quality || {};
+
+      status.textContent = 'Video analysis completed successfully!';
+
+      addLine('Video', file.name);
+      addLine('Duration (seconds)', media.durationSeconds);
+      addLine('Resolution', `${media.width} × ${media.height}`);
+      addLine('Frame rate (FPS)', media.frameRate);
+      addLine('Video codec', media.videoCodec);
+      addLine('Audio detected', media.hasAudio ? 'Yes' : 'No');
+      addLine('Scene changes', report.sceneChanges?.count);
+      addLine('Detected scenes', quality.detectedScenes);
+      addLine('Average scene duration', quality.averageSceneSeconds);
+      addLine('Technical status', quality.technicalStatus);
+
+      const warnings = quality.warnings || [];
+
+      if (warnings.length) {
+        addLine('Warnings', warnings.join('; '));
+      } else {
+        addLine('Warnings', 'No basic technical warnings detected.');
+      }
+
+      const download = document.createElement('button');
+      download.type = 'button';
+      download.className = 'secondary';
+      download.textContent = 'Download Analysis Report';
+
+      download.addEventListener('click', function () {
+        const blob = new Blob(
+          [JSON.stringify(report, null, 2)],
+          { type: 'application/json' }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'zala-video-analysis.json';
+        link.click();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+
+      results.appendChild(download);
+
+    } catch (error) {
+      status.textContent = 'Unable to analyze video: ' + error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+})();
+</script>
+
 <script>
 (function () {
   'use strict';
