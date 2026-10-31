@@ -168,7 +168,68 @@ function estimate(seconds, premium, creationType = 'photo') {
       'Estimate only. Actual provider billing may differ.'
   };
 }
+app.post(
+  '/api/test-music-intelligence',
+  upload.single('audio'),
+  async (req, res) => {
+    if (!isVideoAdmin(req)) {
+      return res.status(403).json({
+        error: 'Administrator password required.'
+      });
+    }
 
+    if (!req.file) {
+      return res.status(400).json({
+        error: 'Please upload an MP3 or WAV song.'
+      });
+    }
+
+    const testDir = path.join(
+      JOBS,
+      'music-test-' + randomUUID()
+    );
+
+    try {
+      await fs.mkdir(testDir, {
+        recursive: true
+      });
+
+      const songFile = path.join(
+        testDir,
+        'test-song'
+      );
+
+      await fs.writeFile(
+        songFile,
+        req.file.buffer
+      );
+
+      const plan = await analyzeMusic(
+        songFile,
+        {
+          maxAnalysisSeconds: 360,
+          maxSceneSeconds: 15,
+          minSceneSeconds: 6
+        }
+      );
+
+      res.json({
+        ok: true,
+        message: 'Music analysis completed.',
+        plan
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: error.message
+      });
+    } finally {
+      await fs.rm(testDir, {
+        recursive: true,
+        force: true
+      }).catch(() => {});
+    }
+  }
+);
 app.get('/api/estimate', (req, res) => {
   const seconds = Number(req.query.seconds);
 
