@@ -1,1 +1,230 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d2347">
+<title>Zala QI's World | Video Studio</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(145deg,#07152b,#123e78);
+  color:#fff;
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+  padding:20px 14px 50px;
+}
+main{
+  max-width:680px;
+  margin:auto;
+}
+header{text-align:center;padding:20px 0}
+.logo{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:65px;height:65px;
+  border-radius:18px;
+  background:#2498ff;
+  font-weight:bold;font-size:26px;
+}
+h1{font-size:28px;margin:15px 0 6px}
+.subtitle{color:#bbd9ff;line-height:1.6}
+.panel{
+  background:#fff;
+  color:#162c48;
+  padding:24px;
+  border-radius:20px;
+  margin:20px 0;
+  box-shadow:0 10px 35px #0003;
+}
+h2{margin-top:0;font-size:21px}
+label{
+  display:block;
+  font-weight:bold;
+  margin:20px 0 8px;
+}
+input,select,textarea{
+  display:block;
+  width:100%;
+  padding:14px;
+  border:1px solid #b8cbe0;
+  border-radius:10px;
+  font:inherit;
+  background:#f7fbff;
+  color:#162c48;
+}
+textarea{min-height:110px;resize:vertical}
+input[type=file]{padding:12px}
+button,.button{
+  display:block;
+  width:100%;
+  padding:16px;
+  background:#1269c7;
+  color:#fff;
+  border:0;
+  border-radius:11px;
+  font-size:16px;
+  font-weight:bold;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+  margin-top:14px;
+}
+button:disabled{opacity:.55;cursor:wait}
+button.secondary{background:#24476e}
+.note{
+  font-size:13px;
+  color:#61758e;
+  line-height:1.6;
+}
+#status{
+  margin-top:16px;
+  line-height:1.6;
+  overflow-wrap:anywhere;
+}
+video{
+  display:block;
+  width:100%;
+  max-height:520px;
+  background:#000;
+  border-radius:12px;
+}
+#videoResult{display:none}
+.actions{display:grid;gap:10px}
+footer{text-align:center;color:#bbd9ff;padding:20px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="logo">ZQ</div>
+  <h1>Zala QI's World</h1>
+  <div class="subtitle">
+    Independent Video Studio<br>
+    Your music. Your vision. Your world.
+  </div>
+</header>
+
+<section class="panel">
+<h2>Create Your Video</h2>
+<p class="note">
+  Upload your photo and music to create a video
+  with cinematic camera movement.
+</p>
+
+<form id="videoForm">
+<label for="title">Video Title</label>
+<input id="title" name="title"
+  placeholder="Enter your video title" required>
+
+<label for="photo">Artist Photo</label>
+<input id="photo" name="photo" type="file"
+  accept="image/jpeg,image/png,image/webp" required>
+
+<label for="audio">Song (MP3 or WAV)</label>
+<input id="audio" name="audio" type="file"
+  accept=".mp3,.wav,audio/mpeg,audio/wav" required>
+
+<label for="motion">Camera Motion</label>
+<select id="motion" name="motion">
+  <option value="zoom">Cinematic Zoom In</option>
+  <option value="zoomOut">Cinematic Zoom Out</option>
+  <option value="panLeft">Pan Left</option>
+  <option value="panRight">Pan Right</option>
+</select>
+
+<label for="seconds">Video Duration</label>
+<select id="seconds" name="seconds">
+  <option value="15">15 Seconds</option>
+  <option value="30">30 Seconds</option>
+  <option value="60">60 Seconds</option>
+</select>
+
+<label for="concept">Creative Direction</label>
+<textarea id="concept" name="concept"
+  placeholder="Describe your video concept, location, mood, or visual style."></textarea>
+
+<p class="note">
+  Independent Engine v1 animates a photograph.
+  Creative direction is saved for future engine
+  capabilities and does not yet generate new scenes.
+</p>
+
+<label for="adminPassword">Administrator Password</label>
+<input id="adminPassword" type="password"
+  autocomplete="off" required
+  placeholder="Enter administrator password">
+
+<button id="generateButton" type="submit">
+  🎬 Generate Video
+</button>
+</form>
+
+<div id="status" role="status" aria-live="polite">
+  Ready to create your video.
+</div>
+</section>
+
+<section class="panel" id="videoResult">
+<h2>Your Finished Video</h2>
+<video id="player" controls playsinline preload="metadata"></video>
+<div class="actions">
+  <button type="button" class="secondary"
+    id="replayButton">↻ Replay Video</button>
+  <button type="button" class="secondary"
+    id="fullscreenButton">⛶ Fullscreen</button>
+  <a id="downloadButton" class="button" download="zala-video.mp4">
+    Download Video
+  </a>
+</div>
+</section>
+
+<a href="/" class="button"
+  style="background:#ffffff;color:#1269c7">
+  Return to Zala QI's World
+</a>
+
+<footer>© Zala QI's World — Video Studio</footer>
+</main>
+
+<script>
+const form = document.getElementById('videoForm');
+const statusText = document.getElementById('status');
+const generateButton = document.getElementById('generateButton');
+const result = document.getElementById('videoResult');
+const player = document.getElementById('player');
+const downloadButton = document.getElementById('downloadButton');
+
+function loadVideo(url) {
+  player.src = url;
+  player.load();
+  downloadButton.href = url;
+  result.style.display = 'block';
+  result.scrollIntoView({behavior:'smooth'});
+}
+
+document.getElementById('replayButton').onclick = () => {
+  player.currentTime = 0;
+  player.play().catch(() => {});
+};
+
+document.getElementById('fullscreenButton').onclick = () => {
+  if (player.requestFullscreen) {
+    player.requestFullscreen();
+  }
+};
+
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+
+  statusText.textContent =
+    'Video Studio interface restored. ' +
+    'The independent generation endpoint ' +
+    'still needs to be connected.';
+});
+</script>
+</body>
+</html>
