@@ -111,7 +111,7 @@ function execute(command, args, returnStdout = false) {
     child.on('close', code => code === 0
       ? resolve(returnStdout ? out.trim() : undefined)
       : reject(new Error(err.slice(-1600) || `${command} failed`)));
-  });
+  });⅚
 }
 async function duration(file) {
   const n = Number(await execute('ffprobe', [
@@ -238,7 +238,104 @@ const cameraShots = [
   'Side-tracking shot with layered foreground'
 ];
 
+
 function scenePrompt(s, i) {
+  const idea = sceneIdeas[(i - 1) % sceneIdeas.length];
+  const cameraDirection =
+    cameraShots[(i - 1) % cameraShots.length];
+
+  const concept = String(s.concept || '');
+
+  // Explicit artistic styles remain available to customers.
+  const stylizedStyle =
+    /\b(anime|animated|animation|cartoon|pixar|claymation|stop.motion|cel.shaded|illustration|comic.book|3d.render|cgi|video.game|stylized|non.photorealistic)\b/i
+      .test(concept);
+
+  const realismDirection = stylizedStyle
+    ? (
+        'VISUAL STYLE: Honor the customer requested ' +
+        'artistic or animated style. Preserve character ' +
+        'consistency, coherent anatomy, natural motion ' +
+        'and professional cinematic composition. '
+      )
+    : (
+        'PHOTOREALISTIC LIVE-ACTION CINEMA: ' +
+        'Render all human characters as real people ' +
+        'photographed with professional cinema cameras, ' +
+        'not computer-generated or illustrated figures. ' +
+        'Maintain convincing realism in close-ups, ' +
+        'medium shots, wide shots and full-body shots. ' +
+        'Preserve natural facial structure, realistic ' +
+        'skin texture, subtle pores, believable eyes, ' +
+        'natural hair strands and realistic clothing. ' +
+        'In distant shots, retain realistic human ' +
+        'proportions, posture, silhouette and movement. ' +
+        'Use physically believable lighting, shadows, ' +
+        'depth, perspective and environmental detail. ' +
+        'Avoid plastic skin, doll-like faces, cartoon ' +
+        'features, artificial body shapes, stiff walking, ' +
+        'rubbery motion, excessive smoothing and ' +
+        'animation-like rendering. ' +
+        'Keep the photographic appearance consistent ' +
+        'as the camera moves closer or farther away. '
+      );
+
+  const identity = s.creationType === 'prompt'
+    ? (
+        'CHARACTER CONTINUITY: Keep every recurring ' +
+        'character visually consistent throughout ' +
+        'the scene and across subsequent scenes. '
+      )
+    : (
+        'CRITICAL CHARACTER IDENTITY LOCK: ' +
+        'The uploaded reference photograph defines ' +
+        'the main character. Preserve the same ' +
+        'recognizable person, facial structure, eyes, ' +
+        'nose, lips, jawline, skin tone, hair color, ' +
+        'hairstyle, hair length and body proportions. ' +
+        'Never substitute a different actor. ' +
+        'Maintain identity through camera movements, ' +
+        'lighting changes and scene transitions. ' +
+        'Clothing may change only when requested. ' +
+        'Avoid face morphing and identity drift. '
+      );
+
+  return (
+    `Professional cinematic music video for "${s.title}". ` +
+    `Scene ${i} of ${s.totalScenes}. ` +
+    `${identity}` +
+    `PRIMARY DIRECTOR INSTRUCTIONS: ${concept}. ` +
+    `Follow the customer's requested setting, actions, ` +
+    `character behavior, atmosphere and visual style. ` +
+    `Do not introduce conflicting locations or actions. ` +
+    `${realismDirection}` +
+    `Additional scene inspiration, only if compatible ` +
+    `with the customer's instructions: ${idea}. ` +
+    `Camera direction, when compatible with the ` +
+    `customer's request: ${cameraDirection}. ` +
+    `ACTION AND MOVEMENT: Follow requested actions ` +
+    `in their described order. Maintain believable ` +
+    `gravity, momentum, balance and physical contact. ` +
+    `HUMAN PERFORMANCE: Use expressive faces, natural ` +
+    `blinking, breathing, eye movement, gestures, ` +
+    `emotion and believable body language. ` +
+    `CHARACTER CONSISTENCY: Preserve facial features, ` +
+    `hairstyle, skin tone, body proportions and wardrobe. ` +
+    `Avoid distorted anatomy, extra limbs and sudden ` +
+    `changes in appearance. ` +
+    `CINEMATIC CAMERA: Use professional framing, ` +
+    `natural depth of field and smooth camera movement. ` +
+    `Support aerial views, tracking shots, close-ups ` +
+    `and dynamic perspectives when requested. ` +
+    `Begin with a clearly composed opening frame. ` +
+    `Avoid fade-ins unless requested. ` +
+    `Make scenes visually distinct while maintaining ` +
+    `character and story continuity. ` +
+    `No text, captions, logos, watermarks, music ` +
+    `or dialogue.`
+  );
+}
+
   const idea = sceneIdeas[(i - 1) % sceneIdeas.length];
   const cameraDirection = cameraShots[(i - 1) % cameraShots.length];
 
