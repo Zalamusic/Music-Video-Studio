@@ -7,6 +7,10 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createIndependentVideo } from './independent-video-engine.js';
+import {
+  createRunPodVideo,
+  getRunPodEngineStatus
+} from './runpod-video-engine.js';
 import { createHybridVideo } from './hybrid-video-engine.js';
 import { prepareSceneImage } from './scene-preparation-engine.js';
 import { createDirectorPlan } from './director-mode-engine.js';
