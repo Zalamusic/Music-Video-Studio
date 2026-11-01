@@ -8,7 +8,7 @@
 <title>Zala QI's World | Cinematic Music Video Studio</title>
 
 <style>
-:root {
+:root{
   --blue:#2469cc;
   --blue-dark:#1556b4;
   --navy:#17263c;
@@ -18,30 +18,30 @@
   --photo:url("https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=85");
 }
 
-* {box-sizing:border-box}
+*{box-sizing:border-box}
 
-html {
+html{
   scroll-behavior:smooth;
   scroll-padding-top:180px;
 }
 
-body {
+body{
   margin:0;
   background:#fff;
   color:var(--navy);
   font:16px/1.6 Arial,sans-serif;
 }
 
-button,input,select,textarea {font:inherit}
-a {text-decoration:none}
+button,input,select,textarea{font:inherit}
+a{text-decoration:none}
 
-.page {
+.page{
   max-width:940px;
   margin:auto;
   padding:0 16px 40px;
 }
 
-.icon {
+.icon{
   width:20px;
   height:20px;
   flex:none;
@@ -52,11 +52,11 @@ a {text-decoration:none}
   stroke-linejoin:round;
 }
 
-/* Header and branding */
+/* Main header */
 
-.main-header {padding:17px 0}
+.main-header{padding:17px 0}
 
-.header-top {
+.header-top{
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -64,14 +64,14 @@ a {text-decoration:none}
   gap:12px;
 }
 
-.brand {
+.brand{
   display:flex;
   align-items:center;
   gap:10px;
   min-width:0;
 }
 
-.logo {
+.logo{
   background:#eaf2ff;
   color:var(--blue);
   border-radius:12px;
@@ -84,50 +84,58 @@ a {text-decoration:none}
   flex:none;
 }
 
-.brand-name {
+.brand-name{
   font-size:16px;
   font-weight:800;
 }
 
-.brand-sub {
+.brand-sub{
   color:var(--muted);
   font-size:11px;
   font-weight:600;
   letter-spacing:.6px;
 }
 
-.account-actions {
+/* Matching Sign In and Sign Up buttons */
+
+.account-actions{
   display:flex;
   align-items:center;
   gap:8px;
   flex-shrink:0;
 }
 
-.account-actions a {
+.account-actions a{
   display:inline-flex;
   align-items:center;
   justify-content:center;
   min-height:42px;
   padding:9px 14px;
+  border:3px solid var(--blue);
   border-radius:10px;
+  background:#fff;
+  color:var(--blue);
   font-size:14px;
   font-weight:700;
   white-space:nowrap;
 }
 
-.signin {
+.account-actions a:hover,
+.account-actions a:active,
+.account-actions a:focus-visible{
+  background:#fff;
   color:var(--blue);
-  background:white;
-  border:2px solid var(--blue);
+  border-color:var(--blue);
 }
 
-.signup {
-  color:#fff;
-  background:var(--blue);
-  border:2px solid var(--blue);
+.account-actions a:focus-visible{
+  outline:2px solid var(--blue);
+  outline-offset:3px;
 }
 
-.tabs {
+/* Navigation */
+
+.tabs{
   display:flex;
   gap:12px;
   overflow-x:auto;
@@ -136,9 +144,9 @@ a {text-decoration:none}
   padding:2px 0;
 }
 
-.tabs::-webkit-scrollbar {display:none}
+.tabs::-webkit-scrollbar{display:none}
 
-.tabs a {
+.tabs a{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -153,28 +161,28 @@ a {text-decoration:none}
   font-weight:700;
 }
 
-.tabs a .icon {
+.tabs a .icon{
   width:17px;
   height:17px;
 }
 
-.tabs .selected {
+.tabs .selected{
   background:var(--blue);
   color:#fff;
 }
 
-.main-tabs {margin-top:15px}
+.main-tabs{margin-top:15px}
 
-/* Cinematic hero */
+/* Cinematic homepage */
 
-.hero {
+.hero{
   border:1px solid var(--line);
   border-radius:18px;
   overflow:hidden;
   background:#fff;
 }
 
-.hero-photo {
+.hero-photo{
   height:280px;
   background-image:
     linear-gradient(
@@ -188,23 +196,23 @@ a {text-decoration:none}
   background-color:#142a56;
 }
 
-.hero-content {padding:24px}
+.hero-content{padding:24px}
 
-h1 {
+h1{
   font-size:clamp(25px,4vw,34px);
   line-height:1.2;
   margin:0 0 10px;
   letter-spacing:-.5px;
 }
 
-.hero-sub {
+.hero-sub{
   font-size:17px;
   font-weight:700;
   color:var(--blue-dark);
   margin:0 0 12px;
 }
 
-.hero-description {
+.hero-description{
   color:var(--muted);
   font-size:15px;
   line-height:1.65;
@@ -212,7 +220,7 @@ h1 {
   margin:0 0 18px;
 }
 
-.button,button {
+.button,button{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -227,21 +235,20 @@ h1 {
   cursor:pointer;
 }
 
-.button:hover,button:hover,
-.signup:hover {
+.button:hover,button:hover{
   background:var(--blue-dark);
 }
 
-.tagline {
+.tagline{
   color:var(--muted);
   font-size:14px;
   font-weight:600;
   margin:13px 0 0;
 }
 
-/* Compact floating header */
+/* Floating header */
 
-.floating-header {
+.floating-header{
   position:fixed;
   top:0;
   left:0;
@@ -260,20 +267,20 @@ h1 {
     visibility .3s;
 }
 
-.floating-header.show {
+.floating-header.show{
   transform:translateY(0);
   opacity:1;
   visibility:visible;
   pointer-events:auto;
 }
 
-.floating-inner {
+.floating-inner{
   max-width:940px;
   margin:auto;
   padding:9px 14px 11px;
 }
 
-.floating-top {
+.floating-top{
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -282,13 +289,13 @@ h1 {
   margin-bottom:8px;
 }
 
-.floating-brand {
+.floating-brand{
   display:flex;
   align-items:center;
   gap:8px;
 }
 
-.mini-logo {
+.mini-logo{
   background:#eaf2ff;
   color:var(--blue);
   border-radius:8px;
@@ -296,31 +303,31 @@ h1 {
   font-weight:800;
 }
 
-.mini-brand-name {
+.mini-brand-name{
   font-weight:800;
   font-size:14px;
 }
 
-.mini-brand-sub {
+.mini-brand-sub{
   color:var(--muted);
   font-size:11px;
   font-weight:600;
 }
 
-.floating-account a {
+.floating-account a{
   min-height:36px;
   padding:6px 10px;
   font-size:12px;
 }
 
-.mini-hero {
+.mini-hero{
   display:flex;
   align-items:center;
   gap:12px;
   margin-bottom:9px;
 }
 
-.mini-photo {
+.mini-photo{
   flex:0 0 70px;
   width:70px;
   height:55px;
@@ -331,52 +338,52 @@ h1 {
   background-color:#142a56;
 }
 
-.mini-headline {
+.mini-headline{
   font-size:16px;
   font-weight:800;
   line-height:1.25;
 }
 
-.mini-sub {
+.mini-sub{
   font-size:12px;
   color:var(--blue-dark);
   font-weight:700;
   margin-top:3px;
 }
 
-/* Content */
+/* Customer content */
 
-.content {padding-top:28px}
+.content{padding-top:28px}
 
-h2 {
+h2{
   font-size:21px;
   margin:0 0 12px;
 }
 
-h3 {
+h3{
   font-size:16px;
   margin:0 0 8px;
 }
 
-.note {
+.note{
   font-size:14px;
   line-height:1.6;
   color:var(--muted);
 }
 
-.cards {
+.cards{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:12px;
 }
 
-.card,.panel {
+.card,.panel{
   padding:18px;
   border:1px solid var(--line);
   border-radius:14px;
 }
 
-.card p,.panel p {
+.card p,.panel p{
   color:var(--muted);
   font-size:15px;
   line-height:1.65;
@@ -384,19 +391,19 @@ h3 {
 
 /* Customer studio */
 
-.studio {
+.studio{
   padding:20px;
   background:var(--soft);
   border:1px solid var(--line);
   border-radius:17px;
 }
 
-.field {
+.field{
   margin-bottom:7px;
   padding:3px 0;
 }
 
-.field label {
+.field label{
   display:flex;
   align-items:center;
   gap:10px;
@@ -406,7 +413,7 @@ h3 {
   color:var(--navy);
 }
 
-.field-icon {
+.field-icon{
   width:36px;
   height:36px;
   display:inline-grid;
@@ -419,7 +426,7 @@ h3 {
 
 .studio input,
 .studio select,
-.studio textarea {
+.studio textarea{
   width:100%;
   min-height:48px;
   padding:12px;
@@ -432,128 +439,118 @@ h3 {
 }
 
 .studio input::placeholder,
-.studio textarea::placeholder {
+.studio textarea::placeholder{
   color:#52647b;
   opacity:1;
 }
 
 .studio input:focus,
 .studio select:focus,
-.studio textarea:focus {
+.studio textarea:focus{
   border-color:#0053d6;
   outline:3px solid rgba(36,105,204,.22);
   outline-offset:1px;
   box-shadow:0 3px 12px rgba(36,105,204,.16);
 }
 
-.studio input[type=file] {
+.studio input[type=file]{
   border-style:dashed;
   padding:18px 12px;
   background:#fafdff;
 }
 
-.studio textarea {
+.studio textarea{
   min-height:110px;
   resize:vertical;
 }
 
-.field-row {
+.field-row{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
 }
 
-.studio button {
+.studio button{
   width:100%;
   margin-top:20px;
 }
 
-#studioStatus {margin-top:12px}
+#studioStatus{margin-top:12px}
 
-/* Account preview */
+/* Account section */
 
-.account-panel {
+.account-panel{
   background:#f7faff;
 }
 
-.account-options {
+.account-options{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
   margin-top:15px;
 }
 
-.account-options .button {
-  min-width:110px;
-}
-
-.account-options .secondary {
+.account-options a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:10px 14px;
+  border:3px solid var(--blue);
+  border-radius:10px;
+  background:#fff;
   color:var(--blue);
-  background:white;
-  border:2px solid var(--blue);
+  font-size:14px;
+  font-weight:700;
 }
 
-footer {
+footer{
   text-align:center;
   padding:26px 0;
   font-size:13px;
   color:var(--muted);
 }
 
-/* Mobile adjustments */
-
-@media(max-width:600px) {
-  .hero-photo {height:195px}
-  .hero-content {padding:18px}
-  .cards {grid-template-columns:1fr}
-
-  .field-row {
+@media(max-width:600px){
+  .hero-photo{height:195px}
+  .hero-content{padding:18px}
+  .cards{grid-template-columns:1fr}
+  .field-row{
     grid-template-columns:1fr;
     gap:0;
   }
-
-  .studio {padding:15px}
-
-  .mini-photo {
+  .studio{padding:15px}
+  .mini-photo{
     flex-basis:62px;
     width:62px;
     height:55px;
   }
-
-  .floating-inner {
+  .floating-inner{
     padding:7px 12px 9px;
   }
-
-  .floating-top {
-    gap:6px;
-  }
-
-  .floating-account {
-    gap:5px;
-  }
-
-  .floating-account a {
+  .floating-top{gap:6px}
+  .floating-account{gap:5px}
+  .floating-account a{
     padding:5px 8px;
     min-height:34px;
     font-size:12px;
   }
-
-  .mini-brand-name {font-size:12px}
-  .mini-brand-sub {font-size:9px}
-
-  .mini-headline {font-size:15px}
+  .mini-brand-name{font-size:12px}
+  .mini-brand-sub{font-size:9px}
+  .mini-headline{font-size:15px}
 }
 
-@media(prefers-reduced-motion:reduce) {
-  html {scroll-behavior:auto}
-  .floating-header {transition:none}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .floating-header{transition:none}
 }
 </style>
 </head>
 
 <body>
 
-<!-- Built-in outline icons -->
+<!-- Built-in icons -->
+
 <svg xmlns="http://www.w3.org/2000/svg"
      style="position:absolute;width:0;height:0;overflow:hidden"
      aria-hidden="true">
@@ -627,6 +624,7 @@ footer {
   <div class="floating-inner">
 
     <div class="floating-top">
+
       <div class="floating-brand">
         <span class="mini-logo">ZQ</span>
         <div>
@@ -640,16 +638,16 @@ footer {
       </div>
 
       <div class="account-actions floating-account">
-        <a class="signin" href="#account">Sign In</a>
-        <a class="signup" href="#account">Sign Up</a>
+        <a href="#account">Sign In</a>
+        <a href="#account">Sign Up</a>
       </div>
+
     </div>
 
     <div class="mini-hero">
       <div class="mini-photo"
            role="img"
            aria-label="Cinematic music performance"></div>
-
       <div>
         <div class="mini-headline">
           Your Music Deserves a Video.
@@ -661,6 +659,7 @@ footer {
     </div>
 
     <nav class="tabs" aria-label="Quick navigation">
+
       <a href="#home">
         <svg class="icon"><use href="#i-home"/></svg>
         Home
@@ -685,8 +684,8 @@ footer {
         <svg class="icon"><use href="#i-info"/></svg>
         How It Works
       </a>
-    </nav>
 
+    </nav>
   </div>
 </div>
 
@@ -711,8 +710,8 @@ footer {
     </div>
 
     <div class="account-actions">
-      <a class="signin" href="#account">Sign In</a>
-      <a class="signup" href="#account">Sign Up</a>
+      <a href="#account">Sign In</a>
+      <a href="#account">Sign Up</a>
     </div>
 
   </div>
@@ -785,7 +784,7 @@ footer {
   </div>
 </section>
 
-<!-- How it works -->
+<!-- How It Works -->
 
 <section class="content" id="how">
 
@@ -820,7 +819,7 @@ footer {
   </div>
 </section>
 
-<!-- Customer video studio -->
+<!-- Customer Studio -->
 
 <section class="content" id="create">
 
@@ -990,7 +989,7 @@ footer {
 
 </section>
 
-<!-- Account preview -->
+<!-- Customer Account -->
 
 <section class="content" id="account">
 
@@ -1012,15 +1011,10 @@ footer {
     </p>
 
     <div class="account-options">
-      <a class="button secondary"
-         href="#account"
-         aria-disabled="true">
+      <a href="#account" aria-disabled="true">
         Sign In — Coming Soon
       </a>
-
-      <a class="button"
-         href="#account"
-         aria-disabled="true">
+      <a href="#account" aria-disabled="true">
         Sign Up — Coming Soon
       </a>
     </div>
@@ -1050,7 +1044,7 @@ const hero =
 
 let headerVisible = false;
 
-function updateHeader() {
+function updateHeader(){
   const heroBottom =
     hero.getBoundingClientRect().bottom;
 
@@ -1058,7 +1052,7 @@ function updateHeader() {
     ? heroBottom < 145
     : heroBottom < 105;
 
-  if (shouldShow === headerVisible) return;
+  if(shouldShow === headerVisible) return;
 
   headerVisible = shouldShow;
 
@@ -1094,16 +1088,15 @@ const reducedMotion = window.matchMedia(
   '(prefers-reduced-motion: reduce)'
 );
 
-function gentlyReveal(nextId) {
+function gentlyReveal(nextId){
   const next = document.getElementById(nextId);
-  if (!next) return;
+  if(!next) return;
 
   requestAnimationFrame(() => {
     const rect = next.getBoundingClientRect();
-
     const safeBottom = window.innerHeight - 75;
 
-    if (rect.top <= safeBottom) return;
+    if(rect.top <= safeBottom) return;
 
     const needed = rect.top - safeBottom + 25;
 
@@ -1112,7 +1105,7 @@ function gentlyReveal(nextId) {
       Math.max(0,needed)
     );
 
-    if (movement < 12) return;
+    if(movement < 12) return;
 
     window.scrollBy({
       top:movement,
@@ -1139,25 +1132,25 @@ const formatSelect =
   document.getElementById('format');
 
 songTitle.addEventListener('change',() => {
-  if (songTitle.value.trim()) {
+  if(songTitle.value.trim()){
     gentlyReveal('fieldSong');
   }
 });
 
 songFile.addEventListener('change',() => {
-  if (songFile.files.length) {
+  if(songFile.files.length){
     gentlyReveal('fieldPhoto');
   }
 });
 
 artistPhoto.addEventListener('change',() => {
-  if (artistPhoto.files.length) {
+  if(artistPhoto.files.length){
     gentlyReveal('fieldStyle');
   }
 });
 
 styleSelect.addEventListener('change',() => {
-  if (styleSelect.value) {
+  if(styleSelect.value){
     gentlyReveal('fieldFormat');
   }
 });
@@ -1179,7 +1172,7 @@ form.addEventListener('submit',event => {
 
   const song = songFile.files[0];
 
-  if (!song) {
+  if(!song){
     status.textContent =
       'Please upload an MP3 or WAV song.';
     return;
@@ -1187,10 +1180,10 @@ form.addEventListener('submit',event => {
 
   const filename = song.name.toLowerCase();
 
-  if (
+  if(
     !filename.endsWith('.mp3') &&
     !filename.endsWith('.wav')
-  ) {
+  ){
     status.textContent =
       'Please select an MP3 or WAV file.';
     return;
