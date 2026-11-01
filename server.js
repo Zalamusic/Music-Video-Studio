@@ -155,6 +155,100 @@ function validPrice(value) {
   return Number.isFinite(value) && value > 0;
 }
 
+/*
+ * ZALA GPU VIDEO TEST
+ * Administrator only.
+ * Disabled until explicitly enabled.
+ * Does not use FAL.
+ */
+app.post('/api/gpu/test-video', async (req, res) => {
+  if (!isVideoAdmin(req)) {
+    return res.status(403).json({
+      ok: false,
+      error: 'Administrator password required.'
+    });
+  }
+
+  if (
+    process.env.ZALA_GPU_GENERATION_ENABLED !== 'true'
+  ) {
+    return res.status(503).json({
+      ok: false,
+      error: 'GPU video generation is disabled.'
+    });
+  }
+
+  const { prompt, imageUrl, format } = req.body || {};
+
+  if (
+    typeof prompt !== 'string' ||
+    !prompt.trim() ||
+    prompt.length > 2000
+  ) {
+    return res.status(400).json({
+      ok: false,
+      error: 'A valid video prompt is required.'
+    });
+  }
+
+  if (
+    typeof imageUrl !== 'string' ||
+    !imageUrl.startsWith('https://')
+  ) {
+    return res.status(400).json({
+      ok: false,
+      error: 'An HTTPS artist photo URL is required.'
+    });
+  }
+
+  if (
+    format !== undefined &&
+    !['vertical', 'landscape'].includes(format)
+  ) {
+    return res.status(400).json({
+      ok: false,
+      error: 'Invalid video format.'
+    });
+  }
+
+  const id = randomUUID();
+  const outputPath = path.join(
+    JOBS,
+    'gpu-test-' + id,
+    'video.mp4'
+  );
+
+  try {
+    const result = await createRunPodVideo({
+      prompt: prompt.trim(),
+      imageUrl,
+      seconds: 5,
+      format: format || 'vertical',
+      outputPath
+    });
+
+    return res.json({
+      ok: true,
+      id,
+      engine: result.engine,
+      durationSeconds: result.seconds,
+      message: 'GPU test video generated.'
+    });
+  } catch (error) {
+    console.error('GPU test failed:', error);
+
+    await fs.rm(
+      path.dirname(outputPath),
+      { recursive: true, force: true }
+    ).catch(() => {});
+
+    return res.status(500).json({
+      ok: false,
+      error: 'GPU test failed. Check server logs.'
+    });
+  }
+});
+
 function estimate(seconds, premium, creationType = 'photo') {
   const scenesRequired = premium
     ? 1
