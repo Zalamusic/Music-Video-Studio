@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Zala QI's World | Create Your Music Video</title>
+<style>
+:root{
+  --blue:#2469cc;
+  --navy:#17263c;
+  --muted:#64748b;
+  --line:#e1e9f3;
+  --soft:#f4f8fe;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:#fff;
+  color:var(--navy);
+  font:14px/1.55 Arial,sans-serif;
+}
+header,main,footer{
+  max-width:940px;
+  margin:auto;
+}
+header{padding:17px 16px}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.mark{
+  width:43px;
+  height:43px;
+  display:grid;
+  place-items:center;
+  background:#eaf2ff;
+  border-radius:12px;
+  color:var(--blue);
+  font-weight:800;
+  font-size:17px;
+}
+.brand-name{
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:.3px;
+}
+.brand-sub{
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:1px;
+}
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:16px;
+}
+nav a{
+  text-decoration:none;
+  padding:9px 12px;
+  background:var(--soft);
+  border-radius:9px;
+  color:var(--navy);
+  font-size:12px;
+  font-weight:700;
+}
+nav a.active{
+  background:var(--blue);
+  color:white;
+}
+main{padding:0 16px 35px}
+.hero{
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+}
+.hero-image{
+  height:260px;
+  background:
+    linear-gradient(0deg,rgba(8,17,45,.35),transparent 65%),
+    url("https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=85")
+    center/cover,
+    linear-gradient(135deg,#172b66,#7743a0);
+}
+.hero-copy{padding:23px}
+h1{
+  font-size:clamp(23px,4vw,31px);
+  line-height:1.2;
+  letter-spacing:-.5px;
+  margin:0 0 9px;
+}
+.subtitle{
+  font-size:16px;
+  font-weight:700;
+  color:var(--blue);
+  margin:0 0 12px;
+}
+.description{
+  color:var(--muted);
+  max-width:680px;
+  margin:0 0 18px;
+}
+.button,button{
+  display:inline-block;
+  border:0;
+  border-radius:10px;
+  padding:13px 17px;
+  background:var(--blue);
+  color:#fff;
+  font:700 14px Arial,sans-serif;
+  text-decoration:none;
+  cursor:pointer;
+}
+button:disabled{opacity:.6;cursor:not-allowed}
+section.content{padding-top:25px}
+h2{font-size:19px;margin:0 0 12px}
+h3{font-size:15px;margin:0 0 8px}
+.note{font-size:12px;color:var(--muted)}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.card{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:17px;
+  background:#fff;
+}
+.card p{color:var(--muted);font-size:13px}
+.studio{
+  margin-top:24px;
+  padding:20px;
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:17px;
+}
+label{
+  display:block;
+  font-weight:700;
+  margin:17px 0 7px;
+  font-size:13px;
+}
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #c9d7e8;
+  border-radius:10px;
+  font:14px Arial,sans-serif;
+  background:#fff;
+  color:var(--navy);
+}
+textarea{min-height:105px;resize:vertical}
+input[type=file]{
+  border-style:dashed;
+  padding:18px 12px;
+}
+.field-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.studio button{width:100%;margin-top:19px}
+#studioStatus{
+  margin-top:12px;
+  overflow-wrap:anywhere;
+}
+.example{
+  padding:19px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--soft);
+}
+footer{
+  padding:24px 16px 35px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+}
+@media(max-width:600px){
+  .hero-image{height:195px}
+  .hero-copy{padding:18px}
+  .cards{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr;gap:0}
+  .studio{padding:15px}
+}
+</style>
+</head>
+<body>
+
+<header id="home">
+  <div class="brand">
+    <div class="mark">ZQ</div>
+    <div>
+      <div class="brand-name">ZALA QI'S WORLD</div>
+      <div class="brand-sub">
+        CINEMATIC MUSIC VIDEO STUDIO
+      </div>
+    </div>
+  </div>
+  <nav aria-label="Main navigation">
+    <a href="#home" class="active">Home</a>
+    <a href="#create">Create Video</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#examples">Examples</a>
+    <a href="#how">How It Works</a>
+    <a href="#account">Sign In</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="hero-image" role="img"
+       aria-label="Cinematic live music performance"></div>
+  <div class="hero-copy">
+    <h1>Your Music Deserves a Video.</h1>
+    <p class="subtitle">
+      You made the music. We'll bring it to life.
+    </p>
+    <p class="description">
+      Made it with Suno, Udio, or in your own studio?
+      Turn your songs into breathtaking cinematic music
+      videos—without cameras, crews, or complicated editing.
+    </p>
+    <a href="#create" class="button">
+      CREATE YOUR MUSIC VIDEO
+    </a>
+    <p class="note">
+      Your sound. Your vision. Your world.
+    </p>
+  </div>
+</section>
+
+<section class="content" id="how">
+  <h2>How It Works</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>1. Upload Your Music</h3>
+      <p>
+        Start with your song and an optional artist photo
+        for supported cinematic video styles.
+      </p>
+    </div>
+    <div class="card">
+      <h3>2. Direct Your Vision</h3>
+      <p>
+        Choose a cinematic style, setting, mood,
+        and camera direction.
+      </p>
+    </div>
+    <div class="card">
+      <h3>3. Create Your Video</h3>
+      <p>
+        Once generation and checkout are enabled,
+        you'll be able to order and receive your video.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="content" id="create">
+  <h2>Create Your Music Video</h2>
+  <p class="note">
+    Design your video concept below.
+    Customer ordering is not yet available.
+  </p>
+
+  <div class="studio">
+    <form id="customerForm">
+      <label for="songTitle">Song Title</label>
+      <input id="songTitle" maxlength="120"
+             placeholder="Your song title">
+
+      <label for="songFile">Upload Your Song</label>
+      <input id="songFile" type="file"
+             accept=".mp3,.wav,audio/mpeg,audio/wav">
+
+      <label for="artistPhoto">Upload Artist Photo</label>
+      <input id="artistPhoto" type="file"
+             accept="image/jpeg,image/png,image/webp">
+      <p class="note">
+        A photo is required for artist-photo and
+        singing-performance generation.
+      </p>
+
+      <div class="field-row">
+        <div>
+          <label for="style">Cinematic Style</label>
+          <select id="style">
+            <option>Cinematic Realism</option>
+            <option>Romantic Drama</option>
+            <option>Hollywood Action</option>
+            <option>Science Fiction</option>
+            <option>Fantasy</option>
+            <option>3D Animation</option>
+            <option>Anime</option>
+            <option>Urban Music Video</option>
+          </select>
+        </div>
+        <div>
+          <label for="format">Video Format</label>
+          <select id="format">
+            <option value="vertical">
+              9:16 Vertical
+            </option>
+            <option value="landscape">
+              16:9 Widescreen
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <label for="vision">Describe Your Vision</label>
+      <textarea id="vision"
+        maxlength="4000"
+        placeholder="Describe the scenery, mood, wardrobe, camera movement, and story. Optional."></textarea>
+
+      <button type="submit">
+        Continue
+      </button>
+      <p id="studioStatus" class="note"
+         role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<section class="content" id="pricing">
+  <h2>Pricing</h2>
+  <div class="example">
+    <h3>Full-Length Cinematic Music Videos</h3>
+    <p class="note">
+      Customer pricing is being finalized.
+      No payment will be collected on this preview page.
+    </p>
+  </div>
+</section>
+
+<section class="content" id="examples">
+  <h2>Video Examples</h2>
+  <div class="example">
+    <p>
+      A gallery of finished cinematic music videos
+      will appear here.
+    </p>
+  </div>
+</section>
+
+<section class="content" id="account">
+  <h2>Your Account</h2>
+  <div class="example">
+    <p class="note">
+      Customer sign-in and order tracking are coming soon.
+      This preview does not create an account.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Zala QI's World · Your sound. Your vision. Your world.
+</footer>
+
+<script>
+'use strict';
+
+const form = document.getElementById('customerForm');
+const status = document.getElementById('studioStatus');
+
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const song = document.getElementById('songFile').files[0];
+
+  if (!song) {
+    status.textContent =
+      'Please upload an MP3 or WAV song to continue.';
+    return;
+  }
+
+  const name = song.name.toLowerCase();
+
+  if (!name.endsWith('.mp3') && !name.endsWith('.wav')) {
+    status.textContent =
+      'Please select an MP3 or WAV audio file.';
+    return;
+  }
+
+  status.textContent =
+    'Your video concept is ready. Customer ordering ' +
+    'and payment are not enabled yet. ' +
+    'No video has been generated and no charge has been made.';
+});
+</script>
+
+</body>
+</html>
