@@ -3,214 +3,393 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
-<title>Zala QI's World | Create Your Music Video</title>
+<title>Zala QI's World | Cinematic Music Video Studio</title>
+
 <style>
-:root{
-  --blue:#2469cc;
-  --navy:#17263c;
-  --muted:#64748b;
-  --line:#e1e9f3;
-  --soft:#f4f8fe;
+:root {
+  --blue: #2469cc;
+  --navy: #17263c;
+  --muted: #64748b;
+  --line: #e1e9f3;
+  --soft: #f4f8fe;
 }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;
-  background:#fff;
-  color:var(--navy);
-  font:14px/1.55 Arial,sans-serif;
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 115px;
 }
-header,main,footer{
-  max-width:940px;
-  margin:auto;
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: var(--navy);
+  font: 14px/1.55 Arial, sans-serif;
 }
-header{
-  padding:17px 16px;
-  position:sticky;
-  top:0;
-  z-index:1000;
-  background:#ffffff;
-  border-bottom:1px solid #e1e9f3;
+
+button, input, select, textarea {
+  font: inherit;
 }
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
+
+a { color: inherit; }
+
+.page {
+  max-width: 940px;
+  margin: auto;
+  padding: 0 16px 35px;
 }
-.mark{
-  width:43px;
-  height:43px;
-  display:grid;
-  place-items:center;
-  background:#eaf2ff;
-  border-radius:12px;
-  color:var(--blue);
-  font-weight:800;
-  font-size:17px;
+
+/* Original full-size header */
+.main-header {
+  padding: 18px 0 16px;
 }
-.brand-name{
-  font-weight:800;
-  font-size:15px;
-  letter-spacing:.3px;
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.brand-sub{
-  font-size:10px;
-  color:var(--muted);
-  letter-spacing:1px;
+
+.logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #eaf2ff;
+  color: var(--blue);
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  font-weight: 800;
 }
-nav{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  margin-top:16px;
+
+.brand-title {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: .3px;
 }
-nav a{
-  text-decoration:none;
-  padding:9px 12px;
-  background:var(--soft);
-  border-radius:9px;
-  color:var(--navy);
-  font-size:12px;
-  font-weight:700;
+
+.brand-subtitle {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--muted);
 }
-nav a.active{
-  background:var(--blue);
-  color:white;
+
+.top-tabs,
+.compact-tabs {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
-main{padding:0 16px 35px}
-.hero{
-  border:1px solid var(--line);
-  border-radius:18px;
-  overflow:hidden;
+
+.top-tabs::-webkit-scrollbar,
+.compact-tabs::-webkit-scrollbar {
+  display: none;
 }
-.hero-image{
-  height:260px;
+
+.top-tabs {
+  margin-top: 16px;
+}
+
+.top-tabs a,
+.compact-tabs a {
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: var(--soft);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.top-tabs a:first-child {
+  background: var(--blue);
+  color: white;
+}
+
+/* Compact header appears when scrolling */
+.compact-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: rgba(255,255,255,.98);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 5px 20px rgba(20,50,100,.09);
+  transform: translateY(-110%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform .25s ease,
+              visibility .25s ease;
+}
+
+.compact-header.visible {
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.compact-inner {
+  max-width: 940px;
+  margin: auto;
+  padding: 9px 16px 11px;
+}
+
+.compact-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.compact-logo {
+  background: #eaf2ff;
+  color: var(--blue);
+  font-weight: 800;
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.compact-title {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.compact-title small {
+  display: block;
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.compact-tabs a {
+  padding: 8px 11px;
+}
+
+.compact-tabs a.create-tab {
+  background: var(--blue);
+  color: #ffffff;
+}
+
+/* Hero */
+.hero {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.hero-image {
+  height: 260px;
   background:
-    linear-gradient(0deg,rgba(8,17,45,.35),transparent 65%),
+    linear-gradient(
+      0deg,
+      rgba(8,17,45,.35),
+      transparent 65%
+    ),
     url("https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=85")
     center/cover,
     linear-gradient(135deg,#172b66,#7743a0);
 }
-.hero-copy{padding:23px}
-h1{
-  font-size:clamp(23px,4vw,31px);
-  line-height:1.2;
-  letter-spacing:-.5px;
-  margin:0 0 9px;
+
+.hero-copy {
+  padding: 24px;
 }
-.subtitle{
-  font-size:16px;
-  font-weight:700;
-  color:var(--blue);
-  margin:0 0 12px;
+
+h1 {
+  font-size: clamp(24px,4vw,32px);
+  line-height: 1.2;
+  letter-spacing: -.5px;
+  margin: 0 0 10px;
 }
-.description{
-  color:var(--muted);
-  max-width:680px;
-  margin:0 0 18px;
+
+.subtitle {
+  color: var(--blue);
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 12px;
 }
-.button,button{
-  display:inline-block;
-  border:0;
-  border-radius:10px;
-  padding:13px 17px;
-  background:var(--blue);
-  color:#fff;
-  font:700 14px Arial,sans-serif;
-  text-decoration:none;
-  cursor:pointer;
+
+.description {
+  max-width: 680px;
+  color: var(--muted);
+  margin: 0 0 18px;
 }
-button:disabled{opacity:.6;cursor:not-allowed}
-section.content{padding-top:25px}
-h2{font-size:19px;margin:0 0 12px}
-h3{font-size:15px;margin:0 0 8px}
-.note{font-size:12px;color:var(--muted)}
-.cards{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
+
+.button, button {
+  display: inline-block;
+  background: var(--blue);
+  color: white;
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 17px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
 }
-.card{
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:17px;
-  background:#fff;
+
+.tagline {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 13px 0 0;
 }
-.card p{color:var(--muted);font-size:13px}
-.studio{
-  margin-top:24px;
-  padding:20px;
-  background:var(--soft);
-  border:1px solid var(--line);
-  border-radius:17px;
+
+/* Content */
+.content {
+  padding-top: 28px;
 }
-label{
-  display:block;
-  font-weight:700;
-  margin:17px 0 7px;
-  font-size:13px;
+
+h2 {
+  font-size: 20px;
+  margin: 0 0 12px;
 }
-input,select,textarea{
-  width:100%;
-  padding:12px;
-  border:1px solid #c9d7e8;
-  border-radius:10px;
-  font:14px Arial,sans-serif;
-  background:#fff;
-  color:var(--navy);
+
+h3 {
+  font-size: 15px;
+  margin: 0 0 8px;
 }
-textarea{min-height:105px;resize:vertical}
-input[type=file]{
-  border-style:dashed;
-  padding:18px 12px;
+
+.note {
+  color: var(--muted);
+  font-size: 12px;
 }
-.field-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 12px;
 }
-.studio button{width:100%;margin-top:19px}
-#studioStatus{
-  margin-top:12px;
-  overflow-wrap:anywhere;
+
+.card, .panel {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
 }
-.example{
-  padding:19px;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:var(--soft);
+
+.card p, .panel p {
+  color: var(--muted);
+  font-size: 13px;
 }
-footer{
-  padding:24px 16px 35px;
-  text-align:center;
-  color:var(--muted);
-  font-size:12px;
+
+.studio {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  padding: 20px;
 }
-@media(max-width:600px){
-  .hero-image{height:195px}
-  .hero-copy{padding:18px}
-  .cards{grid-template-columns:1fr}
-  .field-row{grid-template-columns:1fr;gap:0}
-  .studio{padding:15px}
+
+label {
+  display: block;
+  margin: 16px 0 7px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #c9d7e8;
+  border-radius: 10px;
+  background: white;
+  color: var(--navy);
+}
+
+textarea {
+  min-height: 105px;
+  resize: vertical;
+}
+
+input[type=file] {
+  border-style: dashed;
+  padding: 17px 12px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.studio button {
+  width: 100%;
+  margin-top: 20px;
+}
+
+#studioStatus {
+  margin-top: 12px;
+}
+
+footer {
+  text-align: center;
+  padding: 26px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width:600px) {
+  .hero-image { height: 195px; }
+  .hero-copy { padding: 18px; }
+  .cards { grid-template-columns: 1fr; }
+  .field-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .studio { padding: 15px; }
+  .compact-inner { padding: 8px 12px 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .compact-header { transition: none; }
 }
 </style>
 </head>
+
 <body>
 
-<header id="home">
+<!-- Compact scrolling navigation -->
+<div class="compact-header" id="compactHeader">
+  <div class="compact-inner">
+    <div class="compact-top">
+      <span class="compact-logo">ZQ</span>
+      <div class="compact-title">
+        ZALA QI'S WORLD
+        <small>Your Music Deserves a Video.</small>
+      </div>
+    </div>
+
+    <nav class="compact-tabs" aria-label="Quick navigation">
+      <a href="#home">Home</a>
+      <a href="#create" class="create-tab">Create Video</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#examples">Examples</a>
+      <a href="#how">How It Works</a>
+      <a href="#account">Sign In</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page">
+
+<header class="main-header" id="home">
   <div class="brand">
-    <div class="mark">ZQ</div>
+    <div class="logo">ZQ</div>
     <div>
-      <div class="brand-name">ZALA QI'S WORLD</div>
-      <div class="brand-sub">
+      <div class="brand-title">ZALA QI'S WORLD</div>
+      <div class="brand-subtitle">
         CINEMATIC MUSIC VIDEO STUDIO
       </div>
     </div>
   </div>
-  <nav aria-label="Main navigation">
-    <a href="#home" class="active">Home</a>
+
+  <nav class="top-tabs" aria-label="Main navigation">
+    <a href="#home">Home</a>
     <a href="#create">Create Video</a>
     <a href="#pricing">Pricing</a>
     <a href="#examples">Examples</a>
@@ -221,23 +400,30 @@ footer{
 
 <main>
 
-<section class="hero">
-  <div class="hero-image" role="img"
-       aria-label="Cinematic live music performance"></div>
+<section class="hero" id="hero">
+  <div class="hero-image"
+       role="img"
+       aria-label="Cinematic live music performance">
+  </div>
+
   <div class="hero-copy">
     <h1>Your Music Deserves a Video.</h1>
+
     <p class="subtitle">
       You made the music. We'll bring it to life.
     </p>
+
     <p class="description">
       Made it with Suno, Udio, or in your own studio?
       Turn your songs into breathtaking cinematic music
       videos—without cameras, crews, or complicated editing.
     </p>
-    <a href="#create" class="button">
+
+    <a class="button" href="#create">
       CREATE YOUR MUSIC VIDEO
     </a>
-    <p class="note">
+
+    <p class="tagline">
       Your sound. Your vision. Your world.
     </p>
   </div>
@@ -245,26 +431,29 @@ footer{
 
 <section class="content" id="how">
   <h2>How It Works</h2>
+
   <div class="cards">
     <div class="card">
       <h3>1. Upload Your Music</h3>
       <p>
-        Start with your song and an optional artist photo
-        for supported cinematic video styles.
+        Choose your song and upload an artist photo
+        for video styles that use your appearance.
       </p>
     </div>
+
     <div class="card">
       <h3>2. Direct Your Vision</h3>
       <p>
-        Choose a cinematic style, setting, mood,
-        and camera direction.
+        Select your style, setting, mood,
+        and creative direction.
       </p>
     </div>
+
     <div class="card">
       <h3>3. Create Your Video</h3>
       <p>
-        Once generation and checkout are enabled,
-        you'll be able to order and receive your video.
+        Once customer ordering launches, you'll
+        be able to order your cinematic music video.
       </p>
     </div>
   </div>
@@ -273,26 +462,31 @@ footer{
 <section class="content" id="create">
   <h2>Create Your Music Video</h2>
   <p class="note">
-    Design your video concept below.
-    Customer ordering is not yet available.
+    Preview your video setup. Customer ordering
+    is not enabled yet.
   </p>
 
   <div class="studio">
     <form id="customerForm">
+
       <label for="songTitle">Song Title</label>
-      <input id="songTitle" maxlength="120"
+      <input id="songTitle"
+             maxlength="120"
              placeholder="Your song title">
 
       <label for="songFile">Upload Your Song</label>
-      <input id="songFile" type="file"
+      <input id="songFile"
+             type="file"
              accept=".mp3,.wav,audio/mpeg,audio/wav">
 
       <label for="artistPhoto">Upload Artist Photo</label>
-      <input id="artistPhoto" type="file"
+      <input id="artistPhoto"
+             type="file"
              accept="image/jpeg,image/png,image/webp">
+
       <p class="note">
-        A photo is required for artist-photo and
-        singing-performance generation.
+        Artist photos are used for supported
+        character-based and singing videos.
       </p>
 
       <div class="field-row">
@@ -309,15 +503,12 @@ footer{
             <option>Urban Music Video</option>
           </select>
         </div>
+
         <div>
           <label for="format">Video Format</label>
           <select id="format">
-            <option value="vertical">
-              9:16 Vertical
-            </option>
-            <option value="landscape">
-              16:9 Widescreen
-            </option>
+            <option value="vertical">9:16 Vertical</option>
+            <option value="landscape">16:9 Widescreen</option>
           </select>
         </div>
       </div>
@@ -325,44 +516,44 @@ footer{
       <label for="vision">Describe Your Vision</label>
       <textarea id="vision"
         maxlength="4000"
-        placeholder="Describe the scenery, mood, wardrobe, camera movement, and story. Optional."></textarea>
+        placeholder="Describe the location, mood, story, wardrobe, and camera movement. Optional."></textarea>
 
-      <button type="submit">
-        Continue
-      </button>
-      <p id="studioStatus" class="note"
+      <button type="submit">Continue</button>
+
+      <p class="note" id="studioStatus"
          role="status" aria-live="polite"></p>
+
     </form>
   </div>
 </section>
 
 <section class="content" id="pricing">
   <h2>Pricing</h2>
-  <div class="example">
+  <div class="panel">
     <h3>Full-Length Cinematic Music Videos</h3>
-    <p class="note">
-      Customer pricing is being finalized.
-      No payment will be collected on this preview page.
+    <p>
+      Affordable customer pricing is being finalized.
+      No payment is collected on this preview page.
     </p>
   </div>
 </section>
 
 <section class="content" id="examples">
   <h2>Video Examples</h2>
-  <div class="example">
+  <div class="panel">
     <p>
-      A gallery of finished cinematic music videos
-      will appear here.
+      Finished cinematic music-video examples
+      will be featured here.
     </p>
   </div>
 </section>
 
 <section class="content" id="account">
   <h2>Your Account</h2>
-  <div class="example">
-    <p class="note">
-      Customer sign-in and order tracking are coming soon.
-      This preview does not create an account.
+  <div class="panel">
+    <p>
+      Customer sign-in and order tracking
+      are coming soon.
     </p>
   </div>
 </section>
@@ -373,35 +564,84 @@ footer{
   Zala QI's World · Your sound. Your vision. Your world.
 </footer>
 
+</div>
+
 <script>
 'use strict';
+
+const compactHeader =
+  document.getElementById('compactHeader');
+
+const hero = document.getElementById('hero');
+
+function updateCompactHeader() {
+  const heroBottom =
+    hero.getBoundingClientRect().bottom;
+
+  const shouldShow = heroBottom < 125;
+
+  compactHeader.classList.toggle(
+    'visible',
+    shouldShow
+  );
+
+  compactHeader.setAttribute(
+    'aria-hidden',
+    String(!shouldShow)
+  );
+
+  if ('inert' in compactHeader) {
+    compactHeader.inert = !shouldShow;
+  }
+
+  compactHeader.querySelectorAll('a').forEach(link => {
+    link.tabIndex = shouldShow ? 0 : -1;
+  });
+}
+
+window.addEventListener(
+  'scroll',
+  updateCompactHeader,
+  { passive: true }
+);
+
+window.addEventListener(
+  'resize',
+  updateCompactHeader
+);
+
+updateCompactHeader();
 
 const form = document.getElementById('customerForm');
 const status = document.getElementById('studioStatus');
 
-form.addEventListener('submit', function(event) {
+form.addEventListener('submit', event => {
   event.preventDefault();
 
-  const song = document.getElementById('songFile').files[0];
+  const song =
+    document.getElementById('songFile').files[0];
 
   if (!song) {
     status.textContent =
-      'Please upload an MP3 or WAV song to continue.';
+      'Please upload an MP3 or WAV song.';
     return;
   }
 
-  const name = song.name.toLowerCase();
+  const filename = song.name.toLowerCase();
 
-  if (!name.endsWith('.mp3') && !name.endsWith('.wav')) {
+  if (
+    !filename.endsWith('.mp3') &&
+    !filename.endsWith('.wav')
+  ) {
     status.textContent =
-      'Please select an MP3 or WAV audio file.';
+      'Please choose an MP3 or WAV file.';
     return;
   }
 
   status.textContent =
-    'Your video concept is ready. Customer ordering ' +
-    'and payment are not enabled yet. ' +
-    'No video has been generated and no charge has been made.';
+    'Your video concept is ready. ' +
+    'Customer ordering is not enabled yet. ' +
+    'No video has been generated or charged.';
 });
 </script>
 
