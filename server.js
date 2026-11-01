@@ -1802,6 +1802,13 @@ app.delete('/api/jobs/:id', async (req, res) => {
 });
 
 app.post('/api/jobs/:id/resume', async (req, res) => {
+  if (!ENABLE_PAID_GENERATION) {
+    return res.status(503).json({
+      error:
+        'Paid video generation is disabled. Resume is unavailable.'
+    });
+  }
+
   if (!isVideoAdmin(req)) {
     return res.status(403).json({
       error:
