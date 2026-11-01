@@ -627,6 +627,69 @@ artistPhoto.addEventListener('change',() => {
   }
 });
 
+/* Mobile readability and easier navigation */
+
+body {
+  font-size: 16px;
+}
+
+.hero-description,
+.card p,
+.panel p {
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.note,
+.tagline {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.brand-name {
+  font-size: 16px;
+}
+
+.mini-brand-name {
+  font-size: 14px;
+}
+
+.mini-headline {
+  font-size: 16px;
+}
+
+.mini-sub {
+  font-size: 12px;
+}
+
+.field label {
+  font-size: 15px;
+}
+
+.tabs {
+  gap: 12px;
+}
+
+.tabs a {
+  padding: 12px 16px;
+  font-size: 14px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-tabs a {
+  padding: 12px 16px;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px;
+  min-height: 46px;
+}
+
 style.addEventListener('change',() => {
   if (style.value) {
     gentlyReveal('fieldFormat');
