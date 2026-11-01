@@ -119,10 +119,27 @@ const customerUpload = multer({
 app.use(express.json({
   limit: '16kb'
 }));
-
 app.use(express.static('public'));
 
-function isVideoAdmin(req) {
+
+app.get('/api/gpu/status', (req, res) => {
+  if (!isVideoAdmin(req)) {
+    return res.status(403).json({
+      ok: false,
+      error: 'Administrator password required.'
+    });
+  }
+
+  res.set('Cache-Control', 'no-store');
+
+  res.json({
+    ok: true,
+    ...getRunPodEngineStatus(),
+    generationEnabled:
+      process.env.ZALA_GPU_GENERATION_ENABLED === 'true'
+  });
+});
+ function isVideoAdmin(req) {
   return Boolean(
     VIDEO_ADMIN_KEY &&
     req.get('X-Video-Admin-Key') === VIDEO_ADMIN_KEY
