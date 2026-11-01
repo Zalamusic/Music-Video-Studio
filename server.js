@@ -1516,7 +1516,12 @@ app.post('/api/create', upload.fields([
   }
 ]), async (req, res) => {
   let dir;
-
+  if (!ENABLE_PAID_GENERATION) {
+    return res.status(503).json({
+      error:
+        'Paid video generation is disabled. Use Independent Video Studio.'
+    });
+  }
   if (!isVideoAdmin(req)) {
     return res.status(403).json({
       error:
