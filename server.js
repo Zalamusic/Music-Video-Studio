@@ -115,7 +115,9 @@ const customerUpload = multer({
     files: 6
   }
 });
-
+import { createCustomerAuthRouter } from './customer-auth.js';
+import express from 'express';
+import multer from 'multer';
 app.use(express.json({
   limit: '16kb'
 }));
