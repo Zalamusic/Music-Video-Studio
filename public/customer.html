@@ -690,6 +690,37 @@ textarea {
   min-height: 46px;
 }
 
+/* Clearer customer form fields */
+
+.studio input,
+.studio select,
+.studio textarea {
+  border: 2px solid #8faed5;
+  border-radius: 11px;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgba(23, 38, 60, 0.06);
+}
+
+.studio input:focus,
+.studio select:focus,
+.studio textarea:focus {
+  border-color: #2469cc;
+  outline: 3px solid rgba(36, 105, 204, 0.18);
+  outline-offset: 1px;
+  box-shadow: 0 3px 10px rgba(36, 105, 204, 0.12);
+}
+
+.studio input[type="file"] {
+  border: 2px dashed #7299ce;
+  background: #f8fbff;
+  padding: 18px 12px;
+}
+
+.studio .field label {
+  color: #17263c;
+  font-weight: 700;
+}
+
 style.addEventListener('change',() => {
   if (style.value) {
     gentlyReveal('fieldFormat');
