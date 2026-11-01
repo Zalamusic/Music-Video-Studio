@@ -69,7 +69,10 @@ const LIP_PRICE_PER_SECOND = Number(
 const VIDEO_ADMIN_KEY = (
   process.env.VIDEO_ADMIN_KEY || ''
 ).trim();
-
+// Paid provider generation is disabled by default.
+// Only explicitly enable it when we choose to use FAL.
+const ENABLE_PAID_GENERATION =
+  process.env.ENABLE_PAID_GENERATION === 'true';
 const PAYPAL_ENV = process.env.PAYPAL_ENV || 'sandbox';
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
@@ -1364,7 +1367,13 @@ async function generate(id) {
 
   let state;
 
-  try {
+    try {
+    if (!ENABLE_PAID_GENERATION) {
+      throw new Error(
+        'Paid video generation is disabled. No FAL charges allowed.'
+      );
+    }
+
     state = await readState(id);
 
     state.status = 'running';
@@ -1404,6 +1413,7 @@ async function generate(id) {
 
     if (state.mode === 'premium') {
       await generatePremium(
+          
         state,
         dir,
         imageUrl
