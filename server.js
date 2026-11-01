@@ -119,6 +119,12 @@ const customerUpload = multer({
 app.use(express.json({
   limit: '16kb'
 }));
+app.use(
+  '/api/customer-auth',
+  createCustomerAuthRouter({
+    storageDirectory: OUT
+  })
+);
 app.use(express.static('public'));
 
 
