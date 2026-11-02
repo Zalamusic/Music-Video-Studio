@@ -1,0 +1,320 @@
+
+/*
+ * ZALA QI'S WORLD
+ * LIVING ATMOSPHERE — FOUR THEMES
+ *
+ * Morning Glow
+ * Sunset Elegance
+ * Midnight Luxe
+ * Hollywood Premiere
+ *
+ * Theme selection and automatic switching
+ * will be handled by zala-themes.js.
+ */
+
+/* DEFAULT — MORNING GLOW */
+
+:root,
+:root[data-zala-theme="morning"] {
+  color-scheme: light;
+
+  --z-bg: #f5faff;
+  --z-surface: #ffffff;
+  --z-panel: #eef6ff;
+  --z-text: #172b46;
+  --z-muted: #48617c;
+  --z-primary: #2469cc;
+  --z-primary-text: #ffffff;
+  --z-border: #cddff2;
+  --z-accent: #c59b53;
+  --z-glow: rgba(76, 151, 232, .15);
+  --z-gradient:
+    linear-gradient(
+      145deg,
+      #e9f5ff 0%,
+      #ffffff 52%,
+      #fff8e8 100%
+    );
+}
+
+/* SUNSET ELEGANCE */
+
+:root[data-zala-theme="sunset"] {
+  color-scheme: light;
+
+  --z-bg: #fff5f2;
+  --z-surface: #fffaf9;
+  --z-panel: #fff0ee;
+  --z-text: #402744;
+  --z-muted: #73556f;
+  --z-primary: #a94b79;
+  --z-primary-text: #ffffff;
+  --z-border: #e9cbdc;
+  --z-accent: #d89b48;
+  --z-glow: rgba(224, 118, 146, .17);
+  --z-gradient:
+    linear-gradient(
+      145deg,
+      #ffe1cf 0%,
+      #fff4ee 48%,
+      #eee3ff 100%
+    );
+}
+
+/* MIDNIGHT LUXE */
+
+:root[data-zala-theme="midnight"] {
+  color-scheme: dark;
+
+  --z-bg: #0c1023;
+  --z-surface: #171d35;
+  --z-panel: #202541;
+  --z-text: #f4f3ff;
+  --z-muted: #c2c5df;
+  --z-primary: #a88bff;
+  --z-primary-text: #100d23;
+  --z-border: #414565;
+  --z-accent: #d7d8ec;
+  --z-glow: rgba(132, 106, 230, .22);
+  --z-gradient:
+    linear-gradient(
+      145deg,
+      #12172d 0%,
+      #20203e 55%,
+      #301e4d 100%
+    );
+}
+
+/* HOLLYWOOD PREMIERE — BLACK & GOLD */
+
+:root[data-zala-theme="hollywood"] {
+  color-scheme: dark;
+
+  --z-bg: #08090c;
+  --z-surface: #15161b;
+  --z-panel: #1d1d22;
+  --z-text: #fff5dc;
+  --z-muted: #d2c3a6;
+  --z-primary: #d6ac58;
+  --z-primary-text: #17120a;
+  --z-border: #665331;
+  --z-accent: #f2d48c;
+  --z-glow: rgba(226, 177, 75, .19);
+  --z-gradient:
+    radial-gradient(
+      ellipse at top,
+      #42341d 0%,
+      #17171b 38%,
+      #08090c 100%
+    );
+}
+
+/* SHARED PAGE STYLING */
+
+html {
+  background: var(--z-bg);
+}
+
+body.zala-themed {
+  background: var(--z-gradient);
+  background-color: var(--z-bg);
+  color: var(--z-text);
+  min-height: 100vh;
+  transition:
+    background-color 1.4s ease,
+    color 1.4s ease;
+}
+
+body.zala-themed .panel,
+body.zala-themed .loyalty,
+body.zala-themed .history,
+body.zala-themed .order-card {
+  background: var(--z-surface);
+  border-color: var(--z-border);
+  color: var(--z-text);
+  transition:
+    background-color 1.4s ease,
+    border-color 1.4s ease,
+    color 1.4s ease,
+    box-shadow 1.4s ease;
+}
+
+body.zala-themed .panel {
+  box-shadow: 0 12px 35px var(--z-glow);
+}
+
+body.zala-themed h1,
+body.zala-themed h2,
+body.zala-themed .brand,
+body.zala-themed .prestige strong {
+  color: var(--z-text);
+}
+
+body.zala-themed p,
+body.zala-themed .sub,
+body.zala-themed .loyalty-sub,
+body.zala-themed .loyalty-note,
+body.zala-themed .history-intro,
+body.zala-themed .history-note,
+body.zala-themed .order-date,
+body.zala-themed .prestige {
+  color: var(--z-muted);
+}
+
+body.zala-themed a {
+  color: var(--z-primary);
+}
+
+body.zala-themed .logo,
+body.zala-themed .loyalty-symbol {
+  background: var(--z-panel);
+  color: var(--z-primary);
+}
+
+body.zala-themed button:not(.eye-button),
+body.zala-themed .tabs button[aria-pressed="true"] {
+  background: var(--z-primary);
+  color: var(--z-primary-text);
+  border-color: var(--z-primary);
+}
+
+body.zala-themed .tabs button[aria-pressed="false"],
+body.zala-themed .refresh,
+body.zala-themed .account-actions a {
+  background: var(--z-surface);
+  color: var(--z-primary);
+  border-color: var(--z-primary);
+}
+
+body.zala-themed input {
+  background: var(--z-surface);
+  color: var(--z-text);
+  border-color: var(--z-primary);
+}
+
+body.zala-themed .eye-button {
+  background: var(--z-surface);
+  color: var(--z-primary);
+}
+
+body.zala-themed .progress-track {
+  background: var(--z-panel);
+}
+
+body.zala-themed .progress-fill,
+body.zala-themed .milestone.complete {
+  background: var(--z-primary);
+}
+
+body.zala-themed .milestone {
+  background: var(--z-panel);
+  border-color: var(--z-border);
+  color: var(--z-muted);
+}
+
+body.zala-themed .milestone.complete {
+  color: var(--z-primary-text);
+}
+
+body.zala-themed .reward,
+body.zala-themed .history-message {
+  background: var(--z-panel);
+  color: var(--z-text);
+}
+
+body.zala-themed .reward strong {
+  color: var(--z-primary);
+}
+
+body.zala-themed .status.success,
+body.zala-themed .qualifying {
+  color: #218653;
+}
+
+body.zala-themed .status.error {
+  color: #d94a4a;
+}
+
+:root[data-zala-theme="midnight"]
+body.zala-themed .status.success,
+:root[data-zala-theme="hollywood"]
+body.zala-themed .status.success,
+:root[data-zala-theme="midnight"]
+body.zala-themed .qualifying,
+:root[data-zala-theme="hollywood"]
+body.zala-themed .qualifying {
+  color: #79e6a3;
+}
+
+/* THEME SELECTOR */
+
+.zala-theme-control {
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid var(--z-border);
+  border-radius: 14px;
+  background: var(--z-surface);
+  color: var(--z-text);
+}
+
+.zala-theme-control label {
+  display: block;
+  margin: 0 0 9px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--z-text);
+}
+
+.zala-theme-control select {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 2px solid var(--z-primary);
+  border-radius: 10px;
+  background: var(--z-surface);
+  color: var(--z-text);
+  font: inherit;
+  font-weight: 700;
+}
+
+.zala-theme-control select:focus-visible {
+  outline: 3px solid var(--z-accent);
+  outline-offset: 3px;
+}
+
+/* HOLLYWOOD PREMIERE DETAILS */
+
+:root[data-zala-theme="hollywood"]
+body.zala-themed .logo {
+  border: 1px solid var(--z-accent);
+  box-shadow: 0 0 20px var(--z-glow);
+}
+
+:root[data-zala-theme="hollywood"]
+body.zala-themed .panel,
+:root[data-zala-theme="hollywood"]
+body.zala-themed .loyalty,
+:root[data-zala-theme="hollywood"]
+body.zala-themed .history {
+  box-shadow:
+    0 10px 35px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(242,212,140,.12);
+}
+
+:root[data-zala-theme="hollywood"]
+body.zala-themed .loyalty-symbol {
+  border: 1px solid var(--z-accent);
+}
+
+/* ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+  body.zala-themed,
+  body.zala-themed .panel,
+  body.zala-themed .loyalty,
+  body.zala-themed .history,
+  body.zala-themed .order-card {
+    transition: none !important;
+  }
+}
