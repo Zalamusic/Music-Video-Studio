@@ -2653,3 +2653,21 @@ app.listen(PORT, () => {
     'Cinematic Editing integration loaded'
   );
 });
+
+
+/*
+ * CUSTOMER ORDER HISTORY
+ * Read-only customer orders and Platinum Hitmaker progress.
+ * Does not enable payments or video generation.
+ */
+import {
+  createCustomerOrderHistoryRouter
+} from './customer-order-history.js';
+
+app.use(
+  '/api/customer-order-history',
+  createCustomerOrderHistoryRouter({
+    storageDirectory: OUT
+  })
+);
+
