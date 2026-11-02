@@ -7,421 +7,206 @@
 <meta name="theme-color" content="#ffffff">
 <title>Your Account | Zala QI's World</title>
 <style>
-:root {
-  --blue: #2469cc;
-  --navy: #17263c;
-  --muted: #3f5067;
-  --line: #d8e3f0;
-  --soft: #f4f8fe;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: #fff;
-  color: var(--navy);
-  font: 16px/1.6 Arial, sans-serif;
-}
-main {
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 24px 16px 60px;
-}
-a {
-  color: var(--blue);
-  text-decoration: none;
-}
-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 32px;
-}
-.logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: #eaf2ff;
-  color: var(--blue);
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-}
-.brand { font-weight: 800; }
-.sub {
-  font-size: 11px;
-  letter-spacing: .5px;
-  color: var(--muted);
-}
-.panel {
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--soft);
-  padding: 24px;
-}
-h1 {
-  font-size: 26px;
-  margin: 0 0 5px;
-}
-p { color: var(--muted); }
-.tabs {
-  display: flex;
-  gap: 10px;
-  margin: 22px 0;
-}
-.tabs button {
-  flex: 1;
-  background: #fff;
-  color: var(--blue);
-  border: 3px solid var(--blue);
-}
-.tabs button[aria-pressed="true"] {
-  background: var(--blue);
-  color: #fff;
-}
-label {
-  display: block;
-  font-weight: 700;
-  margin: 16px 0 7px;
-}
-input {
-  display: block;
-  width: 100%;
-  padding: 13px;
-  border: 2px solid var(--blue);
-  border-radius: 10px;
-  background: #fff;
-  font: inherit;
-}
-button {
-  font: inherit;
-  cursor: pointer;
-  border: 0;
-  border-radius: 10px;
-  background: var(--blue);
-  color: #fff;
-  font-weight: 700;
-  padding: 12px 16px;
-  min-height: 48px;
-}
-.submit {
-  width: 100%;
-  margin-top: 22px;
-}
-button:disabled {
-  opacity: .65;
-  cursor: wait;
-}
-.status {
-  min-height: 26px;
-  margin-top: 16px;
-  font-weight: 600;
-}
-.error { color: #b42318; }
-.success { color: #166534; }
-.hidden { display: none !important; }
-.account-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
-.account-actions a {
-  border: 2px solid var(--blue);
-  padding: 9px 14px;
-  border-radius: 9px;
-  background: #fff;
-}
-.foot {
-  margin-top: 24px;
-  text-align: center;
-  font-size: 14px;
-}
+:root{--blue:#2469cc;--navy:#17263c;--muted:#3f5067;--line:#d8e3f0;--soft:#f4f8fe}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--navy);font:16px/1.6 Arial,sans-serif}
+main{max-width:520px;margin:0 auto;padding:24px 16px 60px}
+a{color:var(--blue);text-decoration:none}
+header{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.logo{width:48px;height:48px;border-radius:12px;background:#eaf2ff;color:var(--blue);display:grid;place-items:center;font-weight:800}
+.brand{font-weight:800}.sub{font-size:11px;letter-spacing:.5px;color:var(--muted)}
+.panel{border:1px solid var(--line);border-radius:16px;background:var(--soft);padding:24px}
+h1{font-size:26px;line-height:1.25;margin:0 0 10px}p{color:var(--muted)}
+.tabs{display:flex;gap:10px;margin:22px 0}.tabs button{flex:1;background:#fff;color:var(--blue);border:3px solid var(--blue)}
+.tabs button[aria-pressed="true"]{background:var(--blue);color:#fff}
+label{display:block;font-weight:700;margin:16px 0 7px}
+input{display:block;width:100%;padding:13px;border:2px solid var(--blue);border-radius:10px;background:#fff;font:inherit}
+.password-wrap{position:relative}.password-wrap input{padding-right:64px}
+.eye-button{position:absolute;right:5px;top:5px;min-height:40px;min-width:44px;padding:6px;display:grid;place-items:center;background:#fff;color:var(--blue);border-radius:8px}
+.eye-button:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #f6b74a;outline-offset:2px}
+.eye-button svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;background:var(--blue);color:#fff;font-weight:700;padding:12px 16px;min-height:48px}
+.submit{width:100%;margin-top:22px}button:disabled{opacity:.65;cursor:wait}
+.status{min-height:26px;margin-top:16px;font-weight:600}.error{color:#b42318}.success{color:#166534}.hidden{display:none!important}
+.account-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.account-actions a{border:2px solid var(--blue);padding:9px 14px;border-radius:9px;background:#fff}
+.foot{margin-top:24px;text-align:center;font-size:14px}
 </style>
 </head>
 <body>
 <main>
 <header>
   <div class="logo">ZQ</div>
-  <div>
-    <div class="brand">ZALA QI'S WORLD</div>
-    <div class="sub">CINEMATIC MUSIC VIDEO STUDIO</div>
-  </div>
+  <div><div class="brand">ZALA QI'S WORLD</div><div class="sub">CINEMATIC MUSIC VIDEO STUDIO</div></div>
 </header>
-
 <section class="panel" id="authPanel">
-  <h1 id="heading">Welcome back</h1>
-  <p id="description">Sign in to your customer account.</p>
-
+  <h1 id="heading">Welcome Back, Hitmaker!</h1>
+  <p id="description">Ready to make another hit? Sign in and let the creativity continue.</p>
   <div class="tabs" role="group" aria-label="Account action">
-    <button id="loginTab" type="button" aria-pressed="true">
-      Sign In
-    </button>
-    <button id="registerTab" type="button" aria-pressed="false">
-      Sign Up
-    </button>
+    <button id="loginTab" type="button" aria-pressed="true">Sign In</button>
+    <button id="registerTab" type="button" aria-pressed="false">Sign Up</button>
   </div>
-
   <form id="authForm">
     <div id="nameField" class="hidden">
       <label for="name">Your name</label>
-      <input
-        id="name"
-        name="name"
-        autocomplete="name"
-        maxlength="100"
-      >
+      <input id="name" name="name" autocomplete="name" maxlength="100">
     </div>
-
     <label for="email">Email address</label>
-    <input
-      id="email"
-      name="email"
-      type="email"
-      autocomplete="email"
-      maxlength="254"
-      required
-    >
-
+    <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
     <label for="password">Password</label>
-    <input
-      id="password"
-      name="password"
-      type="password"
-      autocomplete="current-password"
-      required
-      minlength="12"
-      maxlength="128"
-    >
-
-    <p id="passwordHint" class="hidden">
-      Use a password of at least 12 characters.
-    </p>
-
-    <button
-      class="submit"
-      id="submitButton"
-      type="submit"
-    >
-      Sign In
-    </button>
+    <div class="password-wrap">
+      <input id="password" name="password" type="password" autocomplete="current-password" required minlength="12" maxlength="128">
+      <button id="togglePassword" class="eye-button" type="button" aria-label="Show password" aria-pressed="false" title="Show password">
+        <svg id="eyeIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <p id="passwordHint" class="hidden">Use a password of at least 12 characters.</p>
+    <button class="submit" id="submitButton" type="submit">Sign In</button>
   </form>
 </section>
-
 <section class="panel hidden" id="profilePanel">
-  <h1>Your Account</h1>
+  <h1 id="profileHeading">You're Back in the Studio!</h1>
+  <p id="profileGreeting">Your next masterpiece is waiting.</p>
   <p id="welcome"></p>
-  <p>
-    Video orders and account order history
-    are not available yet.
-  </p>
-
+  <p>Video orders and account order history are not available yet.</p>
   <div class="account-actions">
     <a href="/customer.html">Back to Studio</a>
-    <button type="button" id="logoutButton">
-      Sign Out
-    </button>
+    <button type="button" id="logoutButton">Sign Out</button>
   </div>
 </section>
-
-<p
-  id="status"
-  class="status"
-  role="status"
-  aria-live="polite"
-></p>
-
-<div class="foot">
-  <a href="/customer.html">
-    Return to Zala QI's World
-  </a>
-</div>
+<p id="status" class="status" role="status" aria-live="polite"></p>
+<div class="foot"><a href="/customer.html">Return to Zala QI's World</a></div>
 </main>
-
 <script>
 'use strict';
-
 const $ = id => document.getElementById(id);
-
-let mode =
-  new URLSearchParams(location.search).get('mode') === 'signup'
-    ? 'register'
-    : 'login';
-
+const messages = {
+  register: [
+    ['Hello, Future Hitmaker!', "Welcome to Zala QI's World. Your next visual masterpiece starts here."],
+    ['Your Music. Your Vision. Your World.', 'Join the studio and bring your music to life.'],
+    ['The Spotlight Is Waiting!', 'Create your account and get ready to tell your story on screen.']
+  ],
+  login: [
+    ['Welcome Back, Hitmaker!', 'Ready to make another hit? Sign in and let the creativity continue.'],
+    ['The Studio Missed You!', "Got another track ready? Let's bring your sound to life."],
+    ["Look Who's Back!", 'Another song, another vision, another chance to create magic.'],
+    ['Your Next Hit Is Calling!', 'Your studio is waiting. Sign in and keep creating.']
+  ],
+  profile: [
+    ['You’re Back in the Studio, {name}!', 'Your next masterpiece is waiting.'],
+    ['The Spotlight Is Yours, {name}!', 'Ready to turn another great track into a cinematic experience?'],
+    ['Another Hit on the Way, {name}?', "Let's make something unforgettable."]
+  ],
+  newProfile: [
+    ['Welcome to the Studio, {name}!', 'Your creative journey starts here.'],
+    ['You’re Officially a Hitmaker, {name}!', 'Welcome to Zala QI’s World.']
+  ]
+};
+let mode = new URLSearchParams(location.search).get('mode') === 'signup' ? 'register' : 'login';
 let busy = false;
-
+let currentGreeting = { register: -1, login: -1, profile: -1, newProfile: -1 };
+function chooseGreeting(kind) {
+  const choices = messages[kind];
+  let index = Math.floor(Math.random() * choices.length);
+  if (choices.length > 1 && index === currentGreeting[kind]) index = (index + 1) % choices.length;
+  currentGreeting[kind] = index;
+  return choices[index];
+}
 function message(value, error = false) {
   $('status').textContent = value;
-  $('status').className =
-    'status ' + (error ? 'error' : 'success');
+  $('status').className = 'status ' + (error ? 'error' : 'success');
 }
-
 function setMode(next) {
   mode = next;
-
   const register = mode === 'register';
-
   $('nameField').classList.toggle('hidden', !register);
   $('name').required = register;
-
-  $('heading').textContent = register
-    ? 'Create your account'
-    : 'Welcome back';
-
-  $('description').textContent = register
-    ? "Join Zala QI's World."
-    : 'Sign in to your customer account.';
-
-  $('loginTab').setAttribute(
-    'aria-pressed',
-    String(!register)
-  );
-
-  $('registerTab').setAttribute(
-    'aria-pressed',
-    String(register)
-  );
-
-  $('submitButton').textContent = register
-    ? 'Create Account'
-    : 'Sign In';
-
-  $('password').autocomplete = register
-    ? 'new-password'
-    : 'current-password';
-
-  $('passwordHint').classList.toggle(
-    'hidden',
-    !register
-  );
-
+  const [heading, description] = chooseGreeting(mode);
+  $('heading').textContent = heading;
+  $('description').textContent = description;
+  $('loginTab').setAttribute('aria-pressed', String(!register));
+  $('registerTab').setAttribute('aria-pressed', String(register));
+  $('submitButton').textContent = register ? 'Create Account' : 'Sign In';
+  $('password').autocomplete = register ? 'new-password' : 'current-password';
+  $('passwordHint').classList.toggle('hidden', !register);
+  hidePassword();
   message('');
 }
-
-function showUser(user) {
+function hidePassword() {
+  $('password').type = 'password';
+  $('togglePassword').setAttribute('aria-pressed', 'false');
+  $('togglePassword').setAttribute('aria-label', 'Show password');
+  $('togglePassword').title = 'Show password';
+  $('eyeIcon').innerHTML = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>';
+}
+$('togglePassword').addEventListener('click', () => {
+  const reveal = $('password').type === 'password';
+  $('password').type = reveal ? 'text' : 'password';
+  $('togglePassword').setAttribute('aria-pressed', String(reveal));
+  $('togglePassword').setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+  $('togglePassword').title = reveal ? 'Hide password' : 'Show password';
+  $('eyeIcon').innerHTML = reveal
+    ? '<path d="M3 3l18 18M10.6 5.1A11.7 11.7 0 0 1 12 5c6.5 0 10 7 10 7a15.6 15.6 0 0 1-3.2 4.1M6.2 6.2C3.5 8.2 2 12 2 12s3.5 7 10 7a10.6 10.6 0 0 0 4.2-.9M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'
+    : '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>';
+});
+function showUser(user, newlyRegistered = false) {
   $('authPanel').classList.add('hidden');
   $('profilePanel').classList.remove('hidden');
-
-  $('welcome').textContent =
-    'Signed in as ' +
-    user.name +
-    ' (' +
-    user.email +
-    ').';
-
+  const firstName = String(user.name || 'Hitmaker').trim().split(/\s+/)[0];
+  const [heading, greeting] = chooseGreeting(newlyRegistered ? 'newProfile' : 'profile');
+  $('profileHeading').textContent = heading.replace('{name}', firstName);
+  $('profileGreeting').textContent = greeting;
+  $('welcome').textContent = 'Signed in as ' + user.name + ' (' + user.email + ').';
   message('');
 }
-
 function showAuth() {
   $('profilePanel').classList.add('hidden');
   $('authPanel').classList.remove('hidden');
+  setMode('login');
 }
-
 async function request(route, options = {}) {
-  const response = await fetch(
-    '/api/customer-auth/' + route,
-    {
-      credentials: 'same-origin',
-      cache: 'no-store',
-      ...options
-    }
-  );
-
+  const response = await fetch('/api/customer-auth/' + route, {
+    credentials: 'same-origin', cache: 'no-store', ...options
+  });
   let data;
-
-  try {
-    data = await response.json();
-  } catch {
-    throw new Error(
-      'The server returned an unexpected response.'
-    );
-  }
-
-  if (!response.ok || !data.ok) {
-    throw new Error(
-      data.error || 'Request failed.'
-    );
-  }
-
+  try { data = await response.json(); }
+  catch { throw new Error('The server returned an unexpected response.'); }
+  if (!response.ok || !data.ok) throw new Error(data.error || 'Request failed.');
   return data;
 }
-
-$('loginTab').addEventListener(
-  'click',
-  () => setMode('login')
-);
-
-$('registerTab').addEventListener(
-  'click',
-  () => setMode('register')
-);
-
-$('authForm').addEventListener(
-  'submit',
-  async event => {
-    event.preventDefault();
-
-    if (busy) return;
-
-    busy = true;
-    $('submitButton').disabled = true;
-    message('Please wait...');
-
-    try {
-      const body = {
-        email: $('email').value.trim(),
-        password: $('password').value
-      };
-
-      if (mode === 'register') {
-        body.name = $('name').value.trim();
-      }
-
-      const data = await request(
-        mode === 'register' ? 'register' : 'login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        }
-      );
-
-      $('password').value = '';
-      showUser(data.user);
-
-    } catch (error) {
-      message(error.message, true);
-
-    } finally {
-      busy = false;
-      $('submitButton').disabled = false;
-    }
-  }
-);
-
-$('logoutButton').addEventListener(
-  'click',
-  async () => {
-    try {
-      await request('logout', {
-        method: 'POST'
-      });
-
-      showAuth();
-      message('You have signed out.');
-
-    } catch (error) {
-      message(error.message, true);
-    }
-  }
-);
-
+$('loginTab').addEventListener('click', () => setMode('login'));
+$('registerTab').addEventListener('click', () => setMode('register'));
+$('authForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (busy) return;
+  busy = true;
+  $('submitButton').disabled = true;
+  message('Please wait...');
+  try {
+    const body = { email: $('email').value.trim(), password: $('password').value };
+    const registering = mode === 'register';
+    if (registering) body.name = $('name').value.trim();
+    const data = await request(registering ? 'register' : 'login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    $('password').value = '';
+    hidePassword();
+    showUser(data.user, registering);
+  } catch (error) { message(error.message, true); }
+  finally { busy = false; $('submitButton').disabled = false; }
+});
+$('logoutButton').addEventListener('click', async () => {
+  if (busy) return;
+  busy = true;
+  $('logoutButton').disabled = true;
+  try {
+    await request('logout', { method: 'POST' });
+    showAuth();
+    message('You have signed out.');
+  } catch (error) { message(error.message, true); }
+  finally { busy = false; $('logoutButton').disabled = false; }
+});
 setMode(mode);
-
-request('me')
-  .then(data => showUser(data.user))
-  .catch(() => {});
+request('me').then(data => showUser(data.user)).catch(() => {});
 </script>
 </body>
 </html>
