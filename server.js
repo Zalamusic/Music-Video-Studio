@@ -123,7 +123,9 @@ app.use(
   createCustomerAuthRouter({
     storageDirectory: OUT
   })
-);
+app.get('/', (req, res) => {
+  res.redirect('/customer.html');
+});
 app.use(express.static('public'));
 
 
