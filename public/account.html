@@ -11,6 +11,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+<!-- ZALA LIVING ATMOSPHERE -->
+<link rel="stylesheet" href="/zala-themes.css">
+<script src="/zala-themes.js" defer></script>
+
 <style>
 :root {
   --blue:#2469cc;
@@ -176,7 +180,8 @@ button {
 
 button:focus-visible,
 a:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
   outline:3px solid #f6b74a;
   outline-offset:2px;
 }
@@ -448,6 +453,133 @@ button:disabled {
 .history-note {
   font-size:12px;
   margin:15px 0 0;
+}
+
+/* LIVING ATMOSPHERE INTEGRATION */
+
+body.zala-themed {
+  --blue:var(--z-primary);
+  --navy:var(--z-text);
+  --muted:var(--z-muted);
+  --line:var(--z-border);
+  --soft:var(--z-panel);
+  --gold:var(--z-accent);
+
+  background:var(--z-gradient);
+  background-color:var(--z-bg);
+  color:var(--z-text);
+}
+
+body.zala-themed .panel,
+body.zala-themed .loyalty,
+body.zala-themed .history {
+  background:var(--z-surface);
+  border-color:var(--z-border);
+}
+
+body.zala-themed .tabs button,
+body.zala-themed .refresh,
+body.zala-themed .account-actions a {
+  border-color:var(--z-primary);
+}
+
+body.zala-themed .tabs button[aria-pressed="false"],
+body.zala-themed .refresh,
+body.zala-themed .account-actions a {
+  background:var(--z-surface);
+  color:var(--z-primary);
+}
+
+body.zala-themed .tabs button[aria-pressed="true"],
+body.zala-themed .submit,
+body.zala-themed #logoutButton {
+  background:var(--z-primary);
+  color:var(--z-primary-text);
+}
+
+body.zala-themed .milestone {
+  background:var(--z-panel);
+  border-color:var(--z-border);
+  color:var(--z-muted);
+}
+
+body.zala-themed .milestone.complete {
+  background:var(--z-primary);
+  color:var(--z-primary-text);
+}
+
+body.zala-themed .reward,
+body.zala-themed .history-message {
+  background:var(--z-panel);
+  color:var(--z-text);
+}
+
+body.zala-themed .order-card {
+  background:var(--z-surface);
+  border-color:var(--z-border);
+}
+
+body.zala-themed .logo {
+  background:var(--z-panel);
+  color:var(--z-primary);
+}
+
+body.zala-themed .eye-button {
+  background:var(--z-surface);
+  color:var(--z-primary);
+}
+
+body.zala-themed input {
+  background:var(--z-surface);
+  color:var(--z-text);
+  border-color:var(--z-primary);
+}
+
+body.zala-themed .progress-track {
+  background:var(--z-panel);
+}
+
+body.zala-themed .progress-fill {
+  background:var(--z-primary);
+}
+
+body.zala-themed .loyalty.unlocked .progress-fill {
+  background:var(--z-accent);
+}
+
+body.zala-themed .reward strong {
+  color:var(--z-primary);
+}
+
+body.zala-themed .prestige strong {
+  color:var(--z-text);
+}
+
+body.zala-themed .status.error {
+  color:#d94a4a;
+}
+
+body.zala-themed .status.success,
+body.zala-themed .qualifying {
+  color:#218653;
+}
+
+:root[data-zala-theme="midnight"]
+body.zala-themed .status.success,
+:root[data-zala-theme="hollywood"]
+body.zala-themed .status.success,
+:root[data-zala-theme="midnight"]
+body.zala-themed .qualifying,
+:root[data-zala-theme="hollywood"]
+body.zala-themed .qualifying {
+  color:#79e6a3;
+}
+
+/* Make the theme selector feel integrated */
+
+body.zala-themed .zala-theme-control {
+  margin-top:24px;
+  box-shadow:0 8px 26px var(--z-glow);
 }
 
 @media(max-width:390px) {
@@ -1257,5 +1389,6 @@ request('me')
   })
   .catch(() => {});
 </script>
+
 </body>
 </html>
