@@ -133,6 +133,102 @@ a{text-decoration:none}
   outline-offset:3px;
 }
 
+/* Signed-in customer profile */
+
+[hidden]{
+  display:none!important;
+}
+
+.customer-profile{
+  position:relative;
+  flex-shrink:0;
+}
+
+.profile-trigger{
+  width:42px;
+  height:42px;
+  min-height:42px;
+  padding:0;
+  border:3px solid var(--blue);
+  border-radius:50%;
+  background:#eaf2ff;
+  color:var(--blue-dark);
+  font-size:17px;
+  font-weight:800;
+  line-height:1;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+
+.profile-trigger:hover{
+  background:#dceaff;
+}
+
+.profile-trigger:focus-visible{
+  outline:2px solid var(--blue);
+  outline-offset:3px;
+}
+
+.profile-menu{
+  position:absolute;
+  right:0;
+  top:calc(100% + 10px);
+  width:210px;
+  max-width:calc(100vw - 32px);
+  z-index:1200;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(20,45,85,.17);
+  padding:10px;
+}
+
+.profile-menu-name{
+  font-size:13px;
+  font-weight:800;
+  padding:7px 9px 10px;
+  color:var(--navy);
+  overflow-wrap:anywhere;
+  border-bottom:1px solid var(--line);
+  margin-bottom:6px;
+}
+
+.profile-menu a,
+.profile-menu button{
+  width:100%;
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  padding:9px 11px;
+  border:0;
+  border-radius:8px;
+  background:#fff;
+  color:var(--navy);
+  font-size:14px;
+  font-weight:700;
+  text-align:left;
+  cursor:pointer;
+}
+
+.profile-menu a:hover,
+.profile-menu button:hover{
+  background:var(--soft);
+  color:var(--blue-dark);
+}
+
+.profile-menu button:disabled{
+  opacity:.6;
+  cursor:wait;
+}
+
+.profile-error{
+  color:#b42318;
+  font-size:12px;
+  padding:5px 9px;
+}
+
 .tabs{
   display:flex;
   gap:12px;
@@ -329,6 +425,13 @@ h1{
   min-height:36px;
   padding:6px 10px;
   font-size:12px;
+}
+
+.floating-profile .profile-trigger{
+  width:36px;
+  height:36px;
+  min-height:36px;
+  font-size:15px;
 }
 
 .mini-hero{
@@ -617,6 +720,8 @@ footer{
   </symbol>
 </svg>
 
+<!-- Floating header -->
+
 <div class="floating-header"
      id="floatingHeader"
      aria-hidden="true"
@@ -638,9 +743,36 @@ footer{
         </div>
       </div>
 
-      <div class="account-actions floating-account">
+      <div class="account-actions floating-account" data-guest-actions>
         <a href="/account.html">Sign In</a>
         <a href="/account.html?mode=signup">Sign Up</a>
+      </div>
+
+      <div class="customer-profile floating-profile"
+           data-profile
+           hidden>
+        <button type="button"
+                class="profile-trigger"
+                data-profile-trigger
+                aria-label="Open customer profile"
+                aria-expanded="false"
+                aria-haspopup="true">
+          <span data-profile-initial>?</span>
+        </button>
+
+        <div class="profile-menu"
+             data-profile-menu
+             hidden>
+          <div class="profile-menu-name"
+               data-profile-name></div>
+          <a href="/account.html">My Account</a>
+          <button type="button"
+                  data-sign-out>Sign Out</button>
+          <div class="profile-error"
+               data-profile-error
+               role="status"
+               hidden></div>
+        </div>
       </div>
 
     </div>
@@ -692,6 +824,8 @@ footer{
 
 <div class="page">
 
+<!-- Main header -->
+
 <header class="main-header" id="home">
 
   <div class="header-top">
@@ -708,9 +842,36 @@ footer{
       </div>
     </div>
 
-    <div class="account-actions">
+    <div class="account-actions" data-guest-actions>
       <a href="/account.html">Sign In</a>
       <a href="/account.html?mode=signup">Sign Up</a>
+    </div>
+
+    <div class="customer-profile"
+         data-profile
+         hidden>
+      <button type="button"
+              class="profile-trigger"
+              data-profile-trigger
+              aria-label="Open customer profile"
+              aria-expanded="false"
+              aria-haspopup="true">
+        <span data-profile-initial>?</span>
+      </button>
+
+      <div class="profile-menu"
+           data-profile-menu
+           hidden>
+        <div class="profile-menu-name"
+             data-profile-name></div>
+        <a href="/account.html">My Account</a>
+        <button type="button"
+                data-sign-out>Sign Out</button>
+        <div class="profile-error"
+             data-profile-error
+             role="status"
+             hidden></div>
+      </div>
     </div>
 
   </div>
@@ -748,6 +909,8 @@ footer{
 
 <main>
 
+<!-- Hero -->
+
 <section class="hero" id="hero">
 
   <div class="hero-photo"
@@ -781,6 +944,8 @@ footer{
   </div>
 </section>
 
+<!-- How It Works -->
+
 <section class="content" id="how">
 
   <h2>How It Works</h2>
@@ -813,6 +978,8 @@ footer{
 
   </div>
 </section>
+
+<!-- Customer Studio -->
 
 <section class="content" id="create">
 
@@ -951,6 +1118,8 @@ footer{
   </div>
 </section>
 
+<!-- Pricing -->
+
 <section class="content" id="pricing">
 
   <h2>Pricing</h2>
@@ -965,6 +1134,8 @@ footer{
 
 </section>
 
+<!-- Examples -->
+
 <section class="content" id="examples">
 
   <h2>Video Examples</h2>
@@ -977,6 +1148,8 @@ footer{
   </div>
 
 </section>
+
+<!-- Customer Account -->
 
 <section class="content" id="account">
 
@@ -1022,6 +1195,8 @@ footer{
 <script>
 'use strict';
 
+/* Floating header */
+
 const floatingHeader =
   document.getElementById('floatingHeader');
 
@@ -1053,6 +1228,10 @@ function updateHeader(){
   );
 
   floatingHeader.inert = !headerVisible;
+
+  if(!headerVisible){
+    closeProfileMenus();
+  }
 }
 
 window.addEventListener(
@@ -1067,6 +1246,185 @@ window.addEventListener(
 );
 
 updateHeader();
+
+/* Customer login and profile */
+
+const guestActions =
+  document.querySelectorAll('[data-guest-actions]');
+
+const profiles =
+  document.querySelectorAll('[data-profile]');
+
+function closeProfileMenus(){
+  profiles.forEach(profile => {
+    const menu =
+      profile.querySelector('[data-profile-menu]');
+    const trigger =
+      profile.querySelector('[data-profile-trigger]');
+
+    menu.hidden = true;
+    trigger.setAttribute('aria-expanded','false');
+  });
+}
+
+function showGuest(){
+  closeProfileMenus();
+
+  guestActions.forEach(element => {
+    element.hidden = false;
+  });
+
+  profiles.forEach(profile => {
+    profile.hidden = true;
+  });
+}
+
+function showCustomer(customer){
+  const name = String(
+    customer.name ||
+    customer.firstName ||
+    customer.email ||
+    'Customer'
+  ).trim();
+
+  const initial =
+    Array.from(name)[0]?.toUpperCase() || 'C';
+
+  guestActions.forEach(element => {
+    element.hidden = true;
+  });
+
+  profiles.forEach(profile => {
+    profile.hidden = false;
+
+    profile.querySelector(
+      '[data-profile-initial]'
+    ).textContent = initial;
+
+    profile.querySelector(
+      '[data-profile-name]'
+    ).textContent = name;
+  });
+}
+
+async function loadCustomer(){
+  try{
+    const response = await fetch(
+      '/api/customer-auth/me',
+      {
+        credentials:'same-origin',
+        cache:'no-store'
+      }
+    );
+
+    if(!response.ok){
+      showGuest();
+      return;
+    }
+
+    const data = await response.json();
+
+    const customer =
+      data.customer || data.user || null;
+
+    if(data.ok && customer){
+      showCustomer(customer);
+    }else{
+      showGuest();
+    }
+  }catch(error){
+    showGuest();
+  }
+}
+
+profiles.forEach(profile => {
+  const trigger =
+    profile.querySelector('[data-profile-trigger]');
+
+  const menu =
+    profile.querySelector('[data-profile-menu]');
+
+  const signOut =
+    profile.querySelector('[data-sign-out]');
+
+  const errorBox =
+    profile.querySelector('[data-profile-error]');
+
+  trigger.addEventListener('click',event => {
+    event.stopPropagation();
+
+    const opening = menu.hidden;
+
+    closeProfileMenus();
+
+    menu.hidden = !opening;
+
+    trigger.setAttribute(
+      'aria-expanded',
+      String(opening)
+    );
+
+    errorBox.hidden = true;
+    errorBox.textContent = '';
+  });
+
+  menu.addEventListener('click',event => {
+    event.stopPropagation();
+  });
+
+  signOut.addEventListener('click',async () => {
+    signOut.disabled = true;
+    errorBox.hidden = true;
+    errorBox.textContent = '';
+
+    try{
+      const response = await fetch(
+        '/api/customer-auth/logout',
+        {
+          method:'POST',
+          credentials:'same-origin',
+          cache:'no-store'
+        }
+      );
+
+      if(!response.ok){
+        throw new Error('Sign out failed.');
+      }
+
+      const data = await response.json();
+
+      if(!data.ok){
+        throw new Error('Sign out failed.');
+      }
+
+      showGuest();
+    }catch(error){
+      errorBox.textContent =
+        'Could not sign out. Please try again.';
+      errorBox.hidden = false;
+    }finally{
+      signOut.disabled = false;
+    }
+  });
+});
+
+document.addEventListener('click',event => {
+  if(!event.target.closest('[data-profile]')){
+    closeProfileMenus();
+  }
+});
+
+document.addEventListener('keydown',event => {
+  if(event.key === 'Escape'){
+    closeProfileMenus();
+  }
+});
+
+window.addEventListener('pageshow',loadCustomer);
+
+loadCustomer();
+
+/* Gentle guided flow */
 
 const reducedMotion = window.matchMedia(
   '(prefers-reduced-motion: reduce)'
@@ -1142,6 +1500,8 @@ styleSelect.addEventListener('change',() => {
 formatSelect.addEventListener('change',() => {
   gentlyReveal('fieldVision');
 });
+
+/* Customer preview form */
 
 const form =
   document.getElementById('customerForm');
