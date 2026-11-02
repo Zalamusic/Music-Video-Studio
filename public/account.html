@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Your Account | Zala QI's World</title>
+<style>
+:root {
+  --blue: #2469cc;
+  --navy: #17263c;
+  --muted: #3f5067;
+  --line: #d8e3f0;
+  --soft: #f4f8fe;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #fff;
+  color: var(--navy);
+  font: 16px/1.6 Arial, sans-serif;
+}
+main {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+a {
+  color: var(--blue);
+  text-decoration: none;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #eaf2ff;
+  color: var(--blue);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+.brand { font-weight: 800; }
+.sub {
+  font-size: 11px;
+  letter-spacing: .5px;
+  color: var(--muted);
+}
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--soft);
+  padding: 24px;
+}
+h1 {
+  font-size: 26px;
+  margin: 0 0 5px;
+}
+p { color: var(--muted); }
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 22px 0;
+}
+.tabs button {
+  flex: 1;
+  background: #fff;
+  color: var(--blue);
+  border: 3px solid var(--blue);
+}
+.tabs button[aria-pressed="true"] {
+  background: var(--blue);
+  color: #fff;
+}
+label {
+  display: block;
+  font-weight: 700;
+  margin: 16px 0 7px;
+}
+input {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  border: 2px solid var(--blue);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+  border-radius: 10px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+  padding: 12px 16px;
+  min-height: 48px;
+}
+.submit {
+  width: 100%;
+  margin-top: 22px;
+}
+button:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+.status {
+  min-height: 26px;
+  margin-top: 16px;
+  font-weight: 600;
+}
+.error { color: #b42318; }
+.success { color: #166534; }
+.hidden { display: none !important; }
+.account-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.account-actions a {
+  border: 2px solid var(--blue);
+  padding: 9px 14px;
+  border-radius: 9px;
+  background: #fff;
+}
+.foot {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="logo">ZQ</div>
+  <div>
+    <div class="brand">ZALA QI'S WORLD</div>
+    <div class="sub">CINEMATIC MUSIC VIDEO STUDIO</div>
+  </div>
+</header>
+
+<section class="panel" id="authPanel">
+  <h1 id="heading">Welcome back</h1>
+  <p id="description">Sign in to your customer account.</p>
+
+  <div class="tabs" role="group" aria-label="Account action">
+    <button id="loginTab" type="button" aria-pressed="true">
+      Sign In
+    </button>
+    <button id="registerTab" type="button" aria-pressed="false">
+      Sign Up
+    </button>
+  </div>
+
+  <form id="authForm">
+    <div id="nameField" class="hidden">
+      <label for="name">Your name</label>
+      <input
+        id="name"
+        name="name"
+        autocomplete="name"
+        maxlength="100"
+      >
+    </div>
+
+    <label for="email">Email address</label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      maxlength="254"
+      required
+    >
+
+    <label for="password">Password</label>
+    <input
+      id="password"
+      name="password"
+      type="password"
+      autocomplete="current-password"
+      required
+      minlength="12"
+      maxlength="128"
+    >
+
+    <p id="passwordHint" class="hidden">
+      Use a password of at least 12 characters.
+    </p>
+
+    <button
+      class="submit"
+      id="submitButton"
+      type="submit"
+    >
+      Sign In
+    </button>
+  </form>
+</section>
+
+<section class="panel hidden" id="profilePanel">
+  <h1>Your Account</h1>
+  <p id="welcome"></p>
+  <p>
+    Video orders and account order history
+    are not available yet.
+  </p>
+
+  <div class="account-actions">
+    <a href="/customer.html">Back to Studio</a>
+    <button type="button" id="logoutButton">
+      Sign Out
+    </button>
+  </div>
+</section>
+
+<p
+  id="status"
+  class="status"
+  role="status"
+  aria-live="polite"
+></p>
+
+<div class="foot">
+  <a href="/customer.html">
+    Return to Zala QI's World
+  </a>
+</div>
+</main>
+
+<script>
+'use strict';
+
+const $ = id => document.getElementById(id);
+
+let mode =
+  new URLSearchParams(location.search).get('mode') === 'signup'
+    ? 'register'
+    : 'login';
+
+let busy = false;
+
+function message(value, error = false) {
+  $('status').textContent = value;
+  $('status').className =
+    'status ' + (error ? 'error' : 'success');
+}
+
+function setMode(next) {
+  mode = next;
+
+  const register = mode === 'register';
+
+  $('nameField').classList.toggle('hidden', !register);
+  $('name').required = register;
+
+  $('heading').textContent = register
+    ? 'Create your account'
+    : 'Welcome back';
+
+  $('description').textContent = register
+    ? "Join Zala QI's World."
+    : 'Sign in to your customer account.';
+
+  $('loginTab').setAttribute(
+    'aria-pressed',
+    String(!register)
+  );
+
+  $('registerTab').setAttribute(
+    'aria-pressed',
+    String(register)
+  );
+
+  $('submitButton').textContent = register
+    ? 'Create Account'
+    : 'Sign In';
+
+  $('password').autocomplete = register
+    ? 'new-password'
+    : 'current-password';
+
+  $('passwordHint').classList.toggle(
+    'hidden',
+    !register
+  );
+
+  message('');
+}
+
+function showUser(user) {
+  $('authPanel').classList.add('hidden');
+  $('profilePanel').classList.remove('hidden');
+
+  $('welcome').textContent =
+    'Signed in as ' +
+    user.name +
+    ' (' +
+    user.email +
+    ').';
+
+  message('');
+}
+
+function showAuth() {
+  $('profilePanel').classList.add('hidden');
+  $('authPanel').classList.remove('hidden');
+}
+
+async function request(route, options = {}) {
+  const response = await fetch(
+    '/api/customer-auth/' + route,
+    {
+      credentials: 'same-origin',
+      cache: 'no-store',
+      ...options
+    }
+  );
+
+  let data;
+
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error(
+      'The server returned an unexpected response.'
+    );
+  }
+
+  if (!response.ok || !data.ok) {
+    throw new Error(
+      data.error || 'Request failed.'
+    );
+  }
+
+  return data;
+}
+
+$('loginTab').addEventListener(
+  'click',
+  () => setMode('login')
+);
+
+$('registerTab').addEventListener(
+  'click',
+  () => setMode('register')
+);
+
+$('authForm').addEventListener(
+  'submit',
+  async event => {
+    event.preventDefault();
+
+    if (busy) return;
+
+    busy = true;
+    $('submitButton').disabled = true;
+    message('Please wait...');
+
+    try {
+      const body = {
+        email: $('email').value.trim(),
+        password: $('password').value
+      };
+
+      if (mode === 'register') {
+        body.name = $('name').value.trim();
+      }
+
+      const data = await request(
+        mode === 'register' ? 'register' : 'login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        }
+      );
+
+      $('password').value = '';
+      showUser(data.user);
+
+    } catch (error) {
+      message(error.message, true);
+
+    } finally {
+      busy = false;
+      $('submitButton').disabled = false;
+    }
+  }
+);
+
+$('logoutButton').addEventListener(
+  'click',
+  async () => {
+    try {
+      await request('logout', {
+        method: 'POST'
+      });
+
+      showAuth();
+      message('You have signed out.');
+
+    } catch (error) {
+      message(error.message, true);
+    }
+  }
+);
+
+setMode(mode);
+
+request('me')
+  .then(data => showUser(data.user))
+  .catch(() => {});
+</script>
+</body>
+</html>
