@@ -1,4 +1,4 @@
-
+import { createCustomerAuthRouter } from './customer-auth.js';
 import express from 'express';
 import multer from 'multer';
 import { fal } from '@fal-ai/client';
