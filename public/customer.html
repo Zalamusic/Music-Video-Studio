@@ -1540,5 +1540,64 @@ form.addEventListener('submit',event => {
 });
 </script>
 
+<style>
+/* Cut Loopz Media official logo */
+.brand .logo,
+.floating-brand .logo {
+  width: 76px;
+  height: 58px;
+  padding: 3px;
+  border-radius: 10px;
+  background: #101010;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand .logo img,
+.floating-brand .logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 7px;
+}
+
+@media (max-width: 600px) {
+  .brand .logo,
+  .floating-brand .logo {
+    width: 64px;
+    height: 50px;
+  }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  const logoPath =
+    '/a_sleek_cinematic_logo_on_a_black_background_a_g.png';
+
+  document.querySelectorAll(
+    '.brand .logo, .floating-brand .logo'
+  ).forEach(function (container) {
+    const img = document.createElement('img');
+    img.src = logoPath;
+    img.alt = 'Cut Loopz Media film-reel logo';
+    img.loading = 'eager';
+
+    container.replaceChildren(img);
+  });
+
+  document.querySelectorAll(
+    '#account h3'
+  ).forEach(function (heading) {
+    if (heading.textContent.includes("Zala QI's World")) {
+      heading.textContent = 'Welcome to Cut Loopz Media';
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
