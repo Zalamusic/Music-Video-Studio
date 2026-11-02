@@ -1,0 +1,144 @@
+
+/* ZALA QI'S WORLD — CUSTOMER THEME CONTRAST FIX */
+
+/* Main page and theme colors */
+body.zala-themed {
+  --blue: var(--z-primary);
+  --blue-dark: var(--z-primary);
+  --navy: var(--z-text);
+  --muted: var(--z-muted);
+  --line: var(--z-border);
+  --soft: var(--z-panel);
+  background: var(--z-gradient);
+  color: var(--z-text);
+}
+
+/* Cards and panels */
+body.zala-themed .hero,
+body.zala-themed .card,
+body.zala-themed .panel,
+body.zala-themed .account-panel,
+body.zala-themed .profile-menu {
+  background: var(--z-surface);
+  border-color: var(--z-border);
+  color: var(--z-text);
+}
+
+body.zala-themed .studio {
+  background: var(--z-panel);
+  border-color: var(--z-border);
+  color: var(--z-text);
+}
+
+/* Headings and descriptions */
+body.zala-themed h1,
+body.zala-themed h2,
+body.zala-themed h3,
+body.zala-themed .brand-name,
+body.zala-themed .mini-brand-name,
+body.zala-themed .mini-headline,
+body.zala-themed .field label,
+body.zala-themed .profile-menu-name {
+  color: var(--z-text);
+}
+
+body.zala-themed .hero-sub,
+body.zala-themed .mini-sub,
+body.zala-themed .hero-description,
+body.zala-themed .tagline,
+body.zala-themed .note,
+body.zala-themed .card p,
+body.zala-themed .panel p,
+body.zala-themed .brand-sub,
+body.zala-themed .mini-brand-sub {
+  color: var(--z-muted);
+}
+
+/* Navigation tabs */
+body.zala-themed .tabs a {
+  background: var(--z-panel);
+  color: var(--z-text);
+  border: 1px solid var(--z-border);
+}
+
+body.zala-themed .tabs a.selected {
+  background: var(--z-primary);
+  color: var(--z-primary-text);
+  border-color: var(--z-primary);
+}
+
+/* Floating navigation */
+body.zala-themed .floating-header {
+  background: var(--z-surface);
+  border-color: var(--z-border);
+  color: var(--z-text);
+}
+
+body.zala-themed .mini-logo,
+body.zala-themed .logo,
+body.zala-themed .field-icon {
+  background: var(--z-panel);
+  color: var(--z-primary);
+}
+
+/* Primary buttons */
+body.zala-themed .button,
+body.zala-themed .hero-cta,
+body.zala-themed .studio button {
+  background: var(--z-primary);
+  color: var(--z-primary-text);
+}
+
+/* Input and upload fields */
+body.zala-themed .studio input,
+body.zala-themed .studio select,
+body.zala-themed .studio textarea {
+  background: var(--z-surface);
+  color: var(--z-text);
+  border-color: var(--z-primary);
+}
+
+body.zala-themed .studio input::placeholder,
+body.zala-themed .studio textarea::placeholder {
+  color: var(--z-muted);
+  opacity: 1;
+}
+
+body.zala-themed .studio input[type="file"] {
+  background: var(--z-surface);
+  color: var(--z-text);
+}
+
+body.zala-themed .studio input[type="file"]::file-selector-button {
+  background: var(--z-primary);
+  color: var(--z-primary-text);
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  margin-right: 10px;
+}
+
+/* Account links and profile */
+body.zala-themed .account-actions a,
+body.zala-themed .account-options a {
+  background: var(--z-surface);
+  color: var(--z-primary);
+  border-color: var(--z-primary);
+}
+
+body.zala-themed .profile-menu a,
+body.zala-themed .profile-menu button {
+  background: var(--z-surface);
+  color: var(--z-text);
+}
+
+body.zala-themed .profile-trigger {
+  background: var(--z-primary);
+  color: var(--z-primary-text);
+}
+
+/* Preserve readable icons */
+body.zala-themed .tabs .icon,
+body.zala-themed .button .icon {
+  stroke: currentColor;
+}
