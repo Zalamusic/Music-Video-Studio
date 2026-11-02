@@ -18,29 +18,40 @@
   --muted:#3f5067;
   --line:#d8e3f0;
   --soft:#f4f8fe;
+  --gold:#c59a46;
 }
+
 * {box-sizing:border-box}
+
 body {
   margin:0;
   background:#fff;
   color:var(--navy);
   font:16px/1.6 "DM Sans",Arial,sans-serif;
 }
+
 main {
   max-width:520px;
   margin:0 auto;
   padding:24px 16px 60px;
 }
-a {color:var(--blue);text-decoration:none}
+
+a {
+  color:var(--blue);
+  text-decoration:none;
+}
+
 header {
   display:flex;
   align-items:center;
   gap:12px;
   margin-bottom:32px;
 }
+
 .logo {
   width:48px;
   height:48px;
+  flex-shrink:0;
   border-radius:12px;
   background:#eaf2ff;
   color:var(--blue);
@@ -48,18 +59,30 @@ header {
   place-items:center;
   font-weight:800;
 }
+
 .brand {font-weight:800}
+
 .sub {
   font-size:11px;
   letter-spacing:.5px;
   color:var(--muted);
 }
+
+.studio-link {
+  margin-left:auto;
+  flex-shrink:0;
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
 .panel {
   border:1px solid var(--line);
   border-radius:16px;
   background:var(--soft);
   padding:24px;
 }
+
 h1 {
   font-size:23px;
   line-height:1.35;
@@ -67,28 +90,40 @@ h1 {
   letter-spacing:-.45px;
   margin:0 0 10px;
 }
+
 p {color:var(--muted)}
-#description,#profileGreeting {
+
+#description,
+#profileGreeting {
   font-size:15px;
   line-height:1.7;
   font-weight:400;
 }
-.tabs {display:flex;gap:10px;margin:22px 0}
+
+.tabs {
+  display:flex;
+  gap:10px;
+  margin:22px 0;
+}
+
 .tabs button {
   flex:1;
   background:#fff;
   color:var(--blue);
   border:3px solid var(--blue);
 }
+
 .tabs button[aria-pressed="true"] {
   background:var(--blue);
   color:#fff;
 }
+
 label {
   display:block;
   font-weight:700;
   margin:16px 0 7px;
 }
+
 input {
   display:block;
   width:100%;
@@ -96,10 +131,13 @@ input {
   border:2px solid var(--blue);
   border-radius:10px;
   background:#fff;
+  color:var(--navy);
   font:inherit;
 }
+
 .password-wrap {position:relative}
 .password-wrap input {padding-right:64px}
+
 .eye-button {
   position:absolute;
   right:5px;
@@ -113,12 +151,7 @@ input {
   color:var(--blue);
   border-radius:8px;
 }
-.eye-button:focus-visible,
-button:focus-visible,
-a:focus-visible {
-  outline:3px solid #f6b74a;
-  outline-offset:2px;
-}
+
 .eye-button svg {
   width:23px;
   height:23px;
@@ -128,6 +161,7 @@ a:focus-visible {
   stroke-linecap:round;
   stroke-linejoin:round;
 }
+
 button {
   font:inherit;
   cursor:pointer;
@@ -139,35 +173,59 @@ button {
   padding:12px 16px;
   min-height:48px;
 }
-.submit {width:100%;margin-top:22px}
-button:disabled {opacity:.65;cursor:wait}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline:3px solid #f6b74a;
+  outline-offset:2px;
+}
+
+.submit {
+  width:100%;
+  margin-top:22px;
+}
+
+button:disabled {
+  opacity:.65;
+  cursor:wait;
+}
+
 .status {
   min-height:26px;
   margin-top:16px;
   font-weight:600;
 }
+
 .error {color:#b42318}
 .success {color:#166534}
 .hidden {display:none!important}
+
 .account-actions {
   display:flex;
   gap:12px;
   flex-wrap:wrap;
-  margin-top:20px;
+  margin-top:22px;
 }
+
 .account-actions a {
   border:2px solid var(--blue);
   padding:9px 14px;
   border-radius:9px;
   background:#fff;
+  font-weight:700;
+  display:inline-flex;
+  align-items:center;
 }
+
 .foot {
   margin-top:24px;
   text-align:center;
   font-size:14px;
 }
 
-/* Platinum Hitmaker loyalty dashboard */
+/* PLATINUM HITMAKER */
+
 .loyalty {
   margin-top:22px;
   padding:22px 18px;
@@ -175,11 +233,13 @@ button:disabled {opacity:.65;cursor:wait}
   border-radius:16px;
   background:#fff;
 }
+
 .loyalty-head {
   display:flex;
   align-items:center;
   gap:12px;
 }
+
 .loyalty-symbol {
   width:50px;
   height:50px;
@@ -190,16 +250,27 @@ button:disabled {opacity:.65;cursor:wait}
   background:#e9f2ff;
   font-size:25px;
 }
+
+.loyalty.unlocked {
+  border-color:#d6b36d;
+}
+
+.loyalty.unlocked .loyalty-symbol {
+  background:#fff1d4;
+}
+
 .loyalty h2 {
   margin:0;
   font-size:19px;
   line-height:1.3;
   letter-spacing:-.3px;
 }
+
 .loyalty-sub {
   margin:3px 0 0;
   font-size:12px;
 }
+
 .loyalty-progress-head {
   display:flex;
   justify-content:space-between;
@@ -209,6 +280,7 @@ button:disabled {opacity:.65;cursor:wait}
   font-size:14px;
   font-weight:700;
 }
+
 .progress-track {
   height:12px;
   margin-top:10px;
@@ -216,18 +288,26 @@ button:disabled {opacity:.65;cursor:wait}
   border-radius:999px;
   background:#e4ebf5;
 }
+
 .progress-fill {
   width:0%;
   height:100%;
   border-radius:inherit;
   background:var(--blue);
+  transition:width .6s ease;
 }
+
+.loyalty.unlocked .progress-fill {
+  background:var(--gold);
+}
+
 .milestones {
   display:flex;
   justify-content:space-between;
   margin-top:10px;
   gap:4px;
 }
+
 .milestone {
   width:29px;
   height:29px;
@@ -240,6 +320,13 @@ button:disabled {opacity:.65;cursor:wait}
   font-size:12px;
   font-weight:800;
 }
+
+.milestone.complete {
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+
 .reward {
   margin-top:20px;
   padding:14px;
@@ -247,12 +334,15 @@ button:disabled {opacity:.65;cursor:wait}
   background:#edf5ff;
   font-size:14px;
 }
+
 .reward strong {color:#194d9a}
+
 .loyalty-note {
   margin:13px 0 0;
   font-size:12px;
   line-height:1.6;
 }
+
 .prestige {
   display:flex;
   align-items:center;
@@ -261,36 +351,153 @@ button:disabled {opacity:.65;cursor:wait}
   font-size:13px;
   color:#53637a;
 }
+
 .prestige strong {color:var(--navy)}
+
+/* ORDER HISTORY */
+
+.history {
+  margin-top:22px;
+  padding:20px 18px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+
+.history-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.history h2 {
+  margin:0;
+  font-size:19px;
+  line-height:1.3;
+}
+
+.history-intro {
+  font-size:13px;
+  margin:9px 0 16px;
+}
+
+.refresh {
+  min-height:36px;
+  padding:7px 12px;
+  font-size:12px;
+  border:1px solid var(--blue);
+  background:#fff;
+  color:var(--blue);
+  flex-shrink:0;
+}
+
+.history-message {
+  padding:17px 14px;
+  border-radius:12px;
+  background:var(--soft);
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+.order-list {
+  display:grid;
+  gap:12px;
+}
+
+.order-card {
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:15px;
+  background:#fff;
+  overflow-wrap:anywhere;
+}
+
+.order-title {
+  font-weight:800;
+  font-size:15px;
+}
+
+.order-date {
+  font-size:12px;
+  color:var(--muted);
+  margin-top:3px;
+}
+
+.order-detail {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:10px;
+  font-size:13px;
+}
+
+.order-detail span:last-child {
+  font-weight:700;
+  text-align:right;
+}
+
+.qualifying {
+  color:#166534;
+  font-weight:700;
+  font-size:12px;
+  margin:12px 0 0;
+}
+
+.history-note {
+  font-size:12px;
+  margin:15px 0 0;
+}
+
+@media(max-width:390px) {
+  .panel {padding:18px}
+  .brand {font-size:13px}
+  .sub {font-size:9px}
+  .studio-link {font-size:11px}
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .progress-fill {transition:none}
+}
 </style>
 </head>
+
 <body>
 <main>
+
 <header>
   <div class="logo">ZQ</div>
   <div>
     <div class="brand">ZALA QI'S WORLD</div>
     <div class="sub">CINEMATIC MUSIC VIDEO STUDIO</div>
   </div>
-  <a href="/customer.html"
-     style="margin-left:auto;flex-shrink:0;font-size:12px;font-weight:700;white-space:nowrap;">
+  <a href="/customer.html" class="studio-link">
     ← Studio
   </a>
 </header>
 
 <section class="panel" id="authPanel">
   <h1 id="heading">Welcome back, hitmaker!</h1>
-  <p id="description">Ready to make another hit? Sign in and let the creativity continue.</p>
+
+  <p id="description">
+    Ready to make another hit? Sign in and let the creativity continue.
+  </p>
 
   <div class="tabs" role="group" aria-label="Account action">
-    <button id="loginTab" type="button" aria-pressed="true">Sign in</button>
-    <button id="registerTab" type="button" aria-pressed="false">Sign up</button>
+    <button id="loginTab" type="button" aria-pressed="true">
+      Sign in
+    </button>
+    <button id="registerTab" type="button" aria-pressed="false">
+      Sign up
+    </button>
   </div>
 
   <form id="authForm">
     <div id="nameField" class="hidden">
       <label for="name">Your name</label>
-      <input id="name" name="name" autocomplete="name" maxlength="100">
+      <input id="name" name="name"
+        autocomplete="name" maxlength="100">
     </div>
 
     <label for="email">Email address</label>
@@ -298,6 +505,7 @@ button:disabled {opacity:.65;cursor:wait}
       autocomplete="email" maxlength="254" required>
 
     <label for="password">Password</label>
+
     <div class="password-wrap">
       <input id="password" name="password"
         type="password"
@@ -310,6 +518,7 @@ button:disabled {opacity:.65;cursor:wait}
         aria-label="Show password"
         aria-pressed="false"
         title="Show password">
+
         <svg id="eyeIcon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
           <circle cx="12" cy="12" r="3"/>
@@ -328,31 +537,45 @@ button:disabled {opacity:.65;cursor:wait}
 </section>
 
 <section class="panel hidden" id="profilePanel">
-  <h1 id="profileHeading">Welcome back to the studio!</h1>
-  <p id="profileGreeting">Your next masterpiece is waiting.</p>
+  <h1 id="profileHeading">
+    Welcome back to the studio!
+  </h1>
+
+  <p id="profileGreeting">
+    Your next masterpiece is waiting.
+  </p>
+
   <p id="welcome"></p>
 
-  <div class="loyalty" aria-labelledby="loyaltyTitle">
+  <div class="loyalty" id="loyaltyPanel"
+    aria-labelledby="loyaltyTitle">
+
     <div class="loyalty-head">
       <div class="loyalty-symbol" aria-hidden="true">🏆</div>
       <div>
         <h2 id="loyaltyTitle">Platinum Hitmaker</h2>
-        <p class="loyalty-sub">Your music. Your milestones. Your rewards.</p>
+        <p class="loyalty-sub">
+          Your music. Your milestones. Your rewards.
+        </p>
       </div>
     </div>
 
     <div class="loyalty-progress-head">
       <span>Your progress</span>
-      <span>0 of 6 videos</span>
+      <span id="progressText">0 of 6 videos</span>
     </div>
+
     <div class="progress-track"
+      id="progressTrack"
       role="progressbar"
       aria-label="Qualifying completed paid videos"
       aria-valuemin="0"
       aria-valuemax="6"
       aria-valuenow="0">
-      <div class="progress-fill"></div>
+
+      <div class="progress-fill" id="progressFill"></div>
     </div>
+
     <div class="milestones" aria-hidden="true">
       <span class="milestone">1</span>
       <span class="milestone">2</span>
@@ -363,37 +586,66 @@ button:disabled {opacity:.65;cursor:wait}
     </div>
 
     <div class="reward">
-      🎁 <strong>Your reward:</strong> Complete 6 qualifying
-      paid music videos to unlock a one-time
+      🎁 <strong>Your reward:</strong>
+      Complete 6 qualifying paid music videos
+      to unlock a one-time
       <strong>20% discount on your 7th video.</strong>
     </div>
 
     <div class="prestige">
       <span aria-hidden="true">🏅</span>
-      <span><strong>Platinum Hitmaker insignia</strong> — unlocks permanently after your sixth qualifying video.</span>
+      <span id="prestigeText">
+        <strong>Platinum Hitmaker insignia</strong>
+        — unlocks permanently after your sixth qualifying video.
+      </span>
     </div>
 
-    <p class="loyalty-note">
-      Preview only: video progress, the permanent badge, and the
-      seventh-video discount will be activated when verified
-      order tracking and checkout are available. No rewards
-      are currently being issued.
+    <p class="loyalty-note" id="loyaltyNote">
+      Loading your verified progress...
     </p>
   </div>
 
-  <p>Video orders and account order history are not available yet.</p>
+  <section class="history" aria-labelledby="historyTitle">
+    <div class="history-heading">
+      <h2 id="historyTitle">🎬 My Video Orders</h2>
+      <button type="button" class="refresh" id="refreshOrders">
+        Refresh
+      </button>
+    </div>
+
+    <p class="history-intro">
+      Your music video orders, all in one place.
+    </p>
+
+    <div id="orderHistory"
+      class="history-message"
+      role="status"
+      aria-live="polite">
+      Loading your order history...
+    </div>
+
+    <p class="history-note">
+      Only orders associated with your signed-in
+      account appear here. New customer ordering
+      and checkout are not yet available.
+    </p>
+  </section>
 
   <div class="account-actions">
     <a href="/customer.html">Back to studio</a>
-    <button type="button" id="logoutButton">Sign out</button>
+    <button type="button" id="logoutButton">
+      Sign out
+    </button>
   </div>
 </section>
 
-<p id="status" class="status" role="status" aria-live="polite"></p>
+<p id="status" class="status"
+  role="status" aria-live="polite"></p>
 
 <div class="foot">
   <a href="/customer.html">← Back</a>
 </div>
+
 </main>
 
 <script>
@@ -416,6 +668,7 @@ const messages = {
       'Create your account and get ready to tell your story on screen.'
     ]
   ],
+
   login: [
     [
       'Welcome back, hitmaker!',
@@ -434,6 +687,7 @@ const messages = {
       'Your studio is waiting. Sign in and keep creating.'
     ]
   ],
+
   profile: [
     [
       'Welcome back to the studio, {name}!',
@@ -448,6 +702,7 @@ const messages = {
       "Let's make something unforgettable."
     ]
   ],
+
   newProfile: [
     [
       'Welcome to the studio, {name}!',
@@ -465,6 +720,9 @@ let mode = new URLSearchParams(location.search).get('mode') === 'signup'
   : 'login';
 
 let busy = false;
+let signedIn = false;
+let accountGeneration = 0;
+let historyRequest = 0;
 
 let currentGreeting = {
   register:-1,
@@ -477,7 +735,10 @@ function chooseGreeting(kind) {
   const choices = messages[kind];
   let index = Math.floor(Math.random() * choices.length);
 
-  if (choices.length > 1 && index === currentGreeting[kind]) {
+  if (
+    choices.length > 1 &&
+    index === currentGreeting[kind]
+  ) {
     index = (index + 1) % choices.length;
   }
 
@@ -487,7 +748,8 @@ function chooseGreeting(kind) {
 
 function message(value, error = false) {
   $('status').textContent = value;
-  $('status').className = 'status ' + (error ? 'error' : 'success');
+  $('status').className =
+    'status ' + (error ? 'error' : 'success');
 }
 
 function setMode(next) {
@@ -502,8 +764,15 @@ function setMode(next) {
   $('heading').textContent = heading;
   $('description').textContent = description;
 
-  $('loginTab').setAttribute('aria-pressed', String(!register));
-  $('registerTab').setAttribute('aria-pressed', String(register));
+  $('loginTab').setAttribute(
+    'aria-pressed',
+    String(!register)
+  );
+
+  $('registerTab').setAttribute(
+    'aria-pressed',
+    String(register)
+  );
 
   $('submitButton').textContent = register
     ? 'Create account'
@@ -513,7 +782,10 @@ function setMode(next) {
     ? 'new-password'
     : 'current-password';
 
-  $('passwordHint').classList.toggle('hidden', !register);
+  $('passwordHint').classList.toggle(
+    'hidden',
+    !register
+  );
 
   hidePassword();
   message('');
@@ -521,8 +793,17 @@ function setMode(next) {
 
 function hidePassword() {
   $('password').type = 'password';
-  $('togglePassword').setAttribute('aria-pressed', 'false');
-  $('togglePassword').setAttribute('aria-label', 'Show password');
+
+  $('togglePassword').setAttribute(
+    'aria-pressed',
+    'false'
+  );
+
+  $('togglePassword').setAttribute(
+    'aria-label',
+    'Show password'
+  );
+
   $('togglePassword').title = 'Show password';
 
   $('eyeIcon').innerHTML =
@@ -533,13 +814,20 @@ function hidePassword() {
 $('togglePassword').addEventListener('click', () => {
   const reveal = $('password').type === 'password';
 
-  $('password').type = reveal ? 'text' : 'password';
+  $('password').type = reveal
+    ? 'text'
+    : 'password';
 
-  $('togglePassword').setAttribute('aria-pressed', String(reveal));
+  $('togglePassword').setAttribute(
+    'aria-pressed',
+    String(reveal)
+  );
+
   $('togglePassword').setAttribute(
     'aria-label',
     reveal ? 'Hide password' : 'Show password'
   );
+
   $('togglePassword').title = reveal
     ? 'Hide password'
     : 'Show password';
@@ -549,7 +837,254 @@ $('togglePassword').addEventListener('click', () => {
     : '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>';
 });
 
+function resetLoyalty() {
+  $('progressText').textContent = '0 of 6 videos';
+  $('progressFill').style.width = '0%';
+
+  $('progressTrack').setAttribute(
+    'aria-valuenow',
+    '0'
+  );
+
+  $('loyaltyPanel').classList.remove('unlocked');
+
+  document.querySelectorAll('.milestone').forEach(
+    milestone => milestone.classList.remove('complete')
+  );
+
+  $('prestigeText').textContent =
+    'Platinum Hitmaker insignia — unlocks permanently after your sixth qualifying video.';
+
+  $('loyaltyNote').textContent =
+    'Verified progress will appear here when available. Rewards and discounts are not currently being issued.';
+}
+
+function updateLoyalty(loyalty) {
+  if (!loyalty || typeof loyalty !== 'object') {
+    resetLoyalty();
+    return;
+  }
+
+  const count = Math.max(
+    0,
+    Math.min(
+      6,
+      Number(loyalty.qualifyingVideos) || 0
+    )
+  );
+
+  const completed = Math.floor(count);
+  const unlocked = loyalty.platinumUnlocked === true;
+
+  $('progressText').textContent =
+    completed + ' of 6 videos';
+
+  $('progressFill').style.width =
+    (completed / 6 * 100) + '%';
+
+  $('progressTrack').setAttribute(
+    'aria-valuenow',
+    String(completed)
+  );
+
+  document.querySelectorAll('.milestone').forEach(
+    (milestone, index) => {
+      milestone.classList.toggle(
+        'complete',
+        index < completed
+      );
+    }
+  );
+
+  $('loyaltyPanel').classList.toggle(
+    'unlocked',
+    unlocked
+  );
+
+  $('prestigeText').textContent = unlocked
+    ? '🏅 Platinum Hitmaker milestone reached!'
+    : 'Platinum Hitmaker insignia — unlocks after your sixth qualifying video.';
+
+  $('loyaltyNote').textContent = unlocked
+    ? 'You have reached the Platinum Hitmaker milestone. Automatic badge issuance and seventh-video discount redemption are not yet active.'
+    : 'Progress reflects qualifying paid and completed videos verified by the server. Automatic rewards and checkout discounts are not yet active.';
+}
+
+function friendlyDate(value) {
+  if (!value) return 'Date unavailable';
+
+  const date = new Date(value);
+
+  if (!Number.isFinite(date.getTime())) {
+    return 'Date unavailable';
+  }
+
+  return date.toLocaleDateString(undefined, {
+    year:'numeric',
+    month:'short',
+    day:'numeric'
+  });
+}
+
+function statusLabel(value) {
+  const labels = {
+    pending:'Pending',
+    paid:'Paid',
+    completed:'Completed',
+    processing:'Processing',
+    queued:'Queued',
+    running:'In progress',
+    failed:'Failed',
+    refunded:'Refunded',
+    cancelled:'Cancelled',
+    canceled:'Cancelled'
+  };
+
+  const key = String(value || '').toLowerCase();
+
+  return labels[key] || 'Not available';
+}
+
+function makeDetail(label, value) {
+  const line = document.createElement('div');
+  line.className = 'order-detail';
+
+  const name = document.createElement('span');
+  name.textContent = label;
+
+  const status = document.createElement('span');
+  status.textContent = value;
+
+  line.append(name, status);
+  return line;
+}
+
+function renderOrders(orders) {
+  const container = $('orderHistory');
+  container.replaceChildren();
+
+  if (!Array.isArray(orders) || orders.length === 0) {
+    container.className = 'history-message';
+    container.textContent =
+      '🎵 No music video orders yet. When customer ordering launches, your orders will appear here.';
+    return;
+  }
+
+  container.className = 'order-list';
+
+  orders.forEach(order => {
+    const card = document.createElement('article');
+    card.className = 'order-card';
+
+    const title = document.createElement('div');
+    title.className = 'order-title';
+    title.textContent = String(
+      order.title || 'Untitled Music Video'
+    );
+
+    const date = document.createElement('div');
+    date.className = 'order-date';
+    date.textContent = friendlyDate(order.createdAt);
+
+    card.append(title, date);
+
+    card.append(
+      makeDetail(
+        'Payment',
+        statusLabel(order.paymentStatus)
+      )
+    );
+
+    card.append(
+      makeDetail(
+        'Video',
+        statusLabel(order.videoStatus)
+      )
+    );
+
+    if (order.qualifiesForPlatinum === true) {
+      const qualifying = document.createElement('p');
+      qualifying.className = 'qualifying';
+      qualifying.textContent =
+        '✓ Counts toward Platinum Hitmaker';
+      card.append(qualifying);
+    }
+
+    container.append(card);
+  });
+}
+
+async function loadOrderHistory() {
+  if (!signedIn) return;
+
+  const generation = accountGeneration;
+  const requestNumber = ++historyRequest;
+
+  const isCurrent = () =>
+    signedIn &&
+    generation === accountGeneration &&
+    requestNumber === historyRequest;
+
+  $('refreshOrders').disabled = true;
+  $('orderHistory').className = 'history-message';
+  $('orderHistory').textContent =
+    'Loading your order history...';
+
+  try {
+    const response = await fetch(
+      '/api/customer-order-history',
+      {
+        credentials:'same-origin',
+        cache:'no-store',
+        headers:{
+          'Accept':'application/json'
+        }
+      }
+    );
+
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error(
+        'The order history server returned an unexpected response.'
+      );
+    }
+
+    if (!response.ok || !data.ok) {
+      throw new Error(
+        data.error || 'Could not load order history.'
+      );
+    }
+
+    if (!isCurrent()) return;
+
+    updateLoyalty(data.loyalty);
+    renderOrders(data.orders);
+
+  } catch (error) {
+    if (!isCurrent()) return;
+
+    resetLoyalty();
+
+    $('orderHistory').className = 'history-message';
+    $('orderHistory').textContent =
+      'Unable to load order history. ' +
+      error.message +
+      ' Please try Refresh.';
+
+  } finally {
+    if (isCurrent()) {
+      $('refreshOrders').disabled = false;
+    }
+  }
+}
+
 function showUser(user, newlyRegistered = false) {
+  signedIn = true;
+  accountGeneration++;
+
   $('authPanel').classList.add('hidden');
   $('profilePanel').classList.remove('hidden');
 
@@ -567,107 +1102,159 @@ function showUser(user, newlyRegistered = false) {
   $('profileGreeting').textContent = greeting;
 
   $('welcome').textContent =
-    'Signed in as ' + user.name + ' (' + user.email + ').';
+    'Signed in as ' +
+    user.name +
+    ' (' +
+    user.email +
+    ').';
 
   message('');
+  resetLoyalty();
+  void loadOrderHistory();
 }
 
 function showAuth() {
+  signedIn = false;
+  accountGeneration++;
+  historyRequest++;
+
   $('profilePanel').classList.add('hidden');
   $('authPanel').classList.remove('hidden');
+
+  $('refreshOrders').disabled = false;
+  $('orderHistory').replaceChildren();
+  resetLoyalty();
+
   setMode('login');
 }
 
 async function request(route, options = {}) {
-  const response = await fetch('/api/customer-auth/' + route, {
-    credentials:'same-origin',
-    cache:'no-store',
-    ...options
-  });
+  const response = await fetch(
+    '/api/customer-auth/' + route,
+    {
+      credentials:'same-origin',
+      cache:'no-store',
+      ...options
+    }
+  );
 
   let data;
 
   try {
     data = await response.json();
   } catch {
-    throw new Error('The server returned an unexpected response.');
+    throw new Error(
+      'The server returned an unexpected response.'
+    );
   }
 
   if (!response.ok || !data.ok) {
-    throw new Error(data.error || 'Request failed.');
+    throw new Error(
+      data.error || 'Request failed.'
+    );
   }
 
   return data;
 }
 
-$('loginTab').addEventListener('click', () => setMode('login'));
+$('loginTab').addEventListener(
+  'click',
+  () => setMode('login')
+);
 
-$('registerTab').addEventListener('click', () => setMode('register'));
+$('registerTab').addEventListener(
+  'click',
+  () => setMode('register')
+);
 
-$('authForm').addEventListener('submit', async event => {
-  event.preventDefault();
+$('refreshOrders').addEventListener(
+  'click',
+  () => void loadOrderHistory()
+);
 
-  if (busy) return;
+$('authForm').addEventListener(
+  'submit',
+  async event => {
+    event.preventDefault();
 
-  busy = true;
-  $('submitButton').disabled = true;
-  message('Please wait...');
+    if (busy) return;
 
-  try {
-    const body = {
-      email:$('email').value.trim(),
-      password:$('password').value
-    };
+    busy = true;
+    $('submitButton').disabled = true;
+    message('Please wait...');
 
-    const registering = mode === 'register';
+    try {
+      const body = {
+        email:$('email').value.trim(),
+        password:$('password').value
+      };
 
-    if (registering) {
-      body.name = $('name').value.trim();
-    }
+      const registering = mode === 'register';
 
-    const data = await request(
-      registering ? 'register' : 'login',
-      {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(body)
+      if (registering) {
+        body.name = $('name').value.trim();
       }
-    );
 
-    $('password').value = '';
-    hidePassword();
-    showUser(data.user, registering);
+      const data = await request(
+        registering ? 'register' : 'login',
+        {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify(body)
+        }
+      );
 
-  } catch (error) {
-    message(error.message, true);
-  } finally {
-    busy = false;
-    $('submitButton').disabled = false;
+      $('password').value = '';
+      hidePassword();
+
+      showUser(data.user, registering);
+
+    } catch (error) {
+      message(error.message, true);
+
+    } finally {
+      busy = false;
+      $('submitButton').disabled = false;
+    }
   }
-});
+);
 
-$('logoutButton').addEventListener('click', async () => {
-  if (busy) return;
+$('logoutButton').addEventListener(
+  'click',
+  async () => {
+    if (busy) return;
 
-  busy = true;
-  $('logoutButton').disabled = true;
+    busy = true;
+    $('logoutButton').disabled = true;
 
-  try {
-    await request('logout', {method:'POST'});
-    showAuth();
-    message('You have signed out.');
-  } catch (error) {
-    message(error.message, true);
-  } finally {
-    busy = false;
-    $('logoutButton').disabled = false;
+    try {
+      await request('logout', {
+        method:'POST'
+      });
+
+      showAuth();
+      message('You have signed out.');
+
+    } catch (error) {
+      message(error.message, true);
+
+    } finally {
+      busy = false;
+      $('logoutButton').disabled = false;
+    }
   }
-});
+);
 
 setMode(mode);
 
 request('me')
-  .then(data => showUser(data.user))
+  .then(data => {
+    if (!signedIn && !busy) {
+      showUser(data.user);
+    }
+  })
   .catch(() => {});
 </script>
 </body>
