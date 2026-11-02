@@ -35,9 +35,9 @@
       const saved = localStorage.getItem(STORAGE_KEY);
       return VALID_MODES.includes(saved)
         ? saved
-        : 'automatic';
+        : 'hollywood';
     } catch {
-      return 'automatic';
+      return 'hollywood';
     }
   }
 
