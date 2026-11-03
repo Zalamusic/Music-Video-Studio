@@ -198,6 +198,8 @@ a{text-decoration:none}
   font-size:12px;
   padding:5px 9px;
 }
+
+/* Navigation */
 .tabs{
   display:flex;
   gap:12px;
@@ -205,6 +207,7 @@ a{text-decoration:none}
   scrollbar-width:none;
   -webkit-overflow-scrolling:touch;
   padding:2px 0;
+  scroll-snap-type:x proximity;
 }
 .tabs::-webkit-scrollbar{display:none}
 .tabs a{
@@ -220,6 +223,8 @@ a{text-decoration:none}
   color:var(--navy);
   font-size:14px;
   font-weight:700;
+  white-space:nowrap;
+  scroll-snap-align:start;
 }
 .tabs a .icon{
   width:17px;
@@ -230,6 +235,12 @@ a{text-decoration:none}
   color:#fff;
 }
 .main-tabs{margin-top:15px}
+
+/*
+ * Director uses the same theme styling as
+ * the other tabs. No forced light-blue color.
+ */
+
 .hero{
   border:1px solid var(--line);
   border-radius:18px;
@@ -533,45 +544,28 @@ footer{
   color:var(--muted);
 }
 
-/* Listening Director navigation */
-
-.director-entry{
-  margin:18px 0 20px;
-  padding:20px;
-  border:1px solid #b8d2f4;
-  border-radius:16px;
-  background:linear-gradient(135deg,#171719,#252125);
-}
-.director-entry h3{
-  margin:0 0 6px;
-  font-size:19px;
-  color:#f2d9a2;
-}
-.director-entry p{
-  margin:0 0 14px;
-  color:#f2d9a2;
-  font-size:14px;
-  line-height:1.6;
-}
-.director-entry .button{
-  width:100%;
-  min-height:48px;
-  text-align:center;
-}
-.director-note{
-  margin-top:10px!important;
-  font-size:12px!important;
-}
-.director-tab{
-  background:#e5f0ff!important;
-  color:#1556b4!important;
-}
-.director-tab:hover,
-.director-tab:focus-visible{
-  background:#d2e5ff!important;
-}
-
+/* Keep three primary tabs visible on phones */
 @media(max-width:600px){
+  .main-tabs,
+  .floating-header .tabs{
+    gap:6px;
+  }
+
+  .main-tabs a:nth-child(-n+3),
+  .floating-header .tabs a:nth-child(-n+3){
+    flex:0 0 auto;
+    padding:9px 10px;
+    min-height:42px;
+    font-size:12px;
+    gap:5px;
+  }
+
+  .main-tabs a:nth-child(-n+3) .icon,
+  .floating-header .tabs a:nth-child(-n+3) .icon{
+    width:14px;
+    height:14px;
+  }
+
   .hero-photo{height:195px}
   .hero-content{padding:18px}
   .cards{grid-template-columns:1fr}
@@ -598,7 +592,19 @@ footer{
   .mini-brand-name{font-size:12px}
   .mini-brand-sub{font-size:9px}
   .mini-headline{font-size:14px}
-  .director-entry{padding:16px}
+}
+@media(max-width:360px){
+  .main-tabs a:nth-child(-n+3),
+  .floating-header .tabs a:nth-child(-n+3){
+    padding:8px 7px;
+    font-size:11px;
+    gap:4px;
+  }
+  .main-tabs a:nth-child(-n+3) .icon,
+  .floating-header .tabs a:nth-child(-n+3) .icon{
+    width:13px;
+    height:13px;
+  }
 }
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -743,8 +749,8 @@ footer{
         Create Video
       </a>
 
-      <a class="director-tab"
-         href="/listening-director.html">
+      <a href="/listening-director.html"
+         aria-label="Open Listening Director">
         <svg class="icon"><use href="#i-magic"/></svg>
         Director
       </a>
@@ -837,10 +843,10 @@ footer{
       Create Video
     </a>
 
-    <a class="director-tab"
-       href="/listening-director.html">
+    <a href="/listening-director.html"
+       aria-label="Open Listening Director">
       <svg class="icon"><use href="#i-magic"/></svg>
-      Listening Director
+      Director
     </a>
 
     <a href="#pricing">
@@ -936,28 +942,7 @@ footer{
     Explore your video setup below.
   </p>
 
-  <!-- New Listening Director entry point -->
-
-  <div class="director-entry">
-    <h3>🎬 A Director That Listens</h3>
-
-    <p>
-      Every song has its own story. Explore your
-      cinematic direction, lyrics, scene ideas,
-      and visual storytelling before creating
-      your music video.
-    </p>
-
-    <a class="button"
-       href="/listening-director.html">
-      🎬 Open Listening Director
-    </a>
-
-    <p class="director-note">
-      Director preview is currently in testing.
-      Some features require administrator access.
-    </p>
-  </div>
+  <!-- Director is on its own page, not inside this form -->
 
   <div class="studio">
     <form id="customerForm">
@@ -1536,15 +1521,6 @@ form.addEventListener('submit',event => {
     img.alt = 'Cut Loopz Media film-reel logo';
     img.loading = 'eager';
     container.replaceChildren(img);
-  });
-
-  document.querySelectorAll(
-    '#account h3'
-  ).forEach(function(heading){
-    if(heading.textContent.includes("Zala QI's World")){
-      heading.textContent =
-        'Welcome to Cut Loopz Media';
-    }
   });
 })();
 </script>
