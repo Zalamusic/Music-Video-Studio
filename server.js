@@ -537,6 +537,67 @@ app.get('/api/independent-video/:id', async (req, res) => {
   }
 });
 
+/*
+ * CUTLOOPZ STORY INTELLIGENCE
+ * Administrator-only Director's Preview.
+ * No paid video generation.
+ */
+app.post('/api/director/story-preview', async (req, res) => {
+  if (!isVideoAdmin(req)) {
+    return res.status(403).json({
+      ok: false,
+      error: 'Administrator password required.'
+    });
+  }
+
+  try {
+    const {
+      title,
+      lyrics,
+      songSeconds,
+      prompt,
+      format,
+      sceneSeconds,
+      visualStyle,
+      musicPlan
+    } = req.body || {};
+
+    if (
+      typeof lyrics !== 'string' ||
+      lyrics.length > 12000
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Lyrics must be text under 12,000 characters.'
+      });
+    }
+
+    const plan = createStoryIntelligencePlan({
+      title,
+      lyrics,
+      songSeconds,
+      prompt,
+      format,
+      sceneSeconds: sceneSeconds ?? 15,
+      visualStyle,
+      musicPlan
+    });
+
+    res.set('Cache-Control', 'no-store');
+
+    return res.json({
+      ok: true,
+      message: 'Director storyboard preview created.',
+      plan
+    });
+  } catch (error) {
+    return res.status(400).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
+
 app.get('/api/estimate', (req, res) => {
   const seconds = Number(req.query.seconds);
 
