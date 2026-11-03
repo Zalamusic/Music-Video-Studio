@@ -1,7 +1,7 @@
 
 /*
- * ZALA QI'S WORLD
- * LIVING ATMOSPHERE — FOUR THEMES
+ * CUTLOOPZ MEDIA
+ * LIVING ATMOSPHERE + REFINED TYPOGRAPHY
  *
  * Morning Glow
  * Sunset Elegance
@@ -9,7 +9,10 @@
  * Hollywood Premiere
  *
  * Theme selection and automatic switching
- * will be handled by zala-themes.js.
+ * are handled by zala-themes.js.
+ *
+ * Existing zala-* names are preserved
+ * for compatibility.
  */
 
 /* DEFAULT — MORNING GLOW */
@@ -260,8 +263,9 @@ body.zala-themed .qualifying {
 .zala-theme-control label {
   display: block;
   margin: 0 0 9px;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
   color: var(--z-text);
 }
 
@@ -275,7 +279,9 @@ body.zala-themed .qualifying {
   background: var(--z-surface);
   color: var(--z-text);
   font: inherit;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .zala-theme-control select:focus-visible {
@@ -305,6 +311,81 @@ body.zala-themed .history {
 :root[data-zala-theme="hollywood"]
 body.zala-themed .loyalty-symbol {
   border: 1px solid var(--z-accent);
+}
+
+/*
+ * CUTLOOPZ REFINED TYPOGRAPHY
+ *
+ * Comfortable ChatGPT-like reading sizes.
+ * Scoped to themed pages to minimize
+ * interference with other layouts.
+ *
+ * Existing page-specific styling may
+ * override these shared defaults.
+ */
+
+body.zala-themed {
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.zala-themed h1 {
+  font-size: clamp(30px, 6vw, 36px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+
+body.zala-themed h2 {
+  font-size: clamp(22px, 4.5vw, 26px);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -.015em;
+}
+
+body.zala-themed h3 {
+  font-size: clamp(19px, 4vw, 22px);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+body.zala-themed p {
+  line-height: 1.65;
+}
+
+body.zala-themed label {
+  line-height: 1.5;
+}
+
+body.zala-themed input,
+body.zala-themed textarea,
+body.zala-themed select {
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+body.zala-themed button,
+body.zala-themed .button-link {
+  font-family: inherit;
+  line-height: 1.45;
+}
+
+body.zala-themed .panel,
+body.zala-themed .loyalty,
+body.zala-themed .history,
+body.zala-themed .order-card {
+  line-height: 1.6;
 }
 
 /* ACCESSIBILITY */
