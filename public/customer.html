@@ -12,7 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/zala-themes.css">
 <script src="/zala-themes.js" defer></script>
-  <link rel="stylesheet" href="/customer-theme-fix.css">
+<link rel="stylesheet" href="/customer-theme-fix.css">
+
 <style>
 :root{
   --blue:#2469cc;
@@ -23,30 +24,24 @@
   --soft:#f4f8fe;
   --photo:url("https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=85");
 }
-
 *{box-sizing:border-box}
-
 html{
   scroll-behavior:smooth;
   scroll-padding-top:180px;
 }
-
 body{
   margin:0;
   background:#fff;
   color:var(--navy);
   font:16px/1.6 "DM Sans",Arial,sans-serif;
 }
-
 button,input,select,textarea{font:inherit}
 a{text-decoration:none}
-
 .page{
   max-width:940px;
   margin:auto;
   padding:0 16px 40px;
 }
-
 .icon{
   width:20px;
   height:20px;
@@ -57,9 +52,7 @@ a{text-decoration:none}
   stroke-linecap:round;
   stroke-linejoin:round;
 }
-
 .main-header{padding:17px 0}
-
 .header-top{
   display:flex;
   align-items:center;
@@ -67,14 +60,12 @@ a{text-decoration:none}
   flex-wrap:nowrap;
   gap:4px;
 }
-
 .brand{
   display:flex;
   align-items:center;
   gap:10px;
   min-width:0;
 }
-
 .logo{
   background:#eaf2ff;
   color:var(--blue);
@@ -87,26 +78,22 @@ a{text-decoration:none}
   font-weight:800;
   flex:none;
 }
-
 .brand-name{
   font-size:16px;
   font-weight:800;
 }
-
 .brand-sub{
   color:var(--muted);
   font-size:11px;
   font-weight:600;
   letter-spacing:.6px;
 }
-
 .account-actions{
   display:flex;
   align-items:center;
   gap:8px;
   flex-shrink:0;
 }
-
 .account-actions a{
   display:inline-flex;
   align-items:center;
@@ -121,7 +108,6 @@ a{text-decoration:none}
   font-weight:700;
   white-space:nowrap;
 }
-
 .account-actions a:hover,
 .account-actions a:active,
 .account-actions a:focus-visible{
@@ -129,23 +115,15 @@ a{text-decoration:none}
   color:var(--blue);
   border-color:var(--blue);
 }
-
 .account-actions a:focus-visible{
   outline:2px solid var(--blue);
   outline-offset:3px;
 }
-
-/* Signed-in customer profile */
-
-[hidden]{
-  display:none!important;
-}
-
+[hidden]{display:none!important}
 .customer-profile{
   position:relative;
   flex-shrink:0;
 }
-
 .profile-trigger{
   width:42px;
   height:42px;
@@ -162,16 +140,11 @@ a{text-decoration:none}
   place-items:center;
   cursor:pointer;
 }
-
-.profile-trigger:hover{
-  background:#dceaff;
-}
-
+.profile-trigger:hover{background:#dceaff}
 .profile-trigger:focus-visible{
   outline:2px solid var(--blue);
   outline-offset:3px;
 }
-
 .profile-menu{
   position:absolute;
   right:0;
@@ -185,7 +158,6 @@ a{text-decoration:none}
   box-shadow:0 10px 30px rgba(20,45,85,.17);
   padding:10px;
 }
-
 .profile-menu-name{
   font-size:13px;
   font-weight:800;
@@ -195,7 +167,6 @@ a{text-decoration:none}
   border-bottom:1px solid var(--line);
   margin-bottom:6px;
 }
-
 .profile-menu a,
 .profile-menu button{
   width:100%;
@@ -213,24 +184,20 @@ a{text-decoration:none}
   text-align:left;
   cursor:pointer;
 }
-
 .profile-menu a:hover,
 .profile-menu button:hover{
   background:var(--soft);
   color:var(--blue-dark);
 }
-
 .profile-menu button:disabled{
   opacity:.6;
   cursor:wait;
 }
-
 .profile-error{
   color:#b42318;
   font-size:12px;
   padding:5px 9px;
 }
-
 .tabs{
   display:flex;
   gap:12px;
@@ -239,9 +206,7 @@ a{text-decoration:none}
   -webkit-overflow-scrolling:touch;
   padding:2px 0;
 }
-
 .tabs::-webkit-scrollbar{display:none}
-
 .tabs a{
   display:inline-flex;
   align-items:center;
@@ -256,26 +221,21 @@ a{text-decoration:none}
   font-size:14px;
   font-weight:700;
 }
-
 .tabs a .icon{
   width:17px;
   height:17px;
 }
-
 .tabs .selected{
   background:var(--blue);
   color:#fff;
 }
-
 .main-tabs{margin-top:15px}
-
 .hero{
   border:1px solid var(--line);
   border-radius:18px;
   overflow:hidden;
   background:#fff;
 }
-
 .hero-photo{
   height:280px;
   background-image:
@@ -289,9 +249,7 @@ a{text-decoration:none}
   background-size:cover;
   background-color:#142a56;
 }
-
 .hero-content{padding:24px}
-
 h1{
   font-size:clamp(23px,3.1vw,29px);
   line-height:1.3;
@@ -300,14 +258,12 @@ h1{
   letter-spacing:-.45px;
   text-transform:none;
 }
-
 .hero-sub{
   font-size:16px;
   font-weight:600;
   color:var(--blue-dark);
   margin:0 0 12px;
 }
-
 .hero-description{
   color:var(--muted);
   font-size:15px;
@@ -315,7 +271,6 @@ h1{
   max-width:680px;
   margin:0 0 18px;
 }
-
 .button,button{
   display:inline-flex;
   align-items:center;
@@ -330,11 +285,9 @@ h1{
   font-weight:700;
   cursor:pointer;
 }
-
 .button:hover,button:hover{
   background:var(--blue-dark);
 }
-
 .hero-cta{
   min-height:42px;
   padding:9px 14px;
@@ -344,19 +297,16 @@ h1{
   max-width:100%;
   text-align:center;
 }
-
 .hero-cta .icon{
   width:17px;
   height:17px;
 }
-
 .tagline{
   color:var(--muted);
   font-size:14px;
   font-weight:600;
   margin:13px 0 0;
 }
-
 .floating-header{
   position:fixed;
   top:0;
@@ -375,20 +325,17 @@ h1{
     opacity .3s ease,
     visibility .3s;
 }
-
 .floating-header.show{
   transform:translateY(0);
   opacity:1;
   visibility:visible;
   pointer-events:auto;
 }
-
 .floating-inner{
   max-width:940px;
   margin:auto;
   padding:9px 14px 11px;
 }
-
 .floating-top{
   display:flex;
   align-items:center;
@@ -397,13 +344,11 @@ h1{
   gap:8px;
   margin-bottom:8px;
 }
-
 .floating-brand{
   display:flex;
   align-items:center;
   gap:8px;
 }
-
 .mini-logo{
   background:#eaf2ff;
   color:var(--blue);
@@ -411,38 +356,32 @@ h1{
   padding:6px 8px;
   font-weight:800;
 }
-
 .mini-brand-name{
   font-weight:800;
   font-size:14px;
 }
-
 .mini-brand-sub{
   color:var(--muted);
   font-size:11px;
   font-weight:600;
 }
-
 .floating-account a{
   min-height:36px;
   padding:6px 10px;
   font-size:12px;
 }
-
 .floating-profile .profile-trigger{
   width:36px;
   height:36px;
   min-height:36px;
   font-size:15px;
 }
-
 .mini-hero{
   display:flex;
   align-items:center;
   gap:12px;
   margin-bottom:9px;
 }
-
 .mini-photo{
   flex:0 0 70px;
   width:70px;
@@ -453,68 +392,56 @@ h1{
   background-size:cover;
   background-color:#142a56;
 }
-
 .mini-headline{
   font-size:15px;
   font-weight:600;
   line-height:1.3;
 }
-
 .mini-sub{
   font-size:12px;
   color:var(--blue-dark);
   font-weight:600;
   margin-top:3px;
 }
-
 .content{padding-top:28px}
-
 h2{
   font-size:21px;
   margin:0 0 12px;
 }
-
 h3{
   font-size:16px;
   margin:0 0 8px;
 }
-
 .note{
   font-size:14px;
   line-height:1.6;
   color:var(--muted);
 }
-
 .cards{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:12px;
 }
-
 .card,.panel{
   padding:18px;
   border:1px solid var(--line);
   border-radius:14px;
 }
-
 .card p,.panel p{
   color:var(--muted);
   font-size:15px;
   line-height:1.65;
 }
-
 .studio{
   padding:20px;
   background:var(--soft);
   border:1px solid var(--line);
   border-radius:17px;
 }
-
 .field{
   margin-bottom:7px;
   padding:3px 0;
 }
-
 .field label{
   display:flex;
   align-items:center;
@@ -524,7 +451,6 @@ h3{
   font-weight:700;
   color:var(--navy);
 }
-
 .field-icon{
   width:36px;
   height:36px;
@@ -535,7 +461,6 @@ h3{
   color:var(--blue);
   flex:none;
 }
-
 .studio input,
 .studio select,
 .studio textarea{
@@ -549,13 +474,11 @@ h3{
   font-size:16px;
   box-shadow:0 2px 6px rgba(36,105,204,.08);
 }
-
 .studio input::placeholder,
 .studio textarea::placeholder{
   color:#52647b;
   opacity:1;
 }
-
 .studio input:focus,
 .studio select:focus,
 .studio textarea:focus{
@@ -564,42 +487,32 @@ h3{
   outline-offset:1px;
   box-shadow:0 3px 12px rgba(36,105,204,.16);
 }
-
 .studio input[type=file]{
   border-style:dashed;
   padding:18px 12px;
   background:#fafdff;
 }
-
 .studio textarea{
   min-height:110px;
   resize:vertical;
 }
-
 .field-row{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
 }
-
 .studio button{
   width:100%;
   margin-top:20px;
 }
-
 #studioStatus{margin-top:12px}
-
-.account-panel{
-  background:#f7faff;
-}
-
+.account-panel{background:#f7faff}
 .account-options{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
   margin-top:15px;
 }
-
 .account-options a{
   display:inline-flex;
   align-items:center;
@@ -613,12 +526,48 @@ h3{
   font-size:14px;
   font-weight:700;
 }
-
 footer{
   text-align:center;
   padding:26px 0;
   font-size:13px;
   color:var(--muted);
+}
+
+/* Listening Director navigation */
+
+.director-entry{
+  margin:18px 0 20px;
+  padding:20px;
+  border:1px solid #b8d2f4;
+  border-radius:16px;
+  background:linear-gradient(135deg,#edf5ff,#fff);
+}
+.director-entry h3{
+  margin:0 0 6px;
+  font-size:19px;
+}
+.director-entry p{
+  margin:0 0 14px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+}
+.director-entry .button{
+  width:100%;
+  min-height:48px;
+  text-align:center;
+}
+.director-note{
+  margin-top:10px!important;
+  font-size:12px!important;
+}
+.director-tab{
+  background:#e5f0ff!important;
+  color:#1556b4!important;
+}
+.director-tab:hover,
+.director-tab:focus-visible{
+  background:#d2e5ff!important;
 }
 
 @media(max-width:600px){
@@ -648,8 +597,8 @@ footer{
   .mini-brand-name{font-size:12px}
   .mini-brand-sub{font-size:9px}
   .mini-headline{font-size:14px}
+  .director-entry{padding:16px}
 }
-
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .floating-header{transition:none}
@@ -667,55 +616,45 @@ footer{
     <path d="m3 10 9-7 9 7v10H3z"/>
     <path d="M9 20v-7h6v7"/>
   </symbol>
-
   <symbol id="i-music" viewBox="0 0 24 24">
     <path d="M9 18V5l12-2v13"/>
     <circle cx="6" cy="18" r="3"/>
     <circle cx="18" cy="16" r="3"/>
   </symbol>
-
   <symbol id="i-upload" viewBox="0 0 24 24">
     <path d="M12 16V3m-5 5 5-5 5 5"/>
     <path d="M4 16v4h16v-4"/>
   </symbol>
-
   <symbol id="i-photo" viewBox="0 0 24 24">
     <rect x="3" y="3" width="18" height="18" rx="2"/>
     <circle cx="8" cy="8" r="2"/>
     <path d="m3 17 6-6 4 4 3-3 5 5"/>
   </symbol>
-
   <symbol id="i-film" viewBox="0 0 24 24">
     <rect x="3" y="3" width="18" height="18" rx="2"/>
     <path d="M7 3v18M17 3v18M3 8h4m-4 8h4m10-8h4m-4 8h4"/>
   </symbol>
-
   <symbol id="i-screen" viewBox="0 0 24 24">
     <rect x="2" y="4" width="20" height="14" rx="2"/>
     <path d="M8 22h8m-4-4v4"/>
     <path d="m10 8 5 3-5 3z"/>
   </symbol>
-
   <symbol id="i-magic" viewBox="0 0 24 24">
     <path d="M4 20 17 7l4 4L8 24"/>
     <path d="m12 3 1 3 3 1-3 1-1 3-1-3-3-1 3-1z"/>
   </symbol>
-
   <symbol id="i-check" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="9"/>
     <path d="m8 12 3 3 5-6"/>
   </symbol>
-
   <symbol id="i-dollar" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="9"/>
     <path d="M12 6v12m4-9c-2-3-8-2-8 1s8 1 8 5-6 4-8 1"/>
   </symbol>
-
   <symbol id="i-user" viewBox="0 0 24 24">
     <circle cx="12" cy="8" r="4"/>
     <path d="M4 21c0-5 3-7 8-7s8 2 8 7"/>
   </symbol>
-
   <symbol id="i-info" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="9"/>
     <path d="M12 11v6m0-10v1"/>
@@ -730,9 +669,7 @@ footer{
      inert>
 
   <div class="floating-inner">
-
     <div class="floating-top">
-
       <div class="floating-brand">
         <div class="logo">CL</div>
         <div>
@@ -745,7 +682,8 @@ footer{
         </div>
       </div>
 
-      <div class="account-actions floating-account" data-guest-actions>
+      <div class="account-actions floating-account"
+           data-guest-actions>
         <a href="/account.html">Sign In</a>
         <a href="/account.html?mode=signup">Sign Up</a>
       </div>
@@ -768,15 +706,15 @@ footer{
           <div class="profile-menu-name"
                data-profile-name></div>
           <a href="/account.html?view=studio">My Studio</a>
-          <button type="button"
-                  data-sign-out>Sign Out</button>
+          <button type="button" data-sign-out>
+            Sign Out
+          </button>
           <div class="profile-error"
                data-profile-error
                role="status"
                hidden></div>
         </div>
       </div>
-
     </div>
 
     <div class="mini-hero">
@@ -794,7 +732,6 @@ footer{
     </div>
 
     <nav class="tabs" aria-label="Quick navigation">
-
       <a href="#home">
         <svg class="icon"><use href="#i-home"/></svg>
         Home
@@ -803,6 +740,12 @@ footer{
       <a class="selected" href="#create">
         <svg class="icon"><use href="#i-film"/></svg>
         Create Video
+      </a>
+
+      <a class="director-tab"
+         href="/listening-director.html">
+        <svg class="icon"><use href="#i-magic"/></svg>
+        Listening Director
       </a>
 
       <a href="#pricing">
@@ -819,7 +762,6 @@ footer{
         <svg class="icon"><use href="#i-info"/></svg>
         How It Works
       </a>
-
     </nav>
   </div>
 </div>
@@ -829,19 +771,21 @@ footer{
 <!-- Main header -->
 
 <header class="main-header" id="home">
-
   <div class="header-top">
 
     <div class="brand">
       <div class="logo">CL</div>
       <div>
-        <div class="brand-name" style="font-family:'Arial Rounded MT Bold','Nunito',Arial,sans-serif;font-weight:700;letter-spacing:1.2px;color:#F2D9A2;">
-  <span style="font-size:1.3em;">C</span>ut Loopz Media
-</div>
+        <div class="brand-name"
+             style="font-family:'Arial Rounded MT Bold','Nunito',Arial,sans-serif;font-weight:700;letter-spacing:1.2px;color:#F2D9A2;">
+          <span style="font-size:1.3em;">C</span>ut Loopz Media
+        </div>
         <div class="brand-sub">
           Music Video Creation Studio
         </div>
-        <div style="color:#e8c77e;font-style:italic;font-weight:400;font-size:13px;line-height:1.5;">Your Music, Your vision, Your video.</div>
+        <div style="color:#e8c77e;font-style:italic;font-weight:400;font-size:13px;line-height:1.5;">
+          Your Music. Your Vision. Your Video.
+        </div>
       </div>
     </div>
 
@@ -868,15 +812,15 @@ footer{
         <div class="profile-menu-name"
              data-profile-name></div>
         <a href="/account.html?view=studio">My Studio</a>
-        <button type="button"
-                data-sign-out>Sign Out</button>
+        <button type="button" data-sign-out>
+          Sign Out
+        </button>
         <div class="profile-error"
              data-profile-error
              role="status"
              hidden></div>
       </div>
     </div>
-
   </div>
 
   <nav class="tabs main-tabs"
@@ -890,6 +834,12 @@ footer{
     <a href="#create">
       <svg class="icon"><use href="#i-film"/></svg>
       Create Video
+    </a>
+
+    <a class="director-tab"
+       href="/listening-director.html">
+      <svg class="icon"><use href="#i-magic"/></svg>
+      Listening Director
     </a>
 
     <a href="#pricing">
@@ -906,7 +856,6 @@ footer{
       <svg class="icon"><use href="#i-info"/></svg>
       How It Works
     </a>
-
   </nav>
 </header>
 
@@ -915,13 +864,11 @@ footer{
 <!-- Hero -->
 
 <section class="hero" id="hero">
-
   <div class="hero-photo"
        role="img"
        aria-label="Cinematic live music performance"></div>
 
   <div class="hero-content">
-
     <h1>Your music deserves a video.</h1>
 
     <p class="hero-sub">
@@ -943,18 +890,15 @@ footer{
     <p class="tagline">
       Your Music. Your Vision. Your Video.
     </p>
-
   </div>
 </section>
 
 <!-- How It Works -->
 
 <section class="content" id="how">
-
   <h2>How It Works</h2>
 
   <div class="cards">
-
     <div class="card">
       <h3>1. Upload Your Music</h3>
       <p>
@@ -978,14 +922,12 @@ footer{
         you'll be able to order your music video.
       </p>
     </div>
-
   </div>
 </section>
 
 <!-- Customer Studio -->
 
 <section class="content" id="create">
-
   <h2>Create Your Music Video</h2>
 
   <p class="note">
@@ -993,12 +935,33 @@ footer{
     Explore your video setup below.
   </p>
 
-  <div class="studio">
+  <!-- New Listening Director entry point -->
 
+  <div class="director-entry">
+    <h3>🎬 A Director That Listens</h3>
+
+    <p>
+      Every song has its own story. Explore your
+      cinematic direction, lyrics, scene ideas,
+      and visual storytelling before creating
+      your music video.
+    </p>
+
+    <a class="button"
+       href="/listening-director.html">
+      🎬 Open Listening Director
+    </a>
+
+    <p class="director-note">
+      Director preview is currently in testing.
+      Some features require administrator access.
+    </p>
+  </div>
+
+  <div class="studio">
     <form id="customerForm">
 
       <div class="field" id="fieldTitle">
-
         <label for="songTitle">
           <span class="field-icon">
             <svg class="icon"><use href="#i-music"/></svg>
@@ -1012,7 +975,6 @@ footer{
       </div>
 
       <div class="field" id="fieldSong">
-
         <label for="songFile">
           <span class="field-icon">
             <svg class="icon"><use href="#i-upload"/></svg>
@@ -1026,7 +988,6 @@ footer{
       </div>
 
       <div class="field" id="fieldPhoto">
-
         <label for="artistPhoto">
           <span class="field-icon">
             <svg class="icon"><use href="#i-photo"/></svg>
@@ -1045,9 +1006,7 @@ footer{
       </div>
 
       <div class="field-row">
-
         <div class="field" id="fieldStyle">
-
           <label for="style">
             <span class="field-icon">
               <svg class="icon"><use href="#i-film"/></svg>
@@ -1068,11 +1027,9 @@ footer{
             <option>Anime</option>
             <option>Urban Music Video</option>
           </select>
-
         </div>
 
         <div class="field" id="fieldFormat">
-
           <label for="format">
             <span class="field-icon">
               <svg class="icon"><use href="#i-screen"/></svg>
@@ -1088,12 +1045,10 @@ footer{
               16:9 Widescreen
             </option>
           </select>
-
         </div>
       </div>
 
       <div class="field" id="fieldVision">
-
         <label for="vision">
           <span class="field-icon">
             <svg class="icon"><use href="#i-magic"/></svg>
@@ -1115,16 +1070,13 @@ footer{
          class="note"
          role="status"
          aria-live="polite"></p>
-
     </form>
-
   </div>
 </section>
 
 <!-- Pricing -->
 
 <section class="content" id="pricing">
-
   <h2>Pricing</h2>
 
   <div class="panel">
@@ -1134,13 +1086,11 @@ footer{
       No payments are collected on this preview.
     </p>
   </div>
-
 </section>
 
 <!-- Examples -->
 
 <section class="content" id="examples">
-
   <h2>Video Examples</h2>
 
   <div class="panel">
@@ -1149,18 +1099,15 @@ footer{
       will appear here.
     </p>
   </div>
-
 </section>
 
 <!-- Customer Account -->
 
 <section class="content" id="account">
-
   <h2>Your Account</h2>
 
   <div class="panel account-panel">
-
-    <h3>Welcome to Zala QI's World</h3>
+    <h3>Welcome to Cut Loopz Media</h3>
 
     <p>
       Create your customer account or sign in
@@ -1182,7 +1129,6 @@ footer{
         Sign Up
       </a>
     </div>
-
   </div>
 </section>
 
@@ -1261,6 +1207,7 @@ function closeProfileMenus(){
   profiles.forEach(profile => {
     const menu =
       profile.querySelector('[data-profile-menu]');
+
     const trigger =
       profile.querySelector('[data-profile-trigger]');
 
@@ -1542,53 +1489,39 @@ form.addEventListener('submit',event => {
 
 <style>
 /* Cut Loopz Media official logo */
+
 .brand .logo,
 .floating-brand .logo {
-  width: 76px;
-  height: 58px;
-  padding: 3px;
-  border-radius: 10px;
-  background: #101010;
-  overflow: hidden;
-  flex-shrink: 0;
+  width:76px;
+  height:58px;
+  padding:9px;
+  border-radius:10px;
+  background:#101010;
+  overflow:hidden;
+  flex-shrink:0;
 }
 
 .brand .logo img,
 .floating-brand .logo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 7px;
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center -2px;
+  border-radius:7px;
 }
 
-@media (max-width: 600px) {
+@media(max-width:600px){
   .brand .logo,
   .floating-brand .logo {
-    width: 64px;
-    height: 50px;
+    width:64px;
+    height:50px;
   }
 }
-  /* Center and resize the Cut Loopz Media logo */
-.brand .logo,
-.floating-brand .logo {
-  overflow: hidden;
-  padding: 9px;
-}
-
-.brand .logo img,
-.floating-brand .logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center -2px;
-  display: block;
-}
-  
 </style>
 
 <script>
-(function () {
+(function(){
   'use strict';
 
   const logoPath =
@@ -1596,20 +1529,20 @@ form.addEventListener('submit',event => {
 
   document.querySelectorAll(
     '.brand .logo, .floating-brand .logo'
-  ).forEach(function (container) {
+  ).forEach(function(container){
     const img = document.createElement('img');
     img.src = logoPath;
     img.alt = 'Cut Loopz Media film-reel logo';
     img.loading = 'eager';
-
     container.replaceChildren(img);
   });
 
   document.querySelectorAll(
     '#account h3'
-  ).forEach(function (heading) {
-    if (heading.textContent.includes("Zala QI's World")) {
-      heading.textContent = 'Welcome to Cut Loopz Media';
+  ).forEach(function(heading){
+    if(heading.textContent.includes("Zala QI's World")){
+      heading.textContent =
+        'Welcome to Cut Loopz Media';
     }
   });
 })();
