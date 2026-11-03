@@ -1,3 +1,6 @@
+import {
+  createStoryIntelligencePlan
+} from './cutloopz-story-intelligence.js';
 import { createCustomerAuthRouter } from './customer-auth.js';
 import express from 'express';
 import multer from 'multer';
