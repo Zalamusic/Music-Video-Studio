@@ -1,5 +1,6 @@
 
 import express from 'express';
+import nodemailer from 'nodemailer';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import {
@@ -17,6 +18,10 @@ const SESSION_DAYS = 7;
 const MAX_SESSIONS_PER_USER = 5;
 const MAX_ATTEMPTS = 10;
 const ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
+const RESET_MINUTES = 30;
+
+const APP_URL =
+  'https://zala-music-video-studio.onrender.com';
 
 const attempts = new Map();
 
@@ -40,6 +45,7 @@ function sessionHash(token) {
 
 async function hashPassword(password) {
   const salt = randomBytes(16).toString('hex');
+
   const hash = await scrypt(password, salt, 64, {
     N: 16384,
     r: 8,
@@ -61,6 +67,7 @@ async function verifyPassword(password, stored) {
   }
 
   const expected = Buffer.from(hex, 'hex');
+
   const actual = await scrypt(password, salt, 64, {
     N: 16384,
     r: 8,
@@ -114,6 +121,7 @@ function rateLimited(key) {
       count: 1,
       started: now
     });
+
     return false;
   }
 
@@ -121,10 +129,80 @@ function rateLimited(key) {
   return record.count > MAX_ATTEMPTS;
 }
 
+function mailTransport() {
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!user || !pass) {
+    throw new Error(
+      'Gmail SMTP credentials are not configured.'
+    );
+  }
+
+  return nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user,
+      pass
+    }
+  });
+}
+
+async function sendResetEmail(email, name, token) {
+  const link =
+    APP_URL +
+    '/reset-password.html?token=' +
+    encodeURIComponent(token);
+
+  const transporter = mailTransport();
+
+  await transporter.sendMail({
+    from: {
+      name: 'Cut Loopz Media',
+      address: process.env.SMTP_USER
+    },
+    to: email,
+    subject: 'Reset Your Cut Loopz Media Password',
+    text:
+      `Hello ${name},\n\n` +
+      'We received a request to reset your ' +
+      'Cut Loopz Media password.\n\n' +
+      'Open this secure link:\n' +
+      link + '\n\n' +
+      'This link expires in 30 minutes ' +
+      'and can only be used once.\n\n' +
+      'If you did not request this change, ' +
+      'you can ignore this email.\n\n' +
+      'Cut Loopz Media',
+    html:
+      '<div style="font-family:Arial,sans-serif;' +
+      'max-width:540px;margin:auto;' +
+      'padding:24px;color:#222">' +
+      '<h2 style="color:#b48b36">' +
+      'Cut Loopz Media</h2>' +
+      '<p>We received a request to reset ' +
+      'your account password.</p>' +
+      '<p><a href="' + link + '" ' +
+      'style="display:inline-block;' +
+      'padding:14px 22px;' +
+      'background:#171717;color:#fff;' +
+      'text-decoration:none;border-radius:8px">' +
+      'Reset My Password</a></p>' +
+      '<p>This link expires in 30 minutes ' +
+      'and can only be used once.</p>' +
+      '<p>If you did not request this change, ' +
+      'you can ignore this email.</p>' +
+      '<p>Cut Loopz Media</p></div>'
+  });
+}
+
 export function createCustomerAuthRouter({
   storageDirectory = '/app/outputs'
 } = {}) {
   const router = express.Router();
+
   const directory = path.join(
     storageDirectory,
     'customer-accounts'
@@ -136,11 +214,14 @@ export function createCustomerAuthRouter({
   let users = [];
   let sessions = [];
   let initialized = false;
+  let initializationPromise = null;
   let writeQueue = Promise.resolve();
 
   async function readJson(file) {
     try {
-      return JSON.parse(await fs.readFile(file, 'utf8'));
+      return JSON.parse(
+        await fs.readFile(file, 'utf8')
+      );
     } catch (error) {
       if (error.code === 'ENOENT') return [];
       throw error;
@@ -150,19 +231,35 @@ export function createCustomerAuthRouter({
   async function initialize() {
     if (initialized) return;
 
-    await fs.mkdir(directory, {
-      recursive: true,
-      mode: 0o700
-    });
+    if (!initializationPromise) {
+      initializationPromise = (async () => {
+        await fs.mkdir(directory, {
+          recursive: true,
+          mode: 0o700
+        });
 
-    users = await readJson(usersFile);
-    sessions = await readJson(sessionsFile);
+        const loadedUsers = await readJson(usersFile);
+        const loadedSessions = await readJson(sessionsFile);
 
-    if (!Array.isArray(users) || !Array.isArray(sessions)) {
-      throw new Error('Invalid customer account storage.');
+        if (
+          !Array.isArray(loadedUsers) ||
+          !Array.isArray(loadedSessions)
+        ) {
+          throw new Error(
+            'Invalid customer account storage.'
+          );
+        }
+
+        users = loadedUsers;
+        sessions = loadedSessions;
+        initialized = true;
+      })().catch(error => {
+        initializationPromise = null;
+        throw error;
+      });
     }
 
-    initialized = true;
+    await initializationPromise;
   }
 
   function save() {
@@ -173,7 +270,8 @@ export function createCustomerAuthRouter({
       });
 
       const writeAtomic = async (file, data) => {
-        const temp = file + '.' + randomUUID() + '.tmp';
+        const temp =
+          file + '.' + randomUUID() + '.tmp';
 
         await fs.writeFile(
           temp,
@@ -200,6 +298,7 @@ export function createCustomerAuthRouter({
     }
 
     const hashed = sessionHash(token);
+
     const session = sessions.find(
       item =>
         item.tokenHash === hashed &&
@@ -217,6 +316,7 @@ export function createCustomerAuthRouter({
 
   async function createSession(req, res, user) {
     const token = randomBytes(32).toString('hex');
+
     const expiresAt = new Date(
       Date.now() + SESSION_DAYS * 86400000
     ).toISOString();
@@ -254,10 +354,15 @@ export function createCustomerAuthRouter({
       res.set('Cache-Control', 'no-store');
       next();
     } catch (error) {
-      console.error('Customer account storage error:', error);
+      console.error(
+        'Customer account storage error:',
+        error
+      );
+
       res.status(503).json({
         ok: false,
-        error: 'Customer accounts are temporarily unavailable.'
+        error:
+          'Customer accounts are temporarily unavailable.'
       });
     }
   });
@@ -265,15 +370,18 @@ export function createCustomerAuthRouter({
   router.post('/register', async (req, res) => {
     try {
       const name = String(req.body?.name || '').trim();
+
       const email = String(req.body?.email || '')
         .trim()
         .toLowerCase();
+
       const password = req.body?.password;
 
       if (rateLimited('register:' + req.ip)) {
         return res.status(429).json({
           ok: false,
-          error: 'Too many attempts. Please try later.'
+          error:
+            'Too many attempts. Please try later.'
         });
       }
 
@@ -285,14 +393,16 @@ export function createCustomerAuthRouter({
       ) {
         return res.status(400).json({
           ok: false,
-          error: 'Enter a name, valid email, and password of 12–128 characters.'
+          error:
+            'Enter a name, valid email, and password of 12–128 characters.'
         });
       }
 
       if (users.some(user => user.email === email)) {
         return res.status(409).json({
           ok: false,
-          error: 'An account already exists for this email.'
+          error:
+            'An account already exists for this email.'
         });
       }
 
@@ -313,7 +423,11 @@ export function createCustomerAuthRouter({
         user: publicUser(user)
       });
     } catch (error) {
-      console.error('Customer registration error:', error);
+      console.error(
+        'Customer registration error:',
+        error
+      );
+
       res.status(500).json({
         ok: false,
         error: 'Could not create your account.'
@@ -326,16 +440,21 @@ export function createCustomerAuthRouter({
       const email = String(req.body?.email || '')
         .trim()
         .toLowerCase();
+
       const password = req.body?.password;
 
       if (rateLimited('login:' + req.ip)) {
         return res.status(429).json({
           ok: false,
-          error: 'Too many attempts. Please try later.'
+          error:
+            'Too many attempts. Please try later.'
         });
       }
 
-      if (!validEmail(email) || typeof password !== 'string') {
+      if (
+        !validEmail(email) ||
+        typeof password !== 'string'
+      ) {
         return res.status(401).json({
           ok: false,
           error: 'Invalid email or password.'
@@ -348,7 +467,10 @@ export function createCustomerAuthRouter({
 
       if (
         !user ||
-        !(await verifyPassword(password, user.passwordHash))
+        !(await verifyPassword(
+          password,
+          user.passwordHash
+        ))
       ) {
         return res.status(401).json({
           ok: false,
@@ -363,10 +485,193 @@ export function createCustomerAuthRouter({
         user: publicUser(user)
       });
     } catch (error) {
-      console.error('Customer login error:', error);
+      console.error(
+        'Customer login error:',
+        error
+      );
+
       res.status(500).json({
         ok: false,
         error: 'Could not sign in.'
+      });
+    }
+  });
+
+  router.post('/forgot-password', async (req, res) => {
+    try {
+      const email = String(req.body?.email || '')
+        .trim()
+        .toLowerCase();
+
+      const genericMessage =
+        'If an account exists for this email, ' +
+        'a password reset link will be sent.';
+
+      if (!validEmail(email)) {
+        return res.status(400).json({
+          ok: false,
+          error: 'Enter a valid email address.'
+        });
+      }
+
+      if (
+        rateLimited('reset-ip:' + req.ip) ||
+        rateLimited('reset-email:' + email)
+      ) {
+        return res.status(429).json({
+          ok: false,
+          error:
+            'Too many requests. Please try again later.'
+        });
+      }
+
+      const user = users.find(
+        item => item.email === email
+      );
+
+      if (!user) {
+        return res.json({
+          ok: true,
+          message: genericMessage
+        });
+      }
+
+      const token = randomBytes(32).toString('hex');
+
+      user.passwordReset = {
+        tokenHash: sessionHash(token),
+        expiresAt: new Date(
+          Date.now() + RESET_MINUTES * 60000
+        ).toISOString()
+      };
+
+      await save();
+
+      try {
+        await sendResetEmail(
+          user.email,
+          user.name,
+          token
+        );
+      } catch (mailError) {
+        console.error(
+          'Password recovery email delivery failed:',
+          mailError.message
+        );
+
+        if (
+          user.passwordReset?.tokenHash ===
+          sessionHash(token)
+        ) {
+          delete user.passwordReset;
+          await save();
+        }
+
+        return res.status(503).json({
+          ok: false,
+          error:
+            'Password recovery email is temporarily unavailable. Please try later.'
+        });
+      }
+
+      res.json({
+        ok: true,
+        message: genericMessage
+      });
+    } catch (error) {
+      console.error(
+        'Forgot password error:',
+        error
+      );
+
+      res.status(500).json({
+        ok: false,
+        error:
+          'Unable to process password recovery.'
+      });
+    }
+  });
+
+  router.post('/reset-password', async (req, res) => {
+    try {
+      const token = req.body?.token;
+      const password = req.body?.password;
+
+      if (rateLimited('reset-submit:' + req.ip)) {
+        return res.status(429).json({
+          ok: false,
+          error:
+            'Too many attempts. Please try later.'
+        });
+      }
+
+      if (
+        typeof token !== 'string' ||
+        !/^[0-9a-f]{64}$/i.test(token)
+      ) {
+        return res.status(400).json({
+          ok: false,
+          error:
+            'Invalid or expired password reset link.'
+        });
+      }
+
+      if (!validPassword(password)) {
+        return res.status(400).json({
+          ok: false,
+          error:
+            'Your new password must contain 12–128 characters.'
+        });
+      }
+
+      const hashedToken = sessionHash(token);
+
+      const user = users.find(item =>
+        item.passwordReset?.tokenHash === hashedToken &&
+        Date.parse(
+          item.passwordReset.expiresAt
+        ) > Date.now()
+      );
+
+      if (!user) {
+        return res.status(400).json({
+          ok: false,
+          error:
+            'Invalid or expired password reset link.'
+        });
+      }
+
+      const newHash = await hashPassword(password);
+
+      user.passwordHash = newHash;
+      delete user.passwordReset;
+
+      sessions = sessions.filter(
+        item => item.userId !== user.id
+      );
+
+      await save();
+
+      res.clearCookie(
+        'zala_session',
+        cookieOptions(req)
+      );
+
+      res.json({
+        ok: true,
+        message:
+          'Your password has been changed. Please sign in.'
+      });
+    } catch (error) {
+      console.error(
+        'Password reset error:',
+        error
+      );
+
+      res.status(500).json({
+        ok: false,
+        error:
+          'Unable to reset your password.'
       });
     }
   });
@@ -389,24 +694,36 @@ export function createCustomerAuthRouter({
 
   router.post('/logout', async (req, res) => {
     try {
-      const token = getCookie(req, 'zala_session');
+      const token = getCookie(
+        req,
+        'zala_session'
+      );
 
       if (token) {
         const hashed = sessionHash(token);
+
         sessions = sessions.filter(
           item => item.tokenHash !== hashed
         );
+
         await save();
       }
 
-      res.clearCookie('zala_session', cookieOptions(req));
+      res.clearCookie(
+        'zala_session',
+        cookieOptions(req)
+      );
 
       res.json({
         ok: true,
         message: 'Signed out.'
       });
     } catch (error) {
-      console.error('Customer logout error:', error);
+      console.error(
+        'Customer logout error:',
+        error
+      );
+
       res.status(500).json({
         ok: false,
         error: 'Could not sign out.'
