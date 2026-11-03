@@ -11,7 +11,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- ZALA LIVING ATMOSPHERE -->
 <link rel="stylesheet" href="/zala-themes.css">
 <script src="/zala-themes.js" defer></script>
 
@@ -24,54 +23,48 @@
   --soft:#f4f8fe;
   --gold:#c59a46;
 }
-
 * {box-sizing:border-box}
-
 body {
   margin:0;
   background:#fff;
   color:var(--navy);
   font:16px/1.6 "DM Sans",Arial,sans-serif;
 }
-
 main {
   max-width:520px;
   margin:0 auto;
   padding:24px 16px 60px;
 }
-
 a {
   color:var(--blue);
   text-decoration:none;
 }
-
 header {
   display:flex;
   align-items:center;
   gap:12px;
   margin-bottom:32px;
 }
-
 .logo {
   width:48px;
   height:48px;
   flex-shrink:0;
   border-radius:12px;
-  background:#eaf2ff;
-  color:var(--blue);
-  display:grid;
-  place-items:center;
-  font-weight:800;
+  overflow:hidden;
+  background:#101010;
 }
-
+.logo img {
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
 .brand {font-weight:800}
-
 .sub {
   font-size:11px;
   letter-spacing:.5px;
   color:var(--muted);
 }
-
 .studio-link {
   margin-left:auto;
   flex-shrink:0;
@@ -79,14 +72,12 @@ header {
   font-weight:700;
   white-space:nowrap;
 }
-
 .panel {
   border:1px solid var(--line);
   border-radius:16px;
   background:var(--soft);
   padding:24px;
 }
-
 h1 {
   font-size:23px;
   line-height:1.35;
@@ -94,40 +85,31 @@ h1 {
   letter-spacing:-.45px;
   margin:0 0 10px;
 }
-
 p {color:var(--muted)}
-
-#description,
-#profileGreeting {
+#description,#profileGreeting {
   font-size:15px;
   line-height:1.7;
-  font-weight:400;
 }
-
 .tabs {
   display:flex;
   gap:10px;
   margin:22px 0;
 }
-
 .tabs button {
   flex:1;
   background:#fff;
   color:var(--blue);
   border:3px solid var(--blue);
 }
-
 .tabs button[aria-pressed="true"] {
   background:var(--blue);
   color:#fff;
 }
-
 label {
   display:block;
   font-weight:700;
   margin:16px 0 7px;
 }
-
 input {
   display:block;
   width:100%;
@@ -138,10 +120,8 @@ input {
   color:var(--navy);
   font:inherit;
 }
-
 .password-wrap {position:relative}
 .password-wrap input {padding-right:64px}
-
 .eye-button {
   position:absolute;
   right:5px;
@@ -155,7 +135,6 @@ input {
   color:var(--blue);
   border-radius:8px;
 }
-
 .eye-button svg {
   width:23px;
   height:23px;
@@ -165,7 +144,6 @@ input {
   stroke-linecap:round;
   stroke-linejoin:round;
 }
-
 button {
   font:inherit;
   cursor:pointer;
@@ -177,42 +155,34 @@ button {
   padding:12px 16px;
   min-height:48px;
 }
-
 button:focus-visible,
 a:focus-visible,
-input:focus-visible,
-select:focus-visible {
+input:focus-visible {
   outline:3px solid #f6b74a;
   outline-offset:2px;
 }
-
 .submit {
   width:100%;
   margin-top:22px;
 }
-
 button:disabled {
   opacity:.65;
   cursor:wait;
 }
-
 .status {
   min-height:26px;
   margin-top:16px;
   font-weight:600;
 }
-
 .error {color:#b42318}
 .success {color:#166534}
 .hidden {display:none!important}
-
 .account-actions {
   display:flex;
   gap:12px;
   flex-wrap:wrap;
   margin-top:22px;
 }
-
 .account-actions a {
   border:2px solid var(--blue);
   padding:9px 14px;
@@ -222,15 +192,11 @@ button:disabled {
   display:inline-flex;
   align-items:center;
 }
-
 .foot {
   margin-top:24px;
   text-align:center;
   font-size:14px;
 }
-
-/* PLATINUM HITMAKER */
-
 .loyalty {
   margin-top:22px;
   padding:22px 18px;
@@ -238,13 +204,11 @@ button:disabled {
   border-radius:16px;
   background:#fff;
 }
-
 .loyalty-head {
   display:flex;
   align-items:center;
   gap:12px;
 }
-
 .loyalty-symbol {
   width:50px;
   height:50px;
@@ -255,27 +219,21 @@ button:disabled {
   background:#e9f2ff;
   font-size:25px;
 }
-
 .loyalty.unlocked {
   border-color:#d6b36d;
 }
-
 .loyalty.unlocked .loyalty-symbol {
   background:#fff1d4;
 }
-
-.loyalty h2 {
+.loyalty h2,.history h2 {
   margin:0;
   font-size:19px;
   line-height:1.3;
-  letter-spacing:-.3px;
 }
-
 .loyalty-sub {
   margin:3px 0 0;
   font-size:12px;
 }
-
 .loyalty-progress-head {
   display:flex;
   justify-content:space-between;
@@ -285,7 +243,6 @@ button:disabled {
   font-size:14px;
   font-weight:700;
 }
-
 .progress-track {
   height:12px;
   margin-top:10px;
@@ -293,7 +250,6 @@ button:disabled {
   border-radius:999px;
   background:#e4ebf5;
 }
-
 .progress-fill {
   width:0%;
   height:100%;
@@ -301,18 +257,15 @@ button:disabled {
   background:var(--blue);
   transition:width .6s ease;
 }
-
 .loyalty.unlocked .progress-fill {
   background:var(--gold);
 }
-
 .milestones {
   display:flex;
   justify-content:space-between;
   margin-top:10px;
   gap:4px;
 }
-
 .milestone {
   width:29px;
   height:29px;
@@ -325,13 +278,11 @@ button:disabled {
   font-size:12px;
   font-weight:800;
 }
-
 .milestone.complete {
   background:var(--blue);
   border-color:var(--blue);
   color:#fff;
 }
-
 .reward {
   margin-top:20px;
   padding:14px;
@@ -339,15 +290,12 @@ button:disabled {
   background:#edf5ff;
   font-size:14px;
 }
-
 .reward strong {color:#194d9a}
-
 .loyalty-note {
   margin:13px 0 0;
   font-size:12px;
   line-height:1.6;
 }
-
 .prestige {
   display:flex;
   align-items:center;
@@ -356,11 +304,7 @@ button:disabled {
   font-size:13px;
   color:#53637a;
 }
-
 .prestige strong {color:var(--navy)}
-
-/* ORDER HISTORY */
-
 .history {
   margin-top:22px;
   padding:20px 18px;
@@ -368,25 +312,16 @@ button:disabled {
   border:1px solid var(--line);
   border-radius:16px;
 }
-
 .history-heading {
   display:flex;
   justify-content:space-between;
   align-items:center;
   gap:10px;
 }
-
-.history h2 {
-  margin:0;
-  font-size:19px;
-  line-height:1.3;
-}
-
 .history-intro {
   font-size:13px;
   margin:9px 0 16px;
 }
-
 .refresh {
   min-height:36px;
   padding:7px 12px;
@@ -394,23 +329,18 @@ button:disabled {
   border:1px solid var(--blue);
   background:#fff;
   color:var(--blue);
-  flex-shrink:0;
 }
-
 .history-message {
   padding:17px 14px;
   border-radius:12px;
   background:var(--soft);
   font-size:14px;
   color:var(--muted);
-  line-height:1.6;
 }
-
 .order-list {
   display:grid;
   gap:12px;
 }
-
 .order-card {
   border:1px solid var(--line);
   border-radius:12px;
@@ -418,18 +348,15 @@ button:disabled {
   background:#fff;
   overflow-wrap:anywhere;
 }
-
 .order-title {
   font-weight:800;
   font-size:15px;
 }
-
 .order-date {
   font-size:12px;
   color:var(--muted);
   margin-top:3px;
 }
-
 .order-detail {
   display:flex;
   justify-content:space-between;
@@ -437,26 +364,20 @@ button:disabled {
   margin-top:10px;
   font-size:13px;
 }
-
 .order-detail span:last-child {
   font-weight:700;
   text-align:right;
 }
-
 .qualifying {
   color:#166534;
   font-weight:700;
   font-size:12px;
   margin:12px 0 0;
 }
-
 .history-note {
   font-size:12px;
   margin:15px 0 0;
 }
-
-/* LIVING ATMOSPHERE INTEGRATION */
-
 body.zala-themed {
   --blue:var(--z-primary);
   --navy:var(--z-text);
@@ -464,131 +385,78 @@ body.zala-themed {
   --line:var(--z-border);
   --soft:var(--z-panel);
   --gold:var(--z-accent);
-
   background:var(--z-gradient);
   background-color:var(--z-bg);
   color:var(--z-text);
 }
-
 body.zala-themed .panel,
 body.zala-themed .loyalty,
 body.zala-themed .history {
   background:var(--z-surface);
   border-color:var(--z-border);
 }
-
 body.zala-themed .tabs button,
 body.zala-themed .refresh,
 body.zala-themed .account-actions a {
   border-color:var(--z-primary);
 }
-
 body.zala-themed .tabs button[aria-pressed="false"],
 body.zala-themed .refresh,
 body.zala-themed .account-actions a {
   background:var(--z-surface);
   color:var(--z-primary);
 }
-
 body.zala-themed .tabs button[aria-pressed="true"],
 body.zala-themed .submit,
 body.zala-themed #logoutButton {
   background:var(--z-primary);
   color:var(--z-primary-text);
 }
-
-body.zala-themed .milestone {
-  background:var(--z-panel);
-  border-color:var(--z-border);
-  color:var(--z-muted);
+body.zala-themed input,
+body.zala-themed .eye-button {
+  background:var(--z-surface);
+  color:var(--z-text);
+  border-color:var(--z-primary);
 }
-
-body.zala-themed .milestone.complete {
-  background:var(--z-primary);
-  color:var(--z-primary-text);
-}
-
 body.zala-themed .reward,
 body.zala-themed .history-message {
   background:var(--z-panel);
   color:var(--z-text);
 }
-
 body.zala-themed .order-card {
   background:var(--z-surface);
   border-color:var(--z-border);
 }
-
-body.zala-themed .logo {
-  background:var(--z-panel);
-  color:var(--z-primary);
-}
-
-body.zala-themed .eye-button {
-  background:var(--z-surface);
-  color:var(--z-primary);
-}
-
-body.zala-themed input {
-  background:var(--z-surface);
-  color:var(--z-text);
-  border-color:var(--z-primary);
-}
-
 body.zala-themed .progress-track {
   background:var(--z-panel);
 }
-
 body.zala-themed .progress-fill {
   background:var(--z-primary);
 }
-
-body.zala-themed .loyalty.unlocked .progress-fill {
-  background:var(--z-accent);
+body.zala-themed .milestone {
+  background:var(--z-panel);
+  border-color:var(--z-border);
+  color:var(--z-muted);
 }
-
-body.zala-themed .reward strong {
-  color:var(--z-primary);
+body.zala-themed .milestone.complete {
+  background:var(--z-primary);
+  color:var(--z-primary-text);
 }
-
 body.zala-themed .prestige strong {
   color:var(--z-text);
 }
-
-body.zala-themed .status.error {
-  color:#d94a4a;
-}
-
-body.zala-themed .status.success,
-body.zala-themed .qualifying {
-  color:#218653;
-}
-
-:root[data-zala-theme="midnight"]
-body.zala-themed .status.success,
-:root[data-zala-theme="hollywood"]
-body.zala-themed .status.success,
-:root[data-zala-theme="midnight"]
-body.zala-themed .qualifying,
-:root[data-zala-theme="hollywood"]
-body.zala-themed .qualifying {
-  color:#79e6a3;
-}
-
-/* Make the theme selector feel integrated */
-
+body.zala-themed .status.error {color:#d94a4a}
+body.zala-themed .status.success {color:#218653}
 body.zala-themed .zala-theme-control {
   margin-top:24px;
   box-shadow:0 8px 26px var(--z-glow);
 }
-
 @media(max-width:390px) {
   .panel {padding:18px}
   .brand {font-size:13px}
   .sub {font-size:9px}
   .studio-link {font-size:11px}
 }
-
 @media(prefers-reduced-motion:reduce) {
   .progress-fill {transition:none}
 }
@@ -599,7 +467,11 @@ body.zala-themed .zala-theme-control {
 <main>
 
 <header>
-  <div class="logo"><img src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png" alt="Cut Loopz Media logo" style="width:100%;height:100%;object-fit:contain;display:block;"></div>
+  <div class="logo">
+    <img
+      src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"
+      alt="Cut Loopz Media logo">
+  </div>
   <div>
     <div class="brand">Cut Loopz Media</div>
     <div class="sub">CINEMATIC MUSIC VIDEO STUDIO</div>
@@ -611,7 +483,6 @@ body.zala-themed .zala-theme-control {
 
 <section class="panel" id="authPanel">
   <h1 id="heading">Welcome back, hitmaker!</h1>
-
   <p id="description">
     Ready to make another hit? Sign in and let the creativity continue.
   </p>
@@ -637,7 +508,6 @@ body.zala-themed .zala-theme-control {
       autocomplete="email" maxlength="254" required>
 
     <label for="password">Password</label>
-
     <div class="password-wrap">
       <input id="password" name="password"
         type="password"
@@ -650,7 +520,6 @@ body.zala-themed .zala-theme-control {
         aria-label="Show password"
         aria-pressed="false"
         title="Show password">
-
         <svg id="eyeIcon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
           <circle cx="12" cy="12" r="3"/>
@@ -669,19 +538,12 @@ body.zala-themed .zala-theme-control {
 </section>
 
 <section class="panel hidden" id="profilePanel">
-  <h1 id="profileHeading">
-    Welcome back to the studio!
-  </h1>
-
-  <p id="profileGreeting">
-    Your next masterpiece is waiting.
-  </p>
-
+  <h1 id="profileHeading">Welcome back to the studio!</h1>
+  <p id="profileGreeting">Your next masterpiece is waiting.</p>
   <p id="welcome"></p>
 
   <div class="loyalty" id="loyaltyPanel"
     aria-labelledby="loyaltyTitle">
-
     <div class="loyalty-head">
       <div class="loyalty-symbol" aria-hidden="true">🏆</div>
       <div>
@@ -704,7 +566,6 @@ body.zala-themed .zala-theme-control {
       aria-valuemin="0"
       aria-valuemax="6"
       aria-valuenow="0">
-
       <div class="progress-fill" id="progressFill"></div>
     </div>
 
@@ -764,10 +625,8 @@ body.zala-themed .zala-theme-control {
   </section>
 
   <div class="account-actions">
-<a href="/customer.html#create">🎬 Create a Video</a>
-    <button type="button" id="logoutButton">
-      Sign out
-    </button>
+    <a href="/customer.html#create">🎬 Create a Video</a>
+    <button type="button" id="logoutButton">Sign out</button>
   </div>
 </section>
 
@@ -775,7 +634,7 @@ body.zala-themed .zala-theme-control {
   role="status" aria-live="polite"></p>
 
 <div class="foot">
-  <a href="/customer.html">← Back</a>
+  <a href="/customer.html">← Back to Main Studio</a>
 </div>
 
 </main>
@@ -787,67 +646,43 @@ const $ = id => document.getElementById(id);
 
 const messages = {
   register: [
-    [
-      'Hello, future hitmaker!',
-      'Welcome to Cut Loopz Media. Your next visual masterpiece starts here.',
-    ],
-    [
-      'Your Music. Your Vision. Your Video.',
-      'Join the studio and bring your music to life.'
-    ],
-    [
-      'The spotlight is waiting!',
-      'Create your account and get ready to tell your story on screen.'
-    ]
+    ['Hello, future hitmaker!',
+     'Welcome to Cut Loopz Media. Your next visual masterpiece starts here.'],
+    ['Your Music. Your Vision. Your Video.',
+     'Join the studio and bring your music to life.'],
+    ['The spotlight is waiting!',
+     'Create your account and get ready to tell your story on screen.']
   ],
-
   login: [
-    [
-      'Welcome back, hitmaker!',
-      'Ready to make another hit? Sign in and let the creativity continue.'
-    ],
-    [
-      'The studio missed you!',
-      "Got another track ready? Let's bring your sound to life."
-    ],
-    [
-      "Look who's back!",
-      'Another song, another vision, another chance to create magic.'
-    ],
-    [
-      'Your next hit is calling!',
-      'Your studio is waiting. Sign in and keep creating.'
-    ]
+    ['Welcome back, hitmaker!',
+     'Ready to make another hit? Sign in and let the creativity continue.'],
+    ['The studio missed you!',
+     "Got another track ready? Let's bring your sound to life."],
+    ["Look who's back!",
+     'Another song, another vision, another chance to create magic.'],
+    ['Your next hit is calling!',
+     'Your studio is waiting. Sign in and keep creating.']
   ],
-
   profile: [
-    [
-      'Welcome back to the studio, {name}!',
-      'Your next masterpiece is waiting.'
-    ],
-    [
-      'The spotlight is yours, {name}!',
-      'Ready to turn another great track into a cinematic experience?'
-    ],
-    [
-      'Another hit on the way, {name}?',
-      "Let's make something unforgettable."
-    ]
+    ['Welcome back to the studio, {name}!',
+     'Your next masterpiece is waiting.'],
+    ['The spotlight is yours, {name}!',
+     'Ready to turn another great track into a cinematic experience?'],
+    ['Another hit on the way, {name}?',
+     "Let's make something unforgettable."]
   ],
-
   newProfile: [
-    [
-      'Welcome to the studio, {name}!',
-      'Your creative journey starts here.'
-    ],
-    [
-      'You’re officially a hitmaker, {name}!',
-      'Welcome to Cut Loopz Media.'
-    ]
+    ['Welcome to the studio, {name}!',
+     'Your creative journey starts here.'],
+    ['You’re officially a hitmaker, {name}!',
+     'Welcome to Cut Loopz Media.']
   ]
 };
 
-let mode = new URLSearchParams(location.search).get('mode') === 'signup'
+const pageParams = new URLSearchParams(location.search);
+const studioView = pageParams.get('view') === 'studio';
+
+let mode = pageParams.get('mode') === 'signup'
   ? 'register'
   : 'login';
 
@@ -856,7 +691,7 @@ let signedIn = false;
 let accountGeneration = 0;
 let historyRequest = 0;
 
-let currentGreeting = {
+const currentGreeting = {
   register:-1,
   login:-1,
   profile:-1,
@@ -867,10 +702,8 @@ function chooseGreeting(kind) {
   const choices = messages[kind];
   let index = Math.floor(Math.random() * choices.length);
 
-  if (
-    choices.length > 1 &&
-    index === currentGreeting[kind]
-  ) {
+  if (choices.length > 1 &&
+      index === currentGreeting[kind]) {
     index = (index + 1) % choices.length;
   }
 
@@ -884,58 +717,10 @@ function message(value, error = false) {
     'status ' + (error ? 'error' : 'success');
 }
 
-function setMode(next) {
-  mode = next;
-  const register = mode === 'register';
-
-  $('nameField').classList.toggle('hidden', !register);
-  $('name').required = register;
-
-  const [heading, description] = chooseGreeting(mode);
-
-  $('heading').textContent = heading;
-  $('description').textContent = description;
-
-  $('loginTab').setAttribute(
-    'aria-pressed',
-    String(!register)
-  );
-
-  $('registerTab').setAttribute(
-    'aria-pressed',
-    String(register)
-  );
-
-  $('submitButton').textContent = register
-    ? 'Create account'
-    : 'Sign in';
-
-  $('password').autocomplete = register
-    ? 'new-password'
-    : 'current-password';
-
-  $('passwordHint').classList.toggle(
-    'hidden',
-    !register
-  );
-
-  hidePassword();
-  message('');
-}
-
 function hidePassword() {
   $('password').type = 'password';
-
-  $('togglePassword').setAttribute(
-    'aria-pressed',
-    'false'
-  );
-
-  $('togglePassword').setAttribute(
-    'aria-label',
-    'Show password'
-  );
-
+  $('togglePassword').setAttribute('aria-pressed', 'false');
+  $('togglePassword').setAttribute('aria-label', 'Show password');
   $('togglePassword').title = 'Show password';
 
   $('eyeIcon').innerHTML =
@@ -943,26 +728,45 @@ function hidePassword() {
     '<circle cx="12" cy="12" r="3"/>';
 }
 
+function setMode(next) {
+  mode = next;
+  const registering = mode === 'register';
+
+  $('nameField').classList.toggle('hidden', !registering);
+  $('name').required = registering;
+
+  const [heading, description] = chooseGreeting(mode);
+  $('heading').textContent = heading;
+  $('description').textContent = description;
+
+  $('loginTab').setAttribute('aria-pressed', String(!registering));
+  $('registerTab').setAttribute('aria-pressed', String(registering));
+
+  $('submitButton').textContent =
+    registering ? 'Create account' : 'Sign in';
+
+  $('password').autocomplete =
+    registering ? 'new-password' : 'current-password';
+
+  $('passwordHint').classList.toggle('hidden', !registering);
+
+  hidePassword();
+  message('');
+}
+
 $('togglePassword').addEventListener('click', () => {
   const reveal = $('password').type === 'password';
 
-  $('password').type = reveal
-    ? 'text'
-    : 'password';
+  $('password').type = reveal ? 'text' : 'password';
 
   $('togglePassword').setAttribute(
-    'aria-pressed',
-    String(reveal)
+    'aria-pressed', String(reveal)
   );
-
   $('togglePassword').setAttribute(
-    'aria-label',
-    reveal ? 'Hide password' : 'Show password'
+    'aria-label', reveal ? 'Hide password' : 'Show password'
   );
-
-  $('togglePassword').title = reveal
-    ? 'Hide password'
-    : 'Show password';
+  $('togglePassword').title =
+    reveal ? 'Hide password' : 'Show password';
 
   $('eyeIcon').innerHTML = reveal
     ? '<path d="M3 3l18 18M10.6 5.1A11.7 11.7 0 0 1 12 5c6.5 0 10 7 10 7a15.6 15.6 0 0 1-3.2 4.1M6.2 6.2C3.5 8.2 2 12 2 12s3.5 7 10 7a10.6 10.6 0 0 0 4.2-.9M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'
@@ -972,16 +776,11 @@ $('togglePassword').addEventListener('click', () => {
 function resetLoyalty() {
   $('progressText').textContent = '0 of 6 videos';
   $('progressFill').style.width = '0%';
-
-  $('progressTrack').setAttribute(
-    'aria-valuenow',
-    '0'
-  );
-
+  $('progressTrack').setAttribute('aria-valuenow', '0');
   $('loyaltyPanel').classList.remove('unlocked');
 
   document.querySelectorAll('.milestone').forEach(
-    milestone => milestone.classList.remove('complete')
+    element => element.classList.remove('complete')
   );
 
   $('prestigeText').textContent =
@@ -997,40 +796,22 @@ function updateLoyalty(loyalty) {
     return;
   }
 
-  const count = Math.max(
+  const count = Math.floor(Math.max(
     0,
-    Math.min(
-      6,
-      Number(loyalty.qualifyingVideos) || 0
-    )
-  );
+    Math.min(6, Number(loyalty.qualifyingVideos) || 0)
+  ));
 
-  const completed = Math.floor(count);
   const unlocked = loyalty.platinumUnlocked === true;
 
-  $('progressText').textContent =
-    completed + ' of 6 videos';
-
-  $('progressFill').style.width =
-    (completed / 6 * 100) + '%';
-
-  $('progressTrack').setAttribute(
-    'aria-valuenow',
-    String(completed)
-  );
+  $('progressText').textContent = count + ' of 6 videos';
+  $('progressFill').style.width = (count / 6 * 100) + '%';
+  $('progressTrack').setAttribute('aria-valuenow', String(count));
+  $('loyaltyPanel').classList.toggle('unlocked', unlocked);
 
   document.querySelectorAll('.milestone').forEach(
-    (milestone, index) => {
-      milestone.classList.toggle(
-        'complete',
-        index < completed
-      );
+    (element, index) => {
+      element.classList.toggle('complete', index < count);
     }
-  );
-
-  $('loyaltyPanel').classList.toggle(
-    'unlocked',
-    unlocked
   );
 
   $('prestigeText').textContent = unlocked
@@ -1046,7 +827,6 @@ function friendlyDate(value) {
   if (!value) return 'Date unavailable';
 
   const date = new Date(value);
-
   if (!Number.isFinite(date.getTime())) {
     return 'Date unavailable';
   }
@@ -1072,9 +852,8 @@ function statusLabel(value) {
     canceled:'Cancelled'
   };
 
-  const key = String(value || '').toLowerCase();
-
-  return labels[key] || 'Not available';
+  return labels[String(value || '').toLowerCase()]
+    || 'Not available';
 }
 
 function makeDetail(label, value) {
@@ -1084,10 +863,10 @@ function makeDetail(label, value) {
   const name = document.createElement('span');
   name.textContent = label;
 
-  const status = document.createElement('span');
-  status.textContent = value;
+  const detail = document.createElement('span');
+  detail.textContent = value;
 
-  line.append(name, status);
+  line.append(name, detail);
   return line;
 }
 
@@ -1119,20 +898,8 @@ function renderOrders(orders) {
     date.textContent = friendlyDate(order.createdAt);
 
     card.append(title, date);
-
-    card.append(
-      makeDetail(
-        'Payment',
-        statusLabel(order.paymentStatus)
-      )
-    );
-
-    card.append(
-      makeDetail(
-        'Video',
-        statusLabel(order.videoStatus)
-      )
-    );
+    card.append(makeDetail('Payment', statusLabel(order.paymentStatus)));
+    card.append(makeDetail('Video', statusLabel(order.videoStatus)));
 
     if (order.qualifiesForPlatinum === true) {
       const qualifying = document.createElement('p');
@@ -1159,23 +926,16 @@ async function loadOrderHistory() {
 
   $('refreshOrders').disabled = true;
   $('orderHistory').className = 'history-message';
-  $('orderHistory').textContent =
-    'Loading your order history...';
+  $('orderHistory').textContent = 'Loading your order history...';
 
   try {
-    const response = await fetch(
-      '/api/customer-order-history',
-      {
-        credentials:'same-origin',
-        cache:'no-store',
-        headers:{
-          'Accept':'application/json'
-        }
-      }
-    );
+    const response = await fetch('/api/customer-order-history', {
+      credentials:'same-origin',
+      cache:'no-store',
+      headers:{'Accept':'application/json'}
+    });
 
     let data;
-
     try {
       data = await response.json();
     } catch {
@@ -1185,9 +945,7 @@ async function loadOrderHistory() {
     }
 
     if (!response.ok || !data.ok) {
-      throw new Error(
-        data.error || 'Could not load order history.'
-      );
+      throw new Error(data.error || 'Could not load order history.');
     }
 
     if (!isCurrent()) return;
@@ -1199,12 +957,10 @@ async function loadOrderHistory() {
     if (!isCurrent()) return;
 
     resetLoyalty();
-
     $('orderHistory').className = 'history-message';
     $('orderHistory').textContent =
       'Unable to load order history. ' +
-      error.message +
-      ' Please try Refresh.';
+      error.message + ' Please try Refresh.';
 
   } finally {
     if (isCurrent()) {
@@ -1221,8 +977,7 @@ function showUser(user, newlyRegistered = false) {
   $('profilePanel').classList.remove('hidden');
 
   const firstName = String(user.name || 'Hitmaker')
-    .trim()
-    .split(/\s+/)[0];
+    .trim().split(/\s+/)[0];
 
   const [heading, greeting] = chooseGreeting(
     newlyRegistered ? 'newProfile' : 'profile'
@@ -1230,15 +985,12 @@ function showUser(user, newlyRegistered = false) {
 
   $('profileHeading').textContent =
     heading.replace('{name}', firstName);
-
   $('profileGreeting').textContent = greeting;
 
   $('welcome').textContent =
     'Signed in as ' +
-    user.name +
-    ' (' +
-    user.email +
-    ').';
+    String(user.name || 'Hitmaker') +
+    ' (' + String(user.email || '') + ').';
 
   message('');
   resetLoyalty();
@@ -1256,7 +1008,6 @@ function showAuth() {
   $('refreshOrders').disabled = false;
   $('orderHistory').replaceChildren();
   resetLoyalty();
-
   setMode('login');
 }
 
@@ -1275,128 +1026,105 @@ async function request(route, options = {}) {
   try {
     data = await response.json();
   } catch {
-    throw new Error(
-      'The server returned an unexpected response.'
-    );
+    throw new Error('The server returned an unexpected response.');
   }
 
   if (!response.ok || !data.ok) {
-    throw new Error(
-      data.error || 'Request failed.'
-    );
+    throw new Error(data.error || 'Request failed.');
   }
 
   return data;
 }
 
-$('loginTab').addEventListener(
-  'click',
-  () => setMode('login')
-);
+function afterAuthentication(user, newlyRegistered = false) {
+  if (studioView) {
+    showUser(user, newlyRegistered);
+  } else {
+    window.location.assign('/customer.html#create');
+  }
+}
 
-$('registerTab').addEventListener(
-  'click',
-  () => setMode('register')
-);
+$('loginTab').addEventListener('click', () => setMode('login'));
+$('registerTab').addEventListener('click', () => setMode('register'));
 
 $('refreshOrders').addEventListener(
   'click',
   () => void loadOrderHistory()
 );
 
-$('authForm').addEventListener(
-  'submit',
-  async event => {
-    event.preventDefault();
+$('authForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (busy) return;
 
-    if (busy) return;
+  busy = true;
+  $('submitButton').disabled = true;
+  message('Please wait...');
 
-    busy = true;
-    $('submitButton').disabled = true;
-    message('Please wait...');
+  try {
+    const body = {
+      email:$('email').value.trim(),
+      password:$('password').value
+    };
 
-    try {
-      const body = {
-        email:$('email').value.trim(),
-        password:$('password').value
-      };
+    const registering = mode === 'register';
 
-      const registering = mode === 'register';
+    if (registering) {
+      body.name = $('name').value.trim();
+    }
 
-      if (registering) {
-        body.name = $('name').value.trim();
+    const data = await request(
+      registering ? 'register' : 'login',
+      {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(body)
       }
+    );
 
-      const data = await request(
-        registering ? 'register' : 'login',
-        {
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json'
-          },
-          body:JSON.stringify(body)
-        }
-      );
+    $('password').value = '';
+    hidePassword();
 
-      $('password').value = '';
-      hidePassword();
+    afterAuthentication(data.user, registering);
 
-      showUser(data.user, registering);
+  } catch (error) {
+    message(error.message, true);
 
-    } catch (error) {
-      message(error.message, true);
-
-    } finally {
-      busy = false;
-      $('submitButton').disabled = false;
-    }
+  } finally {
+    busy = false;
+    $('submitButton').disabled = false;
   }
-);
+});
 
-$('logoutButton').addEventListener(
-  'click',
-  async () => {
-    if (busy) return;
+$('logoutButton').addEventListener('click', async () => {
+  if (busy) return;
 
-    busy = true;
-    $('logoutButton').disabled = true;
+  busy = true;
+  $('logoutButton').disabled = true;
 
-    try {
-      await request('logout', {
-        method:'POST'
-      });
+  try {
+    await request('logout', {method:'POST'});
+    showAuth();
+    message('You have signed out.');
 
-      showAuth();
-      message('You have signed out.');
+  } catch (error) {
+    message(error.message, true);
 
-    } catch (error) {
-      message(error.message, true);
-
-    } finally {
-      busy = false;
-      $('logoutButton').disabled = false;
-    }
+  } finally {
+    busy = false;
+    $('logoutButton').disabled = false;
   }
-);
+});
 
 setMode(mode);
 
 request('me')
   .then(data => {
     if (!signedIn && !busy) {
-      const params = new URLSearchParams(location.search);
-
-      if (params.get('view') === 'studio') {
-        showUser(data.user);
-      } else {
-        window.location.assign('/customer.html#create');
-      }
+      afterAuthentication(data.user);
     }
   })
   .catch(() => {});
-  .catch(() => {});
-  .catch(() => {});
-</script>
 
+</script>
 </body>
 </html>
