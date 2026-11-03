@@ -1,20 +1,20 @@
 
 /*
- * ZALA QI'S WORLD
+ * CUTLOOPZ MEDIA
  * Living Atmosphere Theme Controller
  *
- * Automatic:
- * Morning:  6:00 AM – 4:59 PM
- * Sunset:   5:00 PM – 7:59 PM
- * Midnight: 8:00 PM – 5:59 AM
+ * Morning: 6 AM – 4:59 PM
+ * Sunset: 5 PM – 7:59 PM
+ * Midnight: 8 PM – 5:59 AM
  *
- * Optional Hollywood Premiere theme.
+ * Shared Back-to-Top navigation
  */
 
 (() => {
   'use strict';
 
   const STORAGE_KEY = 'zala-world-theme';
+
   const VALID_MODES = [
     'automatic',
     'morning',
@@ -45,7 +45,7 @@
     try {
       localStorage.setItem(STORAGE_KEY, mode);
     } catch {
-      // Theme still works if storage is unavailable.
+      // Theme works without storage.
     }
   }
 
@@ -109,9 +109,7 @@
   }
 
   function createThemeSelector() {
-    if (!document.body) {
-      return;
-    }
+    if (!document.body) return;
 
     if (document.getElementById('zala-theme-control')) {
       return;
@@ -165,18 +163,151 @@
     destination.appendChild(control);
   }
 
+  /*
+   * CUTLOOPZ BACK-TO-TOP BUTTON
+   */
+
+  function createBackToTop() {
+    if (!document.body) return;
+
+    if (document.getElementById('cutloopz-back-to-top')) {
+      return;
+    }
+
+    const style = document.createElement('style');
+    style.id = 'cutloopz-back-to-top-style';
+
+    style.textContent = `
+      #cutloopz-back-to-top {
+        position: fixed;
+        right: 18px;
+        bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+        z-index: 10000;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--z-primary, #2469cc);
+        color: var(--z-primary-text, #ffffff);
+        border: 2px solid var(--z-border, #cddff2);
+        box-shadow: 0 6px 22px rgba(0,0,0,.24);
+        font-family: Arial, sans-serif;
+        font-size: 27px;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(12px);
+        transition:
+          opacity .25s ease,
+          transform .25s ease,
+          visibility .25s ease,
+          background-color .5s ease,
+          color .5s ease;
+      }
+
+      #cutloopz-back-to-top.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      #cutloopz-back-to-top:focus-visible {
+        outline: 3px solid var(--z-accent, #c59b53);
+        outline-offset: 4px;
+      }
+
+      @media (max-width: 600px) {
+        #cutloopz-back-to-top {
+          width: 46px;
+          height: 46px;
+          right: 14px;
+          bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+          font-size: 25px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #cutloopz-back-to-top {
+          transition: none;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.id = 'cutloopz-back-to-top';
+    button.textContent = '↑';
+    button.setAttribute('aria-label', 'Back to top');
+    button.setAttribute('title', 'Back to top');
+
+    document.body.appendChild(button);
+
+    function updateVisibility() {
+      const scrollTop =
+        window.scrollY ||
+        document.documentElement.scrollTop ||
+        0;
+
+      const scrollableHeight =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
+
+      const shouldShow =
+        scrollTop > 350 &&
+        scrollableHeight > 350;
+
+      button.classList.toggle(
+        'is-visible',
+        shouldShow
+      );
+
+      button.tabIndex = shouldShow ? 0 : -1;
+    }
+
+    button.addEventListener('click', () => {
+      const reducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+
+      window.scrollTo({
+        top: 0,
+        behavior: reducedMotion ? 'auto' : 'smooth'
+      });
+    });
+
+    window.addEventListener(
+      'scroll',
+      updateVisibility,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      'resize',
+      updateVisibility
+    );
+
+    updateVisibility();
+  }
+
   function initialize() {
     createThemeSelector();
     applyTheme();
+    createBackToTop();
 
-    // Check for a time-of-day change once per minute.
     window.setInterval(() => {
       if (currentMode === 'automatic') {
         applyTheme();
       }
     }, 60000);
 
-    // Refresh when a customer returns to the page.
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         applyTheme();
@@ -184,7 +315,6 @@
     });
   }
 
-  // Set the theme early to reduce visible color flashes.
   applyTheme();
 
   if (document.readyState === 'loading') {
