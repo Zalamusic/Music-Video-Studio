@@ -1,0 +1,143 @@
+
+/*
+ * CUTLOOPZ MEDIA
+ * Comfortable Reading Typography v1
+ *
+ * Readable, clean, mobile-friendly text.
+ * Keeps existing heading sizes, layouts,
+ * theme colors and functionality.
+ */
+
+@import url(
+  'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap'
+);
+
+:root {
+  --cutloopz-font:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+body {
+  font-family: var(--cutloopz-font) !important;
+  font-size: 18px !important;
+  font-weight: 400;
+  line-height: 1.65 !important;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Regular reading text */
+
+body p,
+body .description,
+body .intro,
+body .tagline {
+  font-family: var(--cutloopz-font);
+  font-size: 18px !important;
+  line-height: 1.7 !important;
+}
+
+/* Helpful instructions and notes */
+
+body .note,
+body .small,
+body .option-card p,
+body .loyalty-note,
+body .history-note {
+  font-family: var(--cutloopz-font);
+  font-size: 16px !important;
+  line-height: 1.65 !important;
+}
+
+/* Forms */
+
+body label {
+  font-family: var(--cutloopz-font);
+  font-size: 17px !important;
+  line-height: 1.5 !important;
+}
+
+body input:not([type="radio"]):not([type="checkbox"]),
+body select,
+body textarea {
+  font-family: var(--cutloopz-font);
+  font-size: 17px !important;
+  line-height: 1.55 !important;
+}
+
+/* Buttons and links */
+
+body button,
+body .btn,
+body .button-link {
+  font-family: var(--cutloopz-font) !important;
+  font-size: 17px !important;
+  line-height: 1.45 !important;
+  font-weight: 700;
+}
+
+body nav a,
+body .header-link {
+  font-family: var(--cutloopz-font);
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+/* Feature cards */
+
+body .option-card strong {
+  font-family: var(--cutloopz-font);
+  font-size: 17px !important;
+}
+
+/* Brand details remain compact */
+
+body .brand-name,
+body .brand,
+body .brand-small,
+body .logo {
+  font-family: var(--cutloopz-font);
+}
+
+/* Keep headings at existing sizes */
+
+body h1,
+body h2,
+body h3,
+body h4 {
+  font-family: var(--cutloopz-font);
+}
+
+/* Footer */
+
+body footer {
+  font-family: var(--cutloopz-font);
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+}
+
+/* Comfortable mobile reading */
+
+@media (max-width: 480px) {
+  body {
+    font-size: 18px !important;
+  }
+
+  body p,
+  body .description,
+  body .intro,
+  body .tagline {
+    font-size: 18px !important;
+  }
+
+  body .note,
+  body .small,
+  body .option-card p {
+    font-size: 16px !important;
+  }
+}
