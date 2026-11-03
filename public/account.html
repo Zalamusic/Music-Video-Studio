@@ -535,6 +535,32 @@ body.zala-themed .zala-theme-control {
       Sign in
     </button>
   </form>
+  
+  <div id="forgotLinkArea" style="text-align:center;margin-top:16px">
+    <button type="button" id="forgotPasswordButton"
+      style="background:none;color:var(--blue);padding:8px;min-height:36px">
+      Forgot Password?
+    </button>
+  </div>
+
+  <form id="forgotForm" class="hidden">
+    <h2 style="font-size:20px">Reset your password</h2>
+    <p>Enter your account email address. We'll send you a secure reset link.</p>
+
+    <label for="forgotEmail">Email address</label>
+    <input id="forgotEmail" type="email"
+      autocomplete="email" maxlength="254" required>
+
+    <button type="submit" class="submit" id="sendResetButton">
+      Send Reset Link
+    </button>
+
+    <button type="button" id="backToLoginButton"
+      style="background:none;color:var(--blue);width:100%">
+      ← Back to Sign In
+    </button>
+  </form>
+
 </section>
 
 <section class="panel hidden" id="profilePanel">
@@ -1112,6 +1138,53 @@ $('logoutButton').addEventListener('click', async () => {
   } finally {
     busy = false;
     $('logoutButton').disabled = false;
+  }
+});
+
+$('forgotPasswordButton').addEventListener('click', () => {
+  $('authForm').classList.add('hidden');
+  $('forgotLinkArea').classList.add('hidden');
+  $('forgotForm').classList.remove('hidden');
+  document.querySelector('.tabs').classList.add('hidden');
+  $('heading').textContent = 'Forgot your password?';
+  $('description').textContent =
+    "We'll email you a secure link to create a new password.";
+  $('forgotEmail').value = $('email').value.trim();
+  message('');
+});
+
+$('backToLoginButton').addEventListener('click', () => {
+  $('forgotForm').classList.add('hidden');
+  $('authForm').classList.remove('hidden');
+  $('forgotLinkArea').classList.remove('hidden');
+  document.querySelector('.tabs').classList.remove('hidden');
+  setMode('login');
+});
+
+$('forgotForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (busy) return;
+
+  busy = true;
+  $('sendResetButton').disabled = true;
+  message('Sending your reset link...');
+
+  try {
+    const data = await request('forgot-password', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email: $('forgotEmail').value.trim()
+      })
+    });
+
+    message(data.message ||
+      'If your account exists, a reset link will be emailed.');
+  } catch (error) {
+    message(error.message, true);
+  } finally {
+    busy = false;
+    $('sendResetButton').disabled = false;
   }
 });
 
