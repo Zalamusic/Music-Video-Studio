@@ -1384,9 +1384,17 @@ setMode(mode);
 request('me')
   .then(data => {
     if (!signedIn && !busy) {
-      window.location.assign('/customer.html#create');
+      const params = new URLSearchParams(location.search);
+
+      if (params.get('view') === 'studio') {
+        showUser(data.user);
+      } else {
+        window.location.assign('/customer.html#create');
+      }
     }
   })
+  .catch(() => {});
+  .catch(() => {});
   .catch(() => {});
 </script>
 
