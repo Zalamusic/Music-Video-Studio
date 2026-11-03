@@ -76,15 +76,12 @@ header {
   letter-spacing:1.2px;
   text-transform:uppercase;
 }
-
 h1 {
   font-size:clamp(23px,5vw,30px);
   line-height:1.25;
   letter-spacing:-.6px;
   margin:9px 0;
 }
-
-  
 h2 {
   font-size:20px;
   line-height:1.3;
@@ -296,7 +293,90 @@ pre {
   display:block;
   font-size:15px;
 }
+
+/* Accurate song duration controls */
+
+.duration-panel {
+  margin-top:12px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+}
+.duration-panel h3 {
+  margin:0 0 5px;
+}
+.duration-panel p {
+  margin:5px 0 12px;
+}
+.duration-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:12px;
+}
+.duration-grid label {
+  margin:0 0 6px;
+}
+.duration-grid input {
+  font-size:20px;
+  font-weight:700;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+.duration-result {
+  margin-top:14px;
+  padding:13px;
+  border-radius:11px;
+  background:var(--soft);
+  border:1px solid var(--line);
+}
+.duration-result strong {
+  display:block;
+  font-size:21px;
+  font-variant-numeric:tabular-nums;
+  color:var(--navy);
+}
+.duration-result span {
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+}
+.duration-help {
+  font-size:12px;
+  line-height:1.6;
+}
+.duration-message {
+  margin-top:10px;
+  font-size:13px;
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+.duration-file {
+  margin-top:10px;
+}
+.duration-file input[type=file] {
+  font-size:14px;
+  padding:12px;
+}
+.duration-divider {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:17px 0;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+.duration-divider:before,
+.duration-divider:after {
+  content:"";
+  flex:1;
+  height:1px;
+  background:var(--line);
+}
 [hidden] {display:none!important}
+
 footer {
   text-align:center;
   margin-top:30px;
@@ -342,6 +422,7 @@ body.zala-themed .button-link {
   .sub {font-size:9px}
   .header-link {font-size:11px}
   .summary-grid {grid-template-columns:1fr}
+  .duration-panel {padding:13px}
 }
 @media(prefers-reduced-motion:reduce) {
   html {scroll-behavior:auto}
@@ -370,12 +451,14 @@ body.zala-themed .button-link {
   <h1>Listening Director</h1>
   <p><strong>A Director That Listens.</strong></p>
   <p>
-    
     Get a comprehensive creative analysis of your song
-and discover its cinematic potential through a
-personalized storyboard.
-
-See your vision before you create your masterpiece.
+    and discover its cinematic potential through a
+    personalized storyboard.
+  </p>
+  <p>
+    <strong>
+      See your vision before you create your masterpiece.
+    </strong>
   </p>
 </section>
 
@@ -407,18 +490,91 @@ See your vision before you create your masterpiece.
     <input id="title" maxlength="120"
       placeholder="Safe With Me" required>
 
-    <label for="seconds">Song duration in seconds</label>
-    <input id="seconds" type="number"
-      min="1" max="360" step="0.001"
-      placeholder="219.192" required>
+    <div class="duration-panel">
+      <h3>🎵 How long is your song?</h3>
+      <p class="small">
+        Upload your song to detect its duration automatically.
+        Or enter the minutes and seconds yourself.
+      </p>
+
+      <div class="duration-file">
+        <label for="songAudio">
+          Detect duration from your song
+        </label>
+        <input
+          id="songAudio"
+          type="file"
+          accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav">
+      </div>
+
+      <p class="duration-help">
+        MP3 or WAV. Your audio is read on this device
+        for timing only. It is not uploaded to the server
+        by this storyboard preview.
+      </p>
+
+      <p id="audioStatus"
+         class="duration-message"
+         role="status"
+         aria-live="polite"></p>
+
+      <div class="duration-divider">
+        Or enter manually
+      </div>
+
+      <div class="duration-grid">
+        <div>
+          <label for="songMinutes">Minutes</label>
+          <input
+            id="songMinutes"
+            type="number"
+            min="0"
+            max="6"
+            step="1"
+            inputmode="numeric"
+            placeholder="4"
+            required>
+        </div>
+        <div>
+          <label for="songSecondsPart">Seconds</label>
+          <input
+            id="songSecondsPart"
+            type="number"
+            min="0"
+            max="59.999"
+            step="0.001"
+            inputmode="decimal"
+            placeholder="01"
+            required>
+        </div>
+      </div>
+
+      <p class="duration-help">
+        Example: A 4-minute, 1-second song is entered
+        as 4 minutes and 01 seconds.
+      </p>
+
+      <div class="duration-result">
+        <span>Song duration</span>
+        <strong id="durationDisplay">—:——</strong>
+        <span id="durationDetail">
+          Waiting for song duration
+        </span>
+      </div>
+
+      <input
+        id="seconds"
+        type="hidden"
+        value="">
+    </div>
 
     <label for="lyrics">Song lyrics</label>
     <textarea id="lyrics" maxlength="12000"
       placeholder="Paste your lyrics here..."></textarea>
 
     <p class="small">
-      Example: 3 minutes and 39.192 seconds = 219.192.
-      This preview does not upload or analyze audio.
+      Your lyrics help the Director plan the
+      storytelling and visual scenes.
     </p>
 
     <div class="actions">
@@ -529,15 +685,27 @@ See your vision before you create your masterpiece.
 
 const $ = id => document.getElementById(id);
 const form = $('directorForm');
+
 let latestPlan = null;
 let currentStep = 1;
+let audioCheckId = 0;
+
+const MAX_SONG_SECONDS = 360;
 
 const draftFields = [
-  'title','seconds','lyrics','concept',
-  'style','format','sceneSeconds'
+  'title',
+  'seconds',
+  'songMinutes',
+  'songSecondsPart',
+  'lyrics',
+  'concept',
+  'style',
+  'format',
+  'sceneSeconds'
 ];
 
-const draftKey = 'cutloopz-listening-director-draft-v1';
+const draftKey =
+  'cutloopz-listening-director-draft-v1';
 
 function saveDraft() {
   try {
@@ -545,68 +713,421 @@ function saveDraft() {
     for (const id of draftFields) {
       data[id] = $(id).value;
     }
-    localStorage.setItem(draftKey, JSON.stringify(data));
+    localStorage.setItem(
+      draftKey,
+      JSON.stringify(data)
+    );
   } catch {}
 }
 
 function restoreDraft() {
   try {
-    const data = JSON.parse(localStorage.getItem(draftKey) || '{}');
+    const data = JSON.parse(
+      localStorage.getItem(draftKey) || '{}'
+    );
+
     for (const id of draftFields) {
-      if (typeof data[id] === 'string') {
+      if (
+        typeof data[id] === 'string' &&
+        data[id] !== ''
+      ) {
         $(id).value = data[id];
+      }
+    }
+
+    // Migrate a previously saved duration in seconds.
+    if (
+      !data.songMinutes &&
+      !data.songSecondsPart &&
+      data.seconds !== undefined &&
+      data.seconds !== ''
+    ) {
+      const oldSeconds = Number(data.seconds);
+
+      if (
+        Number.isFinite(oldSeconds) &&
+        oldSeconds > 0 &&
+        oldSeconds <= MAX_SONG_SECONDS
+      ) {
+        setDuration(oldSeconds, false);
       }
     }
   } catch {}
 }
 
+function formatDuration(totalSeconds) {
+  if (
+    !Number.isFinite(totalSeconds) ||
+    totalSeconds < 0
+  ) {
+    return '—:——';
+  }
+
+  const rounded = Math.round(totalSeconds * 1000);
+  const minutes = Math.floor(rounded / 60000);
+  const remainder = rounded - minutes * 60000;
+
+  const seconds = Math.floor(remainder / 1000);
+  const milliseconds = remainder % 1000;
+
+  let result =
+    minutes + ':' +
+    String(seconds).padStart(2,'0');
+
+  if (milliseconds > 0) {
+    result += '.' +
+      String(milliseconds)
+        .padStart(3,'0')
+        .replace(/0+$/,'');
+  }
+
+  return result;
+}
+
+function durationFromFields() {
+  const minuteText = $('songMinutes').value.trim();
+  const secondText = $('songSecondsPart').value.trim();
+
+  if (minuteText === '' || secondText === '') {
+    return null;
+  }
+
+  const minutes = Number(minuteText);
+  const seconds = Number(secondText);
+
+  if (
+    !Number.isInteger(minutes) ||
+    minutes < 0 ||
+    minutes > 6 ||
+    !Number.isFinite(seconds) ||
+    seconds < 0 ||
+    seconds >= 60
+  ) {
+    return null;
+  }
+
+  const total = Math.round(
+    (minutes * 60 + seconds) * 1000
+  ) / 1000;
+
+  if (
+    total <= 0 ||
+    total > MAX_SONG_SECONDS
+  ) {
+    return null;
+  }
+
+  return total;
+}
+
+function updateDurationDisplay() {
+  const total = durationFromFields();
+
+  if (total === null) {
+    $('seconds').value = '';
+    $('durationDisplay').textContent = '—:——';
+    $('durationDetail').textContent =
+      'Enter a valid duration up to 6 minutes.';
+    return false;
+  }
+
+  $('seconds').value = String(total);
+
+  $('durationDisplay').textContent =
+    formatDuration(total);
+
+  $('durationDetail').textContent =
+    'Ready for your cinematic storyboard';
+
+  return true;
+}
+
+function setDuration(totalSeconds, persist = true) {
+  if (
+    !Number.isFinite(totalSeconds) ||
+    totalSeconds <= 0 ||
+    totalSeconds > MAX_SONG_SECONDS
+  ) {
+    return false;
+  }
+
+  const totalMilliseconds =
+    Math.round(totalSeconds * 1000);
+
+  const minutes =
+    Math.floor(totalMilliseconds / 60000);
+
+  const remainingMilliseconds =
+    totalMilliseconds - minutes * 60000;
+
+  const wholeSeconds =
+    Math.floor(remainingMilliseconds / 1000);
+
+  const milliseconds =
+    remainingMilliseconds % 1000;
+
+  let secondValue =
+    String(wholeSeconds).padStart(2,'0');
+
+  if (milliseconds > 0) {
+    secondValue += '.' +
+      String(milliseconds)
+        .padStart(3,'0')
+        .replace(/0+$/,'');
+  }
+
+  $('songMinutes').value = String(minutes);
+  $('songSecondsPart').value = secondValue;
+
+  updateDurationDisplay();
+
+  if (persist) {
+    saveDraft();
+  }
+
+  return true;
+}
+
+function showAudioMessage(message, isError = false) {
+  $('audioStatus').textContent = message;
+  $('audioStatus').className =
+    'duration-message' +
+    (isError ? ' error' : '');
+}
+
+function readAudioDuration(file) {
+  return new Promise((resolve,reject) => {
+    const audio = document.createElement('audio');
+    const objectUrl = URL.createObjectURL(file);
+
+    let finished = false;
+
+    function cleanup() {
+      audio.removeAttribute('src');
+      audio.load();
+      URL.revokeObjectURL(objectUrl);
+    }
+
+    function finish(error,seconds) {
+      if (finished) return;
+      finished = true;
+
+      clearTimeout(timeoutId);
+      cleanup();
+
+      if (error) {
+        reject(error);
+      } else {
+        resolve(seconds);
+      }
+    }
+
+    const timeoutId = setTimeout(() => {
+      finish(new Error(
+        'Duration detection timed out. Enter it manually.'
+      ));
+    },15000);
+
+    audio.preload = 'metadata';
+
+    audio.addEventListener('loadedmetadata',() => {
+      if (
+        Number.isFinite(audio.duration) &&
+        audio.duration > 0
+      ) {
+        finish(null,audio.duration);
+      }
+    });
+
+    audio.addEventListener('durationchange',() => {
+      if (
+        Number.isFinite(audio.duration) &&
+        audio.duration > 0
+      ) {
+        finish(null,audio.duration);
+      }
+    });
+
+    audio.addEventListener('error',() => {
+      finish(new Error(
+        'This audio file could not be read. Enter the duration manually.'
+      ));
+    });
+
+    audio.src = objectUrl;
+    audio.load();
+  });
+}
+
+$('songAudio').addEventListener(
+  'change',
+  async () => {
+    const file = $('songAudio').files[0];
+    const checkId = ++audioCheckId;
+
+    if (!file) {
+      showAudioMessage('');
+      return;
+    }
+
+    const lowerName = file.name.toLowerCase();
+
+    if (
+      !lowerName.endsWith('.mp3') &&
+      !lowerName.endsWith('.wav')
+    ) {
+      showAudioMessage(
+        'Please choose an MP3 or WAV file.',
+        true
+      );
+      return;
+    }
+
+    showAudioMessage(
+      '⏱️ Reading your song duration...'
+    );
+
+    try {
+      const detected = await readAudioDuration(file);
+
+      if (checkId !== audioCheckId) return;
+
+      const rounded =
+        Math.round(detected * 1000) / 1000;
+
+      if (
+        rounded <= 0 ||
+        rounded > MAX_SONG_SECONDS
+      ) {
+        showAudioMessage(
+          'This preview supports songs up to 6 minutes. ' +
+          'The selected song is ' +
+          formatDuration(rounded) + '.',
+          true
+        );
+        return;
+      }
+
+      setDuration(rounded);
+
+      showAudioMessage(
+        '✓ Duration detected: ' +
+        formatDuration(rounded) +
+        '. Your Director is ready!'
+      );
+
+    } catch (error) {
+      if (checkId !== audioCheckId) return;
+
+      showAudioMessage(
+        error.message ||
+        'Unable to detect duration. Enter it manually.',
+        true
+      );
+    }
+  }
+);
+
+for (const id of [
+  'songMinutes',
+  'songSecondsPart'
+]) {
+  $(id).addEventListener('input',() => {
+    ++audioCheckId;
+    updateDurationDisplay();
+    saveDraft();
+  });
+}
+
 function showStep(step) {
   currentStep = step;
+
   $('musicStep').hidden = step !== 1;
   $('visionStep').hidden = step !== 2;
   $('results').hidden = step !== 3;
 
-  $('progressFill').style.width = (step / 3 * 100) + '%';
+  $('progressFill').style.width =
+    (step / 3 * 100) + '%';
+
   $('progressText').textContent =
     'Step ' + step + ' of 3 — ' +
-    (step === 1 ? 'Your Music' :
-     step === 2 ? 'Your Vision' : 'Storyboard');
+    (
+      step === 1 ? 'Your Music' :
+      step === 2 ? 'Your Vision' :
+      'Storyboard'
+    );
 
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({
+    top:0,
+    behavior:'smooth'
+  });
 }
 
 function validateMusic() {
-  for (const id of ['title','seconds']) {
-    if (!$(id).reportValidity()) return false;
+  if (!$('title').reportValidity()) {
+    return false;
   }
+
+  for (const id of [
+    'songMinutes',
+    'songSecondsPart'
+  ]) {
+    if (!$(id).reportValidity()) {
+      return false;
+    }
+  }
+
+  if (!updateDurationDisplay()) {
+    $('status').textContent =
+      'Please enter a valid song duration ' +
+      'between 1 second and 6 minutes.';
+
+    $('status').className = 'status error';
+
+    $('songMinutes').focus();
+    return false;
+  }
+
+  $('status').textContent = '';
+  $('status').className = 'status';
+
   return true;
 }
 
-function addText(tag, value, parent) {
+function addText(tag,value,parent) {
   const node = document.createElement(tag);
   node.textContent = String(value ?? '');
   parent.appendChild(node);
   return node;
 }
 
-function addDetail(parent, label, value) {
+function addDetail(parent,label,value) {
   const p = document.createElement('p');
   const strong = document.createElement('strong');
+
   strong.textContent = label + ': ';
   p.appendChild(strong);
+
   p.appendChild(
-    document.createTextNode(String(value ?? 'Not specified'))
+    document.createTextNode(
+      String(value ?? 'Not specified')
+    )
   );
+
   parent.appendChild(p);
 }
 
 function renderPlan(plan) {
   latestPlan = plan;
+
   $('summary').replaceChildren();
   $('scenes').replaceChildren();
 
   const facts = [
     ['Song',plan.title],
+    ['Duration',formatDuration(
+      Number($('seconds').value)
+    )],
     ['Emotion',plan.storyEmotion],
     ['Scenes',plan.totalScenes],
     ['Engine',plan.version],
@@ -616,8 +1137,14 @@ function renderPlan(plan) {
   for (const [label,value] of facts) {
     const card = document.createElement('div');
     card.className = 'summary-item';
+
     addText('span',label,card);
-    addText('strong',value ?? 'Not available',card);
+    addText(
+      'strong',
+      value ?? 'Not available',
+      card
+    );
+
     $('summary').appendChild(card);
   }
 
@@ -628,29 +1155,45 @@ function renderPlan(plan) {
     const top = document.createElement('div');
     top.className = 'scene-top';
 
-    addText('div','Scene ' + scene.number,top)
-      .className = 'scene-number';
+    addText(
+      'div',
+      'Scene ' + scene.number,
+      top
+    ).className = 'scene-number';
 
-    addText('div',
-      scene.startSeconds + 's – ' + scene.endSeconds + 's',
-      top).className = 'scene-time';
+    addText(
+      'div',
+      scene.startSeconds + 's – ' +
+      scene.endSeconds + 's',
+      top
+    ).className = 'scene-time';
 
     card.appendChild(top);
 
-    addText('h3',scene.narrativeBeat || 'Cinematic Scene',card);
+    addText(
+      'h3',
+      scene.narrativeBeat || 'Cinematic Scene',
+      card
+    );
 
     addDetail(card,'Emotion',scene.emotion);
     addDetail(card,'Location',scene.location);
     addDetail(card,'Lighting',scene.lighting);
     addDetail(card,'Camera',scene.shot);
-    addDetail(card,'Camera movement',scene.cameraMovement);
+    addDetail(
+      card,
+      'Camera movement',
+      scene.cameraMovement
+    );
     addDetail(card,'Intensity',scene.intensity);
     addDetail(card,'Lyrics',scene.lyricExcerpt);
     addDetail(card,'Action',scene.action);
 
     const details = document.createElement('details');
     const heading = document.createElement('summary');
+
     heading.textContent = 'View director prompt';
+
     details.appendChild(heading);
     addText('pre',scene.prompt,details);
     card.appendChild(details);
@@ -661,35 +1204,51 @@ function renderPlan(plan) {
   showStep(3);
 }
 
-$('musicNext').addEventListener('click', () => {
+$('musicNext').addEventListener('click',() => {
   if (!validateMusic()) return;
+
   saveDraft();
   showStep(2);
 });
 
-$('visionBack').addEventListener('click', () => {
+$('visionBack').addEventListener('click',() => {
   saveDraft();
   showStep(1);
 });
 
-$('editVision').addEventListener('click', () => {
+$('editVision').addEventListener('click',() => {
   showStep(2);
 });
 
 for (const id of draftFields) {
+  if (
+    id === 'songMinutes' ||
+    id === 'songSecondsPart'
+  ) {
+    continue;
+  }
+
   $(id).addEventListener('input',saveDraft);
   $(id).addEventListener('change',saveDraft);
 }
 
-form.addEventListener('submit', async event => {
+form.addEventListener('submit',async event => {
   event.preventDefault();
 
-  if (!validateMusic() || !$('concept').reportValidity()
-      || !$('adminKey').reportValidity()) return;
+  if (
+    !validateMusic() ||
+    !$('concept').reportValidity() ||
+    !$('adminKey').reportValidity()
+  ) {
+    return;
+  }
 
   saveDraft();
+
   $('createButton').disabled = true;
-  $('status').textContent = 'Preparing your cinematic storyboard...';
+  $('status').textContent =
+    'Preparing your cinematic storyboard...';
+
   $('status').className = 'status';
 
   const payload = {
@@ -703,14 +1262,17 @@ form.addEventListener('submit', async event => {
   };
 
   try {
-    const response = await fetch('/api/director/story-preview', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'X-Video-Admin-Key':$('adminKey').value
-      },
-      body:JSON.stringify(payload)
-    });
+    const response = await fetch(
+      '/api/director/story-preview',
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'X-Video-Admin-Key':$('adminKey').value
+        },
+        body:JSON.stringify(payload)
+      }
+    );
 
     const raw = await response.text();
     let data;
@@ -718,45 +1280,67 @@ form.addEventListener('submit', async event => {
     try {
       data = JSON.parse(raw);
     } catch {
-      throw new Error('The server returned an unexpected response.');
+      throw new Error(
+        'The server returned an unexpected response.'
+      );
     }
 
-    if (!response.ok || !data.ok || !data.plan) {
-      throw new Error(data.error || 'Storyboard creation failed.');
+    if (
+      !response.ok ||
+      !data.ok ||
+      !data.plan
+    ) {
+      throw new Error(
+        data.error || 'Storyboard creation failed.'
+      );
     }
 
     renderPlan(data.plan);
+
     $('status').textContent =
       'Your cinematic storyboard is ready.';
+
     $('status').className = 'status success';
 
   } catch (error) {
     $('status').textContent =
-      'Unable to create storyboard: ' + error.message;
+      'Unable to create storyboard: ' +
+      error.message;
+
     $('status').className = 'status error';
+
   } finally {
     $('createButton').disabled = false;
   }
 });
 
-$('downloadButton').addEventListener('click', () => {
+$('downloadButton').addEventListener('click',() => {
   if (!latestPlan) return;
 
   const blob = new Blob(
     [JSON.stringify(latestPlan,null,2)],
     {type:'application/json'}
   );
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
+
   link.href = url;
-  link.download = 'cutloopz-listening-director-storyboard.json';
+  link.download =
+    'cutloopz-listening-director-storyboard.json';
+
   document.body.appendChild(link);
   link.click();
   link.remove();
-  setTimeout(() => URL.revokeObjectURL(url),1000);
+
+  setTimeout(
+    () => URL.revokeObjectURL(url),
+    1000
+  );
 });
 
 restoreDraft();
+updateDurationDisplay();
 showStep(1);
 </script>
 </body>
