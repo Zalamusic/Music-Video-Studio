@@ -4,60 +4,130 @@ import { stat } from 'node:fs/promises';
 
 const SAMPLE_RATE = 11025;
 const WINDOW_SECONDS = 0.1;
-const SAMPLES_PER_WINDOW = Math.round(SAMPLE_RATE * WINDOW_SECONDS);
+const WINDOW_SAMPLES = Math.round(
+  SAMPLE_RATE * WINDOW_SECONDS
+);
 
-function decodeEnergy(audioPath, maxSeconds) {
+const clamp = (v, low, high) =>
+  Math.max(low, Math.min(high, v));
+
+const round = v =>
+  Number(v.toFixed(2));
+
+function average(values) {
+  if (!values.length) return 0;
+  return values.reduce((a, b) => a + b, 0) /
+    values.length;
+}
+
+function median(values) {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+function decodeAudio(audioPath, maxSeconds) {
   return new Promise((resolve, reject) => {
-    const args = [
+    const child = spawn('ffmpeg', [
       '-v', 'error',
       '-i', audioPath,
       '-map', '0:a:0',
       '-ac', '1',
       '-ar', String(SAMPLE_RATE),
-      '-f', 's16le',
       '-t', String(maxSeconds),
+      '-f', 's16le',
       'pipe:1'
-    ];
-
-    const child = spawn('ffmpeg', args, {
+    ], {
       stdio: ['ignore', 'pipe', 'pipe']
     });
 
-    const energy = [];
+    const windows = [];
     let pending = Buffer.alloc(0);
-    let sumSquares = 0;
-    let count = 0;
     let errorText = '';
     let settled = false;
 
-    child.stderr.on('data', chunk => {
-      errorText = (errorText + chunk.toString()).slice(-1500);
-    });
+    let count = 0;
+    let squares = 0;
+    let crossings = 0;
+    let differences = 0;
+    let bassSquares = 0;
+    let previous = 0;
+    let lowpass = 0;
+
+    const lowpassAlpha =
+      1 - Math.exp(-2 * Math.PI * 180 / SAMPLE_RATE);
+
+    function finishWindow() {
+      if (!count) return;
+
+      const rms = Math.sqrt(squares / count);
+
+      windows.push({
+        energy: rms,
+        brightness: differences / count,
+        zeroCrossingRate: crossings / count,
+        bassRatio: clamp(
+          Math.sqrt(bassSquares / count) /
+            Math.max(rms, 0.000001),
+          0,
+          1
+        )
+      });
+
+      count = 0;
+      squares = 0;
+      crossings = 0;
+      differences = 0;
+      bassSquares = 0;
+    }
 
     child.stdout.on('data', chunk => {
       pending = Buffer.concat([pending, chunk]);
-      const bytes = pending.length - (pending.length % 2);
 
-      for (let offset = 0; offset < bytes; offset += 2) {
-        const sample = pending.readInt16LE(offset) / 32768;
-        sumSquares += sample * sample;
+      const bytes = pending.length -
+        (pending.length % 2);
+
+      for (let i = 0; i < bytes; i += 2) {
+        const sample =
+          pending.readInt16LE(i) / 32768;
+
+        lowpass += lowpassAlpha *
+          (sample - lowpass);
+
+        squares += sample * sample;
+        bassSquares += lowpass * lowpass;
+        differences += Math.abs(sample - previous);
+
+        if (
+          (sample >= 0 && previous < 0) ||
+          (sample < 0 && previous >= 0)
+        ) {
+          crossings++;
+        }
+
+        previous = sample;
         count++;
 
-        if (count === SAMPLES_PER_WINDOW) {
-          energy.push(Math.sqrt(sumSquares / count));
-          sumSquares = 0;
-          count = 0;
+        if (count >= WINDOW_SAMPLES) {
+          finishWindow();
         }
       }
 
-      pending = Buffer.from(pending.subarray(bytes));
+      pending = Buffer.from(
+        pending.subarray(bytes)
+      );
+    });
+
+    child.stderr.on('data', chunk => {
+      errorText = (
+        errorText + chunk.toString()
+      ).slice(-1500);
     });
 
     child.on('error', error => {
-      if (!settled) {
-        settled = true;
-        reject(error);
-      }
+      if (settled) return;
+      settled = true;
+      reject(error);
     });
 
     child.on('close', code => {
@@ -66,39 +136,264 @@ function decodeEnergy(audioPath, maxSeconds) {
 
       if (code !== 0) {
         return reject(new Error(
-          errorText || 'Audio decoding failed'
+          errorText || 'Audio decoding failed.'
         ));
       }
 
-      if (count) {
-        energy.push(Math.sqrt(sumSquares / count));
-      }
+      finishWindow();
 
-      if (!energy.length) {
+      if (!windows.length) {
         return reject(new Error(
-          'No decodable audio samples'
+          'No decodable audio samples.'
         ));
       }
 
-      resolve(energy);
+      resolve(windows);
     });
   });
 }
 
-function clamp(value, low, high) {
-  return Math.max(low, Math.min(high, value));
+function findAccents(windows) {
+  const novelty = windows.map((window, i) => {
+    if (i === 0) return 0;
+
+    const energyRise = Math.max(
+      0,
+      window.energy - windows[i - 1].energy
+    );
+
+    const brightnessRise = Math.max(
+      0,
+      window.brightness -
+        windows[i - 1].brightness
+    );
+
+    return energyRise + brightnessRise * 0.15;
+  });
+
+  const sorted = [...novelty].sort(
+    (a, b) => a - b
+  );
+
+  const threshold =
+    sorted[Math.floor(sorted.length * 0.85)] || 0;
+
+  const accents = [];
+  let previousTime = -Infinity;
+
+  for (let i = 1; i < novelty.length - 1; i++) {
+    const time = i * WINDOW_SECONDS;
+
+    if (
+      novelty[i] > threshold &&
+      novelty[i] >= novelty[i - 1] &&
+      novelty[i] > novelty[i + 1] &&
+      time - previousTime >= 0.25
+    ) {
+      accents.push(round(time));
+      previousTime = time;
+    }
+  }
+
+  return accents;
 }
 
-function round(value) {
-  return Number(value.toFixed(2));
+function estimateTempo(accents) {
+  const intervals = [];
+
+  for (let i = 1; i < accents.length; i++) {
+    const interval = accents[i] - accents[i - 1];
+
+    if (interval >= 0.3 && interval <= 1.5) {
+      intervals.push(interval);
+    }
+  }
+
+  if (intervals.length < 4) {
+    return {
+      bpm: null,
+      confidence: 'insufficient'
+    };
+  }
+
+  const interval = median(intervals);
+  const bpm = 60 / interval;
+
+  const consistency = intervals.filter(
+    value =>
+      Math.abs(value - interval) <
+      interval * 0.15
+  ).length / intervals.length;
+
+  return {
+    bpm: Math.round(clamp(bpm, 60, 200)),
+    confidence:
+      consistency >= 0.65
+        ? 'medium'
+        : 'low'
+  };
 }
 
-export async function analyzeMusic(audioPath, options = {}) {
+function classifyTexture(features, global) {
+  if (features.energy < global.energy * 0.65) {
+    return 'quiet or restrained';
+  }
+
+  if (
+    features.bassRatio > global.bassRatio * 1.2 &&
+    features.bassRatio > 0.25
+  ) {
+    return 'bass-forward';
+  }
+
+  if (
+    features.brightness >
+    global.brightness * 1.25
+  ) {
+    return 'bright or percussive';
+  }
+
+  if (
+    features.zeroCrossingRate >
+    global.zeroCrossingRate * 1.3
+  ) {
+    return 'busy or textured';
+  }
+
+  return 'balanced';
+}
+
+function makeScene(
+  windows,
+  start,
+  end,
+  number,
+  global,
+  accents
+) {
+  const first = Math.floor(
+    start / WINDOW_SECONDS
+  );
+
+  const last = Math.min(
+    windows.length,
+    Math.ceil(end / WINDOW_SECONDS)
+  );
+
+  const section = windows.slice(first, last);
+
+  const energy = average(
+    section.map(x => x.energy)
+  );
+
+  const brightness = average(
+    section.map(x => x.brightness)
+  );
+
+  const bassRatio = average(
+    section.map(x => x.bassRatio)
+  );
+
+  const zeroCrossingRate = average(
+    section.map(x => x.zeroCrossingRate)
+  );
+
+  const intensity =
+    energy > global.energy * 1.2
+      ? 'high'
+      : energy < global.energy * 0.8
+        ? 'low'
+        : 'medium';
+
+  const third = Math.max(
+    1,
+    Math.floor(section.length / 3)
+  );
+
+  const early = average(
+    section.slice(0, third).map(x => x.energy)
+  );
+
+  const late = average(
+    section.slice(-third).map(x => x.energy)
+  );
+
+  const energyChange =
+    late > early * 1.15
+      ? 'rising'
+      : late < early * 0.85
+        ? 'falling'
+        : 'steady';
+
+  const features = {
+    energy,
+    brightness,
+    bassRatio,
+    zeroCrossingRate
+  };
+
+  const texture = classifyTexture(
+    features,
+    global
+  );
+
+  const sceneAccents = accents.filter(
+    time => time >= start && time < end
+  );
+
+  let suggestedShot;
+  let cameraMovement;
+
+  if (intensity === 'high') {
+    suggestedShot =
+      'dynamic wide or tracking shot';
+    cameraMovement =
+      'energetic tracking or crane movement';
+  } else if (intensity === 'low') {
+    suggestedShot =
+      'intimate close-up';
+    cameraMovement =
+      'restrained dolly or gentle slider';
+  } else {
+    suggestedShot =
+      'smooth cinematic medium shot';
+    cameraMovement =
+      'controlled tracking or orbit';
+  }
+
+  return {
+    scene: number,
+    startSeconds: round(start),
+    endSeconds: round(end),
+    durationSeconds: round(end - start),
+    intensity,
+    energyChange,
+    suggestedShot,
+    cameraMovement,
+    transition:
+      energyChange === 'rising'
+        ? 'cut on musical accent'
+        : 'clean cut',
+    musicalTexture: texture,
+    accentCount: sceneAccents.length,
+    audioFeatures: {
+      rmsEnergy: round(energy),
+      brightnessProxy: round(brightness),
+      bassRatioProxy: round(bassRatio),
+      zeroCrossingRate: round(zeroCrossingRate)
+    }
+  };
+}
+
+export async function analyzeMusic(
+  audioPath,
+  options = {}
+) {
   if (
     typeof audioPath !== 'string' ||
     !audioPath.trim()
   ) {
-    throw new Error('Audio path required');
+    throw new Error('Audio path required.');
   }
 
   await stat(audioPath);
@@ -121,64 +416,33 @@ export async function analyzeMusic(audioPath, options = {}) {
     maxSceneSeconds
   );
 
-  const energy = await decodeEnergy(
+  const windows = await decodeAudio(
     audioPath,
     maxSeconds
   );
 
   const durationSeconds =
-    energy.length * WINDOW_SECONDS;
+    windows.length * WINDOW_SECONDS;
 
-  const novelty = energy.map((value, index) =>
-    index === 0
-      ? 0
-      : Math.max(0, value - energy[index - 1])
-  );
+  const global = {
+    energy: average(
+      windows.map(x => x.energy)
+    ),
+    brightness: average(
+      windows.map(x => x.brightness)
+    ),
+    bassRatio: average(
+      windows.map(x => x.bassRatio)
+    ),
+    zeroCrossingRate: average(
+      windows.map(x => x.zeroCrossingRate)
+    )
+  };
 
-  const sorted = [...novelty].sort(
-    (a, b) => a - b
-  );
-
-  const threshold =
-    sorted[Math.floor(sorted.length * 0.85)] || 0;
-
-  const accents = [];
-  let previous = -Infinity;
-
-  for (let i = 1; i < novelty.length - 1; i++) {
-    const time = i * WINDOW_SECONDS;
-
-    if (
-      novelty[i] > threshold &&
-      novelty[i] >= novelty[i - 1] &&
-      novelty[i] > novelty[i + 1] &&
-      time - previous >= 0.25
-    ) {
-      previous = time;
-      accents.push(round(time));
-    }
-  }
-
-  const intervals = accents
-    .slice(1)
-    .map((time, index) => time - accents[index])
-    .filter(value => value >= 0.3 && value <= 1.5)
-    .sort((a, b) => a - b);
-
-  const median = intervals.length >= 4
-    ? intervals[Math.floor(intervals.length / 2)]
-    : null;
-
-  const bpmEstimate = median
-    ? Math.round(clamp(60 / median, 60, 200))
-    : null;
+  const accents = findAccents(windows);
+  const tempo = estimateTempo(accents);
 
   const scenes = [];
-  const globalAverage = energy.reduce(
-    (a, b) => a + b,
-    0
-  ) / energy.length;
-
   let start = 0;
 
   while (start < durationSeconds - 0.05) {
@@ -189,7 +453,10 @@ export async function analyzeMusic(audioPath, options = {}) {
       start + maxSceneSeconds
     );
 
-    if (remaining > maxSceneSeconds + minSceneSeconds) {
+    if (
+      remaining >
+      maxSceneSeconds + minSceneSeconds
+    ) {
       const candidates = accents.filter(
         time =>
           time >= start + minSceneSeconds &&
@@ -212,84 +479,54 @@ export async function analyzeMusic(audioPath, options = {}) {
       end = durationSeconds;
     }
 
-    const first = Math.floor(
-      start / WINDOW_SECONDS
+    scenes.push(
+      makeScene(
+        windows,
+        start,
+        end,
+        scenes.length + 1,
+        global,
+        accents
+      )
     );
-
-    const last = Math.min(
-      energy.length,
-      Math.ceil(end / WINDOW_SECONDS)
-    );
-
-    const segment = energy.slice(first, last);
-
-    const average = segment.reduce(
-      (a, b) => a + b,
-      0
-    ) / (segment.length || 1);
-
-    const intensity =
-      average > globalAverage * 1.2
-        ? 'high'
-        : average < globalAverage * 0.8
-          ? 'low'
-          : 'medium';
-
-    const third = Math.max(
-      1,
-      Math.floor(segment.length / 3)
-    );
-
-    const early = segment.slice(0, third);
-    const late = segment.slice(-third);
-
-    const firstEnergy = early.reduce(
-      (a, b) => a + b,
-      0
-    ) / early.length;
-
-    const lastEnergy = late.reduce(
-      (a, b) => a + b,
-      0
-    ) / late.length;
-
-    const energyChange =
-      lastEnergy > firstEnergy * 1.15
-        ? 'rising'
-        : lastEnergy < firstEnergy * 0.85
-          ? 'falling'
-          : 'steady';
-
-    scenes.push({
-      scene: scenes.length + 1,
-      startSeconds: round(start),
-      endSeconds: round(end),
-      durationSeconds: round(end - start),
-      intensity,
-      energyChange,
-      suggestedShot:
-        intensity === 'high'
-          ? 'dynamic wide or tracking shot'
-          : intensity === 'low'
-            ? 'intimate close-up'
-            : 'smooth cinematic medium shot',
-      transition:
-        energyChange === 'rising'
-          ? 'cut on musical accent'
-          : 'clean cut'
-    });
 
     start = end;
   }
 
+  const highEnergyScenes = scenes.filter(
+    x => x.intensity === 'high'
+  ).length;
+
+  const lowEnergyScenes = scenes.filter(
+    x => x.intensity === 'low'
+  ).length;
+
   return {
-    engine: 'Zala Music Intelligence v1',
+    engine: 'CutLoopz Music Intelligence v2',
+    version: 2,
     durationSeconds: round(durationSeconds),
-    bpmEstimate,
+    bpmEstimate: tempo.bpm,
+    bpmConfidence: tempo.confidence,
     detectedAccents: accents.length,
+    analysis: {
+      sampleRate: SAMPLE_RATE,
+      windowSeconds: WINDOW_SECONDS,
+      averageEnergy: round(global.energy),
+      averageBrightnessProxy:
+        round(global.brightness),
+      averageBassRatioProxy:
+        round(global.bassRatio),
+      highEnergyScenes,
+      lowEnergyScenes,
+      musicalCharacter:
+        classifyTexture(global, global)
+    },
     scenes,
     notes:
-      'Rhythm and energy estimates are heuristic, ' +
-      'not verified beat or chorus detection.'
+      'Audio-derived rhythm, loudness, and texture ' +
+      'estimates. BPM is approximate. Brightness and ' +
+      'bass measurements are simplified proxies, not ' +
+      'spectral measurements. Genre, lyrical meaning, ' +
+      'and emotional intent require additional context.'
   };
 }
