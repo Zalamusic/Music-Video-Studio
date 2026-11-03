@@ -1384,7 +1384,7 @@ setMode(mode);
 request('me')
   .then(data => {
     if (!signedIn && !busy) {
-      showUser(data.user);
+      window.location.assign('/customer.html#create');
     }
   })
   .catch(() => {});
