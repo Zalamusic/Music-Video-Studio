@@ -55,15 +55,15 @@ const LIP_MODEL = 'minimax/h3-max/lip-sync/image-to-video';
 const MAX_SONG_SECONDS = 360;
 const SCENE_SECONDS = 15;
 const DOWNLOAD_LINK_DAYS = 7;
-const PREVIEW_LINK_MINUTES = 15;
-const SCENE_PRICE_USD = Number(
+const PREVIEW_LINK_MINUTES = 15; const SCENE_PRICE_USD = Number(
  process.env.SCENE_PRICE_USD
 );
 const TEXT_SCENE_PRICE_USD = Number(
  process.env.TEXT_SCENE_PRICE_USD
 );
 const LIP_PRICE_PER_SECOND = Number(
- process.env.LIP_PRICE_PER_SECOND_USD );
+ process.env.LIP_PRICE_PER_SECOND_USD
+);
 const VIDEO_ADMIN_KEY = (
  process.env.VIDEO_ADMIN_KEY || ''
 ).trim();
@@ -110,8 +110,7 @@ app.use(
  '/api/customer-auth',
  createCustomerAuthRouter({
  storageDirectory: OUT
- })
-);
+ }) );
 // Read-only order history and loyalty progress.
 app.use(
  '/api/customer-order-history',
@@ -128,7 +127,8 @@ app.get('/api/gpu/status', (req, res) => {
  error: 'Administrator password required.'
  });
  }
- res.set('Cache-Control', 'no-store'); res.json({
+ res.set('Cache-Control', 'no-store');
+ res.json({
  ok: true,
  ...getRunPodEngineStatus(),
  generationEnabled:
@@ -166,8 +166,7 @@ app.post('/api/gpu/test-video', async (req, res) => {
  ) {
  return res.status(503).json({
  ok: false,
- error: 'GPU video generation is disabled.'
- });
+ error: 'GPU video generation is disabled.' });
  }
  const { prompt, imageUrl, format } = req.body || {};
  if (
@@ -195,7 +194,8 @@ app.post('/api/gpu/test-video', async (req, res) => {
  ) {
  return res.status(400).json({
  ok: false,
- error: 'Invalid video format.' });
+ error: 'Invalid video format.'
+ });
  }
  const id = randomUUID();
  const outputPath = path.join(
@@ -223,8 +223,7 @@ app.post('/api/gpu/test-video', async (req, res) => {
  await fs.rm(
  path.dirname(outputPath),
  { recursive: true, force: true }
- ).catch(() => {});
- return res.status(500).json({
+ ).catch(() => {}); return res.status(500).json({
  ok: false,
  error: 'GPU test failed. Check server logs.'
  });
@@ -260,7 +259,8 @@ function estimate(seconds, premium, creationType = 'photo') {
  : null,
  priceConfigured,
  message:
- 'Estimate only. Actual provider billing may differ.' };
+ 'Estimate only. Actual provider billing may differ.'
+ };
 }
 app.post(
  '/api/test-music-intelligence',
@@ -279,8 +279,7 @@ app.post(
  const testDir = path.join(
  JOBS,
  'music-test-' + randomUUID()
- );
- try {
+ ); try {
  await fs.mkdir(testDir, {
  recursive: true
  });
@@ -328,7 +327,8 @@ app.post(
  next();
  },
  upload.single('video'),
- async (req, res) => { if (!req.file) {
+ async (req, res) => {
+ if (!req.file) {
  return res.status(400).json({
  error: 'Please upload an MP4 video.'
  });
@@ -336,8 +336,7 @@ app.post(
  const filename = String(
  req.file.originalname || ''
  ).toLowerCase();
- if (
- !filename.endsWith('.mp4') ||
+ if ( !filename.endsWith('.mp4') ||
  req.file.mimetype !== 'video/mp4'
  ) {
  return res.status(400).json({
@@ -450,8 +449,7 @@ app.post(
  }
  }
 );
-app.get('/api/independent-video/:id', async (req, res) => {
- if (!isVideoAdmin(req)) {
+app.get('/api/independent-video/:id', async (req, res) => { if (!isVideoAdmin(req)) {
  return res.status(403).json({
  error: 'Administrator password required.'
  });
@@ -459,7 +457,8 @@ app.get('/api/independent-video/:id', async (req, res) => {
  const id = String(req.params.id || '');
  if (!/^[0-9a-f-]{36}$/i.test(id)) {
  return res.status(400).send('Invalid video ID.');
- } const outputPath = path.join(
+ }
+ const outputPath = path.join(
  JOBS,
  'independent-' + id,
  'video.mp4'
@@ -508,8 +507,7 @@ app.post('/api/director/story-preview', async (req, res) => {
  title,
  lyrics,
  songSeconds,
- prompt,
- format,
+ prompt, format,
  sceneSeconds: sceneSeconds ?? 15,
  visualStyle,
  musicPlan
@@ -527,7 +525,8 @@ app.post('/api/director/story-preview', async (req, res) => {
  });
  }
 });
-app.get('/api/estimate', (req, res) => { const seconds = Number(req.query.seconds);
+app.get('/api/estimate', (req, res) => {
+ const seconds = Number(req.query.seconds);
  if (
  !Number.isFinite(seconds) ||
  seconds <= 0 ||
@@ -561,8 +560,7 @@ function execute(command, args, returnStdout = false) {
  stdout += chunk.toString();
  });
  child.stderr.on('data', chunk => {
- stderr = (
- stderr + chunk.toString()
+ stderr = ( stderr + chunk.toString()
  ).slice(-3000);
  });
  child.on('error', error => {
@@ -590,7 +588,8 @@ function execute(command, args, returnStdout = false) {
 }
 async function duration(file) {
  const value = Number(
- await execute('ffprobe', [ '-v', 'error',
+ await execute('ffprobe', [
+ '-v', 'error',
  '-show_entries', 'format=duration',
  '-of',
  'default=noprint_wrappers=1:nokey=1',
@@ -617,8 +616,7 @@ async function exists(file) {
 }
 const jobDir = id => path.join(JOBS, id);
 const statePath = id =>
- path.join(jobDir(id), 'state.json');
-async function readState(id) {
+ path.join(jobDir(id), 'state.json'); async function readState(id) {
  return JSON.parse(
  await fs.readFile(
  statePath(id),
@@ -656,7 +654,8 @@ function publicState(state) {
  title,
  status,
  phase,
- completedScenes, totalScenes,
+ completedScenes,
+ totalScenes,
  songSeconds,
  durationSeconds: songSeconds,
  estimatedGenerationCostUSD,
@@ -675,8 +674,7 @@ async function createCustomerLink(id) {
  throw new Error(
  'Video is not completed.'
  );
- }
- if (!(await exists(
+ } if (!(await exists(
  path.join(OUT, `${id}.mp4`)
  ))) {
  throw new Error(
@@ -720,7 +718,8 @@ async function normalizeVideo(input, output, format) {
  input,
  output,
  format
- ); console.log(
+ );
+ console.log(
  'Cinematic Opening Cleaner:',
  result.trimmed
  ? `Removed ${Number(result.trimSeconds).toFixed(2)} seconds`
@@ -730,8 +729,7 @@ async function normalizeVideo(input, output, format) {
  console.error(
  'Opening cleaner unavailable:',
  error.message
- );
- const width = format === 'landscape'
+ ); const width = format === 'landscape'
  ? 1280
  : 720;
  const height = format === 'landscape'
@@ -845,8 +843,7 @@ async function prepareMusicPlan(state, dir) {
  error.message
  );
  state.musicIntelligence = {
- status: 'unavailable'
- };
+ status: 'unavailable' };
  await saveState(state);
  return null;
  }
@@ -854,7 +851,8 @@ async function prepareMusicPlan(state, dir) {
 const sceneIdeas = [
  'Expressive close-up performance with dramatic studio lighting',
  'Wide concert stage performance with moving spotlights',
- 'Nighttime city walk under colorful lights', 'Emotional performance in a luxurious dark studio',
+ 'Nighttime city walk under colorful lights',
+ 'Emotional performance in a luxurious dark studio',
  'Romantic scene beside a rain-covered window',
  'Full-body performance in a stylish modern interior',
  'Nighttime rooftop with city skyline',
@@ -902,8 +900,7 @@ function scenePrompt(state, index, musicScene = null) {
  'wide shots and full-body shots. ' +
  'Preserve natural facial structure, realistic ' +
  'skin texture, believable eyes, natural hair ' +
- 'strands and realistic clothing. ' +
- 'Use physically believable lighting, shadows, ' +
+ 'strands and realistic clothing. ' + 'Use physically believable lighting, shadows, ' +
  'depth, perspective and environmental detail. ' +
  'Water, vegetation, buildings and skies must ' +
  'appear naturally photographed. ' +
@@ -923,7 +920,8 @@ function scenePrompt(state, index, musicScene = null) {
  'facial structure, eyes, nose, lips, jawline, ' +
  'skin tone, hair color, hairstyle, hair length ' +
  'and body proportions. Never substitute ' +
- 'a different actor. Avoid identity drift. ' );
+ 'a different actor. Avoid identity drift. '
+ );
  const musicDirection = musicScene
  ? (
  `MUSIC DIRECTION: Energy is ${musicScene.intensity}. ` +
@@ -963,8 +961,7 @@ function scenePrompt(state, index, musicScene = null) {
 /*
  * CINEMATIC EDITING
  *
- * Try the new engine first.
- * If it cannot assemble the footage, use the
+ * Try the new engine first. * If it cannot assemble the footage, use the
  * original working FFmpeg assembly.
  */
 async function assembleStandardVideo(
@@ -990,7 +987,9 @@ async function assembleStandardVideo(
  state.phase =
  'Editing scenes and synchronizing song';
  await saveState(state);
- try { let result;
+ try {
+ 
+ let result;
  try {
  result = await createCinematicEdit({
  sceneFiles,
@@ -1018,8 +1017,7 @@ async function assembleStandardVideo(
  outputFile: finalFile,
  songSeconds: state.songSeconds,
  format: state.format,
- workDirectory: path.join(
- dir,
+ workDirectory: path.join( dir,
  'hybrid-edit-work'
  )
  });
@@ -1053,7 +1051,8 @@ async function assembleStandardVideo(
  }
  state.phase =
  'Combining scenes using standard assembly';
- await saveState(state); const manifest = sceneFiles.map(
+ await saveState(state);
+ const manifest = sceneFiles.map(
  (_, index) =>
  `file 'scene-${index + 1}.mp4'`
  ).join('\n') + '\n';
@@ -1071,8 +1070,7 @@ async function assembleStandardVideo(
  ]);
  await addOriginalSong(
  path.join(dir, 'joined.mp4'),
- songFile,
- state.songSeconds,
+ songFile, state.songSeconds,
  finalFile
  );
 }
@@ -1119,15 +1117,15 @@ async function generateStandard(
  await saveState(state);
  const raw = path.join(
  dir,
- `raw-${index}.mp4` );
+ `raw-${index}.mp4`
+ );
  if (!(await exists(raw))) {
  const promptOnly =
  state.creationType === 'prompt';
  const model = promptOnly
  ? TEXT_MODEL
  : MODEL;
- const musicScene =
- musicPlan?.scenes?.[index - 1] || null;
+ const musicScene = musicPlan?.scenes?.[index - 1] || null;
  const description = getProductionScenePrompt(
  productionPlan,
  index
@@ -1233,8 +1231,7 @@ const input = {
  const sceneDuration =
  await duration(clip);
  await captureSceneFrames({
- jobDirectory: dir,
- sceneNumber: index,
+ jobDirectory: dir, sceneNumber: index,
  videoFile: clip,
  durationSeconds: sceneDuration
  });
@@ -1243,7 +1240,8 @@ const input = {
  state.id,
  'scene',
  index
- ); } catch (error) {
+ );
+ } catch (error) {
  console.error(
  'Visual continuity capture failed:',
  error
@@ -1289,8 +1287,7 @@ async function generatePremium(
  [audioBytes],
  'song.mp3',
  { type: 'audio/mpeg' }
- )
- );
+ ) );
  state.phase =
  'Generating synchronized singing performance';
  await saveState(state);
@@ -1306,7 +1303,8 @@ async function generatePremium(
  );
  const url =
  result?.data?.video?.url ||
- result?.video?.url; if (!url) {
+ result?.video?.url;
+ if (!url) {
  throw new Error(
  'Lip-sync provider returned no video.'
  );
@@ -1338,8 +1336,7 @@ async function generate(id) {
  active.add(id);
  let state;
  try {
- state = await readState(id);
- if (!ENABLE_PAID_GENERATION) {
+ state = await readState(id); if (!ENABLE_PAID_GENERATION) {
  throw new Error(
  'Paid video generation is disabled. No FAL charges allowed.'
  );
@@ -1363,7 +1360,8 @@ async function generate(id) {
  jobDirectory: dir,
  mimeType:
  state.photoMime || 'image/jpeg'
- }); imageUrl = character.imageUrl;
+ });
+ imageUrl = character.imageUrl;
  console.log(
  'Character reference prepared:',
  state.id
@@ -1391,8 +1389,7 @@ async function generate(id) {
  status: 'pending',
  score: null,
  threshold: 90
- };
- await saveState(state);
+ }; await saveState(state);
  try {
  const videoFile = path.join(
  OUT,
@@ -1428,7 +1425,8 @@ async function generate(id) {
  'Technical quality analysis unavailable'
  };
  }
- await saveState(state).catch(error => { console.error(
+ await saveState(state).catch(error => {
+ console.error(
  'Unable to save quality results:',
  error
  );
@@ -1447,8 +1445,7 @@ async function generate(id) {
  await saveState(state).catch(() => {});
  }
  } finally {
- active.delete(id);
- }
+ active.delete(id); }
 }
 app.post('/api/create', (req, res, next) => {
  if (!ENABLE_PAID_GENERATION) {
@@ -1497,7 +1494,8 @@ app.post('/api/create', (req, res, next) => {
  error: 'Please upload your song.'
  });
  }
- if ( creationType === 'photo' &&
+ if (
+ creationType === 'photo' &&
  !photo
  ) {
  return res.status(400).json({
@@ -1506,8 +1504,7 @@ app.post('/api/create', (req, res, next) => {
  }
  if (
  creationType === 'prompt' &&
- req.body.mode === 'premium'
- ) {
+ req.body.mode === 'premium' ) {
  return res.status(400).json({
  error:
  'Premium Lip-Sync requires an artist photo.'
@@ -1618,8 +1615,7 @@ app.post('/api/create', (req, res, next) => {
  });
  void generate(id);
  } catch (error) {
- console.error(error);
- if (dir) {
+ console.error(error); if (dir) {
  await fs.rm(dir, {
  recursive: true,
  force: true
@@ -1628,7 +1624,8 @@ app.post('/api/create', (req, res, next) => {
  if (!res.headersSent) {
  res.status(500).json({
  error:
- error.message || 'Could not start video job.'
+ error.message ||
+ 'Could not start video job.'
  });
  }
  }
@@ -1674,8 +1671,7 @@ app.delete('/api/jobs/:id', async (req, res) => {
  !expectedKey ||
  suppliedKey !== expectedKey
  ) {
- return res.status(403).json({
- error: 'Unauthorized video deletion.'
+ return res.status(403).json({ error: 'Unauthorized video deletion.'
  });
  }
  const id = req.params.id;
@@ -1692,7 +1688,8 @@ app.delete('/api/jobs/:id', async (req, res) => {
  ) {
  return res.status(409).json({
  error:
- 'Only completed videos can be deleted.' });
+ 'Only completed videos can be deleted.'
+ });
  }
  await fs.rm(
  path.join(OUT, `${id}.mp4`),
@@ -1729,8 +1726,7 @@ app.post('/api/jobs/:id/resume', async (req, res) => {
  if (!validId(req.params.id)) {
  return res.status(400).json({
  error: 'Invalid job ID.'
- });
- }
+ }); }
  try {
  const state = await readState(
  req.params.id
@@ -1756,7 +1752,8 @@ app.post('/api/jobs/:id/resume', async (req, res) => {
  state.creationType !== 'prompt' &&
  !(await exists(
  path.join(dir, 'reference')
- )); if (songMissing || photoMissing) {
+ ));
+ if (songMissing || photoMissing) {
  return res.status(410).json({
  error:
  'Uploaded files are no longer available.'
@@ -1782,8 +1779,7 @@ app.get('/api/jobs/:id/music-plan', async (req, res) => {
  return res.status(403).json({
  error: 'Administrator password required.'
  });
- }
- if (!validId(req.params.id)) {
+ } if (!validId(req.params.id)) {
  return res.status(400).json({
  error: 'Invalid job ID.'
  });
@@ -1819,7 +1815,8 @@ app.post('/api/jobs/:id/customer-link', async (req, res) => {
  error: 'Unauthorized.'
  });
  }
- const id = req.params.id; if (!validId(id)) {
+ const id = req.params.id;
+ if (!validId(id)) {
  return res.status(400).json({
  error: 'Invalid job ID.'
  });
@@ -1838,8 +1835,7 @@ app.post('/api/jobs/:id/customer-link', async (req, res) => {
  } catch (error) {
  res.status(400).json({
  error: error.message
- });
- }
+ }); }
 });
 app.post('/api/jobs/:id/preview-link', async (req, res) => {
  if (!isVideoAdmin(req)) {
@@ -1883,7 +1879,8 @@ app.post('/api/jobs/:id/preview-link', async (req, res) => {
  id,
  expiresAt
  })
- ); res.set(
+ );
+ res.set(
  'Cache-Control',
  'no-store'
  );
@@ -1892,8 +1889,7 @@ app.post('/api/jobs/:id/preview-link', async (req, res) => {
  url: `/preview/${token}`,
  expiresAt
  });
- } catch {
- res.status(404).json({
+ } catch { res.status(404).json({
  error: 'Video job not found.'
  });
  }
@@ -2006,8 +2002,7 @@ app.get('/download/:token', async (req, res) => {
  return res.status(404).send(
  'Invalid download link.'
  );
- }
- try {
+ } try {
  const record = JSON.parse(
  await fs.readFile(
  path.join(
@@ -2016,7 +2011,8 @@ app.get('/download/:token', async (req, res) => {
  ),
  'utf8'
  )
- ); if (
+ );
+ if (
  !Number.isFinite(Date.parse(record.expiresAt)) ||
  Date.now() >= Date.parse(record.expiresAt)
  ) {
@@ -2062,8 +2058,7 @@ async function getPayPalAccessToken() {
  ':' +
  PAYPAL_CLIENT_SECRET
  ).toString('base64');
- const response = await fetch(
- PAYPAL_BASE_URL + '/v1/oauth2/token',
+ const response = await fetch( PAYPAL_BASE_URL + '/v1/oauth2/token',
  {
  method: 'POST',
  headers: {
@@ -2082,7 +2077,8 @@ async function getPayPalAccessToken() {
  );
  }
  return (
- await response.json() ).access_token;
+ await response.json()
+ ).access_token;
 }
 app.post('/api/paypal/create-order', async (req, res) => {
  try {
@@ -2119,8 +2115,7 @@ app.post('/api/paypal/create-order', async (req, res) => {
  'Bearer ' + accessToken,
  'Content-Type':
  'application/json'
- },
- body: JSON.stringify({
+ }, body: JSON.stringify({
  intent: 'CAPTURE',
  purchase_units: [{
  description:
@@ -2149,7 +2144,8 @@ app.post('/api/paypal/create-order', async (req, res) => {
  });
  } catch (error) {
  console.error(
- 'PayPal order error:', error.message
+ 'PayPal order error:',
+ error.message
  );
  res.status(500).json({
  error:
@@ -2176,8 +2172,7 @@ app.post('/api/paypal/capture-order', async (req, res) => {
  });
  }
  const accessToken =
- await getPayPalAccessToken();
- const response = await fetch(
+ await getPayPalAccessToken(); const response = await fetch(
  PAYPAL_BASE_URL +
  '/v2/checkout/orders/' +
  encodeURIComponent(orderID) +
@@ -2215,7 +2210,8 @@ app.post('/api/paypal/capture-order', async (req, res) => {
  'PayPal capture error:',
  error.message
  );
- res.status(500).json({ error:
+ res.status(500).json({
+ error:
  'Unable to confirm PayPal test payment.'
  });
  }
@@ -2232,8 +2228,7 @@ app.get('/api/customer-orders', async (req, res) => {
  ORDERS
  );
  const orders = [];
- for (const file of files) {
- if (!file.endsWith('.json')) {
+ for (const file of files) { if (!file.endsWith('.json')) {
  continue;
  }
  orders.push(
@@ -2280,7 +2275,8 @@ app.get('/api/realism/stats', async (req, res) => {
  if (!isVideoAdmin(req)) {
  return res.status(403).json({
  error:
- 'Administrator password required.' });
+ 'Administrator password required.'
+ });
  }
  try {
  const stats =
@@ -2288,8 +2284,7 @@ app.get('/api/realism/stats', async (req, res) => {
  res.json({
  ok: true,
  ...stats
- });
- } catch (error) {
+ }); } catch (error) {
  console.error(
  'Realism stats error:',
  error
@@ -2333,12 +2328,13 @@ app.get('/api/realism/recommendations', async (req, res) => {
  * route uses this ledger; external provider billing may differ.
  */
 const CINEMA_LAB_MODEL_TEXT = 'fal-ai/ltx-2.3/text-to-video/fast';
-const CINEMA_LAB_MODEL_IMAGE = 'fal-ai/ltx-2.3/image-to-video/fast';
+const CINEMA_LAB_MODEL_IMAGE = 'fal-ai/kling-video/v3/standard/image-to-video';
 const CINEMA_LAB_SECONDS = 6;
 const CINEMA_LAB_BUDGET_USD = 25;
-// Reserve $0.60 per six-second request versus the advertised ~$0.24
-// at $0.04/s, allowing margin for price differences. This is NOT a
-// contractual provider-side spend cap.
+// Reserve $0.60 per six-second request. Kling v3 Standard image-to-video
+// without audio or elements lists at ~$0.084/s (~$0.504 per six seconds),
+// while LTX text-to-video may cost less. This is an internal ledger,
+// NOT a contractual provider-side spending cap.
 const CINEMA_LAB_RESERVE_USD = 0.60;
 const CINEMA_LAB_LEDGER_PATH = path.join(OUT, 'cinema-lab-ledger.json');
 let cinemaLabBusy = false;
@@ -2405,8 +2401,7 @@ async function cinemaLabSyncJob(id) {
  });
  const url = result?.data?.video?.url || result?.video?.url;
  if (!url || !url.startsWith('https://')) {
- throw new Error('Provider result contained no usable video URL.');
- }
+ throw new Error('Provider result contained no usable video URL.'); }
  const file = path.join(cinemaLabJobDir(id), 'video.mp4');
  if (!await exists(file)) await downloadVideo(url, file);
  await cinemaLabSaveJob(id, {
@@ -2417,7 +2412,8 @@ async function cinemaLabSyncJob(id) {
  await cinemaLabSaveJob(id, {
  ...current, status: 'failed', phase: 'Provider generation failed',
  ready: false, error: 'Provider rejected or failed this generation.'
- }); }
+ });
+ }
  return await cinemaLabReadJob(id);
  } catch (error) {
  console.error('Cinematic Lab status recovery:', id, error);
@@ -2467,8 +2463,7 @@ app.post('/api/cinema-lab/start', upload.single('photo'), async (req, res) => {
  const prompt = String(req.body?.prompt || '').trim();
  const format = String(req.body?.format || 'vertical');
  const photo = req.file || null;
- if (prompt.length < 20 || prompt.length > 2500) {
- return res.status(400).json({ error: 'Use a 20–2500 character cinematic prompt.' });
+ if (prompt.length < 20 || prompt.length > 2500) { return res.status(400).json({ error: 'Use a 20–2500 character cinematic prompt.' });
  }
  if (!['vertical', 'landscape'].includes(format)) {
  return res.status(400).json({ error: 'Choose vertical or landscape.' });
@@ -2489,7 +2484,8 @@ app.post('/api/cinema-lab/start', upload.single('photo'), async (req, res) => {
  cinemaLabBusy = false;
  return res.status(402).json({ error: 'Cinematic Lab $25 budget reached; no request sent.' });
  }
- ledger.reservedUsd = Number((ledger.reservedUsd + CINEMA_LAB_RESERVE_USD).toFixed(2)); ledger.requests.push({
+ ledger.reservedUsd = Number((ledger.reservedUsd + CINEMA_LAB_RESERVE_USD).toFixed(2));
+ ledger.requests.push({
  id, reservedUsd: CINEMA_LAB_RESERVE_USD, model,
  createdAt: new Date().toISOString()
  });
@@ -2513,14 +2509,24 @@ app.post('/api/cinema-lab/start', upload.single('photo'), async (req, res) => {
  // Return 202 before long-running provider generation to avoid browser timeouts.
  void (async () => {
  try {
- const input = {
+ // Kling image-to-video uses start_image_url and a string duration.
+ // LTX text-to-video has a different schema. Keep them separate so
+ // the selected photo route truly uses the requested motion model.
+ const input = photo ? {
+ prompt: prompt + ' SINGLE CONTINUOUS REAL-TIME SHOT: no cuts, no stills, no dissolves, no montage. The performer and camera must visibly move naturally throughout all six seconds. Preserve the input person and location.',
+ duration: String(CINEMA_LAB_SECONDS),
+ generate_audio: false,
+ enable_safety_checker: true,
+ shot_type: 'customize',
+ negative_prompt: 'slideshow, still photograph, frozen pose, crossfade, montage, double exposure, scene cut, jump cut, distorted anatomy, morphing hands, face changes, low quality',
+ cfg_scale: 0.65
+ } : {
  prompt,
  duration: CINEMA_LAB_SECONDS,
  resolution: '1080p',
  fps: 25,
  generate_audio: false,
- enable_safety_checker: true,
- aspect_ratio: format === 'landscape' ? '16:9' : '9:16'
+ enable_safety_checker: true, aspect_ratio: format === 'landscape' ? '16:9' : '9:16'
  };
  if (photo) {
  await cinemaLabSaveJob(id, {
@@ -2535,8 +2541,8 @@ app.post('/api/cinema-lab/start', upload.single('photo'), async (req, res) => {
  : photo.mimetype === 'image/webp' ? 'reference.webp' : 'reference.jpg',
  { type: photo.mimetype }
  );
- input.image_url = await fal.storage.upload(image);
- delete input.aspect_ratio; // Image aspect ratio is determined by source.
+ input.start_image_url = await fal.storage.upload(image);
+ // Kling derives output orientation from the starting photograph.
  }
  await cinemaLabSaveJob(id, {
  id, status: 'processing', phase: 'Generating actual 1080p video',
@@ -2564,7 +2570,8 @@ app.post('/api/cinema-lab/start', upload.single('photo'), async (req, res) => {
  model, format, durationSeconds: CINEMA_LAB_SECONDS,
  resolution: '1080p', reserveUsd: CINEMA_LAB_RESERVE_USD,
  error: String(error.message || 'Unknown provider error').slice(0, 500),
- ready: false }).catch(() => {});
+ ready: false
+ }).catch(() => {});
  } finally {
  cinemaLabBusy = false;
  }
@@ -2582,8 +2589,7 @@ app.get('/api/cinema-lab/job/:id', async (req, res) => {
  } catch {
  return res.status(404).json({ error: 'Cinematic test not found.' });
  }
-});
-app.get('/api/cinema-lab/video/:id', async (req, res) => {
+}); app.get('/api/cinema-lab/video/:id', async (req, res) => {
  if (!isVideoAdmin(req)) {
  return res.status(403).json({ error: 'Administrator password required.' });
  }
@@ -2616,11 +2622,11 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#293e59;color:#e8f
 <label for="admin">Administrator password</label><input type="password" id="admin" autocomplete="off" required placeholder="Enter your existing video admin password">
 <button type="button" class="secondary" id="check">Check budget</button>
 <label for="prompt">Director's prompt</label>
-<textarea id="prompt" required maxlength="2500" minlength="20">A cinematic R&B music video. An elegant singer stands on a rainy rooftop at blue hour, city lights glittering behind her. Wind gently moves her jacket. The camera performs one smooth, slow dolly-in from a medium-wide view to a close-up; atmospheric mist, subtle reflections, natural human motion, premium movie lighting, realistic skin textures, controlled depth of field, no text or logos.</textarea>
+<textarea id="prompt" required maxlength="2500" minlength="20">ONE UNBROKEN six-second cinematic shot in the recording studio shown in the artist reference photo. The singer is beside the mixing console. She releases her left hand from the console, takes two natural steps forward, looks directly into the lens, blinks and gives a confident subtle smile. Her shoulders, arms, legs, and clothing move naturally with believable weight. The camera tracks gently backward while keeping her in frame. Same face, short curly hairstyle, white top, jeans, boots and studio background throughout. Photorealistic motion and cinematic lighting. No cuts, zoom transitions, still poses, montages, or dissolves.</textarea>
 <label for="photo">Reference artist photo (optional)</label><input id="photo" type="file" accept="image/png,image/jpeg,image/webp"><div class="small">With a photo, the model attempts to animate that person. Without one, it creates the scene from your prompt. Max photo size 10MB.</div>
 <label for="format">Video orientation</label><select id="format"><option value="vertical">Vertical (9:16)</option><option value="landscape">Landscape (16:9)</option></select>
 <button id="create" type="submit">Generate 6-second cinematic test</button>
-<p class="small">This calls the paid provider once. No automatic retries, no full-song generation, no background music purchased. When using a photo, the photo's shape determines the output orientation.</p>
+<p class="small">This calls the paid provider once. With an uploaded photo the test uses Kling V3 Standard (audio off). With no photo it uses LTX-2.3 Fast. Keep the prompt consistent with the photo location, outfit and pose: the photo determines the initial scene. No automatic retries, no full-song generation, no background music purchased. The photo's shape determines image-to-video orientation.</p>
 </form></section>
 <section><strong>Test progress</strong><p id="status" role="status">No test started.</p><label for="recoverId">Recover an earlier test ID</label><input id="recoverId" placeholder="Paste your earlier test ID"><button type="button" class="secondary" id="recover">Recover test</button><video id="player" controls playsinline></video><p><a id="resultLink" download="cutloopz-cinema-test.mp4">Download test MP4</a></p></section>
 </main><script>
@@ -2637,15 +2643,15 @@ async function poll(id){try{const response=await fetch('/api/cinema-lab/job/'+en
 document.getElementById('labForm').addEventListener('submit',async function(event){event.preventDefault();if(!admin.value.trim()){status.textContent='Enter administrator password.';return;}if(!confirm('Generate ONE real six-second video? This can charge your fal account. Up to $0.60 is reserved against the Lab budget.'))return;create.disabled=true;status.textContent='Starting cinematic test...';player.style.display='none';link.style.display='none';const form=new FormData();form.append('prompt',document.getElementById('prompt').value.trim());form.append('format',document.getElementById('format').value);const photo=document.getElementById('photo').files[0];if(photo)form.append('photo',photo);try{const response=await fetch('/api/cinema-lab/start',{method:'POST',headers:auth(),body:form});const data=await responseJson(response);currentId=data.id;document.getElementById('recoverId').value=currentId;status.textContent='Generation started.\\nTest ID: '+currentId+'\\nWaiting for real motion...';if(timer)clearInterval(timer);timer=setInterval(function(){poll(currentId);},4000);await poll(currentId);}catch(error){create.disabled=false;status.textContent='Could not start: '+error.message;}});
 })();
 </script></body></html>`);
-}); app.listen(PORT, () => {
+});
+app.listen(PORT, () => {
  console.log(
  `CutLoopz Media running on port ${PORT}`
  );
  console.log(
  'Music Intelligence integration loaded'
- );
- console.log(
+ ); console.log(
  'Cinematic Editing integration loaded'
 
  );
-})
+});
