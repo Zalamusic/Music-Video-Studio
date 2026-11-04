@@ -1,9 +1,7 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="/cutloopz-typography.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
@@ -12,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/cutloopz-typography.css">
 <link rel="stylesheet" href="/zala-themes.css">
 <script src="/zala-themes.js" defer></script>
 <script src="/cutloopz-reading-fix.js" defer></script>
@@ -23,8 +22,7 @@
   --muted:#3f5067;
   --line:#d8e3f0;
   --soft:#f4f8fe;
-  --surface:#ffffff;
-  --gold:#c59a46;
+  --surface:#fff;
 }
 * {box-sizing:border-box}
 html {scroll-behavior:smooth}
@@ -32,36 +30,36 @@ body {
   margin:0;
   background:#fff;
   color:var(--navy);
-  font:16px/1.6 "DM Sans",Arial,sans-serif;
+  font:15px/1.5 "DM Sans",Arial,sans-serif;
 }
 main {
-  max-width:760px;
+  width:min(100%,780px);
   margin:auto;
-  padding:22px 16px 65px;
+  padding:18px 16px 45px;
 }
 a {color:var(--blue);text-decoration:none}
 header {
   display:flex;
   align-items:center;
-  gap:11px;
-  margin-bottom:24px;
+  gap:10px;
+  margin-bottom:18px;
 }
 .logo {
-  width:48px;
-  height:48px;
-  border-radius:12px;
+  width:44px;
+  height:44px;
+  flex-shrink:0;
+  border-radius:11px;
   background:#101010;
   overflow:hidden;
-  flex-shrink:0;
 }
 .logo img {
   width:100%;
   height:100%;
   object-fit:contain;
 }
-.brand {font-weight:800;font-size:15px}
+.brand {font-size:14px;font-weight:800}
 .sub {
-  font-size:10px;
+  font-size:9px;
   letter-spacing:.4px;
   color:var(--muted);
 }
@@ -71,132 +69,118 @@ header {
   font-weight:700;
   white-space:nowrap;
 }
-.hero {margin:12px 0 24px}
+.hero {margin:5px 0 18px}
 .eyebrow {
-  color:var(--blue);
-  font-size:12px;
+  font-size:11px;
   font-weight:800;
-  letter-spacing:1.2px;
+  letter-spacing:1px;
+  color:var(--blue);
   text-transform:uppercase;
 }
 h1 {
-  font-size:clamp(23px,5vw,30px);
+  font-size:clamp(23px,5vw,29px);
   line-height:1.25;
-  letter-spacing:-.6px;
-  margin:9px 0;
+  margin:6px 0 9px;
 }
 h2 {
-  font-size:20px;
+  font-size:19px;
   line-height:1.3;
-  margin:0 0 8px;
+  margin:0 0 7px;
 }
-h3 {font-size:17px;margin:0 0 8px}
+h3 {font-size:16px;margin:0 0 6px}
 p {color:var(--muted)}
-.hero p {margin:9px 0}
+.hero p {margin:6px 0;line-height:1.5}
 .panel {
-  border:1px solid var(--line);
-  border-radius:17px;
   background:var(--soft);
-  padding:22px;
-  margin:18px 0;
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:19px;
+  margin:13px 0;
 }
 .white-panel {background:var(--surface)}
 .step-head {
   display:flex;
   align-items:center;
-  gap:12px;
-  margin-bottom:16px;
+  gap:11px;
+  margin-bottom:12px;
 }
 .step-number {
-  width:39px;
-  height:39px;
+  width:36px;
+  height:36px;
+  flex-shrink:0;
   display:grid;
   place-items:center;
   border-radius:50%;
   background:var(--blue);
-  color:white;
+  color:#fff;
   font-weight:800;
-  flex-shrink:0;
 }
 .step-head h2 {margin:0}
-.step-head p {
-  margin:1px 0 0;
-  font-size:13px;
-}
+.step-head p {font-size:13px;margin:2px 0 0}
 .progress-labels {
   display:flex;
   justify-content:space-between;
-  gap:8px;
+  gap:7px;
   font-size:12px;
   font-weight:700;
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 .progress-track {
-  height:9px;
-  border-radius:999px;
+  height:8px;
+  border-radius:20px;
   background:#e1eaf6;
   overflow:hidden;
 }
 .progress-fill {
-  width:33.333%;
   height:100%;
+  width:33.333%;
   background:var(--blue);
   transition:width .25s ease;
 }
+#progressText {margin:8px 0 0}
 label {
   display:block;
   font-size:14px;
   font-weight:700;
-  margin:17px 0 7px;
+  margin:13px 0 5px;
 }
 input,textarea,select {
-  width:100%;
   display:block;
-  padding:13px;
+  width:100%;
+  padding:11px 12px;
   border:2px solid var(--line);
   border-radius:10px;
   background:var(--surface);
   color:var(--navy);
   font:inherit;
+  line-height:1.45;
 }
 textarea {
-  min-height:140px;
+  min-height:170px;
   resize:vertical;
 }
+#lyrics {min-height:230px}
+#concept {min-height:175px}
 input:focus,textarea:focus,select:focus {
   border-color:var(--blue);
 }
-button,.button-link {
+button {
   font:inherit;
   font-weight:700;
   border-radius:10px;
-  padding:12px 16px;
-  min-height:47px;
+  padding:12px 15px;
+  min-height:46px;
   cursor:pointer;
-}
-button {
   border:0;
   background:var(--blue);
   color:#fff;
 }
-.button-link {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  border:2px solid var(--blue);
-  color:var(--blue);
-  background:var(--surface);
-  text-decoration:none;
-}
 .secondary {
-  background:var(--surface);
-  color:var(--blue);
   border:2px solid var(--blue);
+  color:var(--blue);
+  background:var(--surface);
 }
-button:disabled {
-  opacity:.6;
-  cursor:wait;
-}
+button:disabled {opacity:.6;cursor:wait}
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -208,42 +192,127 @@ select:focus-visible {
 .actions {
   display:flex;
   flex-wrap:wrap;
-  gap:10px;
-  margin-top:24px;
+  gap:9px;
+  margin-top:17px;
 }
-.actions>* {flex:1}
-.small {
-  font-size:12px;
-  line-height:1.6;
-}
+.actions>* {flex:1;min-width:0}
+.small {font-size:12px;line-height:1.5}
+.field-help {margin:6px 0 0}
 .note {
-  padding:13px 15px;
+  padding:12px 13px;
   border-radius:11px;
   background:#eaf2ff;
-  font-size:13px;
   color:var(--navy);
+  font-size:13px;
+  line-height:1.5;
 }
 .status {
-  min-height:25px;
+  margin:10px 0;
   font-weight:700;
   overflow-wrap:anywhere;
 }
+.status:empty {display:none}
 .error {color:#b42318}
 .success {color:#166534}
+.duration-panel {
+  margin-top:10px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--surface);
+}
+.duration-panel p {margin:5px 0 9px}
+.duration-file {margin-top:8px}
+.duration-file input[type=file] {
+  font-size:13px;
+  padding:10px;
+}
+.duration-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.duration-grid label {margin:0 0 5px}
+.duration-grid input {
+  font-size:18px;
+  font-weight:700;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+.duration-divider {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:13px 0;
+  font-size:11px;
+  font-weight:800;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+.duration-divider:before,
+.duration-divider:after {
+  content:"";
+  height:1px;
+  flex:1;
+  background:var(--line);
+}
+.duration-result {
+  margin-top:11px;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:var(--soft);
+}
+.duration-result span {
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+}
+.duration-result strong {
+  display:block;
+  font-size:20px;
+  color:var(--navy);
+}
+.duration-message {
+  font-size:13px;
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+.summary-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin:12px 0;
+}
+.summary-item {
+  padding:11px;
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:11px;
+  overflow-wrap:anywhere;
+}
+.summary-item span {
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+}
+.summary-item strong {
+  display:block;
+  font-size:14px;
+}
 .scene {
   background:var(--surface);
   border:1px solid var(--line);
-  border-radius:15px;
-  padding:19px;
-  margin:14px 0;
+  border-radius:14px;
+  padding:15px;
+  margin:11px 0;
   overflow-wrap:anywhere;
 }
 .scene-top {
   display:flex;
   justify-content:space-between;
-  align-items:center;
   gap:10px;
-  margin-bottom:10px;
+  margin-bottom:7px;
 }
 .scene-number {
   color:var(--blue);
@@ -251,15 +320,16 @@ select:focus-visible {
   font-weight:800;
 }
 .scene-time {
-  font-size:12px;
   color:var(--muted);
+  font-size:12px;
 }
 .scene p {
-  margin:7px 0;
+  margin:5px 0;
   font-size:14px;
+  line-height:1.5;
 }
 .scene strong {color:var(--navy)}
-.scene details {margin-top:13px}
+.scene details {margin-top:10px}
 .scene summary {
   color:var(--blue);
   font-weight:700;
@@ -268,122 +338,27 @@ select:focus-visible {
 pre {
   white-space:pre-wrap;
   overflow-wrap:anywhere;
-  padding:13px;
+  padding:11px;
   border-radius:10px;
   background:var(--soft);
-  font:12px/1.6 monospace;
   color:var(--navy);
-}
-.summary-grid {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-  margin:18px 0;
-}
-.summary-item {
-  background:var(--soft);
-  padding:13px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  overflow-wrap:anywhere;
-}
-.summary-item span {
-  display:block;
-  color:var(--muted);
-  font-size:12px;
-}
-.summary-item strong {
-  display:block;
-  font-size:15px;
-}
-
-/* Accurate song duration controls */
-
-.duration-panel {
-  margin-top:12px;
-  padding:16px;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:var(--surface);
-}
-.duration-panel h3 {
-  margin:0 0 5px;
-}
-.duration-panel p {
-  margin:5px 0 12px;
-}
-.duration-grid {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  gap:12px;
-}
-.duration-grid label {
-  margin:0 0 6px;
-}
-.duration-grid input {
-  font-size:20px;
-  font-weight:700;
-  text-align:center;
-  font-variant-numeric:tabular-nums;
-}
-.duration-result {
-  margin-top:14px;
-  padding:13px;
-  border-radius:11px;
-  background:var(--soft);
-  border:1px solid var(--line);
-}
-.duration-result strong {
-  display:block;
-  font-size:21px;
-  font-variant-numeric:tabular-nums;
-  color:var(--navy);
-}
-.duration-result span {
-  display:block;
-  font-size:12px;
-  color:var(--muted);
-}
-.duration-help {
-  font-size:12px;
-  line-height:1.6;
-}
-.duration-message {
-  margin-top:10px;
-  font-size:13px;
-  font-weight:700;
-  overflow-wrap:anywhere;
-}
-.duration-file {
-  margin-top:10px;
-}
-.duration-file input[type=file] {
-  font-size:14px;
-  padding:12px;
-}
-.duration-divider {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin:17px 0;
-  color:var(--muted);
-  font-size:12px;
-  font-weight:800;
-  text-transform:uppercase;
-}
-.duration-divider:before,
-.duration-divider:after {
-  content:"";
-  flex:1;
-  height:1px;
-  background:var(--line);
+  font:12px/1.5 monospace;
 }
 [hidden] {display:none!important}
-
 footer {
   text-align:center;
-  margin-top:30px;
+  margin-top:24px;
   font-size:13px;
+}
+.back-top {
+  display:block;
+  margin:14px auto 0;
+  width:max-content;
+  padding:9px 14px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  font-weight:700;
+  background:var(--surface);
 }
 body.zala-themed {
   --blue:var(--z-primary);
@@ -392,7 +367,6 @@ body.zala-themed {
   --line:var(--z-border);
   --soft:var(--z-panel);
   --surface:var(--z-surface);
-  --gold:var(--z-accent);
   background:var(--z-gradient);
   background-color:var(--z-bg);
   color:var(--z-text);
@@ -413,19 +387,27 @@ body.zala-themed button:not(.secondary) {
   background:var(--z-primary);
   color:var(--z-primary-text);
 }
-body.zala-themed .secondary,
-body.zala-themed .button-link {
+body.zala-themed .secondary {
   background:var(--z-surface);
   color:var(--z-primary);
   border-color:var(--z-primary);
 }
 @media(max-width:480px) {
-  .panel {padding:17px}
+  main {padding:14px 13px 36px}
+  header {margin-bottom:14px}
   .brand {font-size:13px}
   .sub {font-size:9px}
   .header-link {font-size:11px}
+  .panel {padding:15px;margin:11px 0}
+  .duration-panel {padding:12px}
+  .summary-item strong {font-size:13px}
+  .scene {padding:13px}
+  .actions {flex-direction:column}
+  .actions>* {width:100%}
+  #lyrics {min-height:220px}
+}
+@media(max-width:350px) {
   .summary-grid {grid-template-columns:1fr}
-  .duration-panel {padding:13px}
 }
 @media(prefers-reduced-motion:reduce) {
   html {scroll-behavior:auto}
@@ -435,11 +417,10 @@ body.zala-themed .button-link {
 </head>
 
 <body>
-<main>
+<main id="top">
 <header>
   <div class="logo">
-    <img
-      src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"
+    <img src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"
       alt="Cut Loopz Media logo">
   </div>
   <div>
@@ -453,14 +434,8 @@ body.zala-themed .button-link {
   <div class="eyebrow">Your Creative Studio</div>
   <h1>Listening Director</h1>
   <p><strong>A Director That Listens.</strong></p>
-  <p>
-    Get a comprehensive creative analysis of your song and discover its cinematic potential 
-  </p>
-  <p>
-    <strong>
-      Envision your masterpiece before it's created.
-    </strong>
-  </p>
+  <p>Get a comprehensive creative analysis of your song and discover its cinematic potential.</p>
+  <p><strong>Envision your masterpiece before it's created.</strong></p>
 </section>
 
 <section class="panel white-panel" aria-label="Creative progress">
@@ -472,178 +447,126 @@ body.zala-themed .button-link {
   <div class="progress-track">
     <div class="progress-fill" id="progressFill"></div>
   </div>
-  <p class="small" id="progressText">
-    Step 1 of 3 — Your Music
-  </p>
+  <p class="small" id="progressText">Step 1 of 3 — Your Music</p>
 </section>
 
 <form id="directorForm">
-  <section class="panel" id="musicStep">
-    <div class="step-head">
-      <div class="step-number">1</div>
+<section class="panel" id="musicStep">
+  <div class="step-head">
+    <div class="step-number">1</div>
+    <div>
+      <h2>Your Music</h2>
+      <p>Every great music video begins with a song.</p>
+    </div>
+  </div>
+
+  <label for="title">Song title</label>
+  <input id="title" maxlength="120"
+    placeholder="Safe With Me" required>
+
+  <div class="duration-panel">
+    <h3>🎵 How long is your song?</h3>
+    <p class="small">Upload an MP3 or WAV to detect its duration automatically, or enter the time below.</p>
+
+    <div class="duration-file">
+      <label for="songAudio">Detect duration from your song</label>
+      <input id="songAudio" type="file"
+        accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav">
+    </div>
+    <p class="small">Your song stays on your device. Only its duration is detected.</p>
+    <p id="audioStatus" class="duration-message"
+      role="status" aria-live="polite"></p>
+
+    <div class="duration-divider">Or enter manually</div>
+
+    <div class="duration-grid">
       <div>
-        <h2>Your Music</h2>
-        <p>Every great music video begins with a song.</p>
+        <label for="songMinutes">Minutes</label>
+        <input id="songMinutes" type="number"
+          min="0" max="6" step="1"
+          inputmode="numeric" placeholder="4" required>
       </div>
-    </div>
-
-    <label for="title">Song title</label>
-    <input id="title" maxlength="120"
-      placeholder="Safe With Me" required>
-
-    <div class="duration-panel">
-      <h3>🎵 How long is your song?</h3>
-      <p class="small">
-        Upload an MP3 or WAV to detect its duration
-automatically, or enter the time below.
-      </p>
-
-      <div class="duration-file">
-        <label for="songAudio">
-          Detect duration from your song
-        </label>
-        <input
-          id="songAudio"
-          type="file"
-          accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav">
-      </div>
-        <p class="duration-help">
-  Your song stays on your device.
-  Only its duration is detected.
-</p>
-
-      <p id="audioStatus"
-         class="duration-message"
-         role="status"
-         aria-live="polite"></p>
-
-      <div class="duration-divider">
-        Or enter manually
-      </div>
-
-      <div class="duration-grid">
-        <div>
-          <label for="songMinutes">Minutes</label>
-          <input
-            id="songMinutes"
-            type="number"
-            min="0"
-            max="6"
-            step="1"
-            inputmode="numeric"
-            placeholder="4"
-            required>
-        </div>
-        <div>
-          <label for="songSecondsPart">Seconds</label>
-          <input
-            id="songSecondsPart"
-            type="number"
-            min="0"
-            max="59.999"
-            step="0.001"
-            inputmode="decimal"
-            placeholder="01"
-            required>
-        </div>
-      </div>
-
-      <p class="duration-help">
-        Example: A 4-minute, 1-second song is entered
-        as 4 minutes and 01 seconds.
-      </p>
-
-      <div class="duration-result">
-        <span>Song duration</span>
-        <strong id="durationDisplay">—:——</strong>
-        <span id="durationDetail">
-          Waiting for song duration
-        </span>
-      </div>
-
-      <input
-        id="seconds"
-        type="hidden"
-        value="">
-    </div>
-
-    <label for="lyrics">Song lyrics</label>
-    <textarea id="lyrics" maxlength="12000"
-      placeholder="Paste your lyrics here..."></textarea>
-
-    <p class="small">
-      Your lyrics help the Director plan the
-      storytelling and visual scenes.
-    </p>
-
-    <div class="actions">
-      <button type="button" id="musicNext">
-        Continue to Your Vision
-      </button>
-    </div>
-  </section>
-
-  <section class="panel" id="visionStep" hidden>
-    <div class="step-head">
-      <div class="step-number">2</div>
       <div>
-        <h2>Your Vision</h2>
-        <p>You imagine it. We help plan it.</p>
+        <label for="songSecondsPart">Seconds</label>
+        <input id="songSecondsPart" type="number"
+          min="0" max="59.999" step="0.001"
+          inputmode="decimal" placeholder="01" required>
       </div>
     </div>
+    <p class="small">Example: Enter 4 minutes and 01 seconds for a 4:01 song.</p>
 
-    <label for="concept">Describe your vision</label>
-    <textarea id="concept" maxlength="4000"
-      placeholder="Describe your story, characters, locations, mood, camera shots, and anything you want the director to respect..."
-      required></textarea>
-
-    <label for="style">Cinematic style</label>
-    <select id="style">
-      <option value="photorealistic">Photorealistic Cinema</option>
-      <option value="Hollywood cinematic">Hollywood Cinematic</option>
-      <option value="romantic cinematic">Romantic Cinema</option>
-      <option value="dramatic R&B music video">Dramatic R&B</option>
-      <option value="3D animation">3D Animation</option>
-      <option value="anime">Anime</option>
-      <option value="science fiction cinema">Science Fiction</option>
-      <option value="fantasy cinema">Fantasy</option>
-    </select>
-
-    <label for="format">Video format</label>
-    <select id="format">
-      <option value="vertical">Vertical 9:16</option>
-      <option value="landscape">Landscape 16:9</option>
-    </select>
-
-    <label for="sceneSeconds">Scene duration</label>
-    <select id="sceneSeconds">
-      <option value="15">15 seconds</option>
-      <option value="10">10 seconds</option>
-      <option value="6">6 seconds</option>
-    </select>
-
-    <label for="adminKey">Administrator password</label>
-    <input id="adminKey" type="password"
-      autocomplete="off" required>
-
-    <div class="note">
-      Director's Preview is currently an administrator
-      testing feature. It creates a storyboard only,
-      without generating paid video footage.
+    <div class="duration-result">
+      <span>Song duration</span>
+      <strong id="durationDisplay">—:——</strong>
+      <span id="durationDetail">Waiting for song duration</span>
     </div>
+    <input id="seconds" type="hidden" value="">
+  </div>
 
-    <div class="actions">
-      <button type="button" class="secondary"
-        id="visionBack">← Back</button>
-      <button type="submit" id="createButton">
-        Create My Storyboard
-      </button>
+  <label for="lyrics">Song lyrics</label>
+  <textarea id="lyrics" maxlength="12000"
+    placeholder="Paste your lyrics here..."></textarea>
+  <p class="small field-help">Your lyrics help the Director plan storytelling and visual scenes.</p>
+
+  <div class="actions">
+    <button type="button" id="musicNext">Continue to Your Vision</button>
+  </div>
+</section>
+
+<section class="panel" id="visionStep" hidden>
+  <div class="step-head">
+    <div class="step-number">2</div>
+    <div>
+      <h2>Your Vision</h2>
+      <p>You imagine it. We help plan it.</p>
     </div>
-  </section>
+  </div>
+
+  <label for="concept">Describe your vision</label>
+  <textarea id="concept" maxlength="4000" required
+    placeholder="Describe your story, characters, locations, mood, camera shots, and anything you want the director to respect..."></textarea>
+
+  <label for="style">Cinematic style</label>
+  <select id="style">
+    <option value="photorealistic">Photorealistic Cinema</option>
+    <option value="Hollywood cinematic">Hollywood Cinematic</option>
+    <option value="romantic cinematic">Romantic Cinema</option>
+    <option value="dramatic R&B music video">Dramatic R&B</option>
+    <option value="3D animation">3D Animation</option>
+    <option value="anime">Anime</option>
+    <option value="science fiction cinema">Science Fiction</option>
+    <option value="fantasy cinema">Fantasy</option>
+  </select>
+
+  <label for="format">Video format</label>
+  <select id="format">
+    <option value="vertical">Vertical 9:16</option>
+    <option value="landscape">Landscape 16:9</option>
+  </select>
+
+  <label for="sceneSeconds">Scene duration</label>
+  <select id="sceneSeconds">
+    <option value="15">15 seconds</option>
+    <option value="10">10 seconds</option>
+    <option value="6">6 seconds</option>
+  </select>
+
+  <label for="adminKey">Administrator password</label>
+  <input id="adminKey" type="password"
+    autocomplete="off" required>
+
+  <div class="note">
+    Director's Preview is currently an administrator testing feature. It creates a storyboard only, without generating paid video footage.
+  </div>
+
+  <div class="actions">
+    <button type="button" class="secondary" id="visionBack">← Back</button>
+    <button type="submit" id="createButton">Create My Storyboard</button>
+  </div>
+</section>
 </form>
 
-<p id="status" class="status" role="status"
-  aria-live="polite"></p>
+<p id="status" class="status" role="status" aria-live="polite"></p>
 
 <section id="results" hidden>
   <div class="panel white-panel">
@@ -654,28 +577,22 @@ automatically, or enter the time below.
         <p>Your song. Your vision. Scene by scene.</p>
       </div>
     </div>
-
     <div class="summary-grid" id="summary"></div>
-
     <div class="note" id="reviewNotice">
-      This is a preliminary storyboard preview.
-      Review all scenes before generating video.
+      This is a preliminary storyboard preview. Review all scenes before generating video.
     </div>
-
     <div class="actions">
-      <button type="button" id="downloadButton">
-        Download Storyboard
-      </button>
-      <button type="button" class="secondary"
-        id="editVision">Edit My Vision</button>
+      <button type="button" id="downloadButton">Download Storyboard</button>
+      <button type="button" class="secondary" id="editVision">Edit My Vision</button>
     </div>
   </div>
-
   <div id="scenes"></div>
 </section>
 
 <footer>
+  <p>Your Music. Your Vision. Your Video.</p>
   <a href="/customer.html">← Return to Main Studio</a>
+  <a href="#top" class="back-top">↑ Back to Top</a>
 </footer>
 </main>
 
@@ -684,144 +601,74 @@ automatically, or enter the time below.
 
 const $ = id => document.getElementById(id);
 const form = $('directorForm');
+const MAX_SONG_SECONDS = 360;
+const draftKey = 'cutloopz-listening-director-draft-v1';
+const draftFields = [
+  'title','seconds','songMinutes','songSecondsPart',
+  'lyrics','concept','style','format','sceneSeconds'
+];
 
 let latestPlan = null;
 let currentStep = 1;
 let audioCheckId = 0;
 
-const MAX_SONG_SECONDS = 360;
-
-const draftFields = [
-  'title',
-  'seconds',
-  'songMinutes',
-  'songSecondsPart',
-  'lyrics',
-  'concept',
-  'style',
-  'format',
-  'sceneSeconds'
-];
-
-const draftKey =
-  'cutloopz-listening-director-draft-v1';
-
 function saveDraft() {
   try {
     const data = {};
-    for (const id of draftFields) {
-      data[id] = $(id).value;
-    }
-    localStorage.setItem(
-      draftKey,
-      JSON.stringify(data)
-    );
+    for (const id of draftFields) data[id] = $(id).value;
+    localStorage.setItem(draftKey,JSON.stringify(data));
   } catch {}
 }
 
 function restoreDraft() {
   try {
-    const data = JSON.parse(
-      localStorage.getItem(draftKey) || '{}'
-    );
-
+    const data = JSON.parse(localStorage.getItem(draftKey) || '{}');
     for (const id of draftFields) {
-      if (
-        typeof data[id] === 'string' &&
-        data[id] !== ''
-      ) {
+      if (typeof data[id] === 'string' && data[id] !== '') {
         $(id).value = data[id];
       }
     }
-
-    // Migrate a previously saved duration in seconds.
-    if (
-      !data.songMinutes &&
-      !data.songSecondsPart &&
-      data.seconds !== undefined &&
-      data.seconds !== ''
-    ) {
+    if (!data.songMinutes && !data.songSecondsPart && data.seconds) {
       const oldSeconds = Number(data.seconds);
-
-      if (
-        Number.isFinite(oldSeconds) &&
-        oldSeconds > 0 &&
-        oldSeconds <= MAX_SONG_SECONDS
-      ) {
-        setDuration(oldSeconds, false);
+      if (Number.isFinite(oldSeconds) && oldSeconds > 0 &&
+          oldSeconds <= MAX_SONG_SECONDS) {
+        setDuration(oldSeconds,false);
       }
     }
   } catch {}
 }
 
 function formatDuration(totalSeconds) {
-  if (
-    !Number.isFinite(totalSeconds) ||
-    totalSeconds < 0
-  ) {
-    return '—:——';
-  }
-
+  if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return '—:——';
   const rounded = Math.round(totalSeconds * 1000);
   const minutes = Math.floor(rounded / 60000);
   const remainder = rounded - minutes * 60000;
-
   const seconds = Math.floor(remainder / 1000);
   const milliseconds = remainder % 1000;
-
-  let result =
-    minutes + ':' +
-    String(seconds).padStart(2,'0');
-
+  let result = minutes + ':' + String(seconds).padStart(2,'0');
   if (milliseconds > 0) {
-    result += '.' +
-      String(milliseconds)
-        .padStart(3,'0')
-        .replace(/0+$/,'');
+    result += '.' + String(milliseconds)
+      .padStart(3,'0').replace(/0+$/,'');
   }
-
   return result;
 }
 
 function durationFromFields() {
   const minuteText = $('songMinutes').value.trim();
   const secondText = $('songSecondsPart').value.trim();
-
-  if (minuteText === '' || secondText === '') {
-    return null;
-  }
-
+  if (minuteText === '' || secondText === '') return null;
   const minutes = Number(minuteText);
   const seconds = Number(secondText);
-
-  if (
-    !Number.isInteger(minutes) ||
-    minutes < 0 ||
-    minutes > 6 ||
-    !Number.isFinite(seconds) ||
-    seconds < 0 ||
-    seconds >= 60
-  ) {
+  if (!Number.isInteger(minutes) || minutes < 0 || minutes > 6 ||
+      !Number.isFinite(seconds) || seconds < 0 || seconds >= 60) {
     return null;
   }
-
-  const total = Math.round(
-    (minutes * 60 + seconds) * 1000
-  ) / 1000;
-
-  if (
-    total <= 0 ||
-    total > MAX_SONG_SECONDS
-  ) {
-    return null;
-  }
-
-  return total;
+  const total = Math.round((minutes * 60 + seconds) * 1000) / 1000;
+  return total > 0 && total <= MAX_SONG_SECONDS ? total : null;
 }
 
 function updateDurationDisplay() {
   const total = durationFromFields();
-
   if (total === null) {
     $('seconds').value = '';
     $('durationDisplay').textContent = '—:——';
@@ -829,76 +676,45 @@ function updateDurationDisplay() {
       'Enter a valid duration up to 6 minutes.';
     return false;
   }
-
   $('seconds').value = String(total);
-
-  $('durationDisplay').textContent =
-    formatDuration(total);
-
+  $('durationDisplay').textContent = formatDuration(total);
   $('durationDetail').textContent =
     'Ready for your cinematic storyboard';
-
   return true;
 }
 
-function setDuration(totalSeconds, persist = true) {
-  if (
-    !Number.isFinite(totalSeconds) ||
-    totalSeconds <= 0 ||
-    totalSeconds > MAX_SONG_SECONDS
-  ) {
+function setDuration(totalSeconds,persist = true) {
+  if (!Number.isFinite(totalSeconds) ||
+      totalSeconds <= 0 || totalSeconds > MAX_SONG_SECONDS) {
     return false;
   }
-
-  const totalMilliseconds =
-    Math.round(totalSeconds * 1000);
-
-  const minutes =
-    Math.floor(totalMilliseconds / 60000);
-
-  const remainingMilliseconds =
-    totalMilliseconds - minutes * 60000;
-
-  const wholeSeconds =
-    Math.floor(remainingMilliseconds / 1000);
-
-  const milliseconds =
-    remainingMilliseconds % 1000;
-
-  let secondValue =
-    String(wholeSeconds).padStart(2,'0');
-
+  const ms = Math.round(totalSeconds * 1000);
+  const minutes = Math.floor(ms / 60000);
+  const remaining = ms - minutes * 60000;
+  const wholeSeconds = Math.floor(remaining / 1000);
+  const milliseconds = remaining % 1000;
+  let secondValue = String(wholeSeconds).padStart(2,'0');
   if (milliseconds > 0) {
-    secondValue += '.' +
-      String(milliseconds)
-        .padStart(3,'0')
-        .replace(/0+$/,'');
+    secondValue += '.' + String(milliseconds)
+      .padStart(3,'0').replace(/0+$/,'');
   }
-
   $('songMinutes').value = String(minutes);
   $('songSecondsPart').value = secondValue;
-
   updateDurationDisplay();
-
-  if (persist) {
-    saveDraft();
-  }
-
+  if (persist) saveDraft();
   return true;
 }
 
-function showAudioMessage(message, isError = false) {
+function showAudioMessage(message,isError = false) {
   $('audioStatus').textContent = message;
   $('audioStatus').className =
-    'duration-message' +
-    (isError ? ' error' : '');
+    'duration-message' + (isError ? ' error' : '');
 }
 
 function readAudioDuration(file) {
   return new Promise((resolve,reject) => {
     const audio = document.createElement('audio');
     const objectUrl = URL.createObjectURL(file);
-
     let finished = false;
 
     function cleanup() {
@@ -910,127 +726,72 @@ function readAudioDuration(file) {
     function finish(error,seconds) {
       if (finished) return;
       finished = true;
-
       clearTimeout(timeoutId);
       cleanup();
-
-      if (error) {
-        reject(error);
-      } else {
-        resolve(seconds);
-      }
+      if (error) reject(error);
+      else resolve(seconds);
     }
 
     const timeoutId = setTimeout(() => {
-      finish(new Error(
-        'Duration detection timed out. Enter it manually.'
-      ));
+      finish(new Error('Duration detection timed out. Enter it manually.'));
     },15000);
 
     audio.preload = 'metadata';
-
-    audio.addEventListener('loadedmetadata',() => {
-      if (
-        Number.isFinite(audio.duration) &&
-        audio.duration > 0
-      ) {
-        finish(null,audio.duration);
-      }
-    });
-
-    audio.addEventListener('durationchange',() => {
-      if (
-        Number.isFinite(audio.duration) &&
-        audio.duration > 0
-      ) {
-        finish(null,audio.duration);
-      }
-    });
-
+    for (const eventName of ['loadedmetadata','durationchange']) {
+      audio.addEventListener(eventName,() => {
+        if (Number.isFinite(audio.duration) && audio.duration > 0) {
+          finish(null,audio.duration);
+        }
+      });
+    }
     audio.addEventListener('error',() => {
       finish(new Error(
         'This audio file could not be read. Enter the duration manually.'
       ));
     });
-
     audio.src = objectUrl;
     audio.load();
   });
 }
 
-$('songAudio').addEventListener(
-  'change',
-  async () => {
-    const file = $('songAudio').files[0];
-    const checkId = ++audioCheckId;
-
-    if (!file) {
-      showAudioMessage('');
-      return;
-    }
-
-    const lowerName = file.name.toLowerCase();
-
-    if (
-      !lowerName.endsWith('.mp3') &&
-      !lowerName.endsWith('.wav')
-    ) {
-      showAudioMessage(
-        'Please choose an MP3 or WAV file.',
-        true
-      );
-      return;
-    }
-
-    showAudioMessage(
-      '⏱️ Reading your song duration...'
-    );
-
-    try {
-      const detected = await readAudioDuration(file);
-
-      if (checkId !== audioCheckId) return;
-
-      const rounded =
-        Math.round(detected * 1000) / 1000;
-
-      if (
-        rounded <= 0 ||
-        rounded > MAX_SONG_SECONDS
-      ) {
-        showAudioMessage(
-          'This preview supports songs up to 6 minutes. ' +
-          'The selected song is ' +
-          formatDuration(rounded) + '.',
-          true
-        );
-        return;
-      }
-
-      setDuration(rounded);
-
-      showAudioMessage(
-        '✓ Duration detected: ' +
-        formatDuration(rounded) +
-        '. Your Director is ready!'
-      );
-
-    } catch (error) {
-      if (checkId !== audioCheckId) return;
-
-      showAudioMessage(
-        error.message ||
-        'Unable to detect duration. Enter it manually.',
-        true
-      );
-    }
+$('songAudio').addEventListener('change',async () => {
+  const file = $('songAudio').files[0];
+  const checkId = ++audioCheckId;
+  if (!file) {
+    showAudioMessage('');
+    return;
   }
-);
+  const name = file.name.toLowerCase();
+  if (!name.endsWith('.mp3') && !name.endsWith('.wav')) {
+    showAudioMessage('Please choose an MP3 or WAV file.',true);
+    return;
+  }
+  showAudioMessage('⏱️ Reading your song duration...');
+  try {
+    const detected = await readAudioDuration(file);
+    if (checkId !== audioCheckId) return;
+    const rounded = Math.round(detected * 1000) / 1000;
+    if (rounded <= 0 || rounded > MAX_SONG_SECONDS) {
+      showAudioMessage(
+        'This preview supports songs up to 6 minutes. Selected song: ' +
+        formatDuration(rounded),true
+      );
+      return;
+    }
+    setDuration(rounded);
+    showAudioMessage(
+      '✓ Duration detected: ' + formatDuration(rounded) +
+      '. Your Director is ready!'
+    );
+  } catch (error) {
+    if (checkId !== audioCheckId) return;
+    showAudioMessage(
+      error.message || 'Unable to detect duration. Enter it manually.',true
+    );
+  }
+});
 
-for (const id of [
-  'songMinutes',
-  'songSecondsPart'
-]) {
+for (const id of ['songMinutes','songSecondsPart']) {
   $(id).addEventListener('input',() => {
     ++audioCheckId;
     updateDurationDisplay();
@@ -1040,56 +801,31 @@ for (const id of [
 
 function showStep(step) {
   currentStep = step;
-
   $('musicStep').hidden = step !== 1;
   $('visionStep').hidden = step !== 2;
   $('results').hidden = step !== 3;
-
-  $('progressFill').style.width =
-    (step / 3 * 100) + '%';
-
+  $('progressFill').style.width = (step / 3 * 100) + '%';
   $('progressText').textContent =
     'Step ' + step + ' of 3 — ' +
-    (
-      step === 1 ? 'Your Music' :
-      step === 2 ? 'Your Vision' :
-      'Storyboard'
-    );
-
-  window.scrollTo({
-    top:0,
-    behavior:'smooth'
-  });
+    (step === 1 ? 'Your Music' :
+     step === 2 ? 'Your Vision' : 'Storyboard');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function validateMusic() {
-  if (!$('title').reportValidity()) {
-    return false;
+  if (!$('title').reportValidity()) return false;
+  for (const id of ['songMinutes','songSecondsPart']) {
+    if (!$(id).reportValidity()) return false;
   }
-
-  for (const id of [
-    'songMinutes',
-    'songSecondsPart'
-  ]) {
-    if (!$(id).reportValidity()) {
-      return false;
-    }
-  }
-
   if (!updateDurationDisplay()) {
     $('status').textContent =
-      'Please enter a valid song duration ' +
-      'between 1 second and 6 minutes.';
-
+      'Please enter a valid song duration between 1 second and 6 minutes.';
     $('status').className = 'status error';
-
     $('songMinutes').focus();
     return false;
   }
-
   $('status').textContent = '';
   $('status').className = 'status';
-
   return true;
 }
 
@@ -1103,30 +839,22 @@ function addText(tag,value,parent) {
 function addDetail(parent,label,value) {
   const p = document.createElement('p');
   const strong = document.createElement('strong');
-
   strong.textContent = label + ': ';
   p.appendChild(strong);
-
-  p.appendChild(
-    document.createTextNode(
-      String(value ?? 'Not specified')
-    )
-  );
-
+  p.appendChild(document.createTextNode(
+    String(value ?? 'Not specified')
+  ));
   parent.appendChild(p);
 }
 
 function renderPlan(plan) {
   latestPlan = plan;
-
   $('summary').replaceChildren();
   $('scenes').replaceChildren();
 
   const facts = [
     ['Song',plan.title],
-    ['Duration',formatDuration(
-      Number($('seconds').value)
-    )],
+    ['Duration',formatDuration(Number($('seconds').value))],
     ['Emotion',plan.storyEmotion],
     ['Scenes',plan.totalScenes],
     ['Engine',plan.version],
@@ -1136,76 +864,47 @@ function renderPlan(plan) {
   for (const [label,value] of facts) {
     const card = document.createElement('div');
     card.className = 'summary-item';
-
     addText('span',label,card);
-    addText(
-      'strong',
-      value ?? 'Not available',
-      card
-    );
-
+    addText('strong',value ?? 'Not available',card);
     $('summary').appendChild(card);
   }
 
   for (const scene of plan.scenes || []) {
     const card = document.createElement('article');
     card.className = 'scene';
-
     const top = document.createElement('div');
     top.className = 'scene-top';
 
-    addText(
-      'div',
-      'Scene ' + scene.number,
-      top
-    ).className = 'scene-number';
-
-    addText(
-      'div',
-      scene.startSeconds + 's – ' +
-      scene.endSeconds + 's',
-      top
+    addText('div','Scene ' + scene.number,top)
+      .className = 'scene-number';
+    addText('div',
+      scene.startSeconds + 's – ' + scene.endSeconds + 's',top
     ).className = 'scene-time';
-
     card.appendChild(top);
 
-    addText(
-      'h3',
-      scene.narrativeBeat || 'Cinematic Scene',
-      card
-    );
-
+    addText('h3',scene.narrativeBeat || 'Cinematic Scene',card);
     addDetail(card,'Emotion',scene.emotion);
     addDetail(card,'Location',scene.location);
     addDetail(card,'Lighting',scene.lighting);
     addDetail(card,'Camera',scene.shot);
-    addDetail(
-      card,
-      'Camera movement',
-      scene.cameraMovement
-    );
+    addDetail(card,'Camera movement',scene.cameraMovement);
     addDetail(card,'Intensity',scene.intensity);
     addDetail(card,'Lyrics',scene.lyricExcerpt);
     addDetail(card,'Action',scene.action);
 
     const details = document.createElement('details');
     const heading = document.createElement('summary');
-
     heading.textContent = 'View director prompt';
-
     details.appendChild(heading);
     addText('pre',scene.prompt,details);
     card.appendChild(details);
-
     $('scenes').appendChild(card);
   }
-
   showStep(3);
 }
 
 $('musicNext').addEventListener('click',() => {
   if (!validateMusic()) return;
-
   saveDraft();
   showStep(2);
 });
@@ -1220,13 +919,7 @@ $('editVision').addEventListener('click',() => {
 });
 
 for (const id of draftFields) {
-  if (
-    id === 'songMinutes' ||
-    id === 'songSecondsPart'
-  ) {
-    continue;
-  }
-
+  if (id === 'songMinutes' || id === 'songSecondsPart') continue;
   $(id).addEventListener('input',saveDraft);
   $(id).addEventListener('change',saveDraft);
 }
@@ -1234,20 +927,13 @@ for (const id of draftFields) {
 form.addEventListener('submit',async event => {
   event.preventDefault();
 
-  if (
-    !validateMusic() ||
-    !$('concept').reportValidity() ||
-    !$('adminKey').reportValidity()
-  ) {
-    return;
-  }
+  if (!validateMusic() ||
+      !$('concept').reportValidity() ||
+      !$('adminKey').reportValidity()) return;
 
   saveDraft();
-
   $('createButton').disabled = true;
-  $('status').textContent =
-    'Preparing your cinematic storyboard...';
-
+  $('status').textContent = 'Preparing your cinematic storyboard...';
   $('status').className = 'status';
 
   const payload = {
@@ -1261,53 +947,33 @@ form.addEventListener('submit',async event => {
   };
 
   try {
-    const response = await fetch(
-      '/api/director/story-preview',
-      {
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'X-Video-Admin-Key':$('adminKey').value
-        },
-        body:JSON.stringify(payload)
-      }
-    );
+    const response = await fetch('/api/director/story-preview',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'X-Video-Admin-Key':$('adminKey').value
+      },
+      body:JSON.stringify(payload)
+    });
 
     const raw = await response.text();
     let data;
-
     try {
       data = JSON.parse(raw);
     } catch {
-      throw new Error(
-        'The server returned an unexpected response.'
-      );
+      throw new Error('The server returned an unexpected response.');
     }
-
-    if (
-      !response.ok ||
-      !data.ok ||
-      !data.plan
-    ) {
-      throw new Error(
-        data.error || 'Storyboard creation failed.'
-      );
+    if (!response.ok || !data.ok || !data.plan) {
+      throw new Error(data.error || 'Storyboard creation failed.');
     }
 
     renderPlan(data.plan);
-
-    $('status').textContent =
-      'Your cinematic storyboard is ready.';
-
+    $('status').textContent = 'Your cinematic storyboard is ready.';
     $('status').className = 'status success';
-
   } catch (error) {
     $('status').textContent =
-      'Unable to create storyboard: ' +
-      error.message;
-
+      'Unable to create storyboard: ' + error.message;
     $('status').className = 'status error';
-
   } finally {
     $('createButton').disabled = false;
   }
@@ -1315,27 +981,18 @@ form.addEventListener('submit',async event => {
 
 $('downloadButton').addEventListener('click',() => {
   if (!latestPlan) return;
-
   const blob = new Blob(
     [JSON.stringify(latestPlan,null,2)],
     {type:'application/json'}
   );
-
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-
   link.href = url;
-  link.download =
-    'cutloopz-listening-director-storyboard.json';
-
+  link.download = 'cutloopz-listening-director-storyboard.json';
   document.body.appendChild(link);
   link.click();
   link.remove();
-
-  setTimeout(
-    () => URL.revokeObjectURL(url),
-    1000
-  );
+  setTimeout(() => URL.revokeObjectURL(url),1000);
 });
 
 restoreDraft();
