@@ -1249,7 +1249,19 @@ async function generateStandard(
   dir,
   imageUrl,
   musicPlan = null
-) {
+  ){
+    const productionPlan = createProductionPlan({
+    title: state.title,
+    songSeconds: state.songSeconds,
+    customerPrompt: state.concept,
+    lyrics: state.lyrics || '',
+    storyboard: state.storyboard || null,
+    musicPlan,
+    format: state.format,
+    hasReferencePhoto: state.creationType !== 'prompt',
+    shotSeconds: SCENE_SECONDS
+  });
+ 
   for (
     let index = 1;
     index <= state.totalScenes;
@@ -1295,13 +1307,11 @@ async function generateStandard(
       const musicScene =
         musicPlan?.scenes?.[index - 1] || null;
 
-      const description = scenePrompt(
-        state,
-        index,
-        musicScene
-      );
-
-      const input = {
+      const description = getProductionScenePrompt(
+  productionPlan,
+  index
+);
+const input = {
         prompt: applyCharacterIdentityToPrompt(
           description,
           {
