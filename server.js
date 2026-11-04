@@ -11,6 +11,7 @@ import { spawn } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { File as NodeFile } from 'node:buffer';
 import { createIndependentVideo } from './independent-video-engine.js';
 import {
  createRunPodVideo,
@@ -54,15 +55,15 @@ const LIP_MODEL = 'minimax/h3-max/lip-sync/image-to-video';
 const MAX_SONG_SECONDS = 360;
 const SCENE_SECONDS = 15;
 const DOWNLOAD_LINK_DAYS = 7;
-const PREVIEW_LINK_MINUTES = 15; const SCENE_PRICE_USD = Number(
+const PREVIEW_LINK_MINUTES = 15;
+const SCENE_PRICE_USD = Number(
  process.env.SCENE_PRICE_USD
 );
 const TEXT_SCENE_PRICE_USD = Number(
  process.env.TEXT_SCENE_PRICE_USD
 );
 const LIP_PRICE_PER_SECOND = Number(
- process.env.LIP_PRICE_PER_SECOND_USD
-);
+ process.env.LIP_PRICE_PER_SECOND_USD );
 const VIDEO_ADMIN_KEY = (
  process.env.VIDEO_ADMIN_KEY || ''
 ).trim();
@@ -108,7 +109,8 @@ app.use(express.json({
 app.use(
  '/api/customer-auth',
  createCustomerAuthRouter({
- storageDirectory: OUT })
+ storageDirectory: OUT
+ })
 );
 // Read-only order history and loyalty progress.
 app.use(
@@ -126,8 +128,7 @@ app.get('/api/gpu/status', (req, res) => {
  error: 'Administrator password required.'
  });
  }
- res.set('Cache-Control', 'no-store');
- res.json({
+ res.set('Cache-Control', 'no-store'); res.json({
  ok: true,
  ...getRunPodEngineStatus(),
  generationEnabled:
@@ -163,7 +164,8 @@ app.post('/api/gpu/test-video', async (req, res) => {
  if (
  process.env.ZALA_GPU_GENERATION_ENABLED !== 'true'
  ) {
- return res.status(503).json({ ok: false,
+ return res.status(503).json({
+ ok: false,
  error: 'GPU video generation is disabled.'
  });
  }
@@ -193,8 +195,7 @@ app.post('/api/gpu/test-video', async (req, res) => {
  ) {
  return res.status(400).json({
  ok: false,
- error: 'Invalid video format.'
- });
+ error: 'Invalid video format.' });
  }
  const id = randomUUID();
  const outputPath = path.join(
@@ -219,7 +220,8 @@ app.post('/api/gpu/test-video', async (req, res) => {
  });
  } catch (error) {
  console.error('GPU test failed:', error);
- await fs.rm( path.dirname(outputPath),
+ await fs.rm(
+ path.dirname(outputPath),
  { recursive: true, force: true }
  ).catch(() => {});
  return res.status(500).json({
@@ -258,8 +260,7 @@ function estimate(seconds, premium, creationType = 'photo') {
  : null,
  priceConfigured,
  message:
- 'Estimate only. Actual provider billing may differ.'
- };
+ 'Estimate only. Actual provider billing may differ.' };
 }
 app.post(
  '/api/test-music-intelligence',
@@ -274,7 +275,8 @@ app.post(
  return res.status(400).json({
  error: 'Please upload an MP3 or WAV song.'
  });
- } const testDir = path.join(
+ }
+ const testDir = path.join(
  JOBS,
  'music-test-' + randomUUID()
  );
@@ -326,12 +328,12 @@ app.post(
  next();
  },
  upload.single('video'),
- async (req, res) => {
- if (!req.file) {
+ async (req, res) => { if (!req.file) {
  return res.status(400).json({
  error: 'Please upload an MP4 video.'
  });
- } const filename = String(
+ }
+ const filename = String(
  req.file.originalname || ''
  ).toLowerCase();
  if (
@@ -386,13 +388,13 @@ app.post(
  if (!isVideoAdmin(req)) {
  return res.status(403).json({
  error: 'Administrator password required.'
- }); }
+ });
+ }
  next();
  },
  upload.fields([
  { name: 'photo', maxCount: 1 },
- { name: 'audio', maxCount: 1 }
- ]),
+ { name: 'audio', maxCount: 1 } ]),
  async (req, res) => {
  const photo = req.files?.photo?.[0];
  const audio = req.files?.audio?.[0];
@@ -442,7 +444,8 @@ app.post(
  recursive: true,
  force: true
  }).catch(() => {});
- res.status(500).json({ error: 'Video generation failed: ' + error.message
+ res.status(500).json({
+ error: 'Video generation failed: ' + error.message
  });
  }
  }
@@ -456,8 +459,7 @@ app.get('/api/independent-video/:id', async (req, res) => {
  const id = String(req.params.id || '');
  if (!/^[0-9a-f-]{36}$/i.test(id)) {
  return res.status(400).send('Invalid video ID.');
- }
- const outputPath = path.join(
+ } const outputPath = path.join(
  JOBS,
  'independent-' + id,
  'video.mp4'
@@ -499,7 +501,8 @@ app.post('/api/director/story-preview', async (req, res) => {
  ) {
  return res.status(400).json({
  ok: false,
- error: 'Lyrics must be text under 12,000 characters.' });
+ error: 'Lyrics must be text under 12,000 characters.'
+ });
  }
  const plan = createStoryIntelligencePlan({
  title,
@@ -524,8 +527,7 @@ app.post('/api/director/story-preview', async (req, res) => {
  });
  }
 });
-app.get('/api/estimate', (req, res) => {
- const seconds = Number(req.query.seconds);
+app.get('/api/estimate', (req, res) => { const seconds = Number(req.query.seconds);
  if (
  !Number.isFinite(seconds) ||
  seconds <= 0 ||
@@ -552,7 +554,8 @@ app.get('/api/estimate', (req, res) => {
 function execute(command, args, returnStdout = false) {
  return new Promise((resolve, reject) => {
  const child = spawn(command, args);
- let stdout = ''; let stderr = '';
+ let stdout = '';
+ let stderr = '';
  let settled = false;
  child.stdout.on('data', chunk => {
  stdout += chunk.toString();
@@ -587,8 +590,7 @@ function execute(command, args, returnStdout = false) {
 }
 async function duration(file) {
  const value = Number(
- await execute('ffprobe', [
- '-v', 'error',
+ await execute('ffprobe', [ '-v', 'error',
  '-show_entries', 'format=duration',
  '-of',
  'default=noprint_wrappers=1:nokey=1',
@@ -607,7 +609,8 @@ async function duration(file) {
 }
 async function exists(file) {
  try {
- await fs.access(file); return true;
+ await fs.access(file);
+ return true;
  } catch {
  return false;
  }
@@ -653,8 +656,7 @@ function publicState(state) {
  title,
  status,
  phase,
- completedScenes,
- totalScenes,
+ completedScenes, totalScenes,
  songSeconds,
  durationSeconds: songSeconds,
  estimatedGenerationCostUSD,
@@ -664,7 +666,8 @@ function publicState(state) {
  mode,
  creationType,
  musicIntelligence,
- editing };
+ editing
+ };
 }
 async function createCustomerLink(id) {
  const job = await readState(id);
@@ -775,7 +778,8 @@ async function addOriginalSong(
  ]);
 }
 /*
- * MUSIC INTELLIGENCE *
+ * MUSIC INTELLIGENCE
+ *
  * The analysis is cached per job.
  * Analysis errors do not stop video generation.
  */
@@ -786,8 +790,7 @@ async function prepareMusicPlan(state, dir) {
  );
  if (await exists(planFile)) {
  try {
- const plan = JSON.parse(
- await fs.readFile(
+ const plan = JSON.parse( await fs.readFile(
  planFile,
  'utf8'
  )
@@ -830,7 +833,8 @@ async function prepareMusicPlan(state, dir) {
  detectedAccents: plan.detectedAccents,
  suggestedScenes: plan.scenes.length
  };
- await saveState(state); console.log(
+ await saveState(state);
+ console.log(
  'Music Intelligence ready:',
  state.id
  );
@@ -850,8 +854,7 @@ async function prepareMusicPlan(state, dir) {
 const sceneIdeas = [
  'Expressive close-up performance with dramatic studio lighting',
  'Wide concert stage performance with moving spotlights',
- 'Nighttime city walk under colorful lights',
- 'Emotional performance in a luxurious dark studio',
+ 'Nighttime city walk under colorful lights', 'Emotional performance in a luxurious dark studio',
  'Romantic scene beside a rain-covered window',
  'Full-body performance in a stylish modern interior',
  'Nighttime rooftop with city skyline',
@@ -884,7 +887,8 @@ function scenePrompt(state, index, musicScene = null) {
  const stylizedStyle =
  /\b(anime|animated|animation|cartoon|pixar|claymation|stop.motion|cel.shaded|illustration|comic.book|3d.render|cgi|video.game|stylized|non.photorealistic)\b/i
  .test(concept);
- const realismDirection = stylizedStyle ? (
+ const realismDirection = stylizedStyle
+ ? (
  'VISUAL STYLE: Honor the customer requested ' +
  'artistic or animated style. Preserve character ' +
  'consistency, coherent anatomy, natural motion ' +
@@ -919,8 +923,7 @@ function scenePrompt(state, index, musicScene = null) {
  'facial structure, eyes, nose, lips, jawline, ' +
  'skin tone, hair color, hairstyle, hair length ' +
  'and body proportions. Never substitute ' +
- 'a different actor. Avoid identity drift. '
- );
+ 'a different actor. Avoid identity drift. ' );
  const musicDirection = musicScene
  ? (
  `MUSIC DIRECTION: Energy is ${musicScene.intensity}. ` +
@@ -945,7 +948,8 @@ function scenePrompt(state, index, musicScene = null) {
  `customer instructions: ${cameraDirection}. ` +
  'Maintain believable gravity, momentum, balance, ' +
  'natural facial expressions, blinking and gestures. ' +
- 'Preserve character identity through camera movement. ' + 'Use professional framing, depth of field, ' +
+ 'Preserve character identity through camera movement. ' +
+ 'Use professional framing, depth of field, ' +
  'natural lighting and smooth camera movement. ' +
  'Support aerial views when requested. ' +
  'Begin with a clearly composed opening frame. ' +
@@ -986,9 +990,7 @@ async function assembleStandardVideo(
  state.phase =
  'Editing scenes and synchronizing song';
  await saveState(state);
- try {
- 
- let result;
+ try { let result;
  try {
  result = await createCinematicEdit({
  sceneFiles,
@@ -1001,7 +1003,8 @@ async function assembleStandardVideo(
  dir,
  'cinematic-edit-work'
  )
- }); } catch (cinematicError) {
+ });
+ } catch (cinematicError) {
  console.error(
  'Cinematic editor failed; trying Hybrid Engine:',
  cinematicError.message
@@ -1050,11 +1053,11 @@ async function assembleStandardVideo(
  }
  state.phase =
  'Combining scenes using standard assembly';
- await saveState(state);
- const manifest = sceneFiles.map(
+ await saveState(state); const manifest = sceneFiles.map(
  (_, index) =>
  `file 'scene-${index + 1}.mp4'`
- ).join('\n') + '\n'; await fs.writeFile(
+ ).join('\n') + '\n';
+ await fs.writeFile(
  path.join(dir, 'scenes.txt'),
  manifest
  );
@@ -1110,13 +1113,13 @@ async function generateStandard(
  continue;
  }
  } catch {}
- } state.phase =
+ }
+ state.phase =
  `Generating scene ${index} of ${state.totalScenes}`;
  await saveState(state);
  const raw = path.join(
  dir,
- `raw-${index}.mp4`
- );
+ `raw-${index}.mp4` );
  if (!(await exists(raw))) {
  const promptOnly =
  state.creationType === 'prompt';
@@ -1162,7 +1165,8 @@ const input = {
  preparedImageFile,
  'utf8'
  )
- ); if (
+ );
+ if (
  typeof saved.imageUrl === 'string' &&
  saved.imageUrl.startsWith('https://')
  ) {
@@ -1180,8 +1184,7 @@ const input = {
  referenceImageUrl: imageUrl,
  sceneDescription: description,
  format: state.format
- });
- preparedImageUrl = prepared.imageUrl;
+ }); preparedImageUrl = prepared.imageUrl;
  await fs.writeFile(
  preparedImageFile,
  JSON.stringify({
@@ -1214,7 +1217,8 @@ const input = {
  await saveState(state);
  const temp = clip + '.partial.mp4';
  await normalizeVideo(
- raw, temp,
+ raw,
+ temp,
  state.format
  );
  if ((await duration(temp)) < 2) {
@@ -1239,8 +1243,7 @@ const input = {
  state.id,
  'scene',
  index
- );
- } catch (error) {
+ ); } catch (error) {
  console.error(
  'Visual continuity capture failed:',
  error
@@ -1267,7 +1270,8 @@ async function generatePremium(
  );
  if (!(await exists(raw))) {
  state.phase = 'Preparing singing audio';
- await saveState(state); const mp3 = path.join(
+ await saveState(state);
+ const mp3 = path.join(
  dir,
  'lip-sync-song.mp3'
  );
@@ -1302,8 +1306,7 @@ async function generatePremium(
  );
  const url =
  result?.data?.video?.url ||
- result?.video?.url;
- if (!url) {
+ result?.video?.url; if (!url) {
  throw new Error(
  'Lip-sync provider returned no video.'
  );
@@ -1319,7 +1322,8 @@ async function generatePremium(
  await normalizeVideo(
  raw,
  clip,
- state.format );
+ state.format
+ );
  await addOriginalSong(
  clip,
  path.join(dir, 'song'),
@@ -1359,14 +1363,14 @@ async function generate(id) {
  jobDirectory: dir,
  mimeType:
  state.photoMime || 'image/jpeg'
- });
- imageUrl = character.imageUrl;
+ }); imageUrl = character.imageUrl;
  console.log(
  'Character reference prepared:',
  state.id
  );
  }
- if (state.mode === 'premium') { await generatePremium(
+ if (state.mode === 'premium') {
+ await generatePremium(
  
  state,
  dir,
@@ -1422,9 +1426,9 @@ async function generate(id) {
  score: null,
  error:
  'Technical quality analysis unavailable'
- }; }
- await saveState(state).catch(error => {
- console.error(
+ };
+ }
+ await saveState(state).catch(error => { console.error(
  'Unable to save quality results:',
  error
  );
@@ -1481,7 +1485,8 @@ app.post('/api/create', (req, res, next) => {
  'Administrator password required to create videos.'
  });
  }
- try { const audio = req.files?.audio?.[0];
+ try {
+ const audio = req.files?.audio?.[0];
  const photo = req.files?.photo?.[0];
  const creationType =
  req.body.creationType === 'prompt'
@@ -1492,8 +1497,7 @@ app.post('/api/create', (req, res, next) => {
  error: 'Please upload your song.'
  });
  }
- if (
- creationType === 'photo' &&
+ if ( creationType === 'photo' &&
  !photo
  ) {
  return res.status(400).json({
@@ -1536,7 +1540,8 @@ app.post('/api/create', (req, res, next) => {
  error:
  'FAL_KEY is missing in Render settings.'
  });
- } const id = randomUUID();
+ }
+ const id = randomUUID();
  dir = jobDir(id);
  await fs.mkdir(dir);
  await fs.writeFile(
@@ -1556,8 +1561,7 @@ app.post('/api/create', (req, res, next) => {
  await fs.rm(dir, {
  recursive: true,
  force: true
- });
- dir = null;
+ }); dir = null;
  return res.status(400).json({
  error:
  'Songs must be 6 minutes or shorter.'
@@ -1590,7 +1594,8 @@ app.post('/api/create', (req, res, next) => {
  req.body.format === 'landscape'
  ? 'landscape'
  : 'vertical',
- creationType, photoMime:
+ creationType,
+ photoMime:
  photo ? photo.mimetype : null,
  mode,
  estimatedGenerationCostUSD:
@@ -1623,8 +1628,7 @@ app.post('/api/create', (req, res, next) => {
  if (!res.headersSent) {
  res.status(500).json({
  error:
- error.message ||
- 'Could not start video job.'
+ error.message || 'Could not start video job.'
  });
  }
  }
@@ -1646,7 +1650,8 @@ app.get('/api/jobs/:id', async (req, res) => {
  state.status = 'failed';
  state.error =
  'Server restarted. Resume from saved scenes if available.';
- state.phase = 'Interrupted'; await saveState(state);
+ state.phase = 'Interrupted';
+ await saveState(state);
  }
  res.json({
  ok: true,
@@ -1687,8 +1692,7 @@ app.delete('/api/jobs/:id', async (req, res) => {
  ) {
  return res.status(409).json({
  error:
- 'Only completed videos can be deleted.'
- });
+ 'Only completed videos can be deleted.' });
  }
  await fs.rm(
  path.join(OUT, `${id}.mp4`),
@@ -1698,7 +1702,8 @@ app.delete('/api/jobs/:id', async (req, res) => {
  recursive: true,
  force: true
  });
- res.json({ ok: true,
+ res.json({
+ ok: true,
  message:
  'Video and job files deleted.'
  });
@@ -1751,8 +1756,8 @@ app.post('/api/jobs/:id/resume', async (req, res) => {
  state.creationType !== 'prompt' &&
  !(await exists(
  path.join(dir, 'reference')
- ));
- if (songMissing || photoMissing) { return res.status(410).json({
+ )); if (songMissing || photoMissing) {
+ return res.status(410).json({
  error:
  'Uploaded files are no longer available.'
  });
@@ -1807,14 +1812,14 @@ app.get('/api/jobs/:id/music-plan', async (req, res) => {
  'Music analysis is not available for this job.'
  });
  }
-}); app.post('/api/jobs/:id/customer-link', async (req, res) => {
+});
+app.post('/api/jobs/:id/customer-link', async (req, res) => {
  if (!isVideoAdmin(req)) {
  return res.status(403).json({
  error: 'Unauthorized.'
  });
  }
- const id = req.params.id;
- if (!validId(id)) {
+ const id = req.params.id; if (!validId(id)) {
  return res.status(400).json({
  error: 'Invalid job ID.'
  });
@@ -1860,7 +1865,8 @@ app.post('/api/jobs/:id/preview-link', async (req, res) => {
  !(await exists(video))
  ) {
  return res.status(404).json({
- error: 'Completed video is unavailable.'
+ error:
+ 'Completed video is unavailable.'
  });
  }
  const token = randomUUID();
@@ -1877,8 +1883,7 @@ app.post('/api/jobs/:id/preview-link', async (req, res) => {
  id,
  expiresAt
  })
- );
- res.set(
+ ); res.set(
  'Cache-Control',
  'no-store'
  );
@@ -1914,7 +1919,8 @@ app.get('/preview/:token', async (req, res) => {
  return res.status(404).send(
  'Invalid preview.'
  );
- } const expires = Date.parse(
+ }
+ const expires = Date.parse(
  record.expiresAt
  );
  if (
@@ -1941,8 +1947,7 @@ app.get('/preview/:token', async (req, res) => {
  res.type('mp4');
  return res.sendFile(video);
  } catch {
- return res.status(404).send(
- 'Preview link not found.'
+ return res.status(404).send( 'Preview link not found.'
  );
  }
 });
@@ -1968,7 +1973,8 @@ app.get('/watch/:token', (req, res) => {
  background: #10101b;
  color: white;
  font-family: Arial, sans-serif;
- text-align: center; padding: 30px 15px;
+ text-align: center;
+ padding: 30px 15px;
  }
  a {
  display: inline-block;
@@ -2010,8 +2016,7 @@ app.get('/download/:token', async (req, res) => {
  ),
  'utf8'
  )
- );
- if (
+ ); if (
  !Number.isFinite(Date.parse(record.expiresAt)) ||
  Date.now() >= Date.parse(record.expiresAt)
  ) {
@@ -2026,7 +2031,8 @@ app.get('/download/:token', async (req, res) => {
  }
  const video = path.join(
  OUT,
- `${record.id}.mp4` );
+ `${record.id}.mp4`
+ );
  if (!(await exists(video))) {
  return res.status(404).send(
  'Video is no longer available.'
@@ -2076,13 +2082,13 @@ async function getPayPalAccessToken() {
  );
  }
  return (
- await response.json()
- ).access_token;
+ await response.json() ).access_token;
 }
 app.post('/api/paypal/create-order', async (req, res) => {
  try {
  if (PAYPAL_ENV !== 'sandbox') {
- return res.status(503).json({ error:
+ return res.status(503).json({
+ error:
  'Live payments are not enabled yet.'
  });
  }
@@ -2138,12 +2144,12 @@ app.post('/api/paypal/create-order', async (req, res) => {
  res.json({
  ok: true,
  orderID: data.id,
- amount, currency: 'USD'
+ amount,
+ currency: 'USD'
  });
  } catch (error) {
  console.error(
- 'PayPal order error:',
- error.message
+ 'PayPal order error:', error.message
  );
  res.status(500).json({
  error:
@@ -2194,7 +2200,8 @@ app.post('/api/paypal/capture-order', async (req, res) => {
  !response.ok ||
  data.status !== 'COMPLETED'
  ) {
- return res.status(400).json({ error:
+ return res.status(400).json({
+ error:
  'Payment could not be confirmed.'
  });
  }
@@ -2208,8 +2215,7 @@ app.post('/api/paypal/capture-order', async (req, res) => {
  'PayPal capture error:',
  error.message
  );
- res.status(500).json({
- error:
+ res.status(500).json({ error:
  'Unable to confirm PayPal test payment.'
  });
  }
@@ -2249,7 +2255,8 @@ app.get('/api/customer-orders', async (req, res) => {
  orders
  });
  } catch (error) {
- console.error( 'Customer orders error:',
+ console.error(
+ 'Customer orders error:',
  error
  );
  res.status(500).json({
@@ -2273,8 +2280,7 @@ app.get('/api/realism/stats', async (req, res) => {
  if (!isVideoAdmin(req)) {
  return res.status(403).json({
  error:
- 'Administrator password required.'
- });
+ 'Administrator password required.' });
  }
  try {
  const stats =
@@ -2303,7 +2309,8 @@ app.get('/api/realism/recommendations', async (req, res) => {
  }
  try {
  const recommendations =
- await recommendTechniques(5); res.json({
+ await recommendTechniques(5);
+ res.json({
  ok: true,
  recommendations
  });
@@ -2318,7 +2325,319 @@ app.get('/api/realism/recommendations', async (req, res) => {
  });
  }
 });
-app.listen(PORT, () => {
+/*
+ * CUTLOOPZ CINEMATIC LAB — isolated admin-only quality test (v1).
+ * Real 1080p generative video, not the Independent still-photo engine.
+ * Does NOT replace the production Standard or Lip Sync generators.
+ * The ledger accounts conservatively for requested tests. Only this Lab
+ * route uses this ledger; external provider billing may differ.
+ */
+const CINEMA_LAB_MODEL_TEXT = 'fal-ai/ltx-2.3/text-to-video/fast';
+const CINEMA_LAB_MODEL_IMAGE = 'fal-ai/ltx-2.3/image-to-video/fast';
+const CINEMA_LAB_SECONDS = 6;
+const CINEMA_LAB_BUDGET_USD = 25;
+// Reserve $0.60 per six-second request versus the advertised ~$0.24
+// at $0.04/s, allowing margin for price differences. This is NOT a
+// contractual provider-side spend cap.
+const CINEMA_LAB_RESERVE_USD = 0.60;
+const CINEMA_LAB_LEDGER_PATH = path.join(OUT, 'cinema-lab-ledger.json');
+let cinemaLabBusy = false;
+const cinemaLabCompleting = new Set();
+function cinemaLabJobDir(id) {
+ return path.join(JOBS, 'cinema-lab-' + id);
+} async function cinemaLabReadLedger() {
+ try {
+ const ledger = JSON.parse(await fs.readFile(
+ CINEMA_LAB_LEDGER_PATH, 'utf8'
+ ));
+ if (
+ !ledger ||
+ !Number.isFinite(ledger.reservedUsd) ||
+ ledger.reservedUsd < 0 ||
+ !Array.isArray(ledger.requests)
+ ) {
+ throw new Error('Budget ledger is malformed.');
+ }
+ return ledger;
+ } catch (error) {
+ if (error.code === 'ENOENT') {
+ return { reservedUsd: 0, requests: [] };
+ }
+ throw error; // Fail closed; never reset an unreadable ledger.
+ }
+}
+async function cinemaLabWriteLedger(ledger) {
+ const temp = CINEMA_LAB_LEDGER_PATH + '.new';
+ await fs.writeFile(temp, JSON.stringify(ledger, null, 2));
+ await fs.rename(temp, CINEMA_LAB_LEDGER_PATH);
+}
+async function cinemaLabSaveJob(id, details) {
+ const dir = cinemaLabJobDir(id);
+ await fs.mkdir(dir, { recursive: true });
+ await fs.writeFile(
+ path.join(dir, 'state.json'),
+ JSON.stringify({ ...details, updatedAt: new Date().toISOString() }, null, 2)
+ );
+}
+async function cinemaLabReadJob(id) {
+ return JSON.parse(await fs.readFile(
+ path.join(cinemaLabJobDir(id), 'state.json'), 'utf8'
+ ));
+}
+// The provider queue keeps working if the web browser closes. Checking a job
+// after a Render restart can resume downloading a completed provider result.
+async function cinemaLabSyncJob(id) {
+ const current = await cinemaLabReadJob(id);
+ if (current.status !== 'processing' || !current.requestId) return current;
+ if (cinemaLabCompleting.has(id)) return current;
+ cinemaLabCompleting.add(id);
+ try {
+ const progress = await fal.queue.status(current.model, {
+ requestId: current.requestId,
+ logs: false
+ });
+ if (progress.status === 'COMPLETED') {
+ await cinemaLabSaveJob(id, {
+ ...current, phase: 'Downloading finished 1080p video'
+ });
+ const result = await fal.queue.result(current.model, {
+ requestId: current.requestId
+ });
+ const url = result?.data?.video?.url || result?.video?.url;
+ if (!url || !url.startsWith('https://')) {
+ throw new Error('Provider result contained no usable video URL.');
+ }
+ const file = path.join(cinemaLabJobDir(id), 'video.mp4');
+ if (!await exists(file)) await downloadVideo(url, file);
+ await cinemaLabSaveJob(id, {
+ ...current, status: 'completed', phase: '1080p video ready',
+ ready: true, error: null
+ });
+ } else if (progress.status === 'FAILED') {
+ await cinemaLabSaveJob(id, {
+ ...current, status: 'failed', phase: 'Provider generation failed',
+ ready: false, error: 'Provider rejected or failed this generation.'
+ }); }
+ return await cinemaLabReadJob(id);
+ } catch (error) {
+ console.error('Cinematic Lab status recovery:', id, error);
+ return {
+ ...current,
+ syncWarning: 'Unable to check provider status right now; try again.'
+ };
+ } finally {
+ cinemaLabCompleting.delete(id);
+ }
+}
+app.get('/api/cinema-lab/budget', async (req, res) => {
+ if (!isVideoAdmin(req)) {
+ return res.status(403).json({ error: 'Administrator password required.' });
+ }
+ try {
+ const ledger = await cinemaLabReadLedger();
+ return res.json({
+ ok: true,
+ ceilingUsd: CINEMA_LAB_BUDGET_USD,
+ conservativeReservedUsd: Number(ledger.reservedUsd.toFixed(2)),
+ remainingUsd: Number(Math.max(0,
+ CINEMA_LAB_BUDGET_USD - ledger.reservedUsd
+ ).toFixed(2)),
+ reservationPerTestUsd: CINEMA_LAB_RESERVE_USD,
+ providerBilling: 'Not accessible; check your fal account for actual charges.',
+ otherPaidRoutesIncluded: false,
+ enabled: ENABLE_PAID_GENERATION && Boolean(process.env.FAL_KEY)
+ });
+ } catch (error) {
+ console.error('Cinematic Lab ledger error:', error);
+ return res.status(503).json({ error: 'Cannot read budget ledger; spending blocked.' });
+ }
+});
+app.post('/api/cinema-lab/start', upload.single('photo'), async (req, res) => {
+ if (!isVideoAdmin(req)) {
+ return res.status(403).json({ error: 'Administrator password required.' });
+ }
+ if (!ENABLE_PAID_GENERATION || !process.env.FAL_KEY) {
+ return res.status(503).json({
+ error: 'Cinematic Lab requires ENABLE_PAID_GENERATION=true and FAL_KEY.'
+ });
+ }
+ if (cinemaLabBusy) {
+ return res.status(409).json({ error: 'One test is already running. Check its status.' });
+ }
+ const prompt = String(req.body?.prompt || '').trim();
+ const format = String(req.body?.format || 'vertical');
+ const photo = req.file || null;
+ if (prompt.length < 20 || prompt.length > 2500) {
+ return res.status(400).json({ error: 'Use a 20–2500 character cinematic prompt.' });
+ }
+ if (!['vertical', 'landscape'].includes(format)) {
+ return res.status(400).json({ error: 'Choose vertical or landscape.' });
+ }
+ if (photo && !['image/jpeg', 'image/png', 'image/webp'].includes(photo.mimetype)) {
+ return res.status(400).json({ error: 'Photo must be JPEG, PNG, or WebP.' });
+ }
+ if (photo && photo.size > 10 * 1024 * 1024) {
+ return res.status(400).json({ error: 'Photo must be under 10MB.' });
+ }
+ // Serialize budget reservation and provider submission for this instance.
+ cinemaLabBusy = true;
+ const id = randomUUID();
+ const model = photo ? CINEMA_LAB_MODEL_IMAGE : CINEMA_LAB_MODEL_TEXT;
+ try {
+ const ledger = await cinemaLabReadLedger();
+ if (ledger.reservedUsd + CINEMA_LAB_RESERVE_USD > CINEMA_LAB_BUDGET_USD + 1e-8) {
+ cinemaLabBusy = false;
+ return res.status(402).json({ error: 'Cinematic Lab $25 budget reached; no request sent.' });
+ }
+ ledger.reservedUsd = Number((ledger.reservedUsd + CINEMA_LAB_RESERVE_USD).toFixed(2)); ledger.requests.push({
+ id, reservedUsd: CINEMA_LAB_RESERVE_USD, model,
+ createdAt: new Date().toISOString()
+ });
+ await cinemaLabWriteLedger(ledger);
+ await cinemaLabSaveJob(id, {
+ id, status: 'processing', phase: 'Preparing request',
+ model, format, durationSeconds: CINEMA_LAB_SECONDS,
+ resolution: '1080p', reserveUsd: CINEMA_LAB_RESERVE_USD,
+ error: null, ready: false
+ });
+ res.status(202).json({
+ ok: true, id, status: 'processing',
+ conservativeBudgetReserveUsd: CINEMA_LAB_RESERVE_USD,
+ warning: 'Actual provider billing may differ from the reserved estimate.'
+ });
+ } catch (error) {
+ cinemaLabBusy = false;
+ console.error('Cinematic Lab start failed:', error);
+ return res.status(503).json({ error: 'Could not safely reserve test budget. No generation started.' });
+ }
+ // Return 202 before long-running provider generation to avoid browser timeouts.
+ void (async () => {
+ try {
+ const input = {
+ prompt,
+ duration: CINEMA_LAB_SECONDS,
+ resolution: '1080p',
+ fps: 25,
+ generate_audio: false,
+ enable_safety_checker: true,
+ aspect_ratio: format === 'landscape' ? '16:9' : '9:16'
+ };
+ if (photo) {
+ await cinemaLabSaveJob(id, {
+ id, status: 'processing', phase: 'Uploading reference photograph',
+ model, format, durationSeconds: CINEMA_LAB_SECONDS,
+ resolution: '1080p', reserveUsd: CINEMA_LAB_RESERVE_USD,
+ error: null, ready: false
+ });
+ const image = new NodeFile(
+ [photo.buffer],
+ photo.mimetype === 'image/png' ? 'reference.png'
+ : photo.mimetype === 'image/webp' ? 'reference.webp' : 'reference.jpg',
+ { type: photo.mimetype }
+ );
+ input.image_url = await fal.storage.upload(image);
+ delete input.aspect_ratio; // Image aspect ratio is determined by source.
+ }
+ await cinemaLabSaveJob(id, {
+ id, status: 'processing', phase: 'Generating actual 1080p video',
+ model, format, durationSeconds: CINEMA_LAB_SECONDS,
+ resolution: '1080p', reserveUsd: CINEMA_LAB_RESERVE_USD,
+ error: null, ready: false
+ });
+ const queued = await fal.queue.submit(model, { input });
+ const requestId = queued?.request_id || queued?.requestId;
+ if (!requestId) {
+ throw new Error('Provider did not return a recoverable request ID.');
+ }
+ await cinemaLabSaveJob(id, {
+ id, status: 'processing', phase: 'Queued with provider; rendering 1080p video',
+ model, format, durationSeconds: CINEMA_LAB_SECONDS,
+ resolution: '1080p', reserveUsd: CINEMA_LAB_RESERVE_USD,
+ requestId,
+ error: null, ready: false
+ });
+ console.log('Cinematic Lab queued:', id, requestId);
+ } catch (error) {
+ console.error('Cinematic Lab failed:', id, error);
+ await cinemaLabSaveJob(id, {
+ id, status: 'failed', phase: 'Generation failed',
+ model, format, durationSeconds: CINEMA_LAB_SECONDS,
+ resolution: '1080p', reserveUsd: CINEMA_LAB_RESERVE_USD,
+ error: String(error.message || 'Unknown provider error').slice(0, 500),
+ ready: false }).catch(() => {});
+ } finally {
+ cinemaLabBusy = false;
+ }
+ })();
+});
+app.get('/api/cinema-lab/job/:id', async (req, res) => {
+ if (!isVideoAdmin(req)) {
+ return res.status(403).json({ error: 'Administrator password required.' });
+ }
+ if (!validId(req.params.id)) {
+ return res.status(400).json({ error: 'Invalid job ID.' });
+ }
+ try {
+ return res.json({ ok: true, ...(await cinemaLabSyncJob(req.params.id)) });
+ } catch {
+ return res.status(404).json({ error: 'Cinematic test not found.' });
+ }
+});
+app.get('/api/cinema-lab/video/:id', async (req, res) => {
+ if (!isVideoAdmin(req)) {
+ return res.status(403).json({ error: 'Administrator password required.' });
+ }
+ if (!validId(req.params.id)) {
+ return res.status(400).json({ error: 'Invalid job ID.' });
+ }
+ const file = path.join(cinemaLabJobDir(req.params.id), 'video.mp4');
+ if (!await exists(file)) {
+ return res.status(404).json({ error: 'Video not ready.' });
+ }
+ res.set('Cache-Control', 'private, no-store');
+ return res.sendFile(file);
+});
+app.get('/admin-cinema-lab', (req, res) => {
+ res.type('html').send(`<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cinematic Lab | CutLoopz Media</title><style>
+*{box-sizing:border-box}body{margin:0;background:#0d1422;color:#f7f9ff;font-family:system-ui,-apple-system,sans-serif;line-height:1.55}
+main{max-width:760px;margin:auto;padding:22px 18px 70px}header{border-bottom:1px solid #2d4058;padding-bottom:15px;margin-bottom:23px}
+h1{font-size:clamp(25px,5vw,35px);margin:7px 0}p{color:#c4d0e2}small,.small{font-size:13px;color:#bbcada}
+section{background:#172338;border:1px solid #33445e;border-radius:15px;padding:19px;margin:18px 0}
+label{display:block;font-size:15px;font-weight:700;margin:14px 0 6px}input,textarea,select{width:100%;padding:13px 12px;border:1px solid #52637c;border-radius:9px;color:#f7f9ff;background:#0d1727;font:inherit}
+textarea{min-height:170px;resize:vertical}input[type=file]{font-size:14px}button{border:0;border-radius:9px;padding:13px 20px;background:#56bbff;color:#061426;font-weight:800;font:inherit;cursor:pointer;margin:8px 0}
+button:disabled{opacity:.55;cursor:wait}.secondary{background:#293e59;color:#e8f5ff}video{width:100%;border:3px solid #748fb4;border-radius:10px;background:#000;display:none}
+#resultLink{display:none;color:#b0e8ff;font-weight:700}#status{white-space:pre-wrap}strong{color:#fff}.tag{color:#7ce5b7;font-size:13px;font-weight:800}
+</style></head><body><main>
+<header><div class="tag">CUTLOOPZ MEDIA · ADMIN ONLY</div><h1>Cinematic Lab</h1><p>Real 1080p motion generation. One affordable six-second test before upgrading full-length videos.</p></header>
+<section><strong>Cost control</strong><p>Lab ceiling: $25 total. Each six-second test reserves $0.60 conservatively against this limit. Advertised base generation may cost less; actual provider billing is separate.</p><div id="budget" class="small">Enter admin password to view the Lab budget.</div></section>
+<section><form id="labForm">
+<label for="admin">Administrator password</label><input type="password" id="admin" autocomplete="off" required placeholder="Enter your existing video admin password">
+<button type="button" class="secondary" id="check">Check budget</button>
+<label for="prompt">Director's prompt</label>
+<textarea id="prompt" required maxlength="2500" minlength="20">A cinematic R&B music video. An elegant singer stands on a rainy rooftop at blue hour, city lights glittering behind her. Wind gently moves her jacket. The camera performs one smooth, slow dolly-in from a medium-wide view to a close-up; atmospheric mist, subtle reflections, natural human motion, premium movie lighting, realistic skin textures, controlled depth of field, no text or logos.</textarea>
+<label for="photo">Reference artist photo (optional)</label><input id="photo" type="file" accept="image/png,image/jpeg,image/webp"><div class="small">With a photo, the model attempts to animate that person. Without one, it creates the scene from your prompt. Max photo size 10MB.</div>
+<label for="format">Video orientation</label><select id="format"><option value="vertical">Vertical (9:16)</option><option value="landscape">Landscape (16:9)</option></select>
+<button id="create" type="submit">Generate 6-second cinematic test</button>
+<p class="small">This calls the paid provider once. No automatic retries, no full-song generation, no background music purchased. When using a photo, the photo's shape determines the output orientation.</p>
+</form></section>
+<section><strong>Test progress</strong><p id="status" role="status">No test started.</p><label for="recoverId">Recover an earlier test ID</label><input id="recoverId" placeholder="Paste your earlier test ID"><button type="button" class="secondary" id="recover">Recover test</button><video id="player" controls playsinline></video><p><a id="resultLink" download="cutloopz-cinema-test.mp4">Download test MP4</a></p></section>
+</main><script>
+(function(){
+const admin=document.getElementById('admin');const status=document.getElementById('status');const player=document.getElementById('player');const link=document.getElementById('resultLink');const create=document.getElementById('create');
+let timer=null;let videoUrl=null;let currentId=null;
+function auth(){return {'X-Video-Admin-Key':admin.value.trim()};}
+async function responseJson(response){const body=await response.text();let data;try{data=JSON.parse(body);}catch{throw new Error('Unexpected server reply ('+response.status+'): '+body.slice(0,160));}if(!response.ok)throw new Error(data.error||'Request failed.');return data;}
+async function budget(){try{const response=await fetch('/api/cinema-lab/budget',{headers:auth()});const data=await responseJson(response);document.getElementById('budget').textContent='Conservatively reserved: $'+data.conservativeReservedUsd.toFixed(2)+' • Remaining: $'+data.remainingUsd.toFixed(2)+' • Per test reservation: $'+data.reservationPerTestUsd.toFixed(2);}catch(error){document.getElementById('budget').textContent=error.message;}}
+document.getElementById('check').addEventListener('click',budget);
+document.getElementById('recover').addEventListener('click',async function(){const id=document.getElementById('recoverId').value.trim();if(!id){status.textContent='Enter a previous test ID.';return;}currentId=id;if(timer)clearInterval(timer);timer=setInterval(function(){poll(currentId);},4000);await poll(currentId);});
+async function showVideo(id){const response=await fetch('/api/cinema-lab/video/'+encodeURIComponent(id),{headers:auth()});if(!response.ok){throw new Error('Video download failed ('+response.status+').');}const blob=await response.blob();if(videoUrl)URL.revokeObjectURL(videoUrl);videoUrl=URL.createObjectURL(blob);player.src=videoUrl;player.style.display='block';link.href=videoUrl;link.style.display='inline';create.disabled=false;}
+async function poll(id){try{const response=await fetch('/api/cinema-lab/job/'+encodeURIComponent(id),{headers:auth()});const data=await responseJson(response);status.textContent=data.phase+'\\nTest ID: '+id;if(data.status==='completed'){clearInterval(timer);timer=null;status.textContent='Completed! Your real 1080p cinematic video is ready.\\nTest ID: '+id;await showVideo(id);await budget();}else if(data.status==='failed'){clearInterval(timer);timer=null;create.disabled=false;status.textContent='Test failed: '+(data.error||'Unknown error')+'\\nTest ID: '+id+'\\nNote: reservation is retained until provider billing is checked.';await budget();}}catch(error){status.textContent='Status check failed: '+error.message+'\\nYou can refresh and keep the test ID.';}}
+document.getElementById('labForm').addEventListener('submit',async function(event){event.preventDefault();if(!admin.value.trim()){status.textContent='Enter administrator password.';return;}if(!confirm('Generate ONE real six-second video? This can charge your fal account. Up to $0.60 is reserved against the Lab budget.'))return;create.disabled=true;status.textContent='Starting cinematic test...';player.style.display='none';link.style.display='none';const form=new FormData();form.append('prompt',document.getElementById('prompt').value.trim());form.append('format',document.getElementById('format').value);const photo=document.getElementById('photo').files[0];if(photo)form.append('photo',photo);try{const response=await fetch('/api/cinema-lab/start',{method:'POST',headers:auth(),body:form});const data=await responseJson(response);currentId=data.id;document.getElementById('recoverId').value=currentId;status.textContent='Generation started.\\nTest ID: '+currentId+'\\nWaiting for real motion...';if(timer)clearInterval(timer);timer=setInterval(function(){poll(currentId);},4000);await poll(currentId);}catch(error){create.disabled=false;status.textContent='Could not start: '+error.message;}});
+})();
+</script></body></html>`);
+}); app.listen(PORT, () => {
  console.log(
  `CutLoopz Media running on port ${PORT}`
  );
@@ -2327,5 +2646,6 @@ app.listen(PORT, () => {
  );
  console.log(
  'Cinematic Editing integration loaded'
+
  );
-});
+})
