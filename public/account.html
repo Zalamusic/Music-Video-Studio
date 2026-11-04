@@ -10,7 +10,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="/zala-themes.css">
 <script src="/zala-themes.js" defer></script>
 
@@ -21,33 +20,33 @@
   --muted:#3f5067;
   --line:#d8e3f0;
   --soft:#f4f8fe;
+  --surface:#fff;
   --gold:#c59a46;
 }
 * {box-sizing:border-box}
+html {scroll-behavior:smooth}
 body {
   margin:0;
   background:#fff;
   color:var(--navy);
-  font:16px/1.6 "DM Sans",Arial,sans-serif;
+  font:17px/1.6 "DM Sans",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
 }
 main {
-  max-width:520px;
+  width:min(100%,600px);
   margin:0 auto;
-  padding:24px 16px 60px;
+  padding:22px 17px 55px;
 }
-a {
-  color:var(--blue);
-  text-decoration:none;
-}
+a {color:var(--blue);text-decoration:none}
 header {
   display:flex;
   align-items:center;
   gap:12px;
-  margin-bottom:32px;
+  margin-bottom:24px;
 }
 .logo {
-  width:48px;
-  height:48px;
+  width:50px;
+  height:50px;
   flex-shrink:0;
   border-radius:12px;
   overflow:hidden;
@@ -59,47 +58,58 @@ header {
   object-fit:contain;
   display:block;
 }
-.brand {font-weight:800}
+.brand {
+  font-size:17px;
+  font-weight:800;
+  line-height:1.3;
+}
 .sub {
-  font-size:11px;
-  letter-spacing:.5px;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.3px;
   color:var(--muted);
 }
 .studio-link {
   margin-left:auto;
   flex-shrink:0;
-  font-size:12px;
-  font-weight:700;
+  font-size:15px;
+  font-weight:800;
   white-space:nowrap;
 }
 .panel {
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:17px;
   background:var(--soft);
-  padding:24px;
+  padding:23px;
 }
 h1 {
-  font-size:23px;
-  line-height:1.35;
-  font-weight:600;
-  letter-spacing:-.45px;
-  margin:0 0 10px;
+  font-size:clamp(24px,5vw,29px);
+  line-height:1.3;
+  font-weight:800;
+  letter-spacing:-.35px;
+  margin:0 0 12px;
 }
+h2 {line-height:1.35}
 p {color:var(--muted)}
 #description,#profileGreeting {
+  font-size:17px;
+  line-height:1.65;
+  margin:8px 0 15px;
+}
+#welcome {
   font-size:15px;
-  line-height:1.7;
+  overflow-wrap:anywhere;
 }
 .tabs {
   display:flex;
   gap:10px;
-  margin:22px 0;
+  margin:20px 0;
 }
 .tabs button {
   flex:1;
-  background:#fff;
+  background:var(--surface);
   color:var(--blue);
-  border:3px solid var(--blue);
+  border:2px solid var(--blue);
 }
 .tabs button[aria-pressed="true"] {
   background:var(--blue);
@@ -107,37 +117,40 @@ p {color:var(--muted)}
 }
 label {
   display:block;
+  font-size:16px;
   font-weight:700;
-  margin:16px 0 7px;
+  margin:15px 0 7px;
 }
 input {
   display:block;
   width:100%;
-  padding:13px;
+  min-height:49px;
+  padding:12px 13px;
   border:2px solid var(--blue);
   border-radius:10px;
-  background:#fff;
+  background:var(--surface);
   color:var(--navy);
   font:inherit;
+  font-size:17px;
 }
 .password-wrap {position:relative}
-.password-wrap input {padding-right:64px}
+.password-wrap input {padding-right:65px}
 .eye-button {
   position:absolute;
   right:5px;
   top:5px;
-  min-height:40px;
-  min-width:44px;
+  min-height:39px;
+  min-width:46px;
   padding:6px;
   display:grid;
   place-items:center;
-  background:#fff;
+  background:var(--surface);
   color:var(--blue);
   border-radius:8px;
 }
 .eye-button svg {
-  width:23px;
-  height:23px;
+  width:24px;
+  height:24px;
   fill:none;
   stroke:currentColor;
   stroke-width:2;
@@ -146,13 +159,14 @@ input {
 }
 button {
   font:inherit;
+  font-size:16px;
   cursor:pointer;
   border:0;
   border-radius:10px;
   background:var(--blue);
   color:#fff;
-  font-weight:700;
-  padding:12px 16px;
+  font-weight:800;
+  padding:12px 15px;
   min-height:48px;
 }
 button:focus-visible,
@@ -163,16 +177,15 @@ input:focus-visible {
 }
 .submit {
   width:100%;
-  margin-top:22px;
+  margin-top:20px;
 }
-button:disabled {
-  opacity:.65;
-  cursor:wait;
-}
+button:disabled {opacity:.65;cursor:wait}
 .status {
   min-height:26px;
   margin-top:16px;
-  font-weight:600;
+  font-size:15px;
+  font-weight:700;
+  overflow-wrap:anywhere;
 }
 .error {color:#b42318}
 .success {color:#166534}
@@ -181,28 +194,32 @@ button:disabled {
   display:flex;
   gap:12px;
   flex-wrap:wrap;
-  margin-top:22px;
+  margin-top:21px;
 }
 .account-actions a {
   border:2px solid var(--blue);
-  padding:9px 14px;
-  border-radius:9px;
-  background:#fff;
-  font-weight:700;
+  padding:11px 14px;
+  border-radius:10px;
+  background:var(--surface);
+  font-size:16px;
+  font-weight:800;
   display:inline-flex;
   align-items:center;
+  justify-content:center;
+  min-height:48px;
 }
 .foot {
-  margin-top:24px;
+  margin-top:26px;
   text-align:center;
-  font-size:14px;
+  font-size:16px;
+  font-weight:700;
 }
 .loyalty {
-  margin-top:22px;
-  padding:22px 18px;
-  border:1px solid #cfdef4;
+  margin-top:19px;
+  padding:20px;
+  border:1px solid var(--line);
   border-radius:16px;
-  background:#fff;
+  background:var(--surface);
 }
 .loyalty-head {
   display:flex;
@@ -210,42 +227,40 @@ button:disabled {
   gap:12px;
 }
 .loyalty-symbol {
-  width:50px;
-  height:50px;
+  width:53px;
+  height:53px;
   flex-shrink:0;
   display:grid;
   place-items:center;
   border-radius:50%;
   background:#e9f2ff;
-  font-size:25px;
+  font-size:27px;
 }
-.loyalty.unlocked {
-  border-color:#d6b36d;
-}
-.loyalty.unlocked .loyalty-symbol {
-  background:#fff1d4;
-}
+.loyalty.unlocked {border-color:#d6b36d}
+.loyalty.unlocked .loyalty-symbol {background:#fff1d4}
 .loyalty h2,.history h2 {
   margin:0;
-  font-size:19px;
-  line-height:1.3;
+  font-size:21px;
+  line-height:1.35;
+  font-weight:800;
 }
 .loyalty-sub {
-  margin:3px 0 0;
-  font-size:12px;
+  margin:5px 0 0;
+  font-size:15px;
+  line-height:1.5;
 }
 .loyalty-progress-head {
   display:flex;
   justify-content:space-between;
-  gap:12px;
+  gap:10px;
   align-items:center;
-  margin-top:23px;
-  font-size:14px;
-  font-weight:700;
+  margin-top:22px;
+  font-size:16px;
+  font-weight:800;
 }
 .progress-track {
-  height:12px;
-  margin-top:10px;
+  height:13px;
+  margin-top:11px;
   overflow:hidden;
   border-radius:999px;
   background:#e4ebf5;
@@ -257,25 +272,23 @@ button:disabled {
   background:var(--blue);
   transition:width .6s ease;
 }
-.loyalty.unlocked .progress-fill {
-  background:var(--gold);
-}
+.loyalty.unlocked .progress-fill {background:var(--gold)}
 .milestones {
   display:flex;
   justify-content:space-between;
-  margin-top:10px;
-  gap:4px;
+  margin-top:12px;
+  gap:5px;
 }
 .milestone {
-  width:29px;
-  height:29px;
+  width:clamp(30px,9vw,39px);
+  height:clamp(30px,9vw,39px);
   display:grid;
   place-items:center;
-  border:1px solid #d8e3f0;
+  border:1px solid var(--line);
   border-radius:50%;
-  background:#f4f8fe;
-  color:#65748a;
-  font-size:12px;
+  background:var(--soft);
+  color:var(--muted);
+  font-size:15px;
   font-weight:800;
 }
 .milestone.complete {
@@ -285,57 +298,62 @@ button:disabled {
 }
 .reward {
   margin-top:20px;
-  padding:14px;
+  padding:17px;
   border-radius:12px;
   background:#edf5ff;
-  font-size:14px;
+  font-size:16px;
+  line-height:1.65;
 }
 .reward strong {color:#194d9a}
 .loyalty-note {
-  margin:13px 0 0;
-  font-size:12px;
-  line-height:1.6;
+  margin:15px 0 0;
+  font-size:15px;
+  line-height:1.65;
 }
 .prestige {
   display:flex;
-  align-items:center;
-  gap:8px;
-  margin-top:17px;
-  font-size:13px;
-  color:#53637a;
+  align-items:flex-start;
+  gap:10px;
+  margin-top:19px;
+  font-size:16px;
+  line-height:1.6;
+  color:var(--muted);
 }
 .prestige strong {color:var(--navy)}
 .history {
-  margin-top:22px;
-  padding:20px 18px;
-  background:#fff;
+  margin-top:20px;
+  padding:19px;
+  background:var(--surface);
   border:1px solid var(--line);
   border-radius:16px;
 }
 .history-heading {
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  gap:10px;
+  align-items:flex-start;
+  gap:12px;
 }
+.history-heading h2 {flex:1}
 .history-intro {
-  font-size:13px;
-  margin:9px 0 16px;
+  font-size:16px;
+  margin:10px 0 15px;
 }
 .refresh {
-  min-height:36px;
-  padding:7px 12px;
-  font-size:12px;
+  min-height:42px;
+  padding:8px 13px;
+  font-size:15px;
   border:1px solid var(--blue);
-  background:#fff;
+  background:var(--surface);
   color:var(--blue);
 }
 .history-message {
-  padding:17px 14px;
+  padding:17px 15px;
   border-radius:12px;
   background:var(--soft);
-  font-size:14px;
+  font-size:16px;
+  line-height:1.6;
   color:var(--muted);
+  overflow-wrap:anywhere;
 }
 .order-list {
   display:grid;
@@ -344,46 +362,65 @@ button:disabled {
 .order-card {
   border:1px solid var(--line);
   border-radius:12px;
-  padding:15px;
-  background:#fff;
+  padding:16px;
+  background:var(--surface);
   overflow-wrap:anywhere;
 }
 .order-title {
   font-weight:800;
-  font-size:15px;
+  font-size:17px;
 }
 .order-date {
-  font-size:12px;
+  font-size:15px;
   color:var(--muted);
-  margin-top:3px;
+  margin-top:4px;
 }
 .order-detail {
   display:flex;
   justify-content:space-between;
   gap:12px;
-  margin-top:10px;
-  font-size:13px;
+  margin-top:11px;
+  font-size:15px;
 }
 .order-detail span:last-child {
-  font-weight:700;
+  font-weight:800;
   text-align:right;
 }
 .qualifying {
   color:#166534;
   font-weight:700;
-  font-size:12px;
+  font-size:15px;
   margin:12px 0 0;
 }
 .history-note {
-  font-size:12px;
+  font-size:15px;
+  line-height:1.6;
   margin:15px 0 0;
 }
+.forgot-button {
+  background:none;
+  color:var(--blue);
+  padding:8px;
+  min-height:42px;
+  font-size:16px;
+}
+.back-button {
+  background:none;
+  color:var(--blue);
+  width:100%;
+  font-size:16px;
+}
+.forgot-title {font-size:22px}
+#passwordHint {font-size:15px}
+
+/* Preserve all existing theme choices */
 body.zala-themed {
   --blue:var(--z-primary);
   --navy:var(--z-text);
   --muted:var(--z-muted);
   --line:var(--z-border);
   --soft:var(--z-panel);
+  --surface:var(--z-surface);
   --gold:var(--z-accent);
   background:var(--z-gradient);
   background-color:var(--z-bg);
@@ -423,16 +460,15 @@ body.zala-themed .history-message {
   background:var(--z-panel);
   color:var(--z-text);
 }
+body.zala-themed .reward strong {
+  color:var(--z-text);
+}
 body.zala-themed .order-card {
   background:var(--z-surface);
   border-color:var(--z-border);
 }
-body.zala-themed .progress-track {
-  background:var(--z-panel);
-}
-body.zala-themed .progress-fill {
-  background:var(--z-primary);
-}
+body.zala-themed .progress-track {background:var(--z-panel)}
+body.zala-themed .progress-fill {background:var(--z-primary)}
 body.zala-themed .milestone {
   background:var(--z-panel);
   border-color:var(--z-border);
@@ -442,22 +478,41 @@ body.zala-themed .milestone.complete {
   background:var(--z-primary);
   color:var(--z-primary-text);
 }
-body.zala-themed .prestige strong {
-  color:var(--z-text);
-}
-body.zala-themed .status.error {color:#d94a4a}
-body.zala-themed .status.success {color:#218653}
+body.zala-themed .prestige strong {color:var(--z-text)}
+body.zala-themed .status.error {color:#e86b6b}
+body.zala-themed .status.success {color:#60bd85}
 body.zala-themed .zala-theme-control {
   margin-top:24px;
   box-shadow:0 8px 26px var(--z-glow);
 }
-@media(max-width:390px) {
-  .panel {padding:18px}
-  .brand {font-size:13px}
+
+@media(max-width:480px) {
+  main {padding:17px 13px 42px}
+  header {gap:9px;margin-bottom:18px}
+  .logo {width:46px;height:46px}
+  .brand {font-size:15px}
+  .sub {font-size:10px}
+  .studio-link {font-size:14px}
+  .panel {padding:17px}
+  .loyalty {padding:16px}
+  .history {padding:16px}
+  .loyalty h2,.history h2 {font-size:19px}
+  .loyalty-sub {font-size:15px}
+  .history-heading {flex-wrap:wrap}
+  .history-heading h2 {min-width:180px}
+  .account-actions {flex-direction:column}
+  .account-actions a,.account-actions button {width:100%}
+}
+@media(max-width:350px) {
+  .brand {font-size:14px}
   .sub {font-size:9px}
-  .studio-link {font-size:11px}
+  .studio-link {font-size:13px}
+  .loyalty-head {gap:9px}
+  .loyalty-symbol {width:43px;height:43px;font-size:22px}
+  .loyalty h2 {font-size:18px}
 }
 @media(prefers-reduced-motion:reduce) {
+  html {scroll-behavior:auto}
   .progress-fill {transition:none}
 }
 </style>
@@ -468,17 +523,14 @@ body.zala-themed .zala-theme-control {
 
 <header>
   <div class="logo">
-    <img
-      src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"
+    <img src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"
       alt="Cut Loopz Media logo">
   </div>
   <div>
     <div class="brand">Cut Loopz Media</div>
     <div class="sub">CINEMATIC MUSIC VIDEO STUDIO</div>
   </div>
-  <a href="/customer.html" class="studio-link">
-    ← Studio
-  </a>
+  <a href="/customer.html" class="studio-link">← Studio</a>
 </header>
 
 <section class="panel" id="authPanel">
@@ -488,12 +540,8 @@ body.zala-themed .zala-theme-control {
   </p>
 
   <div class="tabs" role="group" aria-label="Account action">
-    <button id="loginTab" type="button" aria-pressed="true">
-      Sign in
-    </button>
-    <button id="registerTab" type="button" aria-pressed="false">
-      Sign up
-    </button>
+    <button id="loginTab" type="button" aria-pressed="true">Sign in</button>
+    <button id="registerTab" type="button" aria-pressed="false">Sign up</button>
   </div>
 
   <form id="authForm">
@@ -510,16 +558,12 @@ body.zala-themed .zala-theme-control {
     <label for="password">Password</label>
     <div class="password-wrap">
       <input id="password" name="password"
-        type="password"
-        autocomplete="current-password"
+        type="password" autocomplete="current-password"
         required minlength="12" maxlength="128">
 
-      <button id="togglePassword"
-        class="eye-button"
-        type="button"
-        aria-label="Show password"
-        aria-pressed="false"
-        title="Show password">
+      <button id="togglePassword" class="eye-button"
+        type="button" aria-label="Show password"
+        aria-pressed="false" title="Show password">
         <svg id="eyeIcon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
           <circle cx="12" cy="12" r="3"/>
@@ -535,16 +579,14 @@ body.zala-themed .zala-theme-control {
       Sign in
     </button>
   </form>
-  
-  <div id="forgotLinkArea" style="text-align:center;margin-top:16px">
+
+  <div id="forgotLinkArea" style="text-align:center;margin-top:15px">
     <button type="button" id="forgotPasswordButton"
-      style="background:none;color:var(--blue);padding:8px;min-height:36px">
-      Forgot Password?
-    </button>
+      class="forgot-button">Forgot Password?</button>
   </div>
 
   <form id="forgotForm" class="hidden">
-    <h2 style="font-size:20px">Reset your password</h2>
+    <h2 class="forgot-title">Reset your password</h2>
     <p>Enter your account email address. We'll send you a secure reset link.</p>
 
     <label for="forgotEmail">Email address</label>
@@ -555,12 +597,10 @@ body.zala-themed .zala-theme-control {
       Send Reset Link
     </button>
 
-    <button type="button" id="backToLoginButton"
-      style="background:none;color:var(--blue);width:100%">
+    <button type="button" id="backToLoginButton" class="back-button">
       ← Back to Sign In
     </button>
   </form>
-
 </section>
 
 <section class="panel hidden" id="profilePanel">
@@ -585,13 +625,10 @@ body.zala-themed .zala-theme-control {
       <span id="progressText">0 of 6 videos</span>
     </div>
 
-    <div class="progress-track"
-      id="progressTrack"
+    <div class="progress-track" id="progressTrack"
       role="progressbar"
       aria-label="Qualifying completed paid videos"
-      aria-valuemin="0"
-      aria-valuemax="6"
-      aria-valuenow="0">
+      aria-valuemin="0" aria-valuemax="6" aria-valuenow="0">
       <div class="progress-fill" id="progressFill"></div>
     </div>
 
@@ -636,17 +673,14 @@ body.zala-themed .zala-theme-control {
       Your music video orders, all in one place.
     </p>
 
-    <div id="orderHistory"
-      class="history-message"
-      role="status"
-      aria-live="polite">
+    <div id="orderHistory" class="history-message"
+      role="status" aria-live="polite">
       Loading your order history...
     </div>
 
     <p class="history-note">
-      Only orders associated with your signed-in
-      account appear here. New customer ordering
-      and checkout are not yet available.
+      Only orders associated with your signed-in account appear here.
+      New customer ordering and checkout are not yet available.
     </p>
   </section>
 
@@ -656,8 +690,7 @@ body.zala-themed .zala-theme-control {
   </div>
 </section>
 
-<p id="status" class="status"
-  role="status" aria-live="polite"></p>
+<p id="status" class="status" role="status" aria-live="polite"></p>
 
 <div class="foot">
   <a href="/customer.html">← Back to Main Studio</a>
@@ -709,8 +742,7 @@ const pageParams = new URLSearchParams(location.search);
 const studioView = pageParams.get('view') === 'studio';
 
 let mode = pageParams.get('mode') === 'signup'
-  ? 'register'
-  : 'login';
+  ? 'register' : 'login';
 
 let busy = false;
 let signedIn = false;
@@ -727,17 +759,14 @@ const currentGreeting = {
 function chooseGreeting(kind) {
   const choices = messages[kind];
   let index = Math.floor(Math.random() * choices.length);
-
-  if (choices.length > 1 &&
-      index === currentGreeting[kind]) {
+  if (choices.length > 1 && index === currentGreeting[kind]) {
     index = (index + 1) % choices.length;
   }
-
   currentGreeting[kind] = index;
   return choices[index];
 }
 
-function message(value, error = false) {
+function message(value,error = false) {
   $('status').textContent = value;
   $('status').className =
     'status ' + (error ? 'error' : 'success');
@@ -745,10 +774,9 @@ function message(value, error = false) {
 
 function hidePassword() {
   $('password').type = 'password';
-  $('togglePassword').setAttribute('aria-pressed', 'false');
-  $('togglePassword').setAttribute('aria-label', 'Show password');
+  $('togglePassword').setAttribute('aria-pressed','false');
+  $('togglePassword').setAttribute('aria-label','Show password');
   $('togglePassword').title = 'Show password';
-
   $('eyeIcon').innerHTML =
     '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>' +
     '<circle cx="12" cy="12" r="3"/>';
@@ -757,39 +785,31 @@ function hidePassword() {
 function setMode(next) {
   mode = next;
   const registering = mode === 'register';
-
-  $('nameField').classList.toggle('hidden', !registering);
+  $('nameField').classList.toggle('hidden',!registering);
   $('name').required = registering;
 
-  const [heading, description] = chooseGreeting(mode);
+  const [heading,description] = chooseGreeting(mode);
   $('heading').textContent = heading;
   $('description').textContent = description;
 
-  $('loginTab').setAttribute('aria-pressed', String(!registering));
-  $('registerTab').setAttribute('aria-pressed', String(registering));
-
+  $('loginTab').setAttribute('aria-pressed',String(!registering));
+  $('registerTab').setAttribute('aria-pressed',String(registering));
   $('submitButton').textContent =
     registering ? 'Create account' : 'Sign in';
-
   $('password').autocomplete =
     registering ? 'new-password' : 'current-password';
-
-  $('passwordHint').classList.toggle('hidden', !registering);
+  $('passwordHint').classList.toggle('hidden',!registering);
 
   hidePassword();
   message('');
 }
 
-$('togglePassword').addEventListener('click', () => {
+$('togglePassword').addEventListener('click',() => {
   const reveal = $('password').type === 'password';
-
   $('password').type = reveal ? 'text' : 'password';
-
+  $('togglePassword').setAttribute('aria-pressed',String(reveal));
   $('togglePassword').setAttribute(
-    'aria-pressed', String(reveal)
-  );
-  $('togglePassword').setAttribute(
-    'aria-label', reveal ? 'Hide password' : 'Show password'
+    'aria-label',reveal ? 'Hide password' : 'Show password'
   );
   $('togglePassword').title =
     reveal ? 'Hide password' : 'Show password';
@@ -802,7 +822,7 @@ $('togglePassword').addEventListener('click', () => {
 function resetLoyalty() {
   $('progressText').textContent = '0 of 6 videos';
   $('progressFill').style.width = '0%';
-  $('progressTrack').setAttribute('aria-valuenow', '0');
+  $('progressTrack').setAttribute('aria-valuenow','0');
   $('loyaltyPanel').classList.remove('unlocked');
 
   document.querySelectorAll('.milestone').forEach(
@@ -823,20 +843,18 @@ function updateLoyalty(loyalty) {
   }
 
   const count = Math.floor(Math.max(
-    0,
-    Math.min(6, Number(loyalty.qualifyingVideos) || 0)
+    0,Math.min(6,Number(loyalty.qualifyingVideos) || 0)
   ));
-
   const unlocked = loyalty.platinumUnlocked === true;
 
   $('progressText').textContent = count + ' of 6 videos';
   $('progressFill').style.width = (count / 6 * 100) + '%';
-  $('progressTrack').setAttribute('aria-valuenow', String(count));
-  $('loyaltyPanel').classList.toggle('unlocked', unlocked);
+  $('progressTrack').setAttribute('aria-valuenow',String(count));
+  $('loyaltyPanel').classList.toggle('unlocked',unlocked);
 
   document.querySelectorAll('.milestone').forEach(
-    (element, index) => {
-      element.classList.toggle('complete', index < count);
+    (element,index) => {
+      element.classList.toggle('complete',index < count);
     }
   );
 
@@ -851,16 +869,10 @@ function updateLoyalty(loyalty) {
 
 function friendlyDate(value) {
   if (!value) return 'Date unavailable';
-
   const date = new Date(value);
-  if (!Number.isFinite(date.getTime())) {
-    return 'Date unavailable';
-  }
-
-  return date.toLocaleDateString(undefined, {
-    year:'numeric',
-    month:'short',
-    day:'numeric'
+  if (!Number.isFinite(date.getTime())) return 'Date unavailable';
+  return date.toLocaleDateString(undefined,{
+    year:'numeric',month:'short',day:'numeric'
   });
 }
 
@@ -877,22 +889,18 @@ function statusLabel(value) {
     cancelled:'Cancelled',
     canceled:'Cancelled'
   };
-
   return labels[String(value || '').toLowerCase()]
     || 'Not available';
 }
 
-function makeDetail(label, value) {
+function makeDetail(label,value) {
   const line = document.createElement('div');
   line.className = 'order-detail';
-
   const name = document.createElement('span');
   name.textContent = label;
-
   const detail = document.createElement('span');
   detail.textContent = value;
-
-  line.append(name, detail);
+  line.append(name,detail);
   return line;
 }
 
@@ -923,9 +931,9 @@ function renderOrders(orders) {
     date.className = 'order-date';
     date.textContent = friendlyDate(order.createdAt);
 
-    card.append(title, date);
-    card.append(makeDetail('Payment', statusLabel(order.paymentStatus)));
-    card.append(makeDetail('Video', statusLabel(order.videoStatus)));
+    card.append(title,date);
+    card.append(makeDetail('Payment',statusLabel(order.paymentStatus)));
+    card.append(makeDetail('Video',statusLabel(order.videoStatus)));
 
     if (order.qualifiesForPlatinum === true) {
       const qualifying = document.createElement('p');
@@ -944,7 +952,6 @@ async function loadOrderHistory() {
 
   const generation = accountGeneration;
   const requestNumber = ++historyRequest;
-
   const isCurrent = () =>
     signedIn &&
     generation === accountGeneration &&
@@ -955,7 +962,7 @@ async function loadOrderHistory() {
   $('orderHistory').textContent = 'Loading your order history...';
 
   try {
-    const response = await fetch('/api/customer-order-history', {
+    const response = await fetch('/api/customer-order-history',{
       credentials:'same-origin',
       cache:'no-store',
       headers:{'Accept':'application/json'}
@@ -973,7 +980,6 @@ async function loadOrderHistory() {
     if (!response.ok || !data.ok) {
       throw new Error(data.error || 'Could not load order history.');
     }
-
     if (!isCurrent()) return;
 
     updateLoyalty(data.loyalty);
@@ -981,13 +987,11 @@ async function loadOrderHistory() {
 
   } catch (error) {
     if (!isCurrent()) return;
-
     resetLoyalty();
     $('orderHistory').className = 'history-message';
     $('orderHistory').textContent =
       'Unable to load order history. ' +
       error.message + ' Please try Refresh.';
-
   } finally {
     if (isCurrent()) {
       $('refreshOrders').disabled = false;
@@ -995,22 +999,21 @@ async function loadOrderHistory() {
   }
 }
 
-function showUser(user, newlyRegistered = false) {
+function showUser(user,newlyRegistered = false) {
   signedIn = true;
   accountGeneration++;
-
   $('authPanel').classList.add('hidden');
   $('profilePanel').classList.remove('hidden');
 
   const firstName = String(user.name || 'Hitmaker')
     .trim().split(/\s+/)[0];
 
-  const [heading, greeting] = chooseGreeting(
+  const [heading,greeting] = chooseGreeting(
     newlyRegistered ? 'newProfile' : 'profile'
   );
 
   $('profileHeading').textContent =
-    heading.replace('{name}', firstName);
+    heading.replace('{name}',firstName);
   $('profileGreeting').textContent = greeting;
 
   $('welcome').textContent =
@@ -1030,14 +1033,13 @@ function showAuth() {
 
   $('profilePanel').classList.add('hidden');
   $('authPanel').classList.remove('hidden');
-
   $('refreshOrders').disabled = false;
   $('orderHistory').replaceChildren();
   resetLoyalty();
   setMode('login');
 }
 
-async function request(route, options = {}) {
+async function request(route,options = {}) {
   const response = await fetch(
     '/api/customer-auth/' + route,
     {
@@ -1048,7 +1050,6 @@ async function request(route, options = {}) {
   );
 
   let data;
-
   try {
     data = await response.json();
   } catch {
@@ -1058,27 +1059,24 @@ async function request(route, options = {}) {
   if (!response.ok || !data.ok) {
     throw new Error(data.error || 'Request failed.');
   }
-
   return data;
 }
 
-function afterAuthentication(user, newlyRegistered = false) {
+function afterAuthentication(user,newlyRegistered = false) {
   if (studioView) {
-    showUser(user, newlyRegistered);
+    showUser(user,newlyRegistered);
   } else {
     window.location.assign('/customer.html');
   }
 }
 
-$('loginTab').addEventListener('click', () => setMode('login'));
-$('registerTab').addEventListener('click', () => setMode('register'));
-
+$('loginTab').addEventListener('click',() => setMode('login'));
+$('registerTab').addEventListener('click',() => setMode('register'));
 $('refreshOrders').addEventListener(
-  'click',
-  () => void loadOrderHistory()
+  'click',() => void loadOrderHistory()
 );
 
-$('authForm').addEventListener('submit', async event => {
+$('authForm').addEventListener('submit',async event => {
   event.preventDefault();
   if (busy) return;
 
@@ -1093,10 +1091,7 @@ $('authForm').addEventListener('submit', async event => {
     };
 
     const registering = mode === 'register';
-
-    if (registering) {
-      body.name = $('name').value.trim();
-    }
+    if (registering) body.name = $('name').value.trim();
 
     const data = await request(
       registering ? 'register' : 'login',
@@ -1109,39 +1104,35 @@ $('authForm').addEventListener('submit', async event => {
 
     $('password').value = '';
     hidePassword();
-
-    afterAuthentication(data.user, registering);
+    afterAuthentication(data.user,registering);
 
   } catch (error) {
-    message(error.message, true);
-
+    message(error.message,true);
   } finally {
     busy = false;
     $('submitButton').disabled = false;
   }
 });
 
-$('logoutButton').addEventListener('click', async () => {
+$('logoutButton').addEventListener('click',async () => {
   if (busy) return;
 
   busy = true;
   $('logoutButton').disabled = true;
 
   try {
-    await request('logout', {method:'POST'});
+    await request('logout',{method:'POST'});
     showAuth();
     message('You have signed out.');
-
   } catch (error) {
-    message(error.message, true);
-
+    message(error.message,true);
   } finally {
     busy = false;
     $('logoutButton').disabled = false;
   }
 });
 
-$('forgotPasswordButton').addEventListener('click', () => {
+$('forgotPasswordButton').addEventListener('click',() => {
   $('authForm').classList.add('hidden');
   $('forgotLinkArea').classList.add('hidden');
   $('forgotForm').classList.remove('hidden');
@@ -1153,7 +1144,7 @@ $('forgotPasswordButton').addEventListener('click', () => {
   message('');
 });
 
-$('backToLoginButton').addEventListener('click', () => {
+$('backToLoginButton').addEventListener('click',() => {
   $('forgotForm').classList.add('hidden');
   $('authForm').classList.remove('hidden');
   $('forgotLinkArea').classList.remove('hidden');
@@ -1161,7 +1152,7 @@ $('backToLoginButton').addEventListener('click', () => {
   setMode('login');
 });
 
-$('forgotForm').addEventListener('submit', async event => {
+$('forgotForm').addEventListener('submit',async event => {
   event.preventDefault();
   if (busy) return;
 
@@ -1170,18 +1161,18 @@ $('forgotForm').addEventListener('submit', async event => {
   message('Sending your reset link...');
 
   try {
-    const data = await request('forgot-password', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        email: $('forgotEmail').value.trim()
+    const data = await request('forgot-password',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        email:$('forgotEmail').value.trim()
       })
     });
 
     message(data.message ||
       'If your account exists, a reset link will be emailed.');
   } catch (error) {
-    message(error.message, true);
+    message(error.message,true);
   } finally {
     busy = false;
     $('sendResetButton').disabled = false;
@@ -1197,7 +1188,6 @@ request('me')
     }
   })
   .catch(() => {});
-
 </script>
 </body>
 </html>
