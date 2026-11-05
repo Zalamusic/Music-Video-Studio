@@ -157,7 +157,14 @@ textarea {
  min-height:170px;
  resize:vertical;
 }
-#lyrics { min-height:220px; overflow-y:hidden; }
+#lyrics {
+ height:280px;
+ min-height:280px;
+ max-height:280px;
+ overflow-y:auto;
+ resize:none;
+ overscroll-behavior:contain;
+}
 input:focus,textarea:focus,select:focus {
  border-color:var(--blue);
 }
@@ -200,14 +207,14 @@ select:focus-visible {
  outline:3px solid #f6b74a;
  outline-offset:2px;
 }
-.actions {
- display:flex;
+.actions { display:flex;
  flex-wrap:wrap;
  gap:10px;
  margin-top:16px;
 }
 .actions>* {flex:1}
-.small { font-size:12px;
+.small {
+ font-size:12px;
  line-height:1.6;
 }
 .note {
@@ -271,14 +278,14 @@ pre {
 .summary-grid {
  display:grid;
  grid-template-columns:repeat(2,minmax(0,1fr));
- gap:10px;
- margin:12px 0;
+ gap:10px; margin:12px 0;
 }
 .summary-item {
  background:var(--soft);
  padding:13px;
  border:1px solid var(--line);
- border-radius:12px; overflow-wrap:anywhere;
+ border-radius:12px;
+ overflow-wrap:anywhere;
 }
 .summary-item span {
  display:block;
@@ -340,14 +347,14 @@ pre {
  line-height:1.6;
 }
 .duration-message {
- margin-top:10px;
- font-size:13px;
+ margin-top:10px; font-size:13px;
  font-weight:700;
  overflow-wrap:anywhere;
 }
 .duration-file {
  margin-top:10px;
-} .duration-file input[type=file] {
+}
+.duration-file input[type=file] {
  font-size:14px;
  padding:12px;
 }
@@ -410,14 +417,14 @@ body.zala-themed .progress-track {
 body.zala-themed .progress-fill,
 body.zala-themed .step-number {
  background:var(--z-primary);
- color:var(--z-primary-text);
-}
+ color:var(--z-primary-text); }
 body.zala-themed button:not(.secondary) {
  background:var(--z-primary);
  color:var(--z-primary-text);
 }
 body.zala-themed .secondary,
-body.zala-themed .button-link { background:var(--z-surface);
+body.zala-themed .button-link {
+ background:var(--z-surface);
  color:var(--z-primary);
  border-color:var(--z-primary);
 }
@@ -477,14 +484,14 @@ body.zala-themed .button-link { background:var(--z-surface);
  Step 1 of 3 — Your Music
  </p>
 </section>
-<form id="directorForm" autocomplete="off">
- <section class="panel" id="musicStep">
+<form id="directorForm" autocomplete="off"> <section class="panel" id="musicStep">
  <div class="step-head">
  <div class="step-number">1</div>
  <div>
  <h2>Your Music</h2>
  <p>Every great music video begins with a song.</p>
- </div> </div>
+ </div>
+ </div>
  <label for="title">Song title</label>
  <input id="title" maxlength="120"
  placeholder="Safe With Me" required>
@@ -542,14 +549,14 @@ automatically, or enter the time below.
  <div>
  <label for="songSecondsPart">Seconds</label>
  <input
- id="songSecondsPart"
- type="number"
+ id="songSecondsPart" type="number"
  min="0"
  max="59.999"
  step="0.001"
  inputmode="decimal"
  placeholder="01"
- required> </div>
+ required>
+ </div>
  </div>
  <p class="duration-help">
  Example: A 4-minute, 1-second song is entered
@@ -604,13 +611,13 @@ automatically, or enter the time below.
  <option value="3D animation">3D Animation</option>
  <option value="anime">Anime</option>
  <option value="science fiction cinema">Science Fiction</option>
- <option value="fantasy cinema">Fantasy</option>
- </select>
+ <option value="fantasy cinema">Fantasy</option> </select>
  <label for="format">Video format</label>
  <select id="format">
  <option value="vertical">Vertical 9:16</option>
  <option value="landscape">Landscape 16:9</option>
- </select> <label for="sceneSeconds">Scene duration</label>
+ </select>
+ <label for="sceneSeconds">Scene duration</label>
  <select id="sceneSeconds">
  <option value="15">15 seconds</option>
  <option value="10">10 seconds</option>
@@ -664,22 +671,29 @@ automatically, or enter the time below.
  <button type="button" class="secondary"
  id="editVision">Edit My Vision</button>
  </div>
- </div>
- <div id="scenes"></div>
+ </div> <div id="scenes"></div>
 </section>
 <footer>
  <a href="/customer.html">← Return to Main Studio</a>
 </footer>
-</main> <script>
+</main>
+<script>
 'use strict';
 const $ = id => document.getElementById(id);
 const form = $('directorForm');
+// Keep the lyrics field readable without stretching the entire page.
+// The lyrics themselves scroll within the fixed-height field.
 function resizeLyrics() {
  const field = $('lyrics');
- field.style.height = 'auto';
- field.style.height = Math.max(220, field.scrollHeight + 4) + 'px';
+ field.style.height = '280px';
+ field.style.overflowY = 'auto';
 }
-$('lyrics').addEventListener('input', resizeLyrics);
+// After pasting a long song, show the beginning of the lyrics.
+$('lyrics').addEventListener('paste', () => {
+ requestAnimationFrame(() => {
+ $('lyrics').scrollTop = 0;
+ });
+});
 let latestPlan = null;
 let latestMusicPlan = null;
 let musicAnalysisMode = 'none';
@@ -715,8 +729,7 @@ function formatDuration(totalSeconds) {
  .padStart(3,'0')
  .replace(/0+$/,'');
  }
- return result;
-}
+ return result; }
 function durationFromFields() {
  const minuteText = $('songMinutes').value.trim();
  const secondText = $('songSecondsPart').value.trim();
@@ -725,7 +738,8 @@ function durationFromFields() {
  }
  const minutes = Number(minuteText);
  const seconds = Number(secondText);
- if ( !Number.isInteger(minutes) ||
+ if (
+ !Number.isInteger(minutes) ||
  minutes < 0 ||
  minutes > 6 ||
  !Number.isFinite(seconds) ||
@@ -770,8 +784,7 @@ function setDuration(totalSeconds) {
  return false;
  }
  const totalMilliseconds =
- Math.round(totalSeconds * 1000);
- const minutes =
+ Math.round(totalSeconds * 1000); const minutes =
  Math.floor(totalMilliseconds / 60000);
  const remainingMilliseconds =
  totalMilliseconds - minutes * 60000;
@@ -780,7 +793,8 @@ function setDuration(totalSeconds) {
  const milliseconds =
  remainingMilliseconds % 1000;
  let secondValue =
- String(wholeSeconds).padStart(2,'0'); if (milliseconds > 0) {
+ String(wholeSeconds).padStart(2,'0');
+ if (milliseconds > 0) {
  secondValue += '.' +
  String(milliseconds)
  .padStart(3,'0')
@@ -823,8 +837,7 @@ function readAudioDuration(file) {
  'Duration detection timed out. Enter it manually.'
  ));
  },15000);
- audio.preload = 'metadata';
- audio.addEventListener('loadedmetadata',() => {
+ audio.preload = 'metadata'; audio.addEventListener('loadedmetadata',() => {
  if (
  Number.isFinite(audio.duration) &&
  audio.duration > 0
@@ -836,7 +849,8 @@ function readAudioDuration(file) {
  if (
  Number.isFinite(audio.duration) &&
  audio.duration > 0
- ) { finish(null,audio.duration);
+ ) {
+ finish(null,audio.duration);
  }
  });
  audio.addEventListener('error',() => {
@@ -882,8 +896,7 @@ $('songAudio').addEventListener(
  ) {
  showAudioMessage(
  'This preview supports songs up to 6 minutes. ' +
- 'The selected song is ' +
- formatDuration(rounded) + '.',
+ 'The selected song is ' + formatDuration(rounded) + '.',
  true
  );
  return;
@@ -893,7 +906,8 @@ $('songAudio').addEventListener(
  '✓ Duration detected: ' +
  formatDuration(rounded) +
  '. Your Director is ready!'
- ); } catch (error) {
+ );
+ } catch (error) {
  if (checkId !== audioCheckId) return;
  showAudioMessage(
  error.message ||
@@ -941,8 +955,7 @@ function validateMusic() {
  ]) {
  if (!$(id).reportValidity()) {
  return false;
- }
- }
+ } }
  if (!updateDurationDisplay()) {
  $('status').textContent =
  'Please enter a valid song duration ' +
@@ -951,7 +964,8 @@ function validateMusic() {
  $('songMinutes').focus();
  return false;
  }
- $('status').textContent = ''; $('status').className = 'status';
+ $('status').textContent = '';
+ $('status').className = 'status';
  return true;
 }
 function addText(tag,value,parent) {
@@ -1001,8 +1015,7 @@ function subdivideMusicPlan(plan, duration, requestedSeconds) {
 async function getMusicPlan() {
  latestMusicPlan = null;
  musicAnalysisMode = 'estimated';
- const file = $('songAudio').files?.[0];
- if (!file || !$('analyzeSong').checked) {
+ const file = $('songAudio').files?.[0]; if (!file || !$('analyzeSong').checked) {
  $('analysisStatus').textContent = file
  ? 'Audio beat analysis skipped; storyboard timings will be estimated.'
  : 'No audio uploaded; storyboard timings will be estimated.';
@@ -1015,7 +1028,8 @@ async function getMusicPlan() {
  try {
  const response = await fetch('/api/test-music-intelligence',{
  method:'POST',
- headers:{'X-Video-Admin-Key':$('adminKey').value}, body:data
+ headers:{'X-Video-Admin-Key':$('adminKey').value},
+ body:data
  });
  const result = await response.json().catch(() => ({}));
  if (!response.ok || !result.ok || !Array.isArray(result.plan?.scenes) || !result.plan.scenes.length) {
@@ -1071,8 +1085,7 @@ function currentProductionPackage() {
  const scenes = (latestPlan.scenes || []).map((s,i) => ({
  sceneNumber:s.number || i+1,
  startSeconds:Number(s.startSeconds),
- endSeconds:Number(s.endSeconds),
- durationSeconds:Number(s.durationSeconds ?? s.endSeconds-s.startSeconds),
+ endSeconds:Number(s.endSeconds), durationSeconds:Number(s.durationSeconds ?? s.endSeconds-s.startSeconds),
  songSection:s.section || 'unlabeled',
  lyricTiming:s.lyricTiming || latestPlan.lyricTiming || 'unavailable',
  energy:s.intensity || 'unknown',
@@ -1085,7 +1098,8 @@ function currentProductionPackage() {
  status:'draft_awaiting_approval'
  }));
  return {
- schema:'cutloopz-intelligent-director-v1', generatedAt:new Date().toISOString(),
+ schema:'cutloopz-intelligent-director-v1',
+ generatedAt:new Date().toISOString(),
  title:latestPlan.title,
  durationSeconds:Number(latestPlan.songSeconds),
  format:$('format').value,
@@ -1138,8 +1152,7 @@ function renderPlan(plan) {
  ];
  for (const [label,value] of facts) {
  const card = document.createElement('div');
- card.className = 'summary-item';
- addText('span',label,card);
+ card.className = 'summary-item'; addText('span',label,card);
  addText(
  'strong',
  value ?? 'Not available',
@@ -1149,7 +1162,8 @@ function renderPlan(plan) {
  }
  $('musicSummary').textContent = musicAnalysisMode === 'audio'
  ? 'Music Intelligence informed the scene timeline and energy. Estimated tempo: ' +
- (Number(latestMusicPlan?.bpmEstimate) > 0 ? Math.round(Number(latestMusicPlan.bpmEstimate)) + ' BPM.'
+ (Number(latestMusicPlan?.bpmEstimate) > 0
+ ? Math.round(Number(latestMusicPlan.bpmEstimate)) + ' BPM.'
  : 'not available.')
  : 'Scenes use estimated timing; add an audio file and enable analysis for beat-informed timing.';
  for (const scene of plan.scenes || []) {
@@ -1195,8 +1209,7 @@ function renderPlan(plan) {
  card.appendChild(details);
  const editorLabel=addText('label',
  'Editable cinematic production prompt',card);
- const editor=document.createElement('textarea');
- editor.className='prompt-editor';
+ const editor=document.createElement('textarea'); editor.className='prompt-editor';
  editor.id='scenePrompt-'+scene.number;
  editor.setAttribute('aria-label','Scene '+scene.number+' cinematic prompt');
  editorLabel.setAttribute('for',editor.id);
@@ -1209,7 +1222,8 @@ function renderPlan(plan) {
  addText('p','Edit the action, location or camera before using this prompt.',card)
  .className='prompt-note';
  const tools=document.createElement('div');
- tools.className='prompt-tools'; const copy=document.createElement('button');
+ tools.className='prompt-tools';
+ const copy=document.createElement('button');
  copy.type='button';copy.className='secondary';
  copy.textContent='Copy Scene '+scene.number+' Prompt';
  copy.addEventListener('click',async () => {
@@ -1259,8 +1273,7 @@ function startNewSong() {
 }
 $('newSongButton').addEventListener('click',startNewSong);
 form.addEventListener('submit',async event => {
- event.preventDefault();
- if (
+ event.preventDefault(); if (
  !validateMusic() ||
  !$('adminKey').reportValidity()
  ) {
@@ -1269,7 +1282,8 @@ form.addEventListener('submit',async event => {
  $('createButton').disabled = true;
  $('status').textContent =
  'Preparing your cinematic storyboard...';
- $('status').className = 'status'; const musicPlan = await getMusicPlan();
+ $('status').className = 'status';
+ const musicPlan = await getMusicPlan();
  const payload = {
  musicPlan,
  title:$('title').value.trim(),
@@ -1316,8 +1330,7 @@ form.addEventListener('submit',async event => {
  $('status').className = 'status success';
  } catch (error) {
  $('status').textContent =
- 'Unable to create storyboard: ' +
- error.message;
+ 'Unable to create storyboard: ' + error.message;
  $('status').className = 'status error';
  } finally {
  $('createButton').disabled = false;
@@ -1327,7 +1340,8 @@ $('downloadButton').addEventListener('click',() => {
  if (!latestPlan) return;
  saveJson(latestPlan,'cutloopz-listening-director-storyboard.json');
 });
-$('downloadPrompts').addEventListener('click',() => { const packageData = currentProductionPackage();
+$('downloadPrompts').addEventListener('click',() => {
+ const packageData = currentProductionPackage();
  if (!packageData) return;
  saveJson(packageData,'cutloopz-cinematic-prompts.json');
 });
