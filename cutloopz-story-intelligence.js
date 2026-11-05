@@ -1,5 +1,5 @@
 /**
- * CutLoopz Media — Story Intelligence v5.1: Emotional Director
+ * CutLoopz Media — Story Intelligence v5.2: Emotional Director
  *
  * Drop-in replacement for cutloopz-story-intelligence.js.
  * Existing server API: createStoryIntelligencePlan({
@@ -28,77 +28,88 @@ const contains = (text, term) => (` ${normalize(text)} `).includes(` ${normalize
 // Wider labels remain distinguishable (love ≠ happiness, pain ≠ aggression).
 const EMOTIONS = {
  reassurance: [
- ['safe with me', 7], ['you are safe', 7], ["you're safe", 7],
- ['you always were', 5], ["i'll stay", 6], ['i will stay', 6],
- ["i won't disappear", 7], ["i'm still here", 6],
- ["i'm not going anywhere", 7], ["i'm not walking away", 6],
- ["won't turn away", 5], ['not alone', 5], ['trust me', 4],
- ['you can trust', 4], ['hold your hand', 4], ['hand in mine', 5],
- ['with me', 1], ['reassurance', 4], ['comfort', 3], ['shelter', 3]
+ ['reassurance', 5], ['reassure', 5], ['safe', 7], ['feel safe', 5],
+ ['safety', 4], ['security', 4], ['comfort', 4], ['comforting', 4],
+ ['support', 4], ['supportive', 4], ['protected', 4],
+ ['you can count on me', 7], ['here for you', 6],
+ ['stand by you', 6], ['trust me', 5], ['stay together', 4],
+ ['always there', 4], ['not alone', 6], ['stay', 3], ['remain', 3],
+ ['still here', 4], ['rely on me', 5],
+ ['shelter', 3], ['peace of mind', 5], ['depend on me', 5]
  ],
  vulnerability: [
- ['fall apart', 6], ['scars', 4], ['afraid', 4], ['fears', 4],
- ['fear', 3], ['cry', 3], ['tears', 4], ['pretend', 3],
- ['hurt', 4], ['break in your voice', 7], ['bleed', 4],
- ['broken', 3], ['silence', 2], ['weak', 3], ['lonely', 3],
- ['vulnerable', 5], ['pain', 4], ['heartache', 5]
+ ['vulnerability', 6], ['vulnerable', 6], ['fragile', 4],
+ ['exposed', 3], ['insecure', 4], ['afraid', 4], ['scared', 4],
+ ['fear', 3], ['cry', 3], ['tears', 4], ['hurt', 4],
+ ['broken', 4], ['pain', 4], ['uncertain', 3],
+ ['anxious', 4], ['weak', 3], ['hide my feelings', 5],
+ ['struggling', 4], ['falling apart', 6]
  ],
  heartbreak: [
- ['heartbreak', 7], ['goodbye', 6], ['broken heart', 7],
- ['left me', 6], ['lost you', 6], ['miss you', 4],
- ["don't love me", 7], ['love is gone', 7], ['betrayed', 6],
- ['alone tonight', 4], ['cheated', 6], ['relationship ended', 7]
+ ['heartbreak', 7], ['broken heart', 7], ['goodbye', 4],
+ ['breakup', 7], ['separation', 5], ['rejected', 5],
+ ['lost love', 6], ['unrequited', 6], ['betrayed', 6],
+ ['cheated on', 7], ['love is over', 6], ['ended our love', 7]
  ],
  romance: [
- ['falling in love', 7], ['in love', 4], ['love you', 4],
- ['kiss', 4], ['together forever', 6], ['lover', 4],
- ['romantic', 5], ['intimate', 3], ['heartbeat', 2],
- ['hold me close', 4], ['my heart belongs', 4]
+ ['romance', 6], ['romantic', 5], ['in love', 5],
+ ['fall in love', 6], ['falling in love', 6], ['love you', 4],
+ ['affection', 5], ['lover', 4], ['sweetheart', 4],
+ ['kiss', 4], ['adore', 5], ['passion', 4],
+ ['devotion', 4], ['tenderness', 4], ['intimate', 3]
  ],
  grief: [
- ['passed away', 8], ['rest in peace', 8], ['funeral', 7],
- ['mourning', 7], ['grief', 7], ['gone forever', 7],
- ['death', 5], ['never see you again', 6]
+ ['grief', 7], ['mourning', 7], ['bereavement', 7],
+ ['passed away', 7], ['funeral', 7], ['death', 5],
+ ['memorial', 5], ['remembrance', 5], ['in loving memory', 6]
  ],
- longing: [
- ['wish you were here', 7], ['missing you', 6],
- ['waiting for you', 5], ['far away', 3], ['come back', 4],
- ['distance', 3], ['yearning', 6], ['longing', 6]
+ longing: [ ['longing', 6], ['yearning', 6], ['homesick', 6],
+ ['homesickness', 6], ['miss you', 5], ['missing you', 5],
+ ['distance', 3], ['far away', 3], ['separated', 4],
+ ['waiting for you', 4], ['wish you were here', 5]
  ],
  hope: [
- ['hope', 5], ['healing', 5], ['new beginning', 7],
- ['tomorrow', 3], ['rise again', 6], ['light at the end', 6], ['brighter day', 6], ['better days', 5], ['finally breathe', 5],
- ['land softly', 4], ['freedom', 4]
+ ['hope', 5], ['hopeful', 5], ['optimism', 5],
+ ['healing', 5], ['new beginning', 6], ['new start', 5],
+ ['brighter future', 5], ['better days', 5],
+ ['rise again', 5], ['recover', 4], ['renewal', 5],
+ ['possibility', 4], ['persevere', 4], ['forgive', 4]
  ],
  reflection: [
- ['remember', 4], ['memories', 5], ['looking back', 6],
- ['regret', 5], ['the past', 4], ['yesterday', 3],
- ['used to be', 3], ['reflect', 4]
+ ['remember', 4], ['memories', 4], ['looking back', 5],
+ ['regret', 5], ['reminisce', 5], ['the past', 3],
+ ['yesterday', 3], ['nostalgia', 5], ['reflection', 5],
+ ['questioning myself', 5]
  ],
  confidence: [
- ['baddie', 8], ['face card', 7], ['that girl', 5],
- ['i am the prize', 7], ['independent', 5], ['boss', 5],
- ['confidence', 6], ['confident', 6], ['superstar', 5],
- ['show off', 6], ['bragging', 6], ['my own money', 6],
- ['my own', 3], ['untouchable', 5], ['swagger', 6],
- ['look at me', 1], ['i own', 4], ['stuck up', 6]
+ ['confidence', 6], ['confident', 6], ['self respect', 6],
+ ['self assured', 5], ['proud', 5], ['pride', 4],
+ ['independent', 5], ['independence', 5], ['self worth', 5],
+ ['ambitious', 4], ['empowered', 5], ['unstoppable', 5],
+ ['bragging', 5], ['swagger', 5], ['boast', 5],
+ ['accomplished', 4], ['self esteem', 5]
  ],
  luxury: [
- ['private jet', 8], ['designer', 5], ['diamonds', 6],
- ['jewelry', 5], ['wealthy', 6], ['rich', 4],
- ['money', 3], ['mansion', 6], ['penthouse', 7],
- ['expensive', 5], ['vip', 4], ['fashion', 3],
- ['shopping', 3], ['luxury', 6], ['sports car', 5]
+ ['luxury', 6], ['designer', 5], ['diamonds', 5],
+ ['jewelry', 4], ['wealthy', 6], ['rich', 3],
+ ['money', 3], ['mansion', 5], ['penthouse', 5],
+ ['expensive', 4], ['vip', 4], ['fashion', 3],
+ ['shopping', 3], ['private jet', 7], ['sports car', 5],
+ ['lavish', 5], ['opulent', 5]
  ],
  celebration: [
- ['party', 5], ['celebrate', 7], ['dance all night', 7],
- ['club', 4], ['winning', 5], ['crowd', 3],
- ['festival', 5], ['have fun', 4], ['turn up', 5]
+ ['party', 5], ['celebrate', 6], ['celebration', 6],
+ ['dancing', 4], ['dance', 3], ['joyful', 4],
+ ['club', 3], ['winning', 5], ['festival', 5],
+ ['have fun', 4], ['excited', 4], ['victory', 5],
+ ['cheering', 4], ['festive', 4]
  ],
  conflict: [
- ['revenge', 7], ['betrayal', 6], ['fight', 4],
- ['enemy', 6], ['argument', 5], ['furious', 6],
- ['war', 4], ['angry', 5], ['cheating', 5]
+ ['conflict', 5], ['revenge', 7], ['betrayal', 5],
+ ['fight', 4], ['enemy', 5], ['argument', 5],
+ ['furious', 6], ['war', 4], ['angry', 5],
+ ['cheating', 4], ['injustice', 5], ['resentment', 5],
+ ['confrontation', 5]
  ]
 };
 // A second layer interprets more specific human feelings. These are
@@ -110,17 +121,16 @@ const NUANCE_LEXICON = {
  joy: {theme:'celebration', cues:['joy','happy','happiness','delight','bliss','euphoria','elated','pleasure','ecstasy']},
  serenity: {theme:'reassurance', cues:['peace','serenity','calm','contentment','satisfied','tranquil','equanimity','at ease']},
  gratitude: {theme:'hope', cues:['grateful','gratitude','thankful','appreciate you','blessed','thank you for']},
- tenderness: {theme:'romance', cues:['tender','tenderness','affection','adoration','fondness','warmth','hold me close']},
+ tenderness: {theme:'romance', cues:['tender','tenderness','affection','adoration','fondness','warmth','gentle touch']},
  compassion: {theme:'reassurance', cues:['compassion','empathy','sympathy','mercy','kindness','care about you','concern for']},
  trust: {theme:'reassurance', cues:['trust','faith in you','loyalty','believe in you','rely on you','i feel safe']},
  belonging: {theme:'reassurance', cues:['belong','belonging','connection','connected to you','you are my home','you are not alone','by my side']},
- relief: {theme:'reassurance', cues:['relief','relieved','breathing again','burden lifted','safe with me','finally breathe']},
+ relief: {theme:'reassurance', cues:['relief','relieved','breathing again','burden lifted','safe again','finally at ease']},
  optimism: {theme:'hope', cues:['optimism','optimistic','hopeful','healing','brighter tomorrow','new beginning','better days']},
  pride: {theme:'confidence', cues:['pride','proud','self respect','dignity','made it','earned this','head held high']},
- arrogance: {theme:'confidence', cues:['arrogant','arrogance','vanity','cocky','better than you','show off','stuck up','i am the prize']},
+ arrogance: {theme:'confidence', cues:['arrogant','arrogance','vanity','cocky','better than you','show off','boastful','self important']},
  amusement: {theme:'celebration', cues:['laughing','laughter','playful','silly','joking','teasing','amused']},
- excitement: {theme:'celebration', cues:['excited','excitement','thrill','enthusiasm','hyped','eager','pumped']},
- triumph: {theme:'celebration', cues:['triumph','victory','won','champion','accomplishment','achievement','overcame']},
+ excitement: {theme:'celebration', cues:['excited','excitement','thrill','enthusiasm','hyped','eager','pumped']}, triumph: {theme:'celebration', cues:['triumph','victory','won','champion','accomplishment','achievement','overcame']},
  curiosity: {theme:'reflection', cues:['curious','curiosity','intrigued','fascinated','i wonder why','discover','question everything']},
  determination: {theme:'confidence', cues:['determined','resolve','grit','never give up','keep going','unstoppable','brave','courage']},
  forgiveness: {theme:'hope', cues:['forgive','forgiveness','forgiven','acceptance','let it go','make peace','reconcile']},
@@ -138,7 +148,8 @@ const NUANCE_LEXICON = {
  insecurity: {theme:'vulnerability', cues:['insecurity','insecure','uncertain','doubt','fragile','fragility','exposed','vulnerable']},
  anger: {theme:'conflict', cues:['anger','angry','rage','furious','fury','irritated','frustrated','indignant','outraged','resentment']},
  bitterness: {theme:'conflict', cues:['bitterness','bitter','hostile','hatred','loathing','contempt','scorn','disdain','spite']},
- betrayal: {theme:'heartbreak', cues:['betrayed','betrayal','cheated on','lied to me','broken trust','deceived','distrust','suspicious']}, jealousy: {theme:'conflict', cues:['jealous','jealousy','envy','envious','rivalry','i envy','covet']},
+ betrayal: {theme:'heartbreak', cues:['betrayed','betrayal','cheated on','lied to me','broken trust','deceived','distrust','suspicious']},
+ jealousy: {theme:'conflict', cues:['jealous','jealousy','envy','envious','rivalry','i envy','covet']},
  disgust: {theme:'conflict', cues:['disgust','revulsion','repulsed','revolted','distaste','makes me sick','disapproval']},
  stress: {theme:'vulnerability', cues:['stressed','stress','overwhelmed','burnout','exhausted','exhaustion','drained','restless']},
  confusion: {theme:'reflection', cues:['confused','confusion','uncertain','ambivalence','mixed feelings','torn between','not sure why']},
@@ -186,8 +197,7 @@ function blendedEmotion(text, nuance = {}) {
  const b = NUANCE_LEXICON[second[0]]?.theme;
  if (a === b || second[1] < first[1] * 0.65) return null;
  return `${first[0]} + ${second[0]}`;
-}
-const INTIMATE = new Set([
+} const INTIMATE = new Set([
  'reassurance', 'vulnerability', 'heartbreak', 'romance',
  'grief', 'longing', 'hope', 'reflection'
 ]);
@@ -207,7 +217,8 @@ const LOCATION_CUES = [
  ['park', 'park'], ['forest', 'forest'], ['desert', 'desert'],
  ['space station', 'space station'], ['planet', 'otherworldly planet landscape'],
  ['home', 'home interior']
-]; function scoreEmotions(text, concept = '', conceptWeight = 0.35) {
+];
+function scoreEmotions(text, concept = '', conceptWeight = 0.35) {
  const scores = {};
  for (const [emotion, entries] of Object.entries(EMOTIONS)) {
  let total = 0;
@@ -250,8 +261,7 @@ function timestamp(text) {
  const m = String(text).match(/^\s*(?:(\d+):)?(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\s*$/);
  if (!m) return null;
  const h = Number(m[1] || 0), minutes = Number(m[2]), seconds = Number(m[3]);
- if ((m[1] && minutes > 59) || seconds > 59) return null;
- return h * 3600 + minutes * 60 + seconds + Number(`0.${m[4] || '0'}`);
+ if ((m[1] && minutes > 59) || seconds > 59) return null; return h * 3600 + minutes * 60 + seconds + Number(`0.${m[4] || '0'}`);
 }
 function parseLyrics(raw) {
  let section = 'unlabeled';
@@ -277,7 +287,8 @@ function lyricTimeline(lines, duration) {
  startSeconds: clamp(line.time, 0, duration),
  endSeconds: clamp(index + 1 < ordered.length ? ordered[index + 1].time : duration, 0, duration),
  timingSource: 'provided'
- })).filter(line => line.endSeconds > line.startSeconds); }
+ })).filter(line => line.endSeconds > line.startSeconds);
+ }
  return lines.map((line, index) => ({
  ...line,
  startSeconds: round(index * duration / lines.length),
@@ -316,8 +327,7 @@ function segmentMusic(plan, duration, clip) {
 }
 const LOCATION_SETS = {
  intimate: [
- 'quiet apartment living room beside a window',
- 'softly lit apartment hallway',
+ 'quiet apartment living room beside a window', 'softly lit apartment hallway',
  'peaceful tree-lined path at dawn'
  ],
  luxury: [
@@ -346,7 +356,8 @@ const ACTIONS = {
  'The performer listens attentively toward the edge of the frame, then responds with a subtle reassuring nod.',
  'The performer remains present and grounded, holding a quiet expression of compassion.'
  ],
- vulnerability: [ 'The performer hesitates beside a window, revealing a vulnerable expression without exaggerated tears.',
+ vulnerability: [
+ 'The performer hesitates beside a window, revealing a vulnerable expression without exaggerated tears.',
  'The performer lowers their gaze and takes a measured breath, communicating emotional uncertainty.',
  'A fleeting expression of sadness crosses the performer’s face before they regain composure.',
  'The performer rests one hand against a doorframe, pausing in a private reflective moment.',
@@ -382,8 +393,7 @@ const ACTIONS = {
  'The performer pauses over a familiar object and then quietly sets it aside.',
  'The performer looks toward a familiar space as a memory returns, keeping the moment grounded.',
  'The performer sits quietly in thought while the camera observes without interruption.'
- ],
- confidence: [
+ ], confidence: [
  'The performer makes a self-assured entrance and confidently holds the lens.',
  'The performer delivers a playful, commanding performance with deliberate body language.',
  'The performer walks through the setting with poised, runway-inspired energy.',
@@ -409,25 +419,25 @@ const ACTIONS = {
  'The performer moves naturally within the chosen location, allowing the lyrics to guide expression.'
  ]
 };
+// Generic semantic cues only; never embed example-song lyrics in production rules.
+// When an action is not justified by the lyric's meaning, fall back to an
+// emotion-appropriate performance. These rules are advisory, not transcription.
 function lyricSpecificAction(text, emotion) {
  if (!text) return null;
- if (contains(text, 'break in your voice'))
- return 'The performer listens carefully toward the edge of frame; concern gives way to patient understanding.';
- if (contains(text, 'you don\'t have to pretend') || contains(text, 'you do not have to pretend'))
- return 'The performer relaxes a guarded expression and meets the camera with openness.';
- if (contains(text, 'hand in mine') || contains(text, 'hold your hand'))
- return 'The performer offers an open hand toward the camera, suggesting connection without inventing an unseen partner.'; if (contains(text, 'i won\'t disappear') || contains(text, "i'm still here"))
- return 'The performer maintains a steady presence as the camera approaches, communicating a promise to remain.';
- if (contains(text, 'the past') && emotionalFamily(emotion) === 'intimate')
- return 'The performer looks briefly backward, then returns attention to the present with quiet resolve.';
- if (emotion === 'confidence' || emotion === 'luxury') {
- if (contains(text, 'face card') || contains(text, 'pretty'))
- return 'The performer confidently holds a beauty close-up with an editorial look and playful attitude.';
- if (contains(text, 'heels') || contains(text, 'walk through the door'))
- return 'The performer makes a memorable high-fashion entrance with confident, natural footsteps.';
- if (contains(text, 'my own money') || contains(text, 'own keys'))
- return 'The performer confidently displays independence through purposeful action and polished styling.';
- }
+ if (['reassurance', 'romance', 'longing'].includes(emotion)
+ && /\b(hand|hands|touch|embrace|hug)\b/i.test(text))
+ return 'The performer uses a natural, gentle gesture toward the camera, suggesting human connection without inventing another performer.';
+ if (['vulnerability', 'heartbreak', 'grief'].includes(emotion)
+ && /\b(tear|tears|cry|crying|sorrow|sadness)\b/i.test(text))
+ return 'A quiet change in the performer’s eyes suggests emotion without forcing theatrical crying.';
+ if (['reflection', 'longing', 'hope'].includes(emotion)
+ && /\b(memory|memories|remember|past|yesterday)\b/i.test(text))
+ return 'The performer glances toward a familiar part of the environment, briefly remembering, then returns to the present.';
+ if (['confidence', 'luxury'].includes(emotion)
+ && /\b(style|fashion|clothes|outfit|designer|dress|shoes)\b/i.test(text))
+ return 'The performer delivers an assured editorial fashion moment with graceful, realistic body movement.';
+ if (emotion === 'celebration' && /\b(dance|dancing|celebrate|party|victory)\b/i.test(text))
+ return 'The performer celebrates with rhythmically natural movement appropriate to the measured musical intensity.';
  return null;
 }
 function roleForIndex(index, total) {
@@ -447,8 +457,7 @@ function chooseVisualEnergy(audioEnergy, emotion, overall, change) {
  if (family === 'expressive') return audioEnergy === 'high' ? 'energetic' : audioEnergy === 'low' ? 'measured' : 'dynamic';
  return audioEnergy === 'high' ? 'dynamic' : 'measured';
 }
-function filmDirection(emotion, visualEnergy, index, total) {
- const stage = roleForIndex(index, total);
+function filmDirection(emotion, visualEnergy, index, total) { const stage = roleForIndex(index, total);
  if (visualEnergy === 'restrained' || visualEnergy === 'emotional crescendo') {
  const intimateShots = ['intimate close-up', 'patient medium shot', 'over-the-shoulder-style profile',
  'quiet wide establishing shot', 'natural eye-level close-up'];
@@ -485,7 +494,8 @@ function lightingFor(emotion, stage) {
  const map = {
  reassurance: 'warm practical light with gentle natural fill',
  vulnerability: 'soft window light with delicate shadows',
- heartbreak: 'subdued atmospheric natural light', romance: 'warm intimate cinematic light',
+ heartbreak: 'subdued atmospheric natural light',
+ romance: 'warm intimate cinematic light',
  grief: 'soft muted respectful lighting',
  longing: 'wistful dusk light with a natural horizon',
  hope: 'gradually brightening natural light',
@@ -513,8 +523,7 @@ function sceneLocation(index, total, overall, chosen, fixed, segmentLyrics) {
  if (lyricalPlaces.length && contains(segmentLyrics, 'at ' + lyricalPlaces[0]))
  return lyricalPlaces[0];
  // Avoid location hopping: intimate videos hold environments over several shots.
- const count = family === 'intimate' ? Math.min(3, Math.ceil(total / 4))
- : Math.min(pool.length, Math.max(2, Math.ceil(total / 3)));
+ const count = family === 'intimate' ? Math.min(3, Math.ceil(total / 4)) : Math.min(pool.length, Math.max(2, Math.ceil(total / 3)));
  const group = Math.min(count - 1, Math.floor(index * count / total));
  return pool[group];
 }
@@ -552,7 +561,8 @@ export function createStoryIntelligencePlan({
  }
  const overall = topEmotion(totals);
  const wholeNuances = nuanceScores(wholeLyrics, concept, 0.5);
- const songBlend = blendedEmotion(`${wholeLyrics} ${concept}`, wholeNuances); const ranked = ranking(totals).filter(([, score]) => score > 0).slice(0, 4);
+ const songBlend = blendedEmotion(`${wholeLyrics} ${concept}`, wholeNuances);
+ const ranked = ranking(totals).filter(([, score]) => score > 0).slice(0, 4);
  const locations = findLocations(concept);
  const fixed = oneLocation(concept);
  const usedActions = new Set();
@@ -575,8 +585,7 @@ export function createStoryIntelligencePlan({
  const camera = filmDirection(emotion, visualEnergy, index, segments.length);
  const location = sceneLocation(index, segments.length, overall, locations, fixed, excerpt);
  const lighting = lightingFor(emotion, narrativeBeat);
- const candidates = ACTIONS[emotion] || ACTIONS.undetermined;
- const specific = lyricSpecificAction(excerpt, emotion);
+ const candidates = ACTIONS[emotion] || ACTIONS.undetermined; const specific = lyricSpecificAction(excerpt, emotion);
  let action = specific || candidates[index % candidates.length];
  const key = normalize(action);
  // Avoid repeated instructions, including repeated chorus lyric cues.
@@ -621,7 +630,8 @@ export function createStoryIntelligencePlan({
  endSeconds: segment.endSeconds,
  durationSeconds: round(segment.endSeconds - segment.startSeconds),
  section: matches[0]?.section || 'unlabeled',
- lyricExcerpt: excerpt, lyricTiming: matches[0]?.timingSource || (timed.length ? 'estimated' : 'unavailable'),
+ lyricExcerpt: excerpt,
+ lyricTiming: matches[0]?.timingSource || (timed.length ? 'estimated' : 'unavailable'),
  emotion,
  emotionalSubtones: localNuances,
  blendedEmotion: localBlend || songBlend,
@@ -641,15 +651,14 @@ export function createStoryIntelligencePlan({
  });
  const warnings = [];
  if (!lines.length) warnings.push('No lyrics supplied. Emotion is based on the customer concept only.');
- if (lines.length && timed[0]?.timingSource === 'estimated')
- warnings.push('Lyrics have no timestamps, so scene-to-lyric alignment is estimated.');
+ if (lines.length && timed[0]?.timingSource === 'estimated') warnings.push('Lyrics have no timestamps, so scene-to-lyric alignment is estimated.');
  if (!musicPlan || !segments.some(segment => segment.audioMatched))
  warnings.push('No usable audio-derived intensity plan. Camera pace is conservatively estimated.');
  if (overall === 'undetermined') warnings.push('Insufficient lyrical evidence to classify the song confidently.');
  if (locations.length && !fixed && locations.length > segments.length)
  warnings.push('More locations requested than available scenes; some locations may be omitted.');
  return {
- version: '5.1',
+ version: '5.2',
  engine: 'CutLoopz Emotional Director',
  status: 'preview',
  title: clean(title, 120),
@@ -683,9 +692,7 @@ export function createStoryIntelligencePlan({
  'No automatic lyric transcription; supply the lyrics separately.',
  'Untimed lyrics are assigned approximate positions, not exact vocal alignment.',
  'Audio-derived intensity and BPM are approximations and can be wrong.',
- 'Storyboard preview only; does not trigger paid video generation.
-
-   preview only; does not trigger paid video generation.'
+ 'Storyboard preview only; does not trigger paid video generation.'
  ]
  };
 }
