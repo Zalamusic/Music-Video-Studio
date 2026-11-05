@@ -1,0 +1,38 @@
+
+name: CutLoopz - Install Performance Pilot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest repository code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pilot without replacing newer server features
+        run: node cutloopz-install-performance-pilot.mjs
+      - name: Check JavaScript syntax
+        run: |
+          node --check server.js
+          node --check cutloopz-performance-pilot.js
+      - name: Commit only the safe server integration
+        run: |
+          if ! git diff --quiet -- server.js; then
+            git config user.name "CutLoopz Installer"
+            git config user.email "cutloopz-installer@users.noreply.github.com"
+            git add server.js
+            git commit -m "Install admin-only audio-driven performance pilot"
+            git push
+          else
+            echo "Pilot already installed. No changes to commit."
+          fi
