@@ -1,73 +1,691 @@
-
-/** CutLoopz Story Intelligence v4 — rule-based, no paid API calls. */
-const MAX_SECONDS=360,MAX_LYRICS=30000,MAX_SCENES=100;
-const clean=(v,n=1000)=>typeof v==='string'?v.trim().slice(0,n):'';
-const round=n=>Math.round(n*100)/100;
-const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}\s']/gu,' ').replace(/\s+/g,' ').trim();
-const has=(s,p)=>(' '+norm(s)+' ').includes(' '+norm(p)+' ');
-const THEMES={
- confidence:['baddie','confidence','confident','face card','pretty','beautiful','gorgeous','that girl','own show','prize','worth','independent','own money','my own','boss','run my','untouchable','superstar','stuck up','arrogant','show off','swagger','bragging','self made'],
- luxury:['luxury','wealthy','rich','money','paid','designer','jewelry','diamonds','private jet','penthouse','mansion','sports car','expensive','vip','shopping','boutique','champagne','glamorous','fashion'],
- celebration:['party','dance','celebrate','winning','club','nightclub','festival','fun','crowd'],
- heartbreak:['heartbreak','goodbye','left me','lost you','betrayed','miss you','lonely','broken heart'],
- reassurance:['safe with me','you are safe',"you're safe",'i will stay',"i'll stay",'not alone','you can trust','i got you','hold your hand'],
- romance:['falling in love','in love','kiss me','hold me','my lover','together forever','romantic','romance'],
- vulnerability:['afraid','fear','tears','crying','fall apart','scars','hurt','bleeding','helpless'],
- hope:['healing','tomorrow','new beginning','rise again','hope','stronger','freedom'],
- conflict:['fight','argue','cheating','betrayal','angry','revenge','enemy'],
- reflection:['remember','memories','regret','yesterday','looking back','past']
+/**
+ * CutLoopz Media — Story Intelligence v5.1: Emotional Director
+ *
+ * Drop-in replacement for cutloopz-story-intelligence.js.
+ * Existing server API: createStoryIntelligencePlan({
+ * title, lyrics, songSeconds, musicPlan, prompt, format,
+ * sceneSeconds, visualStyle
+ * })
+ *
+ * No external APIs, no paid video generation, no file writes.
+ * Intent: combine lyric meaning, audio-derived energy and customer
+ * direction into coherent, editable music-video storyboards.
+ * This is interpretable, rule-based analysis; it is NOT an LLM or
+ * automatic speech/lyric transcription system.
+ */
+const MAX_SECONDS = 360;
+const MAX_LYRICS = 12000;
+const MAX_SCENES = 100;
+const round = n => Math.round(n * 100) / 100;
+const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+const clean = (v, limit = 1000) => String(v ?? '').trim().slice(0, limit);
+const normalize = s => clean(s, 35000).toLowerCase()
+ .replace(/[’‘]/g, "'")
+ .replace(/[^\p{L}\p{N}\s']/gu, ' ')
+ .replace(/\s+/g, ' ').trim();
+const contains = (text, term) => (` ${normalize(text)} `).includes(` ${normalize(term)} `);
+// Phrases are deliberately more specific than individual sentiment words.
+// Wider labels remain distinguishable (love ≠ happiness, pain ≠ aggression).
+const EMOTIONS = {
+ reassurance: [
+ ['safe with me', 7], ['you are safe', 7], ["you're safe", 7],
+ ['you always were', 5], ["i'll stay", 6], ['i will stay', 6],
+ ["i won't disappear", 7], ["i'm still here", 6],
+ ["i'm not going anywhere", 7], ["i'm not walking away", 6],
+ ["won't turn away", 5], ['not alone', 5], ['trust me', 4],
+ ['you can trust', 4], ['hold your hand', 4], ['hand in mine', 5],
+ ['with me', 1], ['reassurance', 4], ['comfort', 3], ['shelter', 3]
+ ],
+ vulnerability: [
+ ['fall apart', 6], ['scars', 4], ['afraid', 4], ['fears', 4],
+ ['fear', 3], ['cry', 3], ['tears', 4], ['pretend', 3],
+ ['hurt', 4], ['break in your voice', 7], ['bleed', 4],
+ ['broken', 3], ['silence', 2], ['weak', 3], ['lonely', 3],
+ ['vulnerable', 5], ['pain', 4], ['heartache', 5]
+ ],
+ heartbreak: [
+ ['heartbreak', 7], ['goodbye', 6], ['broken heart', 7],
+ ['left me', 6], ['lost you', 6], ['miss you', 4],
+ ["don't love me", 7], ['love is gone', 7], ['betrayed', 6],
+ ['alone tonight', 4], ['cheated', 6], ['relationship ended', 7]
+ ],
+ romance: [
+ ['falling in love', 7], ['in love', 4], ['love you', 4],
+ ['kiss', 4], ['together forever', 6], ['lover', 4],
+ ['romantic', 5], ['intimate', 3], ['heartbeat', 2],
+ ['hold me close', 4], ['my heart belongs', 4]
+ ],
+ grief: [
+ ['passed away', 8], ['rest in peace', 8], ['funeral', 7],
+ ['mourning', 7], ['grief', 7], ['gone forever', 7],
+ ['death', 5], ['never see you again', 6]
+ ],
+ longing: [
+ ['wish you were here', 7], ['missing you', 6],
+ ['waiting for you', 5], ['far away', 3], ['come back', 4],
+ ['distance', 3], ['yearning', 6], ['longing', 6]
+ ],
+ hope: [
+ ['hope', 5], ['healing', 5], ['new beginning', 7],
+ ['tomorrow', 3], ['rise again', 6], ['light at the end', 6], ['brighter day', 6], ['better days', 5], ['finally breathe', 5],
+ ['land softly', 4], ['freedom', 4]
+ ],
+ reflection: [
+ ['remember', 4], ['memories', 5], ['looking back', 6],
+ ['regret', 5], ['the past', 4], ['yesterday', 3],
+ ['used to be', 3], ['reflect', 4]
+ ],
+ confidence: [
+ ['baddie', 8], ['face card', 7], ['that girl', 5],
+ ['i am the prize', 7], ['independent', 5], ['boss', 5],
+ ['confidence', 6], ['confident', 6], ['superstar', 5],
+ ['show off', 6], ['bragging', 6], ['my own money', 6],
+ ['my own', 3], ['untouchable', 5], ['swagger', 6],
+ ['look at me', 1], ['i own', 4], ['stuck up', 6]
+ ],
+ luxury: [
+ ['private jet', 8], ['designer', 5], ['diamonds', 6],
+ ['jewelry', 5], ['wealthy', 6], ['rich', 4],
+ ['money', 3], ['mansion', 6], ['penthouse', 7],
+ ['expensive', 5], ['vip', 4], ['fashion', 3],
+ ['shopping', 3], ['luxury', 6], ['sports car', 5]
+ ],
+ celebration: [
+ ['party', 5], ['celebrate', 7], ['dance all night', 7],
+ ['club', 4], ['winning', 5], ['crowd', 3],
+ ['festival', 5], ['have fun', 4], ['turn up', 5]
+ ],
+ conflict: [
+ ['revenge', 7], ['betrayal', 6], ['fight', 4],
+ ['enemy', 6], ['argument', 5], ['furious', 6],
+ ['war', 4], ['angry', 5], ['cheating', 5]
+ ]
 };
-const LOCATION_LIBRARY=[
- ['private jet','private jet cabin or runway'],['runway','private jet runway'],['penthouse','luxury penthouse'],['beverly hills','Beverly Hills mansion'],['mansion','luxury mansion'],['boutique','luxury boutique'],['shopping district','upscale shopping district'],['nightclub','exclusive nightclub'],['vip club','exclusive VIP club'],['club','nightclub'],['rooftop','city rooftop'],['sports car','luxury sports car arrival'],['car','luxury car exterior'],['hotel','luxury hotel'],['restaurant','restaurant'],['beach','beach'],['ocean','oceanfront'],['airport','airport'],['studio','performance studio'],['bedroom','bedroom'],['kitchen','kitchen'],['street','city street'],['city','city skyline'],['home','home interior'],['forest','forest'],['desert','desert'],['space station','space station'],['planet','otherworldly landscape']
+// A second layer interprets more specific human feelings. These are
+// weighted cues, not psychological diagnoses or universal emotion rules.
+// The artist's instructions and lyric context always outrank these hints.
+// Each fine-grained feeling contributes to a cinematic theme that the
+// existing Director already knows how to stage.
+const NUANCE_LEXICON = {
+ joy: {theme:'celebration', cues:['joy','happy','happiness','delight','bliss','euphoria','elated','pleasure','ecstasy']},
+ serenity: {theme:'reassurance', cues:['peace','serenity','calm','contentment','satisfied','tranquil','equanimity','at ease']},
+ gratitude: {theme:'hope', cues:['grateful','gratitude','thankful','appreciate you','blessed','thank you for']},
+ tenderness: {theme:'romance', cues:['tender','tenderness','affection','adoration','fondness','warmth','hold me close']},
+ compassion: {theme:'reassurance', cues:['compassion','empathy','sympathy','mercy','kindness','care about you','concern for']},
+ trust: {theme:'reassurance', cues:['trust','faith in you','loyalty','believe in you','rely on you','i feel safe']},
+ belonging: {theme:'reassurance', cues:['belong','belonging','connection','connected to you','you are my home','you are not alone','by my side']},
+ relief: {theme:'reassurance', cues:['relief','relieved','breathing again','burden lifted','safe with me','finally breathe']},
+ optimism: {theme:'hope', cues:['optimism','optimistic','hopeful','healing','brighter tomorrow','new beginning','better days']},
+ pride: {theme:'confidence', cues:['pride','proud','self respect','dignity','made it','earned this','head held high']},
+ arrogance: {theme:'confidence', cues:['arrogant','arrogance','vanity','cocky','better than you','show off','stuck up','i am the prize']},
+ amusement: {theme:'celebration', cues:['laughing','laughter','playful','silly','joking','teasing','amused']},
+ excitement: {theme:'celebration', cues:['excited','excitement','thrill','enthusiasm','hyped','eager','pumped']},
+ triumph: {theme:'celebration', cues:['triumph','victory','won','champion','accomplishment','achievement','overcame']},
+ curiosity: {theme:'reflection', cues:['curious','curiosity','intrigued','fascinated','i wonder why','discover','question everything']},
+ determination: {theme:'confidence', cues:['determined','resolve','grit','never give up','keep going','unstoppable','brave','courage']},
+ forgiveness: {theme:'hope', cues:['forgive','forgiveness','forgiven','acceptance','let it go','make peace','reconcile']},
+ desire: {theme:'romance', cues:['desire','craving','passion','lust','infatuation','want you','long for your touch']},
+ awe: {theme:'reflection', cues:['awe','wonder','amazed','astonished','sublime','beautiful beyond words','transcendence','reverence']},
+ nostalgia: {theme:'reflection', cues:['nostalgia','nostalgic','wistful','remember when','the old days','memories','used to be','homesick']},
+ sadness: {theme:'vulnerability', cues:['sad','sadness','sorrow','melancholy','gloom','dejected','despondent','downhearted','crying']},
+ grief: {theme:'grief', cues:['grief','mourning','bereavement','funeral','passed away','rest in peace','loss of you']},
+ despair: {theme:'heartbreak', cues:['despair','hopeless','hopelessness','emptiness','nothing left','helpless','defeated','worthless']},
+ loneliness: {theme:'longing', cues:['lonely','loneliness','isolation','abandoned','alone again','left behind','disconnected','alienated']},
+ rejection: {theme:'heartbreak', cues:['rejected','rejection','excluded','unwanted','you left me','you shut me out']},
+ shame: {theme:'vulnerability', cues:['ashamed','shame','embarrassed','humiliated','inadequate','inferior','self conscious','disgrace']},
+ guilt: {theme:'reflection', cues:['guilt','guilty','regret','remorse','repentance','i was wrong','i am sorry','my fault']},
+ fear: {theme:'vulnerability', cues:['fear','afraid','anxiety','anxious','dread','panic','nervous','terrified','apprehension','worried']},
+ insecurity: {theme:'vulnerability', cues:['insecurity','insecure','uncertain','doubt','fragile','fragility','exposed','vulnerable']},
+ anger: {theme:'conflict', cues:['anger','angry','rage','furious','fury','irritated','frustrated','indignant','outraged','resentment']},
+ bitterness: {theme:'conflict', cues:['bitterness','bitter','hostile','hatred','loathing','contempt','scorn','disdain','spite']},
+ betrayal: {theme:'heartbreak', cues:['betrayed','betrayal','cheated on','lied to me','broken trust','deceived','distrust','suspicious']}, jealousy: {theme:'conflict', cues:['jealous','jealousy','envy','envious','rivalry','i envy','covet']},
+ disgust: {theme:'conflict', cues:['disgust','revulsion','repulsed','revolted','distaste','makes me sick','disapproval']},
+ stress: {theme:'vulnerability', cues:['stressed','stress','overwhelmed','burnout','exhausted','exhaustion','drained','restless']},
+ confusion: {theme:'reflection', cues:['confused','confusion','uncertain','ambivalence','mixed feelings','torn between','not sure why']},
+ boredom: {theme:'reflection', cues:['bored','boredom','apathy','indifferent','indifference','ennui','numb']},
+ longing: {theme:'longing', cues:['yearning','longing','miss you','miss home','wish you were here','come back','saudade']},
+ surprise: {theme:'reflection', cues:['surprise','surprised','astonished','shocked','did not expect','never imagined']},
+ moralOutrage: {theme:'conflict', cues:['injustice','unfair','moral outrage','wrongdoing','indignation','disrespect']},
+ selfCompassion: {theme:'hope', cues:['self compassion','i accept myself','love myself','worthy of love','healing myself']}
+};
+const BLENDED_CUES = [
+ {name:'bittersweetness', cues:['bittersweet','happy and sad','smile through the tears'], themes:['hope','vulnerability']},
+ {name:'nervous excitement', cues:['nervous excitement','excited but scared','scared and excited'], themes:['celebration','vulnerability']},
+ {name:'relieved sadness', cues:['relieved but sad','sad but relieved','relieved sadness'], themes:['reassurance','vulnerability']},
+ {name:'angry hurt', cues:['angry and hurt','hurt and angry','angry hurt'], themes:['conflict','vulnerability']},
+ {name:'jealous admiration', cues:['jealous admiration','admire and envy'], themes:['confidence','conflict']},
+ {name:'guilty pleasure', cues:['guilty pleasure','feel guilty but love'], themes:['reflection','romance']},
+ {name:'loving frustration', cues:['loving frustration','love and frustration','love you but i am frustrated','love you but you frustrate me'], themes:['romance','conflict']},
+ {name:'hopeful anxiety', cues:['hopeful anxiety','hopeful but afraid','hope and fear','hopeful but anxious'], themes:['hope','vulnerability']},
+ {name:'nostalgic joy', cues:['nostalgic joy','happy memories','joyful memories'], themes:['reflection','celebration']},
+ {name:'compassionate anger', cues:['compassionate anger','angry on your behalf'], themes:['reassurance','conflict']}
 ];
-const SHOTS={low:['intimate close-up','patient medium shot','wide establishing shot','profile close-up'],medium:['cinematic tracking shot','low-angle hero shot','wide environmental shot','slow dolly-in','fashion editorial close-up'],high:['sweeping crane shot','dynamic wide shot','controlled 360-degree orbit','energetic tracking shot','dramatic low-angle shot','aerial drone reveal']};
-const MOVES={low:['subtle dolly-in','gentle lateral slider','restrained static framing'],medium:['smooth tracking movement','controlled orbit','deliberate push-in','side-tracking movement'],high:['dynamic tracking movement','rising crane reveal','360-degree orbit','aerial drone sweep','fast but legible fashion montage']};
-const LIGHT={confidence:['crisp high-fashion key lighting','bold editorial lighting with vivid highlights','dramatic luxury campaign lighting'],luxury:['glittering golden-hour luxury lighting','polished reflective showroom lighting','premium cinematic night lighting'],celebration:['colorful club lighting','vibrant performance lighting','energetic party lighting'],heartbreak:['muted atmospheric light','soft shadowed interior lighting'],reassurance:['gentle reassuring natural light','warm intimate practical lighting'],romance:['soft romantic evening light','warm cinematic glow'],vulnerability:['soft restrained lighting','subdued window light'],hope:['brightening natural light','optimistic sunrise light'],conflict:['high-contrast dramatic lighting','tense directional lighting'],reflection:['nostalgic soft lighting','thoughtful dusk lighting']};
-function scoreThemes(text,concept=''){
- const a=norm(text),b=norm(concept),scores={};
- for(const [key,terms] of Object.entries(THEMES)){
-  scores[key]=terms.reduce((n,t)=>n+(has(a,t)?2:0)+(has(b,t)?1:0),0);
+function nuanceScores(text, concept = '', conceptWeight = 0.35) {
+ const scores = {};
+ for (const [feeling, descriptor] of Object.entries(NUANCE_LEXICON)) {
+ let score = 0;
+ for (const phrase of descriptor.cues) {
+ if (contains(text, phrase)) score += phrase.includes(' ') ? 3 : 2;
+ if (concept && contains(concept, phrase)) score += (phrase.includes(' ') ? 3 : 2) * conceptWeight;
+ }
+ if (score > 0) scores[feeling] = round(score);
  }
  return scores;
 }
-function bestTheme(scores){const ranked=Object.entries(scores).sort((a,b)=>b[1]-a[1]);return ranked[0]?.[1]>0?ranked[0][0]:'undetermined';}
-function locationsFrom(text){const found=[];for(const [needle,place] of LOCATION_LIBRARY){if(has(text,needle)&&!found.includes(place))found.push(place);}return found;}
-function timestamp(s){const m=String(s).match(/^\s*(?:(\d+):)?(\d{1,2}):(\d{2})(?:\.(\d{1,2}))?\s*$/);if(!m)return null;const h=+(m[1]||0),min=+m[2],sec=+m[3];if((m[1]&&min>59)||sec>59)return null;return h*3600+min*60+sec+Number((m[4]||'').padEnd(2,'0'))/100;}
-function parseLyrics(lyrics){let section='unlabeled';const out=[];for(const raw of clean(lyrics,MAX_LYRICS).split(/\r?\n/)){const line=raw.trim();if(!line)continue;const head=line.match(/^\[(verse|chorus|bridge|intro|outro|pre-chorus|hook|refrain|instrumental)[^\]]*\]$/i);if(head){section=head[1].toLowerCase();continue;}const timed=line.match(/^\[([0-9:.]+)\]\s*(.*)$/);const time=timed?timestamp(timed[1]):null;out.push({time,text:time!==null&&timed[2].trim()?timed[2].trim():line,section});}return out;}
-function timeline(lines,duration){if(!lines.length)return[];if(lines.every(x=>Number.isFinite(x.time))){const ordered=[...lines].sort((a,b)=>a.time-b.time);return ordered.map((x,i)=>({...x,startSeconds:clamp(x.time,0,duration),endSeconds:clamp(i+1<ordered.length?ordered[i+1].time:duration,0,duration),timingSource:'provided'})).filter(x=>x.endSeconds>x.startSeconds);}return lines.map((x,i)=>({...x,startSeconds:round(i*duration/lines.length),endSeconds:round((i+1)*duration/lines.length),timingSource:'estimated'}));}
-function musicScenes(plan,duration,clip){const input=Array.isArray(plan?.scenes)?plan.scenes:[];const valid=input.map(x=>({startSeconds:Number(x.startSeconds),endSeconds:Number(x.endSeconds),intensity:['low','medium','high'].includes(x.intensity)?x.intensity:'medium',energyChange:clean(x.energyChange,40)||'steady'})).filter(x=>Number.isFinite(x.startSeconds)&&Number.isFinite(x.endSeconds)&&x.startSeconds>=0&&x.startSeconds<duration&&x.endSeconds>x.startSeconds).sort((a,b)=>a.startSeconds-b.startSeconds).map(x=>({...x,endSeconds:round(Math.min(duration,x.endSeconds))}));if(valid.length)return valid.slice(0,MAX_SCENES);const result=[];for(let s=0;s<duration&&result.length<MAX_SCENES;s+=clip)result.push({startSeconds:round(s),endSeconds:round(Math.min(duration,s+clip)),intensity:'medium',energyChange:'steady'});return result;}
-const ACTIONS={
- confidence:['Make a commanding entrance; everyone notices the performer.','Perform directly to camera with playful superiority and unmistakable self-confidence.','Walk with runway confidence while onlookers react admiringly.','Own the room with a bold pose, expressive attitude and a confident performance.','Show effortless independence and control over the environment.'],
- luxury:['Reveal a spectacular luxury setting and its details.','Show off high-fashion styling, jewelry and expensive accessories.','Arrive in style and command attention without hesitation.','Show an aspirational, polished celebrity lifestyle.'],
- celebration:['Lead an energetic crowd performance.','Celebrate with lively movement and joyful reactions.','Stage a colorful party sequence with dynamic choreography.'],
- heartbreak:['Show emotional distance through a restrained performance.','Express loss with an intimate reaction and meaningful setting.'],
- reassurance:['Offer a genuine supportive gesture without forcing romance.','Show trust growing through believable body language.'],
- romance:['Create an affectionate interaction consistent with the lyrics.','Capture romantic chemistry through glances and natural movement.'],
- vulnerability:['Reveal emotional uncertainty through a natural, restrained performance.','Use a private reflective moment without inventing another character.'],
- hope:['Move toward a hopeful visual reveal.','Show renewed determination through purposeful movement.'],
- conflict:['Show the central tension through expression and blocking.','Build dramatic confrontation without inventing violence.'],
- reflection:['Use a contemplative performance with meaningful visual detail.','Show a reflective moment connected to the lyric excerpt.'],
- undetermined:['Perform the lyric excerpt in a setting selected from the customer direction.','Build a coherent visual moment from the current lyrics without inventing a subplot.']
+function nuanceRanking(scores) {
+ return Object.entries(scores).sort((a,b) => b[1] - a[1]);
+}
+function blendedEmotion(text, nuance = {}) {
+ for (const entry of BLENDED_CUES) {
+ if (entry.cues.some(cue => contains(text, cue))) return entry.name;
+ }
+ const ranked = nuanceRanking(nuance).filter(([,value]) => value >= 3.5);
+ if (ranked.length < 2) return null;
+ const [first,second] = ranked;
+ const a = NUANCE_LEXICON[first[0]]?.theme;
+ const b = NUANCE_LEXICON[second[0]]?.theme;
+ if (a === b || second[1] < first[1] * 0.65) return null;
+ return `${first[0]} + ${second[0]}`;
+}
+const INTIMATE = new Set([
+ 'reassurance', 'vulnerability', 'heartbreak', 'romance',
+ 'grief', 'longing', 'hope', 'reflection'
+]);
+const EXPRESSIVE = new Set(['confidence', 'luxury', 'celebration', 'conflict']);
+const LOCATION_CUES = [
+ ['private jet', 'private jet cabin'], ['runway', 'airport runway'],
+ ['penthouse', 'luxury penthouse'], ['mansion', 'mansion residence'],
+ ['boutique', 'upscale boutique'], ['shopping district', 'shopping district'],
+ ['nightclub', 'nightclub'], ['vip club', 'exclusive lounge'],
+ ['rooftop', 'rooftop'], ['sports car', 'luxury car exterior'],
+ ['hotel', 'hotel interior'], ['restaurant', 'restaurant'],
+ ['beach', 'beach'], ['ocean', 'oceanfront'],
+ ['airport', 'airport'], ['recording studio', 'recording studio'],
+ ['studio', 'studio'], ['bedroom', 'bedroom'], ['kitchen', 'kitchen'],
+ ['living room', 'living room'], ['hallway', 'hallway'],
+ ['city street', 'city street'], ['street', 'city street'],
+ ['park', 'park'], ['forest', 'forest'], ['desert', 'desert'],
+ ['space station', 'space station'], ['planet', 'otherworldly planet landscape'],
+ ['home', 'home interior']
+]; function scoreEmotions(text, concept = '', conceptWeight = 0.35) {
+ const scores = {};
+ for (const [emotion, entries] of Object.entries(EMOTIONS)) {
+ let total = 0;
+ for (const [phrase, weight] of entries) {
+ if (contains(text, phrase)) total += weight;
+ if (concept && contains(concept, phrase)) total += weight * conceptWeight;
+ }
+ scores[emotion] = round(total);
+ }
+ // Broader feelings enrich the existing director categories without
+ // requiring new shot/action implementations or additional API calls.
+ for (const [feeling, value] of Object.entries(nuanceScores(text, concept, conceptWeight))) {
+ const theme = NUANCE_LEXICON[feeling].theme;
+ scores[theme] = round((scores[theme] || 0) + value * 0.65);
+ }
+ return scores;
+}
+function ranking(scores) {
+ return Object.entries(scores).sort((a, b) => b[1] - a[1]);
+}
+function topEmotion(scores, fallback = 'undetermined') {
+ const ranked = ranking(scores);
+ return ranked[0] && ranked[0][1] > 0 ? ranked[0][0] : fallback;
+}
+function emotionalFamily(emotion) {
+ return INTIMATE.has(emotion) ? 'intimate'
+ : EXPRESSIVE.has(emotion) ? 'expressive' : 'neutral';
+}
+function findLocations(text) {
+ const places = [];
+ for (const [cue, place] of LOCATION_CUES) {
+ if (contains(text, cue) && !places.includes(place)) places.push(place);
+ }
+ return places;
+}
+function oneLocation(text) {
+ return /\b(single location|one location|same location|never leave|entirely inside|one room)\b/i.test(text);
+}
+function timestamp(text) {
+ const m = String(text).match(/^\s*(?:(\d+):)?(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\s*$/);
+ if (!m) return null;
+ const h = Number(m[1] || 0), minutes = Number(m[2]), seconds = Number(m[3]);
+ if ((m[1] && minutes > 59) || seconds > 59) return null;
+ return h * 3600 + minutes * 60 + seconds + Number(`0.${m[4] || '0'}`);
+}
+function parseLyrics(raw) {
+ let section = 'unlabeled';
+ const lines = [];
+ for (const item of clean(raw, MAX_LYRICS).split(/\r?\n/)) {
+ const line = item.trim();
+ if (!line) continue;
+ const tag = line.match(/^\[(intro|verse|pre-chorus|chorus|hook|bridge|outro|refrain|instrumental)(?:\s*\d+)?\]$/i);
+ if (tag) { section = tag[1].toLowerCase(); continue; }
+ const lrc = line.match(/^\[([\d:.]+)\]\s*(.*)$/);
+ const time = lrc ? timestamp(lrc[1]) : null;
+ const text = time !== null ? lrc[2].trim() : line;
+ if (text) lines.push({ text, section, time });
+ }
+ return lines;
+}
+function lyricTimeline(lines, duration) {
+ if (!lines.length) return [];
+ if (lines.every(line => Number.isFinite(line.time))) {
+ const ordered = [...lines].sort((a, b) => a.time - b.time);
+ return ordered.map((line, index) => ({
+ ...line,
+ startSeconds: clamp(line.time, 0, duration),
+ endSeconds: clamp(index + 1 < ordered.length ? ordered[index + 1].time : duration, 0, duration),
+ timingSource: 'provided'
+ })).filter(line => line.endSeconds > line.startSeconds); }
+ return lines.map((line, index) => ({
+ ...line,
+ startSeconds: round(index * duration / lines.length),
+ endSeconds: round((index + 1) * duration / lines.length),
+ timingSource: 'estimated'
+ }));
+}
+// Produce continuous segments at the requested clip length. Audio scenes
+// contribute energy labels but can never create gaps or overlapping shots.
+function segmentMusic(plan, duration, clip) {
+ const source = (Array.isArray(plan?.scenes) ? plan.scenes : [])
+ .map(item => ({
+ startSeconds: Number(item.startSeconds),
+ endSeconds: Number(item.endSeconds),
+ intensity: ['low','medium','high'].includes(item.intensity) ? item.intensity : 'medium',
+ energyChange: clean(item.energyChange, 35) || 'steady'
+ }))
+ .filter(item => Number.isFinite(item.startSeconds) && Number.isFinite(item.endSeconds)
+ && item.endSeconds > item.startSeconds && item.endSeconds > 0)
+ .sort((a, b) => a.startSeconds - b.startSeconds);
+ const segments = [];
+ for (let start = 0; start < duration && segments.length < MAX_SCENES; start += clip) {
+ const end = Math.min(duration, start + clip);
+ const midpoint = (start + end) / 2;
+ const audio = source.find(item => item.startSeconds <= midpoint && item.endSeconds > midpoint)
+ || source.find(item => item.startSeconds < end && item.endSeconds > start);
+ segments.push({
+ startSeconds: round(start),
+ endSeconds: round(end),
+ intensity: audio ? audio.intensity : 'medium',
+ energyChange: audio ? audio.energyChange : 'steady',
+ audioMatched: !!audio
+ });
+ }
+ return segments;
+}
+const LOCATION_SETS = {
+ intimate: [
+ 'quiet apartment living room beside a window',
+ 'softly lit apartment hallway',
+ 'peaceful tree-lined path at dawn'
+ ],
+ luxury: [
+ 'elegant penthouse overlooking the skyline',
+ 'high-fashion designer boutique',
+ 'upscale rooftop overlooking the city',
+ 'premium arrivals entrance'
+ ],
+ expressive: [
+ 'cinematic city rooftop',
+ 'polished performance studio',
+ 'striking downtown exterior',
+ 'dramatic night skyline'
+ ],
+ neutral: [
+ 'cinematic indoor performance space',
+ 'quiet outdoor walkway',
+ 'naturally lit interior'
+ ]
 };
-function lyricAction(excerpt,theme){const t=norm(excerpt);if(theme==='confidence'||theme==='luxury'){
- if(has(t,'heels')||has(t,'walk through the door'))return 'Stage a dramatic high-fashion entrance with audible heel-step energy and heads turning.';
- if(has(t,'mirror'))return 'Pose before an elegant mirror, admiring the look with a playful, self-assured expression.';
- if(has(t,'my own money')||has(t,'own keys'))return 'Show the performer in control of her own money, keys and luxurious lifestyle.';
- if(has(t,'business')||has(t,'woman with a plan'))return 'Present the performer as a capable, successful entrepreneur directing her own affairs.';
- if(has(t,'he can look')||has(t,"can't touch"))return 'Show a confident boundary-setting gesture while admirers watch from a respectful distance.';
- if(has(t,'face card')||has(t,'pretty little face'))return 'Feature an editorial beauty close-up and confident camera-facing pose.';
- if(has(t,'baddie'))return 'Deliver a bold, charismatic hook performance with commanding attitude.';
- }return null;}
-function oneLocation(concept){return /\b(single location|one location|entirely inside|never leave|same location)\b/i.test(concept);}
-export function createStoryIntelligencePlan({title='Untitled Song',lyrics='',songSeconds,musicPlan=null,prompt='',format='vertical',sceneSeconds=15,visualStyle='photorealistic'}={}){
- const duration=Number(songSeconds),clip=Number(sceneSeconds);if(!Number.isFinite(duration)||duration<=0||duration>MAX_SECONDS)throw new Error('Song duration must be between 0 and 360 seconds.');if(!Number.isFinite(clip)||clip<3||clip>30)throw new Error('Scene duration must be between 3 and 30 seconds.');
- const concept=clean(prompt,4000),lines=parseLyrics(lyrics),timed=timeline(lines,duration),segments=musicScenes(musicPlan,duration,clip),allLyrics=lines.map(x=>x.text).join(' '),overallScores=scoreThemes(allLyrics,concept),overall=bestTheme(overallScores),locations=locationsFrom(concept),fixed=oneLocation(concept),used=new Map();
- const scenes=segments.map((seg,i)=>{const matched=timed.filter(x=>x.startSeconds<seg.endSeconds&&x.endSeconds>seg.startSeconds),excerpt=matched.map(x=>x.text).join(' ').slice(0,600),localScores=scoreThemes(excerpt,concept),local=bestTheme(localScores),theme=local==='undetermined'?overall:local,lyricLocations=locationsFrom(excerpt),pool=locations.length?locations:lyricLocations.length?lyricLocations:['location selected from customer concept'];let location;
- if(fixed)location=pool[0];else if(lyricLocations.length&&locations.includes(lyricLocations[0]))location=lyricLocations[0];else{location=pool.reduce((best,p)=>((used.get(p)||0)<(used.get(best)||0)?p:best),pool[i%pool.length]);}used.set(location,(used.get(location)||0)+1);
- const intensity=seg.intensity,shot=SHOTS[intensity][i%SHOTS[intensity].length],movement=MOVES[intensity][Math.floor(i/2)%MOVES[intensity].length],lighting=(LIGHT[theme]||LIGHT.confidence)[i%(LIGHT[theme]||LIGHT.confidence).length],actions=ACTIONS[theme]||ACTIONS.undetermined,actionBase=lyricAction(excerpt,theme)||actions[i%actions.length],action=`${actionBase} Setting: ${location}. Keep the action faithful to the lyric meaning and customer instructions.`,beat=theme==='confidence'?'self-expression':theme==='luxury'?'lifestyle-showcase':theme==='celebration'?'celebration':theme==='undetermined'?'lyric-led-performance':theme;
- const scenePrompt=[`CutLoopz cinematic music video: ${clean(title,120)}.`,`Scene ${i+1} of ${segments.length}.`,`Time: ${round(seg.startSeconds)} to ${round(seg.endSeconds)} seconds.`,`Customer creative direction: ${concept||'Use the provided lyrics for creative direction'}.`,`Lyrics associated with this section: ${excerpt||'not available'}.`,`Narrative beat: ${beat}.`,`Primary emotional cue: ${theme}.`,`Visual action: ${action}`,`Lighting: ${lighting}.`,`Camera: ${shot}; ${movement}.`,`Musical energy: ${intensity}; movement: ${seg.energyChange}.`,`Visual style: ${clean(visualStyle,150)}.`,`Composition: ${format==='landscape'?'16:9':'9:16'}.`,'Preserve the recognizable identity, hairstyle and body proportions of the performer across scenes.','Maintain believable anatomy, physical movement and lighting.','Avoid unrelated subplots, repeated actions, text and watermarks.'].join(' ');
- return {number:i+1,startSeconds:seg.startSeconds,endSeconds:seg.endSeconds,durationSeconds:round(seg.endSeconds-seg.startSeconds),section:matched[0]?.section||'unknown',lyricExcerpt:excerpt,lyricTiming:matched[0]?.timingSource||'unavailable',emotion:theme,emotionConfidence:localScores[theme]>=4?'medium':'low',intensity,energyChange:seg.energyChange,location,shot,action,prompt:scenePrompt,narrativeBeat:beat,lighting,cameraMovement:movement};});
- const uniqueLocations=new Set(scenes.map(x=>x.location)).size;const warnings=[];if(!fixed&&locations.length>=3&&uniqueLocations<Math.min(3,scenes.length))warnings.push('Requested location variety was not achieved.');if(overall==='undetermined')warnings.push('Theme could not be confidently classified from the supplied lyrics and prompt.');if(!musicPlan)warnings.push('Musical intensity is a fallback estimate; no audio analysis was supplied.');
- return {version:4,engine:'CutLoopz Story Intelligence',status:'preview',title:clean(title,120),songSeconds:duration,totalScenes:scenes.length,lyricSource:lines.length?'customer-provided':'none',lyricTiming:lines.length?timed[0]?.timingSource:'unavailable',storyEmotion:overall,customerConcept:concept,scenes,qualityChecks:{uniqueLocations,requestedLocations:locations.length,warnings},limitations:['No automatic vocal transcription in this version.','Theme interpretation is rule-based, not open-ended semantic language-model understanding.','Untimed lyrics use approximate timing.','Musical energy is not inferred from lyrics; an audio-derived musicPlan is required.','Storyboard prompts are not generated video footage.']};
+const ACTIONS = {
+ reassurance: [
+ 'The performer meets the camera with a steady, reassuring gaze; an uncertain expression becomes calm.',
+ 'The performer takes a breath, gently reaches a hand toward the edge of frame, then lets the moment settle.',
+ 'The performer shifts from guarded stillness to an open, welcoming posture, without forced romance.',
+ 'The performer listens attentively toward the edge of the frame, then responds with a subtle reassuring nod.',
+ 'The performer remains present and grounded, holding a quiet expression of compassion.'
+ ],
+ vulnerability: [ 'The performer hesitates beside a window, revealing a vulnerable expression without exaggerated tears.',
+ 'The performer lowers their gaze and takes a measured breath, communicating emotional uncertainty.',
+ 'A fleeting expression of sadness crosses the performer’s face before they regain composure.',
+ 'The performer rests one hand against a doorframe, pausing in a private reflective moment.',
+ 'The performer looks briefly away from the camera and returns with unguarded honesty.'
+ ],
+ heartbreak: [
+ 'The performer sits alone with a quiet sense of distance, avoiding melodramatic gestures.',
+ 'The performer notices an empty space nearby and allows an understated expression of loss.',
+ 'The performer walks slowly away from a familiar place, carrying unresolved emotion.',
+ 'The performer stops mid-step, as though reconsidering a painful memory.'
+ ],
+ romance: [
+ 'The performer offers a gentle, warm camera-facing smile with natural romantic chemistry.',
+ 'The performer responds to a fond thought with a soft expression and relaxed movement.',
+ 'The performer turns toward warm light, allowing a tender, intimate moment to unfold.'
+ ],
+ grief: [
+ 'The performer remains still in a respectful private moment, expression weighted by loss.',
+ 'The performer lowers their gaze in remembrance, holding back an understated emotional response.',
+ 'A long, quiet pause gives the performer space to process grief.'
+ ],
+ longing: [
+ 'The performer watches the distant horizon as though hoping for someone to return.',
+ 'The performer moves slowly toward a window with a thoughtful, longing expression.',
+ 'The performer pauses and glances back, suggesting emotional distance.'
+ ],
+ hope: [
+ 'The performer takes a small, deliberate step into warmer light, suggesting renewed trust.',
+ 'A guarded expression softens into a subtle sense of relief and possibility.',
+ 'The performer looks ahead and moves forward calmly, signaling emotional progress.'
+ ],
+ reflection: [
+ 'The performer pauses over a familiar object and then quietly sets it aside.',
+ 'The performer looks toward a familiar space as a memory returns, keeping the moment grounded.',
+ 'The performer sits quietly in thought while the camera observes without interruption.'
+ ],
+ confidence: [
+ 'The performer makes a self-assured entrance and confidently holds the lens.',
+ 'The performer delivers a playful, commanding performance with deliberate body language.',
+ 'The performer walks through the setting with poised, runway-inspired energy.',
+ 'The performer stops for a striking editorial pose and moves naturally into the next beat.'
+ ],
+ luxury: [
+ 'The performer confidently moves through elegant surroundings, revealing fine details of the setting.',
+ 'The performer adjusts a stylish accessory and holds an effortless editorial pose.',
+ 'The performer arrives at a premium location with a self-assured, polished presence.'
+ ],
+ celebration: [
+ 'The performer celebrates through naturally energetic movement synchronized to the track.',
+ 'The performer gives an upbeat camera-facing performance with unmistakable joy.',
+ 'The performer moves confidently through a lively environment without confusing jump cuts.'
+ ],
+ conflict: [
+ 'The performer conveys tension with controlled expression and body language, without invented violence.',
+ 'A measured confrontation is suggested through framing and reaction, not graphic action.',
+ 'The performer takes a decisive step away from an emotionally tense situation.'
+ ],
+ undetermined: [
+ 'The performer delivers an emotionally neutral, lyric-led performance without invented plot details.',
+ 'The performer moves naturally within the chosen location, allowing the lyrics to guide expression.'
+ ]
+};
+function lyricSpecificAction(text, emotion) {
+ if (!text) return null;
+ if (contains(text, 'break in your voice'))
+ return 'The performer listens carefully toward the edge of frame; concern gives way to patient understanding.';
+ if (contains(text, 'you don\'t have to pretend') || contains(text, 'you do not have to pretend'))
+ return 'The performer relaxes a guarded expression and meets the camera with openness.';
+ if (contains(text, 'hand in mine') || contains(text, 'hold your hand'))
+ return 'The performer offers an open hand toward the camera, suggesting connection without inventing an unseen partner.'; if (contains(text, 'i won\'t disappear') || contains(text, "i'm still here"))
+ return 'The performer maintains a steady presence as the camera approaches, communicating a promise to remain.';
+ if (contains(text, 'the past') && emotionalFamily(emotion) === 'intimate')
+ return 'The performer looks briefly backward, then returns attention to the present with quiet resolve.';
+ if (emotion === 'confidence' || emotion === 'luxury') {
+ if (contains(text, 'face card') || contains(text, 'pretty'))
+ return 'The performer confidently holds a beauty close-up with an editorial look and playful attitude.';
+ if (contains(text, 'heels') || contains(text, 'walk through the door'))
+ return 'The performer makes a memorable high-fashion entrance with confident, natural footsteps.';
+ if (contains(text, 'my own money') || contains(text, 'own keys'))
+ return 'The performer confidently displays independence through purposeful action and polished styling.';
+ }
+ return null;
+}
+function roleForIndex(index, total) {
+ const position = total <= 1 ? 1 : index / (total - 1);
+ if (position < 0.25) return 'emotional setup';
+ if (position < 0.72) return 'development and deepening';
+ if (position < 0.9) return 'emotional turning point';
+ return 'resolution or lingering final image';
+}
+function chooseVisualEnergy(audioEnergy, emotion, overall, change) {
+ const family = emotionalFamily(emotion);
+ const overarchingIntimate = emotionalFamily(overall) === 'intimate';
+ if (family === 'intimate' || (family === 'neutral' && overarchingIntimate)) {
+ if (audioEnergy === 'high' || /rising|build/i.test(change)) return 'emotional crescendo';
+ return 'restrained';
+ }
+ if (family === 'expressive') return audioEnergy === 'high' ? 'energetic' : audioEnergy === 'low' ? 'measured' : 'dynamic';
+ return audioEnergy === 'high' ? 'dynamic' : 'measured';
+}
+function filmDirection(emotion, visualEnergy, index, total) {
+ const stage = roleForIndex(index, total);
+ if (visualEnergy === 'restrained' || visualEnergy === 'emotional crescendo') {
+ const intimateShots = ['intimate close-up', 'patient medium shot', 'over-the-shoulder-style profile',
+ 'quiet wide establishing shot', 'natural eye-level close-up'];
+ const intimateMoves = ['almost imperceptible dolly-in', 'restrained locked-off frame',
+ 'slow lateral slider', 'gentle measured pull-back', 'subtle handheld drift'];
+ const shots = visualEnergy === 'emotional crescendo'
+ ? ['expressive medium close-up', 'intimate tracking close-up', 'composed wide emotional reveal']
+ : intimateShots;
+ const moves = visualEnergy === 'emotional crescendo'
+ ? ['controlled gradual push-in', 'slow rising camera reveal', 'gentle tracking move']
+ : intimateMoves;
+ return {
+ shot: shots[index % shots.length],
+ cameraMovement: moves[Math.floor(index / 2) % moves.length],
+ pacing: visualEnergy === 'emotional crescendo'
+ ? 'emotionally intense but physically restrained, no fast montage'
+ : 'slow, natural, unhurried',
+ framingPurpose: stage
+ };
+ }
+ const shots = ['editorial medium shot', 'dynamic wide shot', 'confident low-angle shot',
+ 'expressive tracking medium shot', 'full-body performance frame', 'cinematic wide establishing shot'];
+ const moves = visualEnergy === 'energetic'
+ ? ['energetic but controlled tracking shot', 'smooth crane reveal', 'deliberate orbital movement']
+ : ['smooth side tracking', 'controlled forward dolly', 'wide floating camera move'];
+ return {
+ shot: shots[index % shots.length],
+ cameraMovement: moves[index % moves.length],
+ pacing: visualEnergy === 'energetic' ? 'lively and rhythmic, still physically believable' : 'measured and rhythmic',
+ framingPurpose: stage
+ };
+}
+function lightingFor(emotion, stage) {
+ const map = {
+ reassurance: 'warm practical light with gentle natural fill',
+ vulnerability: 'soft window light with delicate shadows',
+ heartbreak: 'subdued atmospheric natural light', romance: 'warm intimate cinematic light',
+ grief: 'soft muted respectful lighting',
+ longing: 'wistful dusk light with a natural horizon',
+ hope: 'gradually brightening natural light',
+ reflection: 'muted nostalgic indirect light',
+ confidence: 'crisp fashion editorial lighting',
+ luxury: 'polished high-end cinematic lighting',
+ celebration: 'vivid festive performance lighting',
+ conflict: 'controlled high-contrast dramatic light',
+ undetermined: 'natural motivated cinematic light'
+ };
+ const base = map[emotion] || map.undetermined;
+ return stage.includes('resolution') && emotionalFamily(emotion) === 'intimate'
+ ? 'softly brightening natural light suggesting acceptance' : base;
+}
+function sceneLocation(index, total, overall, chosen, fixed, segmentLyrics) {
+ if (chosen.length) {
+ if (fixed) return chosen[0];
+ // Keep each requested location for a coherent block of shots.
+ return chosen[Math.min(chosen.length - 1, Math.floor(index * chosen.length / total))];
+ }
+ const family = emotionalFamily(overall);
+ const pool = overall === 'luxury' ? LOCATION_SETS.luxury
+ : (LOCATION_SETS[family] || LOCATION_SETS.neutral);
+ const lyricalPlaces = findLocations(segmentLyrics);
+ if (lyricalPlaces.length && contains(segmentLyrics, 'at ' + lyricalPlaces[0]))
+ return lyricalPlaces[0];
+ // Avoid location hopping: intimate videos hold environments over several shots.
+ const count = family === 'intimate' ? Math.min(3, Math.ceil(total / 4))
+ : Math.min(pool.length, Math.max(2, Math.ceil(total / 3)));
+ const group = Math.min(count - 1, Math.floor(index * count / total));
+ return pool[group];
+}
+function confidenceLabel(scores, emotion, timing) {
+ const ranked = ranking(scores);
+ const leader = scores[emotion] || 0;
+ const next = ranked.filter(([key]) => key !== emotion)[0]?.[1] || 0;
+ if (leader >= 8 && leader - next >= 3 && timing === 'provided') return 'high';
+ if (leader >= 4 && leader - next >= 1) return 'medium';
+ return 'low';
+}
+export function createStoryIntelligencePlan({
+ title = 'Untitled Song', lyrics = '', songSeconds, musicPlan = null,
+ prompt = '', format = 'vertical', sceneSeconds = 15,
+ visualStyle = 'photorealistic'
+} = {}) {
+ const duration = Number(songSeconds);
+ const clip = Number(sceneSeconds);
+ if (!Number.isFinite(duration) || duration <= 0 || duration > MAX_SECONDS)
+ throw new Error('Song duration must be above 0 and at most 360 seconds.');
+ if (!Number.isFinite(clip) || clip < 3 || clip > 30)
+ throw new Error('Scene duration must be between 3 and 30 seconds.');
+ if (typeof lyrics !== 'string' || lyrics.length > MAX_LYRICS)
+ throw new Error('Lyrics must be text under 12,000 characters.');
+ const concept = clean(prompt, 4000);
+ const lines = parseLyrics(lyrics);
+ const timed = lyricTimeline(lines, duration);
+ const segments = segmentMusic(musicPlan, duration, clip);
+ const wholeLyrics = lines.map(line => line.text).join(' ');
+ const totals = scoreEmotions(wholeLyrics, concept, 0.55);
+ // Song title provides a small clue, never enough to erase contradictory lyrics.
+ const titleScores = scoreEmotions(clean(title, 120));
+ for (const emotion of Object.keys(totals)) {
+ totals[emotion] = round(totals[emotion] + titleScores[emotion] * 0.5);
+ }
+ const overall = topEmotion(totals);
+ const wholeNuances = nuanceScores(wholeLyrics, concept, 0.5);
+ const songBlend = blendedEmotion(`${wholeLyrics} ${concept}`, wholeNuances); const ranked = ranking(totals).filter(([, score]) => score > 0).slice(0, 4);
+ const locations = findLocations(concept);
+ const fixed = oneLocation(concept);
+ const usedActions = new Set();
+ const storyArc = [];
+ const scenes = segments.map((segment, index) => {
+ const matches = timed.filter(line => line.startSeconds < segment.endSeconds && line.endSeconds > segment.startSeconds);
+ const excerpt = clean(matches.map(line => line.text).join(' '), 600);
+ const localScores = scoreEmotions(excerpt, concept, 0.25);
+ const localNuances = nuanceRanking(nuanceScores(excerpt, concept, 0.15))
+ .filter(([,value]) => value >= 2).slice(0, 3).map(([name]) => name);
+ const localBlend = blendedEmotion(excerpt, nuanceScores(excerpt));
+ const local = topEmotion(localScores);
+ // A single weak word should not override a strong song-wide theme.
+ const localValue = local === 'undetermined' ? 0 : localScores[local];
+ let emotion = localValue >= 3 ? local : overall;
+ if (emotion === 'undetermined' && concept) emotion = topEmotion(scoreEmotions('', concept, 1));
+ if (emotion === 'undetermined') emotion = 'undetermined';
+ const narrativeBeat = roleForIndex(index, segments.length);
+ const visualEnergy = chooseVisualEnergy(segment.intensity, emotion, overall, segment.energyChange);
+ const camera = filmDirection(emotion, visualEnergy, index, segments.length);
+ const location = sceneLocation(index, segments.length, overall, locations, fixed, excerpt);
+ const lighting = lightingFor(emotion, narrativeBeat);
+ const candidates = ACTIONS[emotion] || ACTIONS.undetermined;
+ const specific = lyricSpecificAction(excerpt, emotion);
+ let action = specific || candidates[index % candidates.length];
+ const key = normalize(action);
+ // Avoid repeated instructions, including repeated chorus lyric cues.
+ if (usedActions.has(key)) {
+ action = candidates.find(candidate => !usedActions.has(normalize(candidate)))
+ || `${candidates[index % candidates.length]} Allow the ${narrativeBeat} to develop naturally.`;
+ }
+ usedActions.add(normalize(action));
+ if (narrativeBeat.includes('resolution') && emotionalFamily(overall) === 'intimate'
+ && !['heartbreak', 'grief', 'conflict'].includes(overall)) {
+ action = `${action} End on an earned, understated feeling of emotional safety; avoid forced celebration.`;
+ }
+ // The current Listening Director renders production prompts from intensity,
+ // not from scene.prompt. Send *visual performance* energy in that legacy
+ // field, retaining measured musical intensity separately.
+ const performanceIntensity = visualEnergy === 'restrained' ? 'low'
+ : visualEnergy === 'emotional crescendo' ? 'medium' : segment.intensity;
+ const originalEnergy = segment.audioMatched ? segment.intensity : 'unverified';
+ const promptText = [
+ `CutLoopz cinematic music video for "${clean(title, 120)}".`,
+ `Scene ${index + 1} of ${segments.length}; ${segment.startSeconds}–${segment.endSeconds} seconds.`,
+ `Customer direction (priority): ${concept || 'let the lyrics guide the creative direction'}.`,
+ `Story continuity: ${narrativeBeat}. Maintain the same central performer and consistent visual world.`,
+ `Emotion: ${emotion}. Song-wide emotional theme: ${overall}.`,
+ localNuances.length ? `Emotional subtext: ${localNuances.join(', ')}.` : '',
+ (localBlend || songBlend) ? `Blended emotional tone: ${localBlend || songBlend}. Express this naturally, not as exaggerated acting.` : '',
+ `Lyric inspiration: ${excerpt || 'lyrics not provided for this moment'}.`,
+ `Location: ${location}.`,
+ `On-screen action: ${action}`, 
+ `Camera framing: ${camera.shot}. Movement: ${camera.cameraMovement}.`,
+ `Lighting: ${lighting}. Performance pace: ${camera.pacing}.`,
+ `Audio energy: ${originalEnergy}; energy movement: ${segment.energyChange}. Visually interpreted as: ${visualEnergy}.`,
+ `Style: ${clean(visualStyle, 150)}; ${format === 'landscape' ? '16:9' : '9:16'}.`,
+ 'Preserve the supplied performer reference identity, hairstyle, wardrobe and body proportions across all shots when a reference image is provided.',
+ 'Natural human anatomy, facial expression, realistic movement, grounded gravity and lighting; a single continuous shot.',
+ 'No unrelated subplots, forced new characters, excessive scene changes, morphing, slideshow, subtitles, logos or watermarks.'
+ ].join(' ');
+ storyArc.push({scene: index + 1, emotion, narrativeBeat, visualEnergy});
+ return {
+ number: index + 1,
+ startSeconds: segment.startSeconds,
+ endSeconds: segment.endSeconds,
+ durationSeconds: round(segment.endSeconds - segment.startSeconds),
+ section: matches[0]?.section || 'unlabeled',
+ lyricExcerpt: excerpt, lyricTiming: matches[0]?.timingSource || (timed.length ? 'estimated' : 'unavailable'),
+ emotion,
+ emotionalSubtones: localNuances,
+ blendedEmotion: localBlend || songBlend,
+ emotionConfidence: confidenceLabel(localScores, emotion, matches[0]?.timingSource),
+ intensity: performanceIntensity, // The UI uses this for performance pace.
+ audioIntensity: originalEnergy, // Preserve the original audio measurement.
+ energyChange: segment.energyChange,
+ visualEnergy,
+ location,
+ shot: camera.shot,
+ action: `Story phase: ${narrativeBeat}. ${action}`,
+ prompt: promptText,
+ narrativeBeat,
+ lighting,
+ cameraMovement: camera.cameraMovement
+ };
+ });
+ const warnings = [];
+ if (!lines.length) warnings.push('No lyrics supplied. Emotion is based on the customer concept only.');
+ if (lines.length && timed[0]?.timingSource === 'estimated')
+ warnings.push('Lyrics have no timestamps, so scene-to-lyric alignment is estimated.');
+ if (!musicPlan || !segments.some(segment => segment.audioMatched))
+ warnings.push('No usable audio-derived intensity plan. Camera pace is conservatively estimated.');
+ if (overall === 'undetermined') warnings.push('Insufficient lyrical evidence to classify the song confidently.');
+ if (locations.length && !fixed && locations.length > segments.length)
+ warnings.push('More locations requested than available scenes; some locations may be omitted.');
+ return {
+ version: '5.1',
+ engine: 'CutLoopz Emotional Director',
+ status: 'preview',
+ title: clean(title, 120),
+ songSeconds: duration,
+ totalScenes: scenes.length,
+ lyricSource: lines.length ? 'customer-provided' : 'none',
+ lyricTiming: lines.length ? timed[0]?.timingSource : 'unavailable',
+ storyEmotion: overall,
+ customerConcept: concept,
+ emotionalProfile: {
+ primary: overall,
+ secondary: ranked.filter(([emotion]) => emotion !== overall).slice(0, 3).map(([emotion]) => emotion),
+ nuancedFeelings: nuanceRanking(wholeNuances).slice(0, 8).map(([name]) => name),
+ blendedEmotion: songBlend,
+ approach: emotionalFamily(overall),
+ audioBpmEstimate: Number.isFinite(Number(musicPlan?.bpmEstimate))
+ && Number(musicPlan?.bpmEstimate) > 0 ? Number(musicPlan.bpmEstimate) : null,
+ note: 'BPM is context only. Lyric emotion and section intensity guide visual pace.'
+ },
+ storyArc,
+ scenes,
+ qualityChecks: {
+ uniqueLocations: new Set(scenes.map(scene => scene.location)).size,
+ requestedLocations: locations.length,
+ restrainedOrCrescendoShots: scenes.filter(scene =>
+ ['restrained','emotional crescendo'].includes(scene.visualEnergy)).length,
+ warnings
+ },
+ limitations: [
+ 'Rule-based emotional interpretation, not open-ended semantic understanding; figurative language, sarcasm, negation and cultural meaning can be misread.',
+ 'No automatic lyric transcription; supply the lyrics separately.',
+ 'Untimed lyrics are assigned approximate positions, not exact vocal alignment.',
+ 'Audio-derived intensity and BPM are approximations and can be wrong.',
+ 'Storyboard preview only; does not trigger paid video generation.
+
+   preview only; does not trigger paid video generation.'
+ ]
+ };
 }
