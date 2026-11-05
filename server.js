@@ -23,6 +23,7 @@ import { createDirectorPlan } from './director-mode-engine.js';
 import { checkVideoQuality } from './video-quality-checker.js';
 import { cleanOpening } from './cinematic-opening-cleaner.js';
 import { createCustomerOrderHistoryRouter } from './customer-order-history.js';
+import { createPerformancePilotRouter } from './cutloopz-performance-pilot.js';
 import {
  prepareCharacterReference,
  applyCharacterIdentityToPrompt
@@ -120,6 +121,18 @@ app.get('/', (req, res) => {
  res.redirect('/customer.html');
 });
 app.use(express.static('public'));
+/*
+ * Administrator-only audio-driven performance test, NOT customer lip-sync mode.
+ * Both existing paid-generation flag and pilot flag must be enabled;
+ * every paid request still requires explicit administrator approval.
+ */
+app.use('/api/performance-pilot', createPerformancePilotRouter({
+  express, multer, fal, outDir: OUT,
+  authorize: isVideoAdmin,
+  enabled: () => process.env.CUTLOOPZ_PERFORMANCE_PILOT_ENABLED === 'true',
+  paidEnabled: () => process.env.ENABLE_PAID_GENERATION === 'true'
+}));
+
 app.get('/api/gpu/status', (req, res) => {
  if (!isVideoAdmin(req)) {
  return res.status(403).json({
