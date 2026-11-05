@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7faff">
+<title>Performance Pilot | CutLoopz</title>
+<style>
+:root{
+color-scheme:light;
+--blue:#1364ad;
+--border:#d2e0ef;
+--ink:#14243b;
+--quiet:#53627b;
+--bg:#f4f8fd}
+*{
+box-sizing:border-box}
+body{
+margin:0;
+background:var(--bg);
+font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+color:var(--ink);
+line-height:1.55}
+main{
+max-width:740px;
+margin:0 auto;
+padding:20px 15px 55px}
+.nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+margin-bottom:20px}
+.logo{
+font-weight:800;
+letter-spacing:-.03em;
+font-size:22px}
+.nav a{
+font-size:14px;
+color:var(--blue)}
+h1{
+font-size:clamp(24px,6vw,34px);
+letter-spacing:-.04em;
+margin:0 0 8px}
+p{
+margin:0 0 16px}
+.intro{
+color:var(--quiet)}
+section{
+background:white;
+border:1px solid var(--border);
+border-radius:17px;
+padding:19px;
+margin:16px 0;
+box-shadow:0 5px 18px rgba(10,47,85,.035)}
+h2{
+font-size:19px;
+margin:0 0 14px}
+label{
+display:block;
+font-size:14px;
+font-weight:650;
+margin:13px 0 5px}
+input,textarea,select{
+width:100%;
+padding:11px 13px;
+border-radius:9px;
+border:1px solid #afc4dc;
+font:inherit;
+background:white;
+color:var(--ink)}
+input[type=file]{
+padding:9px}
+textarea{
+resize:vertical;
+min-height:90px;
+max-height:210px}
+input:focus-visible,textarea:focus-visible,button:focus-visible{
+outline:3px solid #87bcfb;
+outline-offset:2px}
+.note{
+color:var(--quiet);
+font-size:13px}
+.cost{
+font-weight:800;
+font-size:23px}
+.toggle{
+display:flex;
+align-items:flex-start;
+gap:10px;
+margin:14px 0;
+font-weight:500}
+.toggle input{
+width:auto;
+flex:none;
+margin-top:5px;
+accent-color:var(--blue)}
+button{
+border:0;
+border-radius:11px;
+background:var(--blue);
+color:white;
+padding:12px 18px;
+font-size:16px;
+font-weight:700;
+cursor:pointer;
+width:100%}
+button[disabled]{
+opacity:.55;
+cursor:not-allowed}
+.linkbutton{
+display:inline-block;
+text-align:center;
+text-decoration:none;
+color:var(--blue)}
+.status{
+border:1px solid var(--border);
+background:#f9fbfe;
+border-radius:10px;
+padding:12px;
+white-space:pre-wrap;
+word-break:break-word;
+font-size:14px;
+min-height:55px}
+video{
+width:100%;
+border:5px solid #172f57;
+background:#020510;
+border-radius:14px;
+display:block}
+.hidden{
+display:none}
+.warn{
+border-left:3px solid #cc870c;
+padding:10px 12px;
+background:#fffaf0;
+font-size:13px;
+color:#5b471c}
+
+</style>
+</head>
+<body>
+<main>
+<header class="nav">
+<div class="logo">CutLoopz <span style="color:#3575b1">Media</span>
+</div>
+<a href="/listening-director.html">← Listening Director</a>
+</header>
+<h1>Performance Director Lab</h1>
+<p class="intro">Administrator-only, five-second proof of real audio-driven artist performance. This is an internal test—not a separate customer lip-sync mode.</p>
+<section>
+<h2>1. Choose the exact performance</h2>
+<form id="form">
+<label for="key">Administrator password</label>
+<input id="key" type="password" required autocomplete="off" placeholder="Your Render admin key">
+<label for="song">Recorded song (MP3 or WAV)</label>
+<input id="song" type="file" accept="audio/*,.wav,.mp3,.m4a" required>
+<label for="photo">Artist reference photo</label>
+<input id="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
+<label for="storyboard">Optional Listening Director storyboard (JSON)</label>
+<input id="storyboard" type="file" accept=".json,application/json">
+<p class="note">Choose a scene to bring its lyrics, mood, camera direction and artist action into this test. You still verify the timing against the real recording.</p>
+<label for="scene">Storyboard scene</label>
+<select id="scene" disabled>
+<option value="">Select a storyboard file first</option>
+</select>
+<label for="start">Start at (seconds)</label>
+<input id="start" type="number" step="0.1" min="0" max="355" value="0" required>
+<p class="note">Choose a five-second part where the artist is clearly singing or speaking. Use the actual recording to find the time; storyboard timings are only estimates.</p>
+<label for="lyrics">Words in this section (optional)</label>
+<textarea id="lyrics" maxlength="350" rows="2" placeholder="Actual words being sung or spoken">
+</textarea>
+<label for="direction">Performance and cinematic direction</label>
+<textarea id="direction" maxlength="900" rows="3" placeholder="Example: Confident playful expression, direct eye contact, glamorous close-up, natural singing performance, elegant camera movement.">
+</textarea>
+<div class="warn">Your artist photo and a five-second song section are sent to fal
+<strong>only if you explicitly approve a paid generation</strong> and both server-side payment switches are enabled.
+Use only faces and music you have rights to use.</div>
+</form>
+</section>
+<section>
+<h2>2. Check and authorize</h2>
+<p class="note">Reference generation price, 480p / 5 seconds</p>
+<p class="cost">About $0.50</p>
+<p class="note">This is an estimate based on the listed price, not a spending guarantee. The first unchecked run is a free preparation test.</p>
+<label class="toggle">
+<input id="approve" type="checkbox">
+<span>I expressly approve this one paid five-second video-generation test. I understand the provider may charge for it.</span>
+</label>
+<button id="run" type="submit" form="form">Prepare test (no generation charge)</button>
+</section>
+<section>
+<h2>3. Performance report</h2>
+<div class="status" id="status" role="status" aria-live="polite">Ready to prepare a test.</div>
+<div class="hidden" id="output">
+<h2 style="margin-top:20px">Generated five-second performance</h2>
+<video id="video" controls playsinline preload="metadata">
+</video>
+<p class="note" style="margin-top:10px">Listen and watch closely. Does the mouth follow the voice? Does she look like the same artist?
+Does the acting fit the lyrics and expression? A valid video file does not prove good lip synchronization.</p>
+<a class="linkbutton" id="download" download="cutloopz-performance-test.mp4">Download the five-second test</a>
+</div>
+</section>
+</main>
+<script>
+(()=>{
+const byId=id=>document.getElementById(id);
+const form=byId('form'),approve=byId('approve'),button=byId('run'),status=byId('status');
+let activeController=null,objectUrl=null;
+approve.addEventListener('change',()=>button.textContent=approve.checked?'Authorize ONE paid 5-second test':'Prepare test (no generation charge)');
+const api='/api/performance-pilot';
+let scenes=[];
+byId('storyboard').addEventListener('change',async()=>{
+  const file=byId('storyboard').files?.[0];if(!file)return;
+  try{
+    if(file.size>2*1024*1024)throw new Error('Storyboard file is too large.');
+    const json=JSON.parse(await file.text());scenes=Array.isArray(json.scenes)?json.scenes:[];
+    if(!scenes.length)throw new Error('No scene list found in this storyboard.');
+    byId('scene').innerHTML='<option value="">Choose one scene</option>';
+    scenes.forEach((sc,i)=>{
+      const opt=document.createElement('option');opt.value=String(i);
+      opt.textContent='Scene '+(sc.number||i+1)+' — '+Math.round(Number(sc.startSeconds||0))+'s — '+String(sc.location||'cinematic');
+      byId('scene').appendChild(opt);
+    });byId('scene').disabled=false;
+    write(scenes.length+' storyboard scenes loaded. Choose one. Times are ESTIMATES, not aligned vocals.');
+  }catch(e){scenes=[];byId('scene').disabled=true;write('Storyboard could not be loaded: '+e.message);}
+});
+byId('scene').addEventListener('change',()=>{
+ const selected=byId('scene').value;if(selected==='')return;
+ const sc=scenes[Number(selected)];if(!sc)return;
+ byId('start').value=String(Number(sc.startSeconds)||0);
+ byId('lyrics').value=String(sc.lyricExcerpt||'').slice(0,350);
+ const directions=[sc.action,sc.location?`Location: ${sc.location}`:'',
+   sc.emotion?`Emotion: ${sc.emotion}`:'',sc.shot?`Shot: ${sc.shot}`:'',
+   sc.cameraMovement?`Camera: ${sc.cameraMovement}`:'']
+   .filter(Boolean).join('. ');
+ byId('direction').value=directions.slice(0,900);
+ write('Scene loaded. Listen to the song and ADJUST the start time before approving generation. Storyboard lyric positions are estimated.');
+});
+function headers(){return {'X-Video-Admin-Key':byId('key').value.trim()};}
+function write(message){status.textContent=message;}
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+async function decode(res){const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'Server request failed.');return data;}
+async function displayVideo(id){
+  const res=await fetch(`${api}/test/${encodeURIComponent(id)}/video`,{headers:headers(),cache:'no-store'});
+  if(!res.ok)throw new Error('Completed preview could not be downloaded.');
+  const blob=await res.blob();if(objectUrl)URL.revokeObjectURL(objectUrl);
+  objectUrl=URL.createObjectURL(blob);byId('video').src=objectUrl;byId('download').href=objectUrl;
+  byId('output').classList.remove('hidden');
+}
+form.addEventListener('submit',async(event)=>{
+  event.preventDefault();
+  if(approve.checked&&!window.confirm('Submit ONE paid five-second performance generation? Estimated provider price $0.50.'))return;
+  if(activeController)activeController.abort();activeController=new AbortController();
+  button.disabled=true;byId('output').classList.add('hidden');write('Preparing five-second audio interval and checking your files…');
+  const data=new FormData();data.append('song',byId('song').files[0]);data.append('photo',byId('photo').files[0]);
+  data.append('startSeconds',byId('start').value);data.append('lyricExcerpt',byId('lyrics').value);
+  data.append('guidance',byId('direction').value);data.append('allowPaidTest',approve.checked?'yes':'no');
+  try{
+    const r=await fetch(`${api}/test`,{method:'POST',headers:headers(),body:data,signal:activeController.signal});
+    let job=await decode(r);
+    if(job.status==='dry-run'){
+      write('Preparation test PASSED. No media went to the external provider; no video-generation request was placed.\n'+job.reason+'\nTest ID: '+job.id);
+      return;
+    }
+    write('Generation accepted. Test ID: '+job.id+'\n'+job.phase);
+    for(let tries=0;tries<100;tries++){
+      await wait(6000);if(activeController.signal.aborted)break;
+      const sr=await fetch(`${api}/test/${encodeURIComponent(job.id)}`,{headers:headers(),cache:'no-store',signal:activeController.signal});
+      job=await decode(sr);write(`${job.phase}\nStatus: ${job.status}\nTest ID: ${job.id}`);
+      if(job.status==='ready'){
+        write('Video generated and audio/video file integrity verified. Mouth synchronization still requires your review.');
+        await displayVideo(job.id);return;
+      }
+      if(job.status==='failed')throw new Error(job.error||'Generation failed.');
+    }
+    write('The test is still processing or polling stopped. Test ID: '+job.id+' (this is not a confirmation of completed video).');
+  }catch(error){if(error.name!=='AbortError')write('Test stopped: '+error.message);}
+  finally{button.disabled=false;}
+});
+})();
+</script>
+</body>
+</html>
