@@ -2668,3 +2668,8 @@ app.listen(PORT, () => {
 
  );
 });
+
+import { registerCutLoopzPerformanceLab } from './cutloopz-performance-lab.js';
+
+registerCutLoopzPerformanceLab({ app, isVideoAdmin });
+
