@@ -41,6 +41,15 @@
  .notice { margin:18px 0 0; padding:13px 16px; border-radius:11px;
  border:1px solid var(--line); background:#18253a; color:var(--muted); }
  .notice strong { color:var(--ink); }
+ .video-pricing { margin-top:28px; padding:24px; border-radius:17px;
+ border:1px solid #967c50; background:#22293b; }
+ .video-price-line { display:flex; flex-wrap:wrap; gap:12px 24px;
+ align-items:center; justify-content:space-between; }
+ .video-price { font-size:clamp(29px,5vw,42px); font-weight:850;
+ color:var(--gold); letter-spacing:-.035em; }
+ .video-pricing p { color:var(--muted); margin:9px 0 0; }
+ .example-total { padding-top:13px; margin-top:15px;
+ border-top:1px solid var(--line); font-size:15px; }
  .features { margin-top:50px; }
  .columns { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px; }
  .feature { padding:24px; border-radius:16px; border:1px solid var(--line); background:var(--panel); }
@@ -58,8 +67,7 @@
  @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
  </style>
 </head>
-<body>
- <div class="wrap">
+<body> <div class="wrap">
  <nav class="nav" aria-label="Main navigation">
  <a class="brand" href="/customer.html">CUTLOOPZ MEDIA</a>
  <div class="navlinks">
@@ -67,7 +75,8 @@
  <a href="/account.html">My account</a>
  </div>
  </nav>
- <header class="hero"> <div class="eyebrow">Your music. Your vision. Your video.</div>
+ <header class="hero">
+ <div class="eyebrow">Your music. Your vision. Your video.</div>
  <h1>Meet the Glamour<br>Membership</h1>
  <p>Plan the look of every scene. Keep your artist's identity consistent and give the Director up to five approved reference photos to work with.</p>
  <span class="pill">Prepaid access · No automatic renewal</span>
@@ -79,6 +88,19 @@
  <p id="apiStatus" role="status" aria-live="polite">Checking current membership prices…</p>
  <div id="plans" class="grid" aria-label="Glamour membership plans"></div>
  <div class="notice"><strong>Membership checkout is not available yet.</strong> Prices and membership details are shown for preview. Your card will not be charged, and no membership can be activated from this page.</div>
+ </section>
+ <section class="video-pricing" aria-labelledby="videoPricingHeading">
+ <div class="eyebrow">Video production pricing</div>
+ <div class="video-price-line">
+ <h2 id="videoPricingHeading">Regular music video</h2>
+ <div class="video-price">$79.99 <span class="month">per video</span></div>
+ </div>
+ <p>Each music video is purchased separately. Glamour membership fees pay for
+ premium styling and wardrobe-planning access, not video generation.
+ The $79.99 video price does not include a Glamour membership.</p>
+ <p class="example-total"><strong>Example:</strong> One regular music video ($79.99)
+ plus a one-month Glamour membership ($24.99) = <strong>$104.98</strong>
+ before any applicable taxes. Pricing is shown for preview; checkout is not active.</p>
  </section>
  <section class="features" aria-labelledby="compareHeading">
  <h2 id="compareHeading">One photo or five? Your choice.</h2>
@@ -114,8 +136,7 @@
  </ol>
  <p class="notice">Coming next: authenticated purchases, secure membership activation, wardrobe uploads, account expiration display, and email reminders at 20, 10, and 3 days before expiration. These are not active yet.</p>
  </section>
- </main>
- <footer>CutLoopz Media · A Director That Listens · Membership does not include video generation. Terms are prepaid and do not automatically renew.</footer>
+ </main> <footer>CutLoopz Media · A Director That Listens · Membership does not include video generation. Terms are prepaid and do not automatically renew.</footer>
  </div>
  <script>
  (function () {
@@ -136,7 +157,8 @@
  }
  const byId = new Map(data.plans.map(plan => [plan.termId, plan]));
  const fragment = document.createDocumentFragment();
- for (const term of order) { const plan = byId.get(term);
+ for (const term of order) {
+ const plan = byId.get(term);
  if (!plan || !Number.isSafeInteger(plan.amountCents) || plan.amountCents <= 0 ||
  !Number.isInteger(plan.months) || plan.months <= 0 || plan.currency !== 'USD') {
  throw new Error('Membership pricing response invalid.');
@@ -176,5 +198,5 @@
  .catch(() => { status.textContent = 'Could not load current prices. Please try again later.'; });
  })();
  </script>
- </body>
- </html>
+</body>
+</html>
