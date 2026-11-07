@@ -21,53 +21,69 @@ input,textarea,select{width:100%;padding:13px;border:1px solid #68788e;border-ra
 textarea{resize:vertical;min-height:118px}input[type=file]{font-size:16px;touch-action:manipulation;-webkit-tap-highlight-color:rgba(228,189,105,.35)}
 /* Native file controls for mobile and desktop browsers. */
 .native-photo-picker{border:1px solid #8fa0b8;border-radius:11px;background:#111b29;padding:7px 10px}
-.native-photo-picker input[type=file]{display:block;position:static;opacity:1;width:100%;height:auto;min-height:46px;padding:6px;border:1px solid #68788e;
-border-radius:8px;background:#172438;color:var(--text);font-size:16px;cursor:pointer}
-.native-photo-picker input[type=file]::file-selector-button{background:var(--gold);color:#172033;border:0;border-radius:8px;padding:8px 10px;margin-right:8px;
-font:inherit;font-weight:750;cursor:pointer}
+.native-photo-picker input[type=file]{display:block;position:static;opacity:1;width:100%;height:auto;min-height:46px;padding:6px;border:1px solid #68788e;border-radius:8px;
+ background:#172438;color:var(--text);font-size:16px;cursor:pointer}
+.native-photo-picker input[type=file]::file-selector-button{background:var(--gold);color:#172033;border:0;border-radius:8px;padding:8px 10px;margin-right:8px;font:inherit;
+ font-weight:750;cursor:pointer}
 .native-photo-picker #photoName{margin:7px 0 0;overflow-wrap:anywhere}
 #lyrics{min-height:150px;max-height:280px;overflow-y:auto;resize:vertical;scroll-behavior:auto}
 /* Compact file controls: accessible on touch, mouse and keyboard. */
 .native-file-picker{border:1px solid #8fa0b8;border-radius:11px;background:#111b29;padding:7px 10px;margin-bottom:6px}
-.native-file-picker input[type=file]{display:block;width:100%;min-height:46px;padding:6px;background:#172438;border:1px solid #68788e;border-radius:8px;
-color:var(--text);font-size:16px;cursor:pointer}
-.native-file-picker input[type=file]::file-selector-button{background:var(--gold);color:#172033;border:0;border-radius:8px;padding:8px 10px;margin-right:8px;
-font:inherit;font-weight:750;cursor:pointer}
+.native-file-picker input[type=file]{display:block;width:100%;min-height:46px;padding:6px;background:#172438;border:1px solid #68788e;border-radius:8px;color:var(--text);
+ font-size:16px;cursor:pointer}
+.native-file-picker input[type=file]::file-selector-button{background:var(--gold);color:#172033;border:0;border-radius:8px;padding:8px 10px;margin-right:8px;font:inherit;
+ font-weight:750;cursor:pointer}
 .file-status{font-size:13px;line-height:1.5;margin:7px 0 0;color:#e7d6a9;overflow-wrap:anywhere}
 .native-file-picker:focus-within,.native-photo-picker:focus-within{outline:2px solid var(--gold);outline-offset:2px}
-button{border:0;border-radius:10px;background:var(--gold);color:#172033;padding:13px 19px;font:inherit;font-weight:750;cursor:pointer;min-height:48px;
-margin-top:14px;touch-action:manipulation}
+button{border:0;border-radius:10px;background:var(--gold);color:#172033;padding:13px 19px;font:inherit;font-weight:750;cursor:pointer;min-height:48px;margin-top:14px;
+ touch-action:manipulation}
 button.secondary{background:#35465d;color:#fff}button:disabled{opacity:.5;cursor:default}
 .inline{display:flex;gap:10px;align-items:center}.inline input{flex:1;min-width:0}.inline button{margin-top:0;white-space:nowrap}
 .notice{border:1px solid #93794c;padding:12px;border-radius:10px;color:#fbe5b1;background:#2d271c}
-pre{background:#101824;border:1px solid var(--edge);border-radius:10px;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.5 ui-monospace,
-monospace}
+pre{background:#101824;border:1px solid var(--edge);border-radius:10px;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.5 ui-monospace,monospace}
 #segments{padding-left:23px}#segments li{padding:7px 0;border-bottom:1px solid var(--edge)}
 .small{font-size:13px}.shot{border:1px solid #60708a;border-radius:13px;margin:16px 0;padding:16px;background:#142033}
-.shot-title{color:var(--gold)}.shot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.shot-title{color:var(--gold)}
+.shot{padding:0;overflow:hidden}
+.shot summary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;min-height:58px;padding:12px 15px;touch-action:manipulation}
+.shot summary::-webkit-details-marker{display:none}
+.shot summary:focus-visible{outline:3px solid var(--gold);outline-offset:-3px;border-radius:12px}
+.shot-summary-name{color:var(--gold);font-size:16px;font-weight:750}
+.shot-indicator{font-size:12px;font-weight:800;color:#ffdf9b;border:1px solid #7d7157;border-radius:20px;padding:3px 9px;white-space:nowrap}
+.shot-indicator.empty{color:#ff9b9b;border-color:#b24b58;background:#3a202a}
+.shot-indicator.progress{color:#ffdf9b;border-color:#97804b;background:#382f1d}
+.shot-indicator.complete{color:#b7f0c5;border-color:#4c9172;background:#18352b}
+.shot-summary-chevron{font-size:18px;color:var(--muted)}
+.shot[open] .shot-summary-chevron{transform:rotate(180deg)}
+.shot-content{padding:0 15px 16px;border-top:1px solid var(--edge)}
+#backTop{position:fixed;right:18px;bottom:calc(22px + env(safe-area-inset-bottom));z-index:1001;display:none;width:48px;height:48px;min-height:48px;padding:0;margin:0;
+ border-radius:50%;border:2px solid #f1d59a;box-shadow:0 3px 16px #0007;font-size:23px}
+#backTop.visible{display:grid;place-items:center}
+@media(max-width:440px){.shot summary{padding:11px}.shot-summary-name{font-size:14px}.shot-indicator{font-size:11px;padding:3px 7px}}
+.shot-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
 .shot-grid label{font-size:14px}.checks{border:1px solid #71829b;border-radius:11px;padding:12px;margin-top:12px}
 .checks label{display:flex;gap:12px;align-items:flex-start;margin:9px 0;font-weight:500}
 .checks input{width:20px;min-width:20px;height:20px;margin-top:3px;accent-color:var(--gold)}
 .muted{color:var(--muted)}.success{color:#9ae6b4}.warning{color:#fbe5b1}
 @media(max-width:600px){.shot-grid{grid-template-columns:1fr}.inline{flex-wrap:wrap}.inline button{width:100%}}
-</style>
-</head>
+</style> </head>
 <body>
 <main>
 <header>
 <div class="tag">CUTLOOPZ MEDIA · ADMINISTRATOR ONLY</div>
 <h1>Unified Production Director</h1>
 <p>30-second planning, six approved five-second Wan shots, private wardrobe references, and persistent shot tracking.</p>
-<div class="notice">Planning and shot approval only. This page has NO render or payment button and cannot launch GPU generation. Vocal synchronization is not 
-connected to the visual-only Wan renderer.</div>
+<div class="notice">Planning and shot approval only. This page has NO render or payment button and cannot launch GPU generation. Vocal synchronization is not connected to the
+ visual-only Wan renderer.</div>
 </header>
 <section>
 <h2>1. Administrator access and safety check</h2>
 <label for="key">Existing video administrator password</label>
-<div class="inline"><input id="key" type="password" autocomplete="off" placeholder="Enter your administrator key"><button id="reveal" type="button" 
-class="secondary" aria-label="Show or hide password">Show</button></div>
+<div class="inline"><input id="key" type="password" autocomplete="off" placeholder="Enter your administrator key"><button id="reveal" type="button" class="secondary"
+ aria-label="Show or hide password">Show</button></div>
 <button id="check" type="button">Check production safeguards</button>
-<pre id="preflight" role="status">Not checked.</pre> </section>
+<pre id="preflight" role="status">Not checked.</pre>
+</section>
 <section>
 <h2>2. Create a 30-second production plan</h2>
 <form id="planForm">
@@ -82,12 +98,10 @@ class="secondary" aria-label="Show or hide password">Show</button></div>
 <input id="photo" type="file" aria-label="Choose original artist photograph" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" required>
 <p class="file-status" id="photoName" role="status" aria-live="polite">No photo selected</p>
 </div>
-<label for="prompt">Your Director instructions</label><textarea id="prompt" minlength="12" maxlength="4000" required 
-placeholder="Describe location, emotion, performance, camera movement, lighting and continuity."></textarea>
-<label for="lyrics">Lyrics (optional, maximum 12,000 characters)</label><textarea id="lyrics" maxlength="12000" placeholder="Paste lyrics if available">
-</textarea>
-<label for="format">Orientation</label><select id="format"><option value="vertical">Vertical (9:16)</option><option value="landscape">Landscape (16:9)</option>
-</select>
+<label for="prompt">Your Director instructions</label><textarea id="prompt" minlength="12" maxlength="4000" required
+ placeholder="Describe location, emotion, performance, camera movement, lighting and continuity."></textarea>
+<label for="lyrics">Lyrics (optional, maximum 12,000 characters)</label><textarea id="lyrics" maxlength="12000" placeholder="Paste lyrics if available"></textarea>
+<label for="format">Orientation</label><select id="format"><option value="vertical">Vertical (9:16)</option><option value="landscape">Landscape (16:9)</option></select>
 <p class="small">Planning analyzes uploaded audio and stores a private job. It does not generate a video.</p>
 <button id="plan" type="submit">Create 30-second plan (no charge)</button>
 </form>
@@ -96,166 +110,254 @@ placeholder="Describe location, emotion, performance, camera movement, lighting 
 </section>
 <section id="approvalSection">
 <h2>3. Prepare six approved Wan shots (no charge)</h2>
-<p>This sends directions to the V2 backend's <code>prepare-shots</code> endpoint. It saves six visual-only shot prompts and up to four additional approved
-photographs. Review all directions before approval; this action is permanent for that job.</p>
-<p class="notice">A real on-camera singing scene must use an audio-conditioned model. Do NOT approve visual-only shots if this video needs visible 
-lip-synchronized singing.</p>
+<p>This sends directions to the V2 backend's <code>prepare-shots</code> endpoint. It saves six visual-only shot prompts and up to four additional approved photographs. Review all directions before approval; this action is permanent for that job.</p>
+<p class="notice">A real on-camera singing scene must use an audio-conditioned model. Do NOT approve visual-only shots if this video needs visible lip-synchronized singing.</p>
 <form id="shotForm">
 <label for="approvalJob">30-second job ID</label><input id="approvalJob" placeholder="Create a plan above or paste its saved job ID" required>
 <h3>Optional Glamour Photographs</h3>
-<p class="small">Look 1 is the lead photo from the original plan. Looks 2–5 can be added here, each up to 12 MB. Photos should show the approved artist and 
-intended wardrobe; this tool does not invent outfits.</p>
+<p class="small">Look 1 is the lead photo from the original plan. Looks 2–5 can be added here, each up to 12 MB. Photos should show the approved artist and intended wardrobe;
+ this tool does not invent outfits.</p>
 <div class="shot-grid">
-<div><label for="look2">Look 2 — Red Leather</label><div class="native-file-picker"><input id="look2" type="file" 
-accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><p id="look2Name" class="file-status" role="status" aria-live="polite">No look selected</p></div>
-</div>
-<div><label for="look3">Look 3 — Pink Designer Dress</label><div class="native-file-picker"><input id="look3" type="file" 
-accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><p id="look3Name" class="file-status" role="status" aria-live="polite">No look selected</p></div>
-</div>
-<div><label for="look4">Look 4 — Mercedes</label><div class="native-file-picker"><input id="look4" type="file" 
-accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><p id="look4Name" class="file-status" role="status" aria-live="polite">No look selected</p></div>
-</div>
-<div><label for="look5">Look 5 — Silver Glamour</label><div class="native-file-picker"><input id="look5" type="file" 
-accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><p id="look5Name" class="file-status" role="status" aria-live="polite">No look selected</p></div>
-</div>
+<div><label for="look2">Look 2 — Red Leather</label><div class="native-file-picker"><input id="look2" type="file"
+ accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><p id="look2Name" class="file-status" role="status" aria-live="polite">No look selected</p></div></div>
+<div><label for="look3">Look 3 — Pink Designer Dress</label><div class="native-file-picker"><input id="look3" type="file"
+ accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><p id="look3Name" class="file-status" role="status" aria-live="polite">No look selected</p></div></div>
+<div><label for="look4">Look 4 — Mercedes</label><div class="native-file-picker"><input id="look4" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+ <p id="look4Name" class="file-status" role="status" aria-live="polite">No look selected</p></div></div>
+<div><label for="look5">Look 5 — Silver Glamour</label><div class="native-file-picker"><input id="look5" type="file"
+ accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><p id="look5Name" class="file-status" role="status" aria-live="polite">No look selected</p></div></div>
 </div>
 <p class="small">All six scene directions below require human review. The five-second duration is fixed.</p>
 <div id="shotCards"></div>
 <div class="checks">
-<label><input id="reviewed" type="checkbox" required><span>I reviewed every 
-scene's story, camera movement, action, wardrobe, and reference photograph.</span></label>
-<label><input id="visualOnly" type="checkbox" required><span>I confirm NO on-camera singing, talking, or lip-sync performance is required in any of these six 
-shots.</span></label>
-<label><input id="approve" type="checkbox" required><span>I approve these six visual-only shots for preparation. I understand this cannot be undone for this job 
-and does NOT authorize GPU spending.</span></label>
-</div>
-<button id="prepare" type="submit">Approve and save six visual-only shots (no charge)</button>
+<label><input id="reviewed" type="checkbox" required><span>I reviewed every scene's story, camera movement, action, wardrobe, and reference photograph.</span></label>
+<label><input id="visualOnly" type="checkbox" required><span>I confirm NO on-camera singing, talking, or lip-sync performance is required in any of these six shots.</span></label>
+<label><input id="approve" type="checkbox" required><span>I approve these six visual-only shots for preparation. I understand this cannot be undone for this job and does NOT
+ authorize GPU spending.</span></label>
+</div> <button id="prepare" type="submit">Approve and save six visual-only shots (no charge)</button>
 </form>
 <pre id="approvalStatus" role="status">No shot package approved.</pre>
 </section>
 <section>
 <h2>4. Review an existing job</h2>
 <label for="lookup">Saved unified job ID</label><input id="lookup" placeholder="Paste job ID">
-<button class="secondary" type="button" id="review">Review saved shot status</button> <pre id="history" role="status">No job selected.</pre>
+<button class="secondary" type="button" id="review">Review saved shot status</button>
+<pre id="history" role="status">No job selected.</pre>
 <p class="small">A prepared job can be checked here. Rendering is deliberately unavailable from this page.</p>
 </section>
 </main>
+<button id="backTop" type="button" aria-label="Back to top" title="Back to top">↑</button>
 <script>
-(()=>{'use strict';
-const $=id=>document.getElementById(id);
-const api='/api/unified-production';
-const headers=()=>({'X-Video-Admin-Key':$('key').value.trim()});
-const message=e=>String(e?.message||e||'Unknown error');
-const lists={framing:['wide','medium','medium-close-up','close-up','full-body'],camera:['locked-off','slow-dolly-in','slow-dolly-out','slow-track-left',
-'slow-track-right','gentle-orbit','slow-pan-left','slow-pan-right'],action:['hold-pose','look-to-camera','turn-head','one-step-forward','two-steps-forward',
-'gentle-shoulder-groove','raise-hand','lower-hand','walk-past-camera'],visualStyle:['photorealistic','cinematic-stylized']};
-async function unpack(response){const raw=await response.text();let data;try{data=JSON.parse(raw)}catch{throw new 
-Error('Unexpected server response ('+response.status+').')}if(!response.ok||data.ok===false)throw new Error(data.error||'Request failed.');return data}
-function el(tag,attrs={},text){const node=document.createElement(tag);for(const [k,v] of Object.entries(attrs)){if(k==='className')node.className=v;else 
-node.setAttribute(k,v)}if(text!==undefined)node.textContent=text;return node}
-function addField(parent,number,field,label,kind='text',max=140){const wrapper=el('div');const id='s'+number+'-'+field;const lab=el('label',{for:id},label);
-wrapper.append(lab);let control;
-if(kind==='select'){control=el('select',{id,'data-field':field});for(const value of lists[field]||[]){const option=el('option',{value},value.replaceAll('-',
-' '));control.append(option)}}
-else if(field==='lookId'){control=el('select',{id,'data-field':field});for(let n=1;n<=5;n++)control.append(el('option',{value:String(n)},
-'Look '+n+(n===1?' · lead':'')))}
-else if(kind==='textarea')control=el('textarea',{id,'data-field':field,maxlength:String(max),required:''});
-else control=el('input',{id,type:'text','data-field':field,maxlength:String(max),required:''});
-wrapper.append(control);parent.append(wrapper);return control}
-function makeCards(){for(let n=1;n<=6;n++){
- const card=el('article',{className:'shot','data-number':String(n)});card.append(el('h3',{className:'shot-title'},
-'Shot '+n+' · '+((n-1)*5)+'–'+(n*5)+' seconds'));
- card.append(el('p',{className:'small'},'One action, one camera movement, one approved look. No lip-sync.'));
- const grid=el('div',{className:'shot-grid'});
- addField(grid,n,'lookId','Approved photograph','select');
- addField(grid,n,'framing','Framing','select');
- addField(grid,n,'camera','Camera movement','select');
- addField(grid,n,'action','Performer action','select');
- addField(grid,n,'visualStyle','Visual style','select');
- addField(grid,n,'location','Location','text',140);
- addField(grid,n,'wardrobe','Exact clothing shown in approved photo','text',140);
- addField(grid,n,'expression','Expression','text',120);
- addField(grid,n,'lighting','Lighting','text',110);
- addField(grid,n,'continuityNote','Continuity requirements','text',160);
- card.append(grid);addField(card,n,'storyBeat','Approved cinematic story beat (max 340 characters)','textarea',340);
- $('shotCards').append(card);
- } }
-makeCards();
-const leadPhoto=$('photo');
-function updateLeadPhotoStatus(){
- const file=leadPhoto.files?.[0];
- $('photoName').textContent=file ? 'Selected: '+file.name : 'No photo selected';
-}
-leadPhoto.addEventListener('change',updateLeadPhotoStatus);
-leadPhoto.addEventListener('input',updateLeadPhotoStatus);
-const songInput=$('audio');
-function updateSongStatus(){
- const file=songInput.files?.[0];
- $('audioName').textContent=file ? 'Selected: '+file.name : 'No song selected';
-}
-songInput.addEventListener('change',updateSongStatus);
-songInput.addEventListener('input',updateSongStatus);
-for(let n=2;n<=5;n++){
- const control=$('look'+n);
- const output=$('look'+n+'Name');
- const show=()=>{const file=control.files?.[0];output.textContent=file?'Selected: '+file.name:'No look selected';};
- control.addEventListener('change',show);
- control.addEventListener('input',show);
-}
-const lyricsBox=$('lyrics');
-function showLyricsBeginning(){ if(!lyricsBox)return;
- lyricsBox.scrollTop=0;
- requestAnimationFrame(()=>{ lyricsBox.scrollTop=0; });
-}
-lyricsBox.addEventListener('paste',()=>setTimeout(showLyricsBeginning,0));
-window.addEventListener('pageshow',showLyricsBeginning);
-window.addEventListener('load',showLyricsBeginning);
-if(document.readyState!=='loading')showLyricsBeginning();
-$('reveal').addEventListener('click',()=>{const visible=$('key').type==='text';$('key').type=visible?'password':'text';
-$('reveal').textContent=visible?'Show':'Hide'});
-$('check').addEventListener('click',async()=>{$('preflight').textContent='Checking...';try{const data=await unpack(await fetch(api+'/preflight',
-{headers:headers(),cache:'no-store'}));$('preflight').textContent=['Administrator access: verified',
-'Unified planning flag: '+(data.gates?.unifiedEnabled?'on':'off'),'GPU provider flag: '+(data.gates?.gpuEnabled?'on':'off'),
-'Explicit spending approval: '+(data.gates?.explicitSpendApproval?'on':'off'),'Rendering enabled: '+(data.renderingEnabled?'YES — use caution':'NO'),
-'No video generation was requested.'].join('\n')}catch(e){$('preflight').textContent=message(e)}});
-$('planForm').addEventListener('submit',async event=>{event.preventDefault();
-if(!$('key').value.trim()){$('status').textContent='Enter administrator password first.';return} $('plan').disabled=true;$('results').hidden=true;
-$('status').textContent='Saving media and analyzing the plan...';try{
-const audio=$('audio').files[0],photo=$('photo').files[0];if(!audio||!photo)throw new Error('Upload a song and lead photo.');if(audio.size>
-30*1024*1024||photo.size>12*1024*1024)throw new Error('A file exceeds upload limit.');
-const form=new FormData();for(const key of ['title','prompt','lyrics','format'])form.append(key,$(key).value);form.append('audio',audio);form.append('photo',
-photo);
-const data=await unpack(await fetch(api+'/plan',{method:'POST',headers:headers(),body:form}));
-$('status').textContent='Planning completed. NO video generated.\nJob ID: '+data.job.id+'\nSegments: '+data.job.totalSegments;
-$('jobId').textContent='Job ID: '+data.job.id;$('lookup').value=data.job.id;$('approvalJob').value=data.job.id;$('segments').replaceChildren();
-for(const s of data.timeline?.segments||[]){$('segments').append(el('li',{},
-'Segment '+s.number+' · '+s.startSeconds+'–'+s.endSeconds+' sec · '+s.durationSeconds+' sec · '+String(s.prompt||'').slice(0,210)))}$('results').hidden=false;
-}catch(e){$('status').textContent='Planning failed: '+message(e)}finally{$('plan').disabled=false}});
-$('shotForm').addEventListener('submit',async event=>{event.preventDefault();$('approvalStatus').textContent='Checking shot directions...';
-if(!$('key').value.trim()){$('approvalStatus').textContent='Enter administrator password first.';return}
-const id=$('approvalJob').value.trim();if(!/^[0-9a-f-]{36}$/i.test(id)){$('approvalStatus').textContent='Enter a valid 30-second job ID.';return}
-try{
-const directions=[];for(const card of document.querySelectorAll('.shot')){const number=Number(card.dataset.number);const obj={number,onCameraSinging:false};
-for(const control of card.querySelectorAll('[data-field]')){const field=control.dataset.field;
-obj[field]=field==='lookId'?Number(control.value):control.value.trim()}directions.push(obj)}
-const files=[];for(let n=2;n<=5;n++){const file=$('look'+n).files?.[0];if(file){if(file.size>12*1024*1024||!['image/jpeg','image/png',
-'image/webp'].includes(file.type))throw new Error('Look '+n+' must be JPG, PNG or WebP within 12MB.');files.push([n,file])}}
-for(const shot of directions){if(shot.lookId!==1&&!files.some(([n])=>n===shot.lookId))throw new 
-Error('Shot '+shot.number+' selects Look '+shot.lookId+' but its photo is missing.')}
-if(!$('reviewed').checked||!$('visualOnly').checked||!$('approve').checked)throw new Error('All three explicit safety confirmations are required.');
-if(!window.confirm('Save six approved VISUAL-ONLY Wan shots? This is permanent for this job. No video will be generated or charged.'))return;
-const form=new FormData();form.append('directions',JSON.stringify(directions));form.append('confirm','APPROVE_SIX_VISUAL_SHOTS');
-form.append('storyboardReviewed','true');form.append('noOnCameraSinging','true');for(const [n,file] of files)form.append('look'+n,file);
-$('prepare').disabled=true;$('approvalStatus').textContent='Saving six approved shots and look references. No GPU calls...';
-try{const data=await unpack(await fetch(api+'/jobs/'+encodeURIComponent(id)+'/prepare-shots',{method:'POST',headers:headers(),body:form}));
-$('approvalStatus').textContent='APPROVED (visual only). No GPU usage.\n'+data.shots.map(s=>
-'Shot '+s.number+' · Look '+s.lookId+' · Wan prompt '+s.promptLength+' characters').join('\n')+'\n'+(data.warning||'');$('lookup').value=id}
-catch(e){$('approvalStatus').textContent='Approval failed: '+message(e)}finally{$('prepare').disabled=false}
-}catch(e){$('approvalStatus').textContent=message(e)}});
-$('review').addEventListener('click',async()=>{const id=$('lookup').value.trim();if(!/^[0-9a-f-]{36}$/i.test(id)){$('history').textContent='Enter valid job ID.';
-return}$('history').textContent='Loading saved job...';try{const data=await unpack(await fetch(api+'/jobs/'+encodeURIComponent(id),{headers:headers(),
-cache:'no-store'}));$('history').textContent='Status: '+data.job.status+'\nPhase: '+data.job.phase+'\n'+(data.shots||[]).map(s=>
-'Shot '+s.number+': '+s.status).join('\n')}catch(e){$('history').textContent=message(e)}});
+(() => {
+ 'use strict';
+ const $ = id => document.getElementById(id);
+ const api = '/api/unified-production';
+ const headers = () => ({ 'X-Video-Admin-Key': $('key').value.trim() });
+ const message = e => String(e?.message || e || 'Unknown error');
+ const lists = { framing: ['wide', 'medium', 'medium-close-up', 'close-up', 'full-body'], camera: ['locked-off', 'slow-dolly-in', 'slow-dolly-out', 'slow-track-left',
+ 'slow-track-right', 'gentle-orbit', 'slow-pan-left', 'slow-pan-right'], action: ['hold-pose', 'look-to-camera', 'turn-head', 'one-step-forward', 'two-steps-forward',
+ 'gentle-shoulder-groove', 'raise-hand', 'lower-hand', 'walk-past-camera'], visualStyle: ['photorealistic', 'cinematic-stylized'] };
+ async function unpack(response) { const raw = await response.text(); let data; try {
+ data = JSON.parse(raw);
+ }
+ catch {
+ throw new Error('Unexpected server response (' + response.status + ').');
+ } if (!response.ok || data.ok === false)
+ throw new Error(data.error || 'Request failed.'); return data; }
+ function el(tag, attrs = {}, text) { const node = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) {
+ if (k === 'className')
+ node.className = v;
+ else
+ node.setAttribute(k, v);
+ } if (text !== undefined)
+ node.textContent = text; return node; }
+ function addField(parent, number, field, label, kind = 'text', max = 140) {
+ const wrapper = el('div');
+ const id = 's' + number + '-' + field;
+ const lab = el('label', { for: id }, label);
+ wrapper.append(lab);
+ let control;
+ if (kind === 'select') {
+ control = el('select', { id, 'data-field': field });
+ for (const value of lists[field] || []) {
+ const option = el('option', { value }, value.replaceAll('-', ' '));
+ control.append(option);
+ }
+ }
+ else if (field === 'lookId') {
+ control = el('select', { id, 'data-field': field });
+ for (let n = 1; n <= 5; n++)
+ control.append(el('option', { value: String(n) }, 'Look ' + n + (n === 1 ? ' · lead' : '')));
+ }
+ else if (kind === 'textarea')
+ control = el('textarea', { id, 'data-field': field, maxlength: String(max), required: '' });
+ else
+ control = el('input', { id, type: 'text', 'data-field': field, maxlength: String(max), required: '' });
+ wrapper.append(control);
+ parent.append(wrapper);
+ return control;
+ }
+ function shotStatus(card) {
+ const textFields = [...card.querySelectorAll('input[data-field],textarea[data-field]')];
+ const hasText = textFields.every(field => field.value.trim().length > 0);
+ const lookSelect = card.querySelector('[data-field="lookId"]');
+ const look = Number(lookSelect.value);
+ const hasPhoto = look === 1 ? Boolean($('photo').files?.length) : Boolean($('look' + look)?.files?.length); const complete = hasText && hasPhoto;
+ // Defaults are not evidence that an artist has completed a shot.
+ const anyManualText = textFields.some(field => field.value.trim().length > 0);
+ const anyChangedSelect = [...card.querySelectorAll('select[data-field]')]
+ .some(field => field.selectedIndex > 0);
+ const started = anyManualText || anyChangedSelect;
+ const badge = card.querySelector('.shot-indicator');
+ const state = complete ? 'complete' : started ? 'progress' : 'empty';
+ badge.textContent = complete ? ' const show = () => { const file = control.files?.[0]; output.textContent = file ? 'Selected: ' + file.name : 'No look selected'; };
+ control.addEventListener('change', () => { show(); refreshShotStatuses(); });
+ control.addEventListener('input', () => { show(); refreshShotStatuses(); });
+ }
+ const lyricsBox = $('lyrics');
+ function showLyricsBeginning() {
+ if (!lyricsBox)
+ return;
+ lyricsBox.scrollTop = 0;
+ requestAnimationFrame(() => { lyricsBox.scrollTop = 0; });
+ }
+ lyricsBox.addEventListener('paste', () => setTimeout(showLyricsBeginning, 0));
+ window.addEventListener('pageshow', showLyricsBeginning);
+ window.addEventListener('load', showLyricsBeginning);
+ if (document.readyState !== 'loading')
+ showLyricsBeginning();
+ $('reveal').addEventListener('click', () => { const visible = $('key').type === 'text'; $('key').type = visible ? 'password' : 'text';
+ $('reveal').textContent = visible ? 'Show' : 'Hide'; });
+ $('check').addEventListener('click', async () => { $('preflight').textContent = 'Checking...'; try {
+ const data = await unpack(await fetch(api + '/preflight', { headers: headers(), cache: 'no-store' }));
+ $('preflight').textContent = ['Administrator access: verified', 'Unified planning flag: ' + (data.gates?.unifiedEnabled ? 'on' : 'off'),
+ 'GPU provider flag: ' + (data.gates?.gpuEnabled ? 'on' : 'off'), 'Explicit spending approval: ' + (data.gates?.explicitSpendApproval ? 'on' : 'off'),
+ 'Rendering enabled: ' + (data.renderingEnabled ? 'YES — use caution' : 'NO'), 'No video generation was requested.'].join('\n');
+ }
+ catch (e) {
+ $('preflight').textContent = message(e);
+ } });
+ $('planForm').addEventListener('submit', async (event) => {
+ event.preventDefault();
+ if (!$('key').value.trim()) {
+ $('status').textContent = 'Enter administrator password first.';
+ return;
+ }
+ $('plan').disabled = true;
+ $('results').hidden = true;
+ $('status').textContent = 'Saving media and analyzing the plan...';
+ try {
+ const audio = $('audio').files[0], photo = $('photo').files[0];
+ if (!audio || !photo)
+ throw new Error('Upload a song and lead photo.');
+ if (audio.size > 30 * 1024 * 1024 || photo.size > 12 * 1024 * 1024)
+ throw new Error('A file exceeds upload limit.');
+ const form = new FormData();
+ for (const key of ['title', 'prompt', 'lyrics', 'format'])
+ form.append(key, $(key).value);
+ form.append('audio', audio);
+ form.append('photo', photo);
+ const data = await unpack(await fetch(api + '/plan', { method: 'POST', headers: headers(), body: form }));
+ $('status').textContent = 'Planning completed. NO video generated.\nJob ID: ' + data.job.id + '\nSegments: ' + data.job.totalSegments;
+ $('jobId').textContent = 'Job ID: ' + data.job.id;
+ $('lookup').value = data.job.id;
+ $('approvalJob').value = data.job.id;
+ $('segments').replaceChildren();
+ for (const s of data.timeline?.segments || []) {
+ $('segments').append(el('li', {}, 'Segment ' + s.number + ' · ' + s.startSeconds + '–' + s.endSeconds + ' sec · ' + s.durationSeconds + ' sec · ' + String(s.prompt || '').slice(0, 210)));
+ }
+ $('results').hidden = false;
+ }
+ catch (e) {
+ $('status').textContent = 'Planning failed: ' + message(e);
+ }
+ finally {
+ $('plan').disabled = false;
+ }
+ });
+ $('shotForm').addEventListener('submit', async (event) => {
+ event.preventDefault();
+ $('approvalStatus').textContent = 'Checking shot directions...';
+ refreshShotStatuses(); if ([...document.querySelectorAll('.shot')].some(card => !shotStatus(card))) {
+ $('approvalStatus').textContent = 'Complete each shot and its selected photograph before approval.';
+ return;
+ }
+ if (!$('key').value.trim()) {
+ $('approvalStatus').textContent = 'Enter administrator password first.';
+ return;
+ }
+ const id = $('approvalJob').value.trim();
+ if (!/^[0-9a-f-]{36}$/i.test(id)) {
+ $('approvalStatus').textContent = 'Enter a valid 30-second job ID.';
+ return;
+ }
+ try {
+ const directions = [];
+ for (const card of document.querySelectorAll('.shot')) {
+ const number = Number(card.dataset.number);
+ const obj = { number, onCameraSinging: false };
+ for (const control of card.querySelectorAll('[data-field]')) {
+ const field = control.dataset.field;
+ obj[field] = field === 'lookId' ? Number(control.value) : control.value.trim();
+ }
+ directions.push(obj);
+ }
+ const files = [];
+ for (let n = 2; n <= 5; n++) {
+ const file = $('look' + n).files?.[0];
+ if (file) {
+ if (file.size > 12 * 1024 * 1024 || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type))
+ throw new Error('Look ' + n + ' must be JPG, PNG or WebP within 12MB.');
+ files.push([n, file]);
+ }
+ }
+ for (const shot of directions) {
+ if (shot.lookId !== 1 && !files.some(([n]) => n === shot.lookId))
+ throw new Error('Shot ' + shot.number + ' selects Look ' + shot.lookId + ' but its photo is missing.');
+ }
+ if (!$('reviewed').checked || !$('visualOnly').checked || !$('approve').checked)
+ throw new Error('All three explicit safety confirmations are required.');
+ if (!window.confirm('Save six approved VISUAL-ONLY Wan shots? This is permanent for this job. No video will be generated or charged.'))
+ return;
+ const form = new FormData();
+ form.append('directions', JSON.stringify(directions));
+ form.append('confirm', 'APPROVE_SIX_VISUAL_SHOTS');
+ form.append('storyboardReviewed', 'true');
+ form.append('noOnCameraSinging', 'true');
+ for (const [n, file] of files)
+ form.append('look' + n, file);
+ $('prepare').disabled = true;
+ $('approvalStatus').textContent = 'Saving six approved shots and look references. No GPU calls...';
+ try {
+ const data = await unpack(await fetch(api + '/jobs/' + encodeURIComponent(id) + '/prepare-shots', { method: 'POST', headers: headers(), body: form }));
+ $('approvalStatus').textContent = 'APPROVED (visual only). No GPU usage.\n' + data.shots.map(s => 'Shot ' + s.number + ' · Look ' + s.lookId + ' · Wan prompt ' + s.promptLength + ' characters').join('\n') + '\n' + (data.warning || '');
+ $('lookup').value = id;
+ }
+ catch (e) {
+ $('approvalStatus').textContent = 'Approval failed: ' + message(e);
+ }
+ finally {
+ $('prepare').disabled = false;
+ }
+ }
+ catch (e) {
+ $('approvalStatus').textContent = message(e);
+ }
+ });
+ const backTop = $('backTop');
+ function updateBackTop() { backTop.classList.toggle('visible', window.scrollY > 450); }
+ window.addEventListener('scroll', updateBackTop, { passive: true }); backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+ updateBackTop();
+ $('review').addEventListener('click', async () => { const id = $('lookup').value.trim(); if (!/^[0-9a-f-]{36}$/i.test(id)) {
+ $('history').textContent = 'Enter valid job ID.';
+ return;
+ } $('history').textContent = 'Loading saved job...'; try {
+ const data = await unpack(await fetch(api + '/jobs/' + encodeURIComponent(id), { headers: headers(), cache: 'no-store' }));
+ $('history').textContent = 'Status: ' + data.job.status + '\nPhase: ' + data.job.phase + '\n' + (data.shots || []).map(s => 'Shot ' + s.number + ': ' + s.status).join('\n');
+ }
+ catch (e) {
+ $('history').textContent = message(e);
+ } });
 })();
 </script>
 </body>
