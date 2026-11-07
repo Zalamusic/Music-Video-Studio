@@ -64,9 +64,9 @@
  [data-profile].customer-profile {
  display: flex;
  flex-direction: column;
- align-items: center;
- justify-content: center;
- gap: 2px; }
+ align-items: center; justify-content: center;
+ gap: 2px;
+ }
  [data-profile].customer-profile[hidden] { display: none !important; }
  .cutloopz-studio-label {
  display: block;
@@ -135,11 +135,11 @@
  }
  .cutloopz-member-prices strong {
  font-size: 20px;
- color: var(--navy, #17263c);
- }
+ color: var(--navy, #17263c); }
  .cutloopz-glamour-link {
  display: inline-flex;
- min-height: 44px; align-items: center;
+ min-height: 44px;
+ align-items: center;
  border: 2px solid var(--blue, #2469cc);
  border-radius: 10px;
  color: var(--blue-dark, #1556b4);
@@ -152,6 +152,29 @@
  background: var(--soft, #f4f8fe);
  }
  .cutloopz-coming-soon { margin-top: 16px; }
+ .account-options .cutloopz-account-signout {
+ display: inline-flex;
+ min-height: 44px;
+ align-items: center;
+ justify-content: center;
+ padding: 10px 14px;
+ border: 3px solid var(--blue, #2469cc);
+ border-radius: 10px;
+ background: #fff;
+ color: var(--blue, #2469cc);
+ font-size: 14px;
+ font-weight: 700;
+ }
+ .account-options .cutloopz-account-signout:hover,
+ .account-options .cutloopz-account-signout:focus-visible {
+ background: var(--soft, #f4f8fe);
+ color: var(--blue-dark, #1556b4);
+ }
+ .cutloopz-account-auth-error {
+ color: #b42318;
+ font-size: 13px;
+ align-self: center;
+ }
  @media (max-width: 650px) {
  .cutloopz-member-prices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
  }
@@ -161,10 +184,82 @@
  }`;
  document.head.appendChild(style);
  }
+ // Mirror the existing customer session in the lower Account section.
+ // Do not infer authentication from localStorage or a customer-supplied ID.
+ // customer.html already owns /api/customer-auth/me and its profile menus.
+ function installAccountActions() {
+ const section = document.getElementById('account');
+ const options = section?.querySelector('.account-options');
+ const heading = section?.querySelector('.account-panel h3');
+ const intro = section?.querySelector('.account-panel p');
+ const profiles = Array.from(document.querySelectorAll('[data-profile]'));
+ if (!options || !profiles.length || options.dataset.cutloopzSessionSync) return;
+ options.dataset.cutloopzSessionSync = 'v2';
+ const originalHeading = heading?.textContent || '';
+ const originalIntro = intro?.textContent || '';
+ const guestLinks = Array.from(options.querySelectorAll('a'));
+ let lastSignedIn = null;
+ function makeLink(text, href) {
+ const link = document.createElement('a');
+ link.href = href;
+ link.textContent = text;
+ return link; }
+ function update() {
+ // This follows the authenticated profile state maintained by customer.html.
+ const signedIn = profiles.some(profile => !profile.hidden);
+ if (lastSignedIn === signedIn) return;
+ lastSignedIn = signedIn;
+ if (!signedIn) {
+ if (heading) heading.textContent = originalHeading;
+ if (intro) intro.textContent = originalIntro;
+ options.replaceChildren(...guestLinks);
+ return;
+ }
+ if (heading) heading.textContent = 'Welcome Back to Cut Loopz Media';
+ if (intro) intro.textContent =
+ 'Your personal studio is ready. Open My Studio to manage your account.';
+ const studio = makeLink('My Studio', '/account.html?view=studio');
+ const signOut = document.createElement('button');
+ signOut.type = 'button';
+ signOut.className = 'cutloopz-account-signout';
+ signOut.textContent = 'Sign Out';
+ const error = document.createElement('span');
+ error.className = 'cutloopz-account-auth-error';
+ error.setAttribute('role', 'status');
+ signOut.addEventListener('click', async () => {
+ signOut.disabled = true;
+ error.textContent = '';
+ try {
+ const response = await fetch('/api/customer-auth/logout', {
+ method: 'POST',
+ credentials: 'same-origin',
+ cache: 'no-store'
+ });
+ if (!response.ok || !(await response.json()).ok) {
+ throw new Error('Sign out was not completed.');
+ }
+ // Reload to refresh the original header, floating header, and account.
+ window.location.reload();
+ } catch (_error) {
+ error.textContent = 'Unable to sign out. Please try again.';
+ signOut.disabled = false;
+ }
+ });
+ options.replaceChildren(studio, signOut, error);
+ }
+ const observer = new MutationObserver(update);
+ profiles.forEach(profile => observer.observe(profile, {
+ attributes: true,
+ attributeFilter: ['hidden']
+ }));
+ window.addEventListener('pageshow', () => queueMicrotask(update));
+ update();
+ }
  function ready() {
  installStyles();
  installProfileLabels();
  installPricing();
+ installAccountActions();
  }
  if (document.readyState === 'loading') {
  document.addEventListener('DOMContentLoaded', ready, { once: true });
