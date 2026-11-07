@@ -1,1529 +1,1152 @@
-
+CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 1
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#ffffff">
-<title>CutLoopz | Cinematic Music Video Studio</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/zala-themes.css">
-<script src="/zala-themes.js" defer></script>
-<link rel="stylesheet" href="/customer-theme-fix.css">
-
-<style>
-:root{
-  --blue:#2469cc;
-  --blue-dark:#1556b4;
-  --navy:#17263c;
-  --muted:#3f5067;
-  --line:#d8e3f0;
-  --soft:#f4f8fe;
-  --photo:url("https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=85");
+ <head>
+ <meta charset="utf-8"/>
+ <meta content="width=device-width,initial-scale=1" name="viewport"/>
+ <meta content="#ffffff" name="theme-color"/>
+ <title>
+ CutLoopz | Cinematic Music Video Studio
+ </title>
+ <link href="https://fonts.googleapis.com" rel="preconnect"/>
+ <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+ <link href="/zala-themes.css" rel="stylesheet"/>
+ <script defer="" src="/zala-themes.js">
+ </script>
+ <link href="/customer-theme-fix.css" rel="stylesheet"/>
+ <style>
+ :root{
+ --blue:#2469cc;
+ --blue-dark:#1556b4;
+ --navy:#17263c;
+ --muted:#3f5067;
+ --line:#d8e3f0;
+ --soft:#f4f8fe;
+ --gold:#b1842e;
+ --gold-light:#e4bd69;
+ --photo:url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=85')
 }
-*{box-sizing:border-box}
+*{
+ box-sizing:border-box
+}
 html{
-  scroll-behavior:smooth;
-  scroll-padding-top:180px;
+ scroll-behavior:smooth;
+ scroll-padding-top:165px
 }
 body{
-  margin:0;
-  background:#fff;
-  color:var(--navy);
-  font:16px/1.6 "DM Sans",Arial,sans-serif;
+ margin:0;
+ background:#fff;
+ color:var(--navy);
+ font:16px/1.6 'DM Sans',Arial,sans-serif
 }
-button,input,select,textarea{font:inherit}
-a{text-decoration:none}
+button,input,select,textarea{
+ font:inherit
+}
+a{
+ text-decoration:none
+}
+[hidden]{
+ display:none!important
+}
+.page,.floating-inner{
+ max-width:940px; CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 2
+ margin:auto }
 .page{
-  max-width:940px;
-  margin:auto;
-  padding:0 16px 40px;
-}
-.icon{
-  width:20px;
-  height:20px;
-  flex:none;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:1.8;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-.main-header{padding:17px 0}
-.header-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:nowrap;
-  gap:4px;
-}
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-}
+ padding:0 16px 40px }
+.main-header{
+ padding:17px 0 }
+.header-top,.floating-top{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:8px }
+.brand,.floating-brand{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ min-width:0 }
 .logo{
-  background:#eaf2ff;
-  color:var(--blue);
-  border-radius:12px;
-  width:44px;
-  height:44px;
-  display:grid;
-  place-items:center;
-  font-size:17px;
-  font-weight:800;
-  flex:none;
-}
+ width:76px;
+ height:58px;
+ background:#101010;
+ border-radius:10px;
+ padding:9px;
+ flex:none;
+ overflow:hidden }
+.logo img{
+ display:block;
+ width:100%;
+ height:100%;
+ object-fit:contain }
 .brand-name{
-  font-size:16px;
-  font-weight:800;
-}
-.brand-sub{
-  color:var(--muted);
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:.6px;
-}
+ font:700 17px 'DM Sans',sans-serif;
+ letter-spacing:.4px;
+ color:#b58b41 }
+.brand-sub,.mini-brand-sub{
+ font-size:11px;
+ color:var(--muted);
+ font-weight:600 }
+.brand-tagline{
+ color:#b1883f;
+ font-style:italic;
+ font-size:12px }
 .account-actions{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-shrink:0;
-}
-.account-actions a{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:34px;
-  padding:6px 9px;
-  border:3px solid var(--blue);
-  border-radius:10px;
-  background:#fff;
-  color:var(--blue);
-  font-size:12px;
-  font-weight:700;
-  white-space:nowrap;
-}
-.account-actions a:hover,
-.account-actions a:active,
-.account-actions a:focus-visible{
-  background:#fff;
-  color:var(--blue);
-  border-color:var(--blue);
-}
-.account-actions a:focus-visible{
-  outline:2px solid var(--blue);
-  outline-offset:3px;
-}
-[hidden]{display:none!important}
+ display:flex; CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 3
+ gap:7px;
+ align-items:center;
+ flex-shrink:0 }
+.account-actions a,.account-options a{
+ border:2px solid var(--blue);
+ background:white;
+ color:var(--blue);
+ border-radius:10px;
+ padding:7px 10px;
+ font-size:12px;
+ font-weight:700;
+ white-space:nowrap }
 .customer-profile{
-  position:relative;
-  flex-shrink:0;
-}
+ position:relative;
+ flex-shrink:0 }
 .profile-trigger{
-  width:42px;
-  height:42px;
-  min-height:42px;
-  padding:0;
-  border:3px solid var(--blue);
-  border-radius:50%;
-  background:#eaf2ff;
-  color:var(--blue-dark);
-  font-size:17px;
-  font-weight:800;
-  line-height:1;
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-}
-.profile-trigger:hover{background:#dceaff}
-.profile-trigger:focus-visible{
-  outline:2px solid var(--blue);
-  outline-offset:3px;
-}
+ width:42px;
+ height:42px;
+ border:3px solid var(--blue);
+ border-radius:50%;
+ background:#eaf2ff;
+ color:var(--blue-dark);
+ font-weight:800;
+ cursor:pointer }
 .profile-menu{
-  position:absolute;
-  right:0;
-  top:calc(100% + 10px);
-  width:210px;
-  max-width:calc(100vw - 32px);
-  z-index:1200;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:14px;
-  box-shadow:0 10px 30px rgba(20,45,85,.17);
-  padding:10px;
-}
+ position:absolute;
+ right:0;
+ top:calc(100% + 9px);
+ z-index:1200;
+ min-width:205px;
+ border:1px solid var(--line);
+ background:white;
+ box-shadow:0 12px 24px #183a5e20;
+ border-radius:12px;
+ padding:10px }
 .profile-menu-name{
-  font-size:13px;
-  font-weight:800;
-  padding:7px 9px 10px;
-  color:var(--navy);
-  overflow-wrap:anywhere;
-  border-bottom:1px solid var(--line);
-  margin-bottom:6px;
-}
-.profile-menu a,
-.profile-menu button{
-  width:100%;
-  min-height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  padding:9px 11px;
-  border:0;
-  border-radius:8px;
-  background:#fff;
-  color:var(--navy);
-  font-size:14px;
-  font-weight:700;
-  text-align:left;
-  cursor:pointer;
-}
-.profile-menu a:hover,
-.profile-menu button:hover{
-  background:var(--soft);
-  color:var(--blue-dark);
-}
-.profile-menu button:disabled{
-  opacity:.6;
-  cursor:wait;
-}
+ font-weight:800;
+ font-size:13px;
+ overflow-wrap:anywhere;
+ border-bottom:1px solid var(--line);
+ padding:6px }
+.profile-menu a,.profile-menu button{
+ display:block;
+ width:100%;
+ text-align:left;
+ background:white; CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 4
+ color:var(--navy);
+ border:0;
+ border-radius:8px;
+ padding:10px;
+ font-size:14px;
+ font-weight:700 }
 .profile-error{
-  color:#b42318;
-  font-size:12px;
-  padding:5px 9px;
-}
-
-/* Navigation */
+ color:#b42318;
+ font-size:12px }
 .tabs{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-  scrollbar-width:none;
-  -webkit-overflow-scrolling:touch;
-  padding:2px 0;
-  scroll-snap-type:x proximity;
-}
-.tabs::-webkit-scrollbar{display:none}
+ display:flex;
+ gap:9px;
+ overflow-x:auto;
+ scrollbar-width:none;
+ white-space:nowrap;
+ padding:2px 0 }
+.tabs::-webkit-scrollbar{
+ display:none }
 .tabs a{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  flex-shrink:0;
-  min-height:46px;
-  padding:11px 16px;
-  background:var(--soft);
-  border-radius:10px;
-  color:var(--navy);
-  font-size:14px;
-  font-weight:700;
-  white-space:nowrap;
-  scroll-snap-align:start;
-}
-.tabs a .icon{
-  width:17px;
-  height:17px;
-}
-.tabs .selected{
-  background:var(--blue);
-  color:#fff;
-}
-.main-tabs{margin-top:15px}
-
-/*
- * Director uses the same theme styling as
- * the other tabs. No forced light-blue color.
- */
-
+ flex:none;
+ padding:10px 14px;
+ background:var(--soft);
+ color:var(--navy);
+ border-radius:10px;
+ font-size:13px;
+ font-weight:700 }
+.tabs a.selected{
+ background:var(--blue);
+ color:white }
+.main-tabs{
+ margin-top:15px }
 .hero{
-  border:1px solid var(--line);
-  border-radius:18px;
-  overflow:hidden;
-  background:#fff;
-}
+ border:1px solid var(--line);
+ border-radius:18px;
+ overflow:hidden }
 .hero-photo{
-  height:280px;
-  background-image:
-    linear-gradient(
-      0deg,
-      rgba(8,17,45,.3),
-      transparent 70%
-    ),
-    var(--photo);
-  background-position:center;
-  background-size:cover;
-  background-color:#142a56;
-}
-.hero-content{padding:24px}
+ height:280px;
+ background-image:linear-gradient(0deg,#08112d55,transparent 70%),var(--photo);
+ background-position:center;
+ background-size:cover;
+ background-color:#142a56 }
+.hero-content{
+ padding:24px CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 5 }
 h1{
-  font-size:clamp(23px,3.1vw,29px);
-  line-height:1.3;
-  font-weight:600;
-  margin:0 0 10px;
-  letter-spacing:-.45px;
-  text-transform:none;
-}
-.hero-sub{
-  font-size:16px;
-  font-weight:600;
-  color:var(--blue-dark);
-  margin:0 0 12px;
-}
-.hero-description{
-  color:var(--muted);
-  font-size:15px;
-  line-height:1.65;
-  max-width:680px;
-  margin:0 0 18px;
-}
-.button,button{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  min-height:42px;
-  padding:9px 14px;
-  border:0;
-  border-radius:10px;
-  background:var(--blue);
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
-}
-.button:hover,button:hover{
-  background:var(--blue-dark);
-}
-.hero-cta{
-  min-height:42px;
-  padding:9px 14px;
-  font-size:14px;
-  font-weight:700;
-  line-height:1.4;
-  max-width:100%;
-  text-align:center;
-}
-.hero-cta .icon{
-  width:17px;
-  height:17px;
-}
-.tagline{
-  color:var(--muted);
-  font-size:14px;
-  font-weight:600;
-  margin:13px 0 0;
-}
-.floating-header{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  z-index:1000;
-  background:rgba(255,255,255,.98);
-  border-bottom:1px solid var(--line);
-  box-shadow:0 5px 18px rgba(20,45,85,.12);
-  transform:translateY(-110%);
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-  transition:
-    transform .3s ease,
-    opacity .3s ease,
-    visibility .3s;
-}
-.floating-header.show{
-  transform:translateY(0);
-  opacity:1;
-  visibility:visible;
-  pointer-events:auto;
-}
-.floating-inner{
-  max-width:940px;
-  margin:auto;
-  padding:9px 14px 11px;
-}
-.floating-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:8px;
-}
-.floating-brand{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.mini-logo{
-  background:#eaf2ff;
-  color:var(--blue);
-  border-radius:8px;
-  padding:6px 8px;
-  font-weight:800;
-}
-.mini-brand-name{
-  font-weight:800;
-  font-size:14px;
-}
-.mini-brand-sub{
-  color:var(--muted);
-  font-size:11px;
-  font-weight:600;
-}
-.floating-account a{
-  min-height:36px;
-  padding:6px 10px;
-  font-size:12px;
-}
-.floating-profile .profile-trigger{
-  width:36px;
-  height:36px;
-  min-height:36px;
-  font-size:15px;
-}
-.mini-hero{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:9px;
-}
-.mini-photo{
-  flex:0 0 70px;
-  width:70px;
-  height:55px;
-  border-radius:12px;
-  background-image:var(--photo);
-  background-position:center;
-  background-size:cover;
-  background-color:#142a56;
-}
-.mini-headline{
-  font-size:15px;
-  font-weight:600;
-  line-height:1.3;
-}
-.mini-sub{
-  font-size:12px;
-  color:var(--blue-dark);
-  font-weight:600;
-  margin-top:3px;
-}
-.content{padding-top:28px}
+ font-size:clamp(23px,3.1vw,29px);
+ font-weight:600;
+ margin:0 0 10px }
 h2{
-  font-size:21px;
-  margin:0 0 12px;
-}
+ font-size:21px;
+ margin:0 0 12px }
 h3{
-  font-size:16px;
-  margin:0 0 8px;
-}
-.note{
-  font-size:14px;
-  line-height:1.6;
-  color:var(--muted);
-}
-.cards{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-}
+ font-size:16px;
+ margin:0 0 8px }
+.hero-sub{
+ font-size:16px;
+ color:var(--blue-dark);
+ font-weight:600 }
+.hero-description,.note,.card p,.panel p{
+ font-size:14px;
+ color:var(--muted);
+ line-height:1.65 }
+.hero-description{
+ max-width:690px }
+.button,button.primary{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:7px;
+ border:0;
+ border-radius:10px;
+ background:var(--blue);
+ color:white;
+ padding:11px 15px;
+ font-weight:700;
+ cursor:pointer }
+.button:hover,button.primary:hover{
+ background:var(--blue-dark) }
+.tagline{
+ font-size:13px;
+ color:var(--muted);
+ font-weight:600 }
+.content{
+ padding-top:28px }
+.cards{ CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 6
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:12px }
 .card,.panel{
-  padding:18px;
-  border:1px solid var(--line);
-  border-radius:14px;
-}
-.card p,.panel p{
-  color:var(--muted);
-  font-size:15px;
-  line-height:1.65;
-}
+ border:1px solid var(--line);
+ border-radius:14px;
+ padding:18px }
 .studio{
-  padding:20px;
-  background:var(--soft);
-  border:1px solid var(--line);
-  border-radius:17px;
-}
+ padding:20px;
+ background:var(--soft);
+ border:1px solid var(--line);
+ border-radius:17px }
 .field{
-  margin-bottom:7px;
-  padding:3px 0;
-}
+ margin:0 0 14px }
 .field label{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin:16px 0 9px;
-  font-size:15px;
-  font-weight:700;
-  color:var(--navy);
-}
-.field-icon{
-  width:36px;
-  height:36px;
-  display:inline-grid;
-  place-items:center;
-  border-radius:10px;
-  background:#e5f0ff;
-  color:var(--blue);
-  flex:none;
-}
-.studio input,
-.studio select,
-.studio textarea{
-  width:100%;
-  min-height:48px;
-  padding:12px;
-  border:2px solid var(--blue);
-  border-radius:11px;
-  background:#fff;
-  color:var(--navy);
-  font-size:16px;
-  box-shadow:0 2px 6px rgba(36,105,204,.08);
-}
-.studio input::placeholder,
-.studio textarea::placeholder{
-  color:#52647b;
-  opacity:1;
-}
-.studio input:focus,
-.studio select:focus,
-.studio textarea:focus{
-  border-color:#0053d6;
-  outline:3px solid rgba(36,105,204,.22);
-  outline-offset:1px;
-  box-shadow:0 3px 12px rgba(36,105,204,.16);
-}
-.studio input[type=file]{
-  border-style:dashed;
-  padding:18px 12px;
-  background:#fafdff;
-}
-.studio textarea{
-  min-height:110px;
-  resize:vertical;
-}
+ display:block;
+ font-weight:700;
+ font-size:15px;
+ margin:0 0 7px }
 .field-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-.studio button{
-  width:100%;
-  margin-top:20px;
-}
-#studioStatus{margin-top:12px}
-.account-panel{background:#f7faff}
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px }
+.studio input,.studio select,.studio textarea{
+ display:block;
+ width:100%;
+ background:white;
+ color:var(--navy);
+ border:2px solid var(--blue);
+ border-radius:11px;
+ padding:11px 12px;
+ font-size:16px;
+ min-height:48px }
+.studio textarea{
+ min-height:115px;
+ resize:vertical }
+.studio input[type=file]{
+ border-style:dashed }
+.studio input:focus-visible,.studio select:focus-visible,.studio textarea:focus-visible{
+ outline:3px solid #2469cc33 }
+.studio .primary{
+ width:100%; CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 7
+ margin-top:9px }
+.account-panel{
+ background:#f7faff }
 .account-options{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:15px;
-}
-.account-options a{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:44px;
-  padding:10px 14px;
-  border:3px solid var(--blue);
-  border-radius:10px;
-  background:#fff;
-  color:var(--blue);
-  font-size:14px;
-  font-weight:700;
-}
+ display:flex;
+ flex-wrap:wrap;
+ gap:10px }
+.floating-header{
+ position:fixed;
+ top:0;
+ left:0;
+ right:0;
+ z-index:1000;
+ background:#fffffff9;
+ border-bottom:1px solid var(--line);
+ box-shadow:0 4px 16px #142d551f;
+ transform:translateY(-110%);
+ opacity:0;
+ visibility:hidden;
+ pointer-events:none;
+ transition:transform .3s,opacity .3s,visibility .3s }
+.floating-header.show{
+ transform:translateY(0);
+ opacity:1;
+ visibility:visible;
+ pointer-events:auto }
+.floating-inner{
+ padding:7px 14px 10px }
+.floating-top{
+ margin-bottom:7px }
+.floating-brand .logo{
+ width:58px;
+ height:44px;
+ padding:6px }
+.mini-brand-name{
+ font-size:13px;
+ font-weight:800 }
+.mini-hero{
+ display:flex;
+ gap:10px;
+ align-items:center;
+ margin-bottom:7px } CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 8
+.mini-photo{
+ width:62px;
+ height:48px;
+ flex:none;
+ border-radius:8px;
+ background:var(--photo) center/cover }
+.mini-headline{
+ font-size:14px;
+ font-weight:700 }
+.mini-sub{
+ font-size:11px;
+ color:var(--blue-dark) }
+.floating-account a{
+ font-size:11px }
+.floating-profile .profile-trigger{
+ width:36px;
+ height:36px }
+/* Production Director: compact gold-numbered scenes */
+.production-heading{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ flex-wrap:wrap;
+ margin-top:25px }
+.production-heading h3{
+ margin:0 }
+.scenes-grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:11px;
+ margin-top:11px }
+.scene-card{
+ background:#172438;
+ color:#fff;
+ border:1px solid #82704c;
+ border-radius:13px;
+ padding:14px;
+ min-width:0 }
+.scene-top{
+ display:flex;
+ align-items:center;
+ gap:10px; CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 9
+ margin-bottom:10px }
+.scene-number{
+ color:#e4bd69;
+ font-size:25px;
+ line-height:1;
+ font-weight:800;
+ letter-spacing:.5px;
+ font-variant-numeric:tabular-nums }
+.scene-name{
+ font-size:14px;
+ font-weight:700 }
+.scene-card label{
+ display:block;
+ color:#e7edf9;
+ font-size:12px;
+ font-weight:700;
+ margin:8px 0 4px }
+.scene-card textarea,.scene-card input{
+ background:#fff;
+ border:1px solid #9fb1c6;
+ color:#16233a;
+ width:100%;
+ border-radius:8px;
+ padding:8px;
+ font-size:14px;
+ min-height:38px }
+.scene-card textarea{
+ min-height:75px;
+ resize:vertical }
+.scene-card textarea::placeholder,.scene-card input::placeholder{
+ color:#52647b }
+.scene-actions{
+ display:flex;
+ gap:9px;
+ flex-wrap:wrap;
+ align-items:center;
+ margin-top:12px }
+.scene-actions button{
+ border-radius:9px;
+ padding:9px 13px;
+ border:1px solid #a88647;
+ background:#fffaf0;
+ color:#513b17;
+ font-weight:700; CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 10
+ cursor:pointer }
+.scene-actions button:disabled{
+ opacity:.5;
+ cursor:not-allowed }
+.scene-help{
+ font-size:12px;
+ color:var(--muted) }
+.prompt-tools{
+ display:flex;
+ flex-wrap:wrap;
+ gap:9px;
+ margin:8px 0 11px }
+.prompt-tools button,.prompt-tools a{
+ font-size:13px;
+ border:1px solid #c5d7ec;
+ background:white;
+ color:#174f96;
+ border-radius:9px;
+ padding:8px 11px;
+ font-weight:700;
+ cursor:pointer }
+.free-feature{
+ border:1px solid #d4c196;
+ background:#fffcf5;
+ border-radius:13px;
+ padding:16px;
+ margin:0 0 19px }
+.free-feature h3{
+ color:#6a501b }
+.free-feature p{
+ font-size:14px;
+ color:#4b5262 }
+.free-feature a{
+ color:#1755a2;
+ font-weight:800;
+ text-decoration:underline }
+.small{
+ font-size:12px;
+ color:var(--muted) }
+.status{
+ font-size:13px;
+ margin:12px 0 0; CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 11
+ min-height:18px }
+.status.error{
+ color:#a32922 }
+.back-top{
+ position:fixed;
+ right:17px;
+ bottom:19px;
+ width:44px;
+ height:44px;
+ border:0;
+ border-radius:50%;
+ background:#1c579e;
+ color:white;
+ box-shadow:0 5px 18px #122a4450;
+ font-weight:800;
+ z-index:900;
+ cursor:pointer }
 footer{
-  text-align:center;
-  padding:26px 0;
-  font-size:13px;
-  color:var(--muted);
-}
-
-/* Keep three primary tabs visible on phones */
+ text-align:center;
+ padding:25px 0;
+ font-size:13px;
+ color:var(--muted) }
 @media(max-width:600px){
-  .main-tabs,
-  .floating-header .tabs{
-    gap:6px;
-  }
-
-  .main-tabs a:nth-child(-n+3),
-  .floating-header .tabs a:nth-child(-n+3){
-    flex:0 0 auto;
-    padding:9px 10px;
-    min-height:42px;
-    font-size:12px;
-    gap:5px;
-  }
-
-  .main-tabs a:nth-child(-n+3) .icon,
-  .floating-header .tabs a:nth-child(-n+3) .icon{
-    width:14px;
-    height:14px;
-  }
-
-  .hero-photo{height:195px}
-  .hero-content{padding:18px}
-  .cards{grid-template-columns:1fr}
-  .field-row{
-    grid-template-columns:1fr;
-    gap:0;
-  }
-  .studio{padding:15px}
-  .mini-photo{
-    flex-basis:62px;
-    width:62px;
-    height:55px;
-  }
-  .floating-inner{
-    padding:7px 12px 9px;
-  }
-  .floating-top{gap:6px}
-  .floating-account{gap:5px}
-  .floating-account a{
-    padding:5px 8px;
-    min-height:34px;
-    font-size:12px;
-  }
-  .mini-brand-name{font-size:12px}
-  .mini-brand-sub{font-size:9px}
-  .mini-headline{font-size:14px}
-}
+ .hero-photo{
+ height:195px
+ }
+ .hero-content{
+ padding:18px
+ }
+ .cards,.field-row{
+ grid-template-columns:1fr
+ }
+ .studio{
+ padding:15px
+ }
+ .tabs{
+ gap:6px
+ }
+ .tabs a{
+ font-size:12px;
+ padding:9px 10px
+ }
+ .brand .logo{
+ width:64px;
+ height:50px;
+ padding:6px
+ }
+ .brand-name{ CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 12
+ font-size:14px
+ }
+ .brand-sub{
+ font-size:9px
+ }
+ .brand-tagline{
+ font-size:10px
+ }
+ .account-actions a{
+ padding:6px 7px;
+ font-size:11px
+ }
+ .scenes-grid{
+ gap:8px
+ }
+ .scene-card{
+ padding:10px
+ }
+ .scene-number{
+ font-size:22px
+ }
+ .scene-name{
+ font-size:12px
+ }
+ .scene-card textarea{
+ min-height:85px
+ }
+ .scene-card input{
+ font-size:13px;
+ padding:7px
+ }
+ .floating-inner{
+ padding:6px 12px
+ }
+ .mini-photo{
+ display:none
+ } }
 @media(max-width:360px){
-  .main-tabs a:nth-child(-n+3),
-  .floating-header .tabs a:nth-child(-n+3){
-    padding:8px 7px;
-    font-size:11px;
-    gap:4px;
-  }
-  .main-tabs a:nth-child(-n+3) .icon,
-  .floating-header .tabs a:nth-child(-n+3) .icon{
-    width:13px;
-    height:13px;
-  }
-}
+ .tabs a{
+ font-size:11px;
+ padding:8px
+ }
+ .scene-card{
+ padding:8px
+ }
+ .scene-number{
+ font-size:20px
+ } }
 @media(prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  .floating-header{transition:none}
+ html{ CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 13
+ scroll-behavior:auto
+ }
+ .floating-header{
+ transition:none
+ }
 }
-</style>
-</head>
-
-<body>
-
-<svg xmlns="http://www.w3.org/2000/svg"
-     style="position:absolute;width:0;height:0;overflow:hidden"
-     aria-hidden="true">
-
-  <symbol id="i-home" viewBox="0 0 24 24">
-    <path d="m3 10 9-7 9 7v10H3z"/>
-    <path d="M9 20v-7h6v7"/>
-  </symbol>
-  <symbol id="i-music" viewBox="0 0 24 24">
-    <path d="M9 18V5l12-2v13"/>
-    <circle cx="6" cy="18" r="3"/>
-    <circle cx="18" cy="16" r="3"/>
-  </symbol>
-  <symbol id="i-upload" viewBox="0 0 24 24">
-    <path d="M12 16V3m-5 5 5-5 5 5"/>
-    <path d="M4 16v4h16v-4"/>
-  </symbol>
-  <symbol id="i-photo" viewBox="0 0 24 24">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
-    <circle cx="8" cy="8" r="2"/>
-    <path d="m3 17 6-6 4 4 3-3 5 5"/>
-  </symbol>
-  <symbol id="i-film" viewBox="0 0 24 24">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
-    <path d="M7 3v18M17 3v18M3 8h4m-4 8h4m10-8h4m-4 8h4"/>
-  </symbol>
-  <symbol id="i-screen" viewBox="0 0 24 24">
-    <rect x="2" y="4" width="20" height="14" rx="2"/>
-    <path d="M8 22h8m-4-4v4"/>
-    <path d="m10 8 5 3-5 3z"/>
-  </symbol>
-  <symbol id="i-magic" viewBox="0 0 24 24">
-    <path d="M4 20 17 7l4 4L8 24"/>
-    <path d="m12 3 1 3 3 1-3 1-1 3-1-3-3-1 3-1z"/>
-  </symbol>
-  <symbol id="i-check" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="9"/>
-    <path d="m8 12 3 3 5-6"/>
-  </symbol>
-  <symbol id="i-dollar" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="9"/>
-    <path d="M12 6v12m4-9c-2-3-8-2-8 1s8 1 8 5-6 4-8 1"/>
-  </symbol>
-  <symbol id="i-user" viewBox="0 0 24 24">
-    <circle cx="12" cy="8" r="4"/>
-    <path d="M4 21c0-5 3-7 8-7s8 2 8 7"/>
-  </symbol>
-  <symbol id="i-info" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="9"/>
-    <path d="M12 11v6m0-10v1"/>
-  </symbol>
-</svg>
-
-<!-- Floating header -->
-
-<div class="floating-header"
-     id="floatingHeader"
-     aria-hidden="true"
-     inert>
-
-  <div class="floating-inner">
-    <div class="floating-top">
-      <div class="floating-brand">
-        <div class="logo">CL</div>
-        <div>
-          <div class="mini-brand-name">
-            Cut Loopz Media
-          </div>
-          <div class="mini-brand-sub">
-            Music Video Creation Studio
-          </div>
-        </div>
-      </div>
-
-      <div class="account-actions floating-account"
-           data-guest-actions>
-        <a href="/account.html">Sign In</a>
-        <a href="/account.html?mode=signup">Sign Up</a>
-      </div>
-
-      <div class="customer-profile floating-profile"
-           data-profile
-           hidden>
-        <button type="button"
-                class="profile-trigger"
-                data-profile-trigger
-                aria-label="Open customer profile"
-                aria-expanded="false"
-                aria-haspopup="true">
-          <span data-profile-initial>?</span>
-        </button>
-
-        <div class="profile-menu"
-             data-profile-menu
-             hidden>
-          <div class="profile-menu-name"
-               data-profile-name></div>
-          <a href="/account.html?view=studio">My Studio</a>
-          <button type="button" data-sign-out>
-            Sign Out
-          </button>
-          <div class="profile-error"
-               data-profile-error
-               role="status"
-               hidden></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="mini-hero">
-      <div class="mini-photo"
-           role="img"
-           aria-label="Cinematic music performance"></div>
-      <div>
-        <div class="mini-headline">
-          Your music deserves a video.
-        </div>
-        <div class="mini-sub">
-          You made the music. We'll bring it to life.
-        </div>
-      </div>
-    </div>
-
-    <nav class="tabs" aria-label="Quick navigation">
-      <a href="#home">
-        <svg class="icon"><use href="#i-home"/></svg>
-        Home
-      </a>
-
-      <a class="selected" href="#create">
-        <svg class="icon"><use href="#i-film"/></svg>
-        Create Video
-      </a>
-
-      <a href="/listening-director.html"
-         aria-label="Open Listening Director">
-        <svg class="icon"><use href="#i-magic"/></svg>
-        Director
-      </a>
-
-      <a href="#pricing">
-        <svg class="icon"><use href="#i-dollar"/></svg>
-        Pricing
-      </a>
-
-      <a href="#examples">
-        <svg class="icon"><use href="#i-screen"/></svg>
-        Examples
-      </a>
-
-      <a href="#how">
-        <svg class="icon"><use href="#i-info"/></svg>
-        How It Works
-      </a>
-    </nav>
-  </div>
-</div>
-
-<div class="page">
-
-<!-- Main header -->
-
-<header class="main-header" id="home">
-  <div class="header-top">
-
-    <div class="brand">
-      <div class="logo">CL</div>
-      <div>
-        <div class="brand-name"
-             style="font-family:'Arial Rounded MT Bold','Nunito',Arial,sans-serif;font-weight:700;letter-spacing:1.2px;color:#F2D9A2;">
-          <span style="font-size:1.3em;">C</span>ut Loopz Media
-        </div>
-        <div class="brand-sub">
-          Music Video Creation Studio
-        </div>
-        <div style="color:#e8c77e;font-style:italic;font-weight:400;font-size:13px;line-height:1.5;">
-          Your Music. Your Vision. Your Video.
-        </div>
-      </div>
-    </div>
-
-    <div class="account-actions" data-guest-actions>
-      <a href="/account.html">Sign In</a>
-      <a href="/account.html?mode=signup">Sign Up</a>
-    </div>
-
-    <div class="customer-profile"
-         data-profile
-         hidden>
-      <button type="button"
-              class="profile-trigger"
-              data-profile-trigger
-              aria-label="Open customer profile"
-              aria-expanded="false"
-              aria-haspopup="true">
-        <span data-profile-initial>?</span>
-      </button>
-
-      <div class="profile-menu"
-           data-profile-menu
-           hidden>
-        <div class="profile-menu-name"
-             data-profile-name></div>
-        <a href="/account.html?view=studio">My Studio</a>
-        <button type="button" data-sign-out>
-          Sign Out
-        </button>
-        <div class="profile-error"
-             data-profile-error
-             role="status"
-             hidden></div>
-      </div>
-    </div>
-  </div>
-
-  <nav class="tabs main-tabs"
-       aria-label="Main navigation">
-
-    <a class="selected" href="#home">
-      <svg class="icon"><use href="#i-home"/></svg>
-      Home
-    </a>
-
-    <a href="#create">
-      <svg class="icon"><use href="#i-film"/></svg>
-      Create Video
-    </a>
-
-    <a href="/listening-director.html"
-       aria-label="Open Listening Director">
-      <svg class="icon"><use href="#i-magic"/></svg>
-      Director
-    </a>
-
-    <a href="#pricing">
-      <svg class="icon"><use href="#i-dollar"/></svg>
-      Pricing
-    </a>
-
-    <a href="#examples">
-      <svg class="icon"><use href="#i-screen"/></svg>
-      Examples
-    </a>
-
-    <a href="#how">
-      <svg class="icon"><use href="#i-info"/></svg>
-      How It Works
-    </a>
-  </nav>
-</header>
-
-<main>
-
-<!-- Hero -->
-
-<section class="hero" id="hero">
-  <div class="hero-photo"
-       role="img"
-       aria-label="Cinematic live music performance"></div>
-
-  <div class="hero-content">
-    <h1>Your music deserves a video.</h1>
-
-    <p class="hero-sub">
-      You made the music. We'll bring it to life.
-    </p>
-
-    <p class="hero-description">
-      Made it with Suno, Udio, or in your own studio?
-      Turn your songs into breathtaking cinematic
-      music videos—without cameras, crews, or
-      complicated editing.
-    </p>
-
-    <a class="button hero-cta" href="#create">
-      <svg class="icon"><use href="#i-film"/></svg>
-      Create your music video
-    </a>
-
-    <p class="tagline">
-      Your Music. Your Vision. Your Video.
-    </p>
-  </div>
-</section>
-
-<!-- How It Works -->
-
-<section class="content" id="how">
-  <h2>How It Works</h2>
-
-  <div class="cards">
-    <div class="card">
-      <h3>1. Upload Your Music</h3>
-      <p>
-        Select your song and add an artist photo
-        for styles that use your appearance.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>2. Direct Your Vision</h3>
-      <p>
-        Choose your cinematic style, setting,
-        mood, and creative direction.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>3. Create Your Video</h3>
-      <p>
-        Once customer ordering launches,
-        you'll be able to order your music video.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- Customer Studio -->
-
-<section class="content" id="create">
-  <h2>Create Your Music Video</h2>
-
-  <p class="note">
-    Customer ordering is not enabled yet.
-    Explore your video setup below.
-  </p>
-
-  <!-- Director is on its own page, not inside this form -->
-
-  <div class="studio">
-    <form id="customerForm">
-
-      <div class="field" id="fieldTitle">
-        <label for="songTitle">
-          <span class="field-icon">
-            <svg class="icon"><use href="#i-music"/></svg>
-          </span>
-          Song Title
-        </label>
-
-        <input id="songTitle"
-               maxlength="120"
-               placeholder="Your song title">
-      </div>
-
-      <div class="field" id="fieldSong">
-        <label for="songFile">
-          <span class="field-icon">
-            <svg class="icon"><use href="#i-upload"/></svg>
-          </span>
-          Upload Your Song
-        </label>
-
-        <input id="songFile"
-               type="file"
-               accept=".mp3,.wav,audio/mpeg,audio/wav">
-      </div>
-
-      <div class="field" id="fieldPhoto">
-        <label for="artistPhoto">
-          <span class="field-icon">
-            <svg class="icon"><use href="#i-photo"/></svg>
-          </span>
-          Upload Artist Photo
-        </label>
-
-        <input id="artistPhoto"
-               type="file"
-               accept="image/jpeg,image/png,image/webp">
-
-        <p class="note">
-          Photos are used for supported
-          character-based and singing videos.
-        </p>
-      </div>
-
-      <div class="field-row">
-        <div class="field" id="fieldStyle">
-          <label for="style">
-            <span class="field-icon">
-              <svg class="icon"><use href="#i-film"/></svg>
-            </span>
-            Cinematic Style
-          </label>
-
-          <select id="style">
-            <option value="" selected disabled>
-              Choose a style
-            </option>
-            <option>Cinematic Realism</option>
-            <option>Romantic Drama</option>
-            <option>Hollywood Action</option>
-            <option>Science Fiction</option>
-            <option>Fantasy</option>
-            <option>3D Animation</option>
-            <option>Anime</option>
-            <option>Urban Music Video</option>
-          </select>
-        </div>
-
-        <div class="field" id="fieldFormat">
-          <label for="format">
-            <span class="field-icon">
-              <svg class="icon"><use href="#i-screen"/></svg>
-            </span>
-            Video Format
-          </label>
-
-          <select id="format">
-            <option value="vertical">
-              9:16 Vertical
-            </option>
-            <option value="landscape">
-              16:9 Widescreen
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field" id="fieldVision">
-        <label for="vision">
-          <span class="field-icon">
-            <svg class="icon"><use href="#i-magic"/></svg>
-          </span>
-          Describe Your Vision
-        </label>
-
-        <textarea id="vision"
-                  maxlength="4000"
-                  placeholder="Describe your story, setting, mood, wardrobe, and camera movements. Optional."></textarea>
-      </div>
-
-      <button type="submit">
-        <svg class="icon"><use href="#i-check"/></svg>
-        Continue
-      </button>
-
-      <p id="studioStatus"
-         class="note"
-         role="status"
-         aria-live="polite"></p>
-    </form>
-  </div>
-</section>
-
-<!-- Pricing -->
-
-<section class="content" id="pricing">
-  <h2>Pricing</h2>
-
-  <div class="panel">
-    <h3>Full-Length Cinematic Music Videos</h3>
-    <p>
-      Affordable per-video pricing is being finalized.
-      No payments are collected on this preview.
-    </p>
-  </div>
-</section>
-
-<!-- Examples -->
-
-<section class="content" id="examples">
-  <h2>Video Examples</h2>
-
-  <div class="panel">
-    <p>
-      Finished cinematic music-video examples
-      will appear here.
-    </p>
-  </div>
-</section>
-
-<!-- Customer Account -->
-
-<section class="content" id="account">
-  <h2>Your Account</h2>
-
-  <div class="panel account-panel">
-    <h3>Welcome to Cut Loopz Media</h3>
-
-    <p>
-      Create your customer account or sign in
-      to your personal music-video studio.
-    </p>
-
-    <p>
-      Account registration and sign-in are available.
-      Video orders, order tracking, and completed
-      video history will be added as customer
-      ordering becomes available.
-    </p>
-
-    <div class="account-options">
-      <a href="/account.html">
-        Sign In
-      </a>
-      <a href="/account.html?mode=signup">
-        Sign Up
-      </a>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  Cut Loopz Media — Your Music. Your Vision. Your Video.
-</footer>
-
-</div>
-
-<script>
-'use strict';
-
-/* Floating header */
-
-const floatingHeader =
-  document.getElementById('floatingHeader');
-
-const hero =
-  document.getElementById('hero');
-
-let headerVisible = false;
-
-function updateHeader(){
-  const heroBottom =
-    hero.getBoundingClientRect().bottom;
-
-  const shouldShow = headerVisible
-    ? heroBottom < 145
-    : heroBottom < 105;
-
-  if(shouldShow === headerVisible) return;
-
-  headerVisible = shouldShow;
-
-  floatingHeader.classList.toggle(
-    'show',
-    headerVisible
-  );
-
-  floatingHeader.setAttribute(
-    'aria-hidden',
-    String(!headerVisible)
-  );
-
-  floatingHeader.inert = !headerVisible;
-
-  if(!headerVisible){
-    closeProfileMenus();
-  }
-}
-
-window.addEventListener(
-  'scroll',
-  updateHeader,
-  {passive:true}
-);
-
-window.addEventListener(
-  'resize',
-  updateHeader
-);
-
-updateHeader();
-
-/* Customer login and profile */
-
-const guestActions =
-  document.querySelectorAll('[data-guest-actions]');
-
-const profiles =
-  document.querySelectorAll('[data-profile]');
-
+ </style>
+ </head>
+ <body>
+ <div aria-hidden="true" class="floating-header" id="floatingHeader" inert="">
+ <div class="floating-inner">
+ <div class="floating-top">
+ <div class="floating-brand">
+ <div class="logo">
+ <img alt="Cut Loopz Media logo" src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"/>
+ </div>
+ <div>
+ <div class="mini-brand-name">
+ Cut Loopz Media
+ </div>
+ <div class="mini-brand-sub">
+ Music Video Creation Studio
+ </div>
+ </div>
+ </div>
+ <div class="account-actions floating-account" data-guest-actions="">
+ <a href="/account.html">
+ Sign In
+ </a>
+ <a href="/account.html?mode=signup">
+ Sign Up
+ </a>
+ </div>
+ <div class="customer-profile floating-profile" data-profile="" hidden="">
+ <button aria-expanded="false" aria-label="Open customer profile" class="profile-trigger" data-profile-trigger="" type="button">
+ <span data-profile-initial="">
+ ?
+ </span>
+ </button>
+ <div class="profile-menu" data-profile-menu="" hidden="">
+ <div class="profile-menu-name" data-profile-name="">
+ </div>
+ <a href="/account.html?view=studio">
+ My Studio
+ </a>
+ <button data-sign-out="" type="button">
+ Sign Out
+ </button>
+ <div class="profile-error" data-profile-error="" hidden="">
+ </div>
+ </div>
+ </div> CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 14
+ </div>
+ <div class="mini-hero">
+ <div class="mini-photo">
+ </div>
+ <div>
+ <div class="mini-headline">
+ Your music deserves a video.
+ </div>
+ <div class="mini-sub">
+ You made the music. We'll bring it to life.
+ </div>
+ </div>
+ </div>
+ <nav aria-label="Quick navigation" class="tabs">
+ <a href="#home">
+ Home
+ </a>
+ <a class="selected" href="#create">
+ Create Video
+ </a>
+ <a href="/listening-director.html">
+ Director
+ </a>
+ <a href="#pricing">
+ Pricing
+ </a>
+ <a href="#examples">
+ Examples
+ </a>
+ <a href="#how">
+ How It Works
+ </a>
+ </nav>
+ </div>
+ </div>
+ <div class="page">
+ <header class="main-header" id="home">
+ <div class="header-top">
+ <div class="brand">
+ <div class="logo">
+ <img alt="Cut Loopz Media film-reel logo" src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"/>
+ </div>
+ <div>
+ <div class="brand-name">
+ Cut Loopz Media
+ </div>
+ <div class="brand-sub">
+ Music Video Creation Studio
+ </div>
+ <div class="brand-tagline">
+ Your Music. Your Vision. Your Video.
+ </div> CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 15
+ </div>
+ </div>
+ <div class="account-actions" data-guest-actions="">
+ <a href="/account.html">
+ Sign In
+ </a>
+ <a href="/account.html?mode=signup">
+ Sign Up
+ </a>
+ </div>
+ <div class="customer-profile" data-profile="" hidden="">
+ <button aria-expanded="false" aria-label="Open customer profile" class="profile-trigger" data-profile-trigger="" type="button">
+ <span data-profile-initial="">
+ ?
+ </span>
+ </button>
+ <div class="profile-menu" data-profile-menu="" hidden="">
+ <div class="profile-menu-name" data-profile-name="">
+ </div>
+ <a href="/account.html?view=studio">
+ My Studio
+ </a>
+ <button data-sign-out="" type="button">
+ Sign Out
+ </button>
+ <div class="profile-error" data-profile-error="" hidden="">
+ </div>
+ </div>
+ </div>
+ </div>
+ <nav aria-label="Main navigation" class="tabs main-tabs">
+ <a class="selected" href="#home">
+ Home
+ </a>
+ <a href="#create">
+ Create Video
+ </a>
+ <a href="/listening-director.html">
+ Director
+ </a>
+ <a href="#pricing">
+ Pricing
+ </a>
+ <a href="#examples">
+ Examples
+ </a>
+ <a href="#how">
+ How It Works
+ </a>
+ </nav>
+ </header>
+ <main> CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 16
+ <section class="hero" id="hero">
+ <div aria-label="Cinematic live music performance" class="hero-photo" role="img">
+ </div>
+ <div class="hero-content">
+ <h1>
+ Your music deserves a video.
+ </h1>
+ <p class="hero-sub">
+ You made the music. We'll bring it to life.
+ </p>
+ <p class="hero-description">
+ Made it with Suno, Udio, or in your own studio? Turn your songs into breathtaking cinematic music videos—without cameras,
+ crews, or complicated editing.
+ </p>
+ <a class="button" href="#create">
+ Create your music video
+ </a>
+ <p class="tagline">
+ Your Music. Your Vision. Your Video.
+ </p>
+ </div>
+ </section>
+ <section class="content" id="how">
+ <h2>
+ How It Works
+ </h2>
+ <div class="cards">
+ <div class="card">
+ <h3>
+ 1. Upload Your Music
+ </h3>
+ <p>
+ Select your song and add an artist photo for styles that use your appearance.
+ </p>
+ </div>
+ <div class="card">
+ <h3>
+ 2. Direct Your Vision
+ </h3>
+ <p>
+ Evaluate your music, create a Director Prompt, and arrange cinematic scenes.
+ </p>
+ </div>
+ <div class="card">
+ <h3>
+ 3. Create Your Video
+ </h3>
+ <p>
+ Once customer ordering launches, you'll be able to order your music video.
+ </p>
+ </div>
+ </div> CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 17
+ </section>
+ <section class="content" id="create">
+ <h2>
+ Create Your Music Video
+ </h2>
+ <p class="note">
+ Customer ordering is not enabled yet. Plan your video without payment or generation.
+ </p>
+ <div class="free-feature">
+ <h3>
+ Free Song Evaluation & Director Prompt
+ </h3>
+ <p>
+ Visit the Listening Director to explore your song and create a cinematic direction plan. Review the resulting prompt before using it in the video setup below. Evaluation is separate from paid video creation.
+ </p>
+ <a href="/listening-director.html">
+ Open Listening Director
+ </a>
+ <p class="small">
+ Note: automatic one-click transfer from the evaluator requires an additional update to the evaluator page. For now,
+ copy its Director Prompt into the field below.
+ </p>
+ </div>
+ <div class="studio">
+ <form id="customerForm">
+ <div class="field" id="fieldTitle">
+ <label for="songTitle">
+ Song Title
+ </label>
+ <input id="songTitle" maxlength="120" placeholder="Your song title"/>
+ </div>
+ <div class="field" id="fieldSong">
+ <label for="songFile">
+ Upload Your Song
+ </label>
+ <input accept=".mp3,.wav,audio/mpeg,audio/wav" id="songFile" type="file"/>
+ </div>
+ <div class="field" id="fieldPhoto">
+ <label for="artistPhoto">
+ Upload Artist Photo
+ </label>
+ <input accept="image/jpeg,image/png,image/webp" id="artistPhoto" type="file"/>
+ <p class="note">
+ Photos are used for supported character-based and singing videos.
+ </p>
+ </div>
+ <div class="field-row">
+ <div class="field" id="fieldStyle">
+ <label for="style">
+ Cinematic Style
+ </label>
+ <select id="style"> CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 18
+ <option disabled="" selected="" value="">
+ Choose a style
+ </option>
+ <option>
+ Cinematic Realism
+ </option>
+ <option>
+ Romantic Drama
+ </option>
+ <option>
+ Hollywood Action
+ </option>
+ <option>
+ Science Fiction
+ </option>
+ <option>
+ Fantasy
+ </option>
+ <option>
+ 3D Animation
+ </option>
+ <option>
+ Anime
+ </option>
+ <option>
+ Urban Music Video
+ </option>
+ </select>
+ </div>
+ <div class="field" id="fieldFormat">
+ <label for="format">
+ Video Format
+ </label>
+ <select id="format">
+ <option value="vertical">
+ 9:16 Vertical
+ </option>
+ <option value="landscape">
+ 16:9 Widescreen
+ </option>
+ </select>
+ </div>
+ </div>
+ <div class="field" id="fieldVision">
+ <label for="vision">
+ Your Director Prompt / Creative Vision
+ </label>
+ <textarea id="vision" maxlength="12000" placeholder="Paste your free Director Prompt here, or describe your story, mood, wardrobe, camera direction and locations."></textarea>
+ <div class="prompt-tools">
+ <button id="applyPrompt" type="button">
+ Apply Prompt to Scenes
+ </button> CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 19
+ <button id="copyPlan" type="button">
+ Copy Production Plan
+ </button>
+ </div>
+ <p class="small">
+ The Director Prompt is the master creative brief. Scene details are optional refinements—not competing instructions.
+ </p>
+ </div>
+ <div class="production-heading">
+ <h3>
+ Production Director — Scene Board
+ </h3>
+ <span class="small">
+ Gold-numbered, two-column layout
+ </span>
+ </div>
+ <p class="scene-help">
+ Four scenes are shown initially. Add more in pairs. Each scene can hold a specific action,
+ location, and wardrobe without repeating the whole Director Prompt.
+ </p>
+ <div aria-live="polite" class="scenes-grid" id="scenesGrid">
+ </div>
+ <div class="scene-actions">
+ <button id="addScenes" type="button">
+ + Add 2 Scenes
+ </button>
+ <button id="removeScenes" type="button">
+ Remove Last 2
+ </button>
+ <span class="small" id="sceneCount">
+ </span>
+ </div>
+ <button class="primary" type="submit">
+ Continue
+ </button>
+ <p aria-live="polite" class="status" id="studioStatus" role="status">
+ </p>
+ </form>
+ </div>
+ </section>
+ <section class="content" id="pricing">
+ <h2>
+ Pricing
+ </h2>
+ <div class="panel">
+ <h3>
+ Full-Length Cinematic Music Videos
+ </h3>
+ <p>
+ Affordable per-video pricing is being finalized. No payments are collected on this preview.
+ </p>
+ </div> CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 20
+ </section>
+ <section class="content" id="examples">
+ <h2>
+ Video Examples
+ </h2>
+ <div class="panel">
+ <p>
+ Finished cinematic music-video examples will appear here.
+ </p>
+ </div>
+ </section>
+ <section class="content" id="account">
+ <h2>
+ Your Account
+ </h2>
+ <div class="panel account-panel">
+ <h3>
+ Welcome to Cut Loopz Media
+ </h3>
+ <p>
+ Create your customer account or sign in to your personal music-video studio.
+ </p>
+ <p>
+ Account registration and sign-in are available. Video orders, order tracking,
+ and completed video history will be added as customer ordering becomes available.
+ </p>
+ <div class="account-options">
+ <a href="/account.html">
+ Sign In
+ </a>
+ <a href="/account.html?mode=signup">
+ Sign Up
+ </a>
+ </div>
+ </div>
+ </section>
+ </main>
+ <footer>
+ Cut Loopz Media — Your Music. Your Vision. Your Video.
+ </footer>
+ </div>
+ <button aria-label="Back to top" class="back-top" hidden="" id="backTop" type="button">
+ ↑
+ </button>
+ <script>
+ 'use strict';
+const $=id=>document.getElementById(id);
+const floatingHeader=$('floatingHeader'),hero=$('hero'),backTop=$('backTop');
+let headerVisible=false;
 function closeProfileMenus(){
-  profiles.forEach(profile => {
-    const menu =
-      profile.querySelector('[data-profile-menu]');
-
-    const trigger =
-      profile.querySelector('[data-profile-trigger]');
-
-    menu.hidden = true;
-    trigger.setAttribute('aria-expanded','false');
-  });
+ document.querySelectorAll('[data-profile]').forEach(p=>{
+ p.querySelector('[data-profile-menu]').hidden=true;p.querySelector('[data-profile-trigger]').setAttribute('aria-expanded', CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 21
+ 'false')
+ })
 }
-
+function updateHeader(){
+ const y=hero.getBoundingClientRect().bottom;
+ const shouldShow=headerVisible?y<145:y<105;
+ if(shouldShow!==headerVisible){
+ headerVisible=shouldShow;
+ floatingHeader.classList.toggle('show',shouldShow);
+ floatingHeader.setAttribute('aria-hidden',String(!shouldShow));
+ floatingHeader.inert=!shouldShow;
+ if(!shouldShow)closeProfileMenus()
+ }
+ backTop.hidden=window.scrollY<350
+}
+window.addEventListener('scroll',updateHeader,{
+ passive:true
+});
+window.addEventListener('resize',updateHeader);
+updateHeader();
+backTop.addEventListener('click',()=>window.scrollTo({
+ top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'
+}));
 function showGuest(){
-  closeProfileMenus();
-
-  guestActions.forEach(element => {
-    element.hidden = false;
-  });
-
-  profiles.forEach(profile => {
-    profile.hidden = true;
-  });
+ closeProfileMenus();
+ document.querySelectorAll('[data-guest-actions]').forEach(x=>x.hidden=false);
+ document.querySelectorAll('[data-profile]').forEach(x=>x.hidden=true)
 }
-
-function showCustomer(customer){
-  const name = String(
-    customer.name ||
-    customer.firstName ||
-    customer.email ||
-    'Customer'
-  ).trim();
-
-  const initial =
-    Array.from(name)[0]?.toUpperCase() || 'C';
-
-  guestActions.forEach(element => {
-    element.hidden = true;
-  });
-
-  profiles.forEach(profile => {
-    profile.hidden = false;
-
-    profile.querySelector(
-      '[data-profile-initial]'
-    ).textContent = initial;
-
-    profile.querySelector(
-      '[data-profile-name]'
-    ).textContent = name;
-  });
+function showCustomer(user){
+ const name=String(user.name||user.firstName||user.email||'Customer').trim(),
+ initial=Array.from(name)[0]?.toUpperCase()||'C';
+ document.querySelectorAll('[data-guest-actions]').forEach(x=>x.hidden=true);
+ document.querySelectorAll('[data-profile]').forEach(p=>{
+ p.hidden=false;p.querySelector('[data-profile-initial]').textContent=initial;p.querySelector('[data-profile-name]').textContent=name
+ })
 }
-
 async function loadCustomer(){
-  try{
-    const response = await fetch(
-      '/api/customer-auth/me',
-      {
-        credentials:'same-origin',
-        cache:'no-store'
-      }
-    );
-
-    if(!response.ok){
-      showGuest();
-      return;
-    }
-
-    const data = await response.json();
-
-    const customer =
-      data.customer || data.user || null;
-
-    if(data.ok && customer){
-      showCustomer(customer);
-    }else{
-      showGuest();
-    }
-  }catch(error){
-    showGuest();
-  }
-}
-
-profiles.forEach(profile => {
-  const trigger =
-    profile.querySelector('[data-profile-trigger]');
-
-  const menu =
-    profile.querySelector('[data-profile-menu]');
-
-  const signOut =
-    profile.querySelector('[data-sign-out]');
-
-  const errorBox =
-    profile.querySelector('[data-profile-error]');
-
-  trigger.addEventListener('click',event => {
-    event.stopPropagation();
-
-    const opening = menu.hidden;
-
-    closeProfileMenus();
-
-    menu.hidden = !opening;
-
-    trigger.setAttribute(
-      'aria-expanded',
-      String(opening)
-    );
-
-    errorBox.hidden = true;
-    errorBox.textContent = '';
-  });
-
-  menu.addEventListener('click',event => {
-    event.stopPropagation();
-  });
-
-  signOut.addEventListener('click',async () => {
-    signOut.disabled = true;
-    errorBox.hidden = true;
-    errorBox.textContent = '';
-
-    try{
-      const response = await fetch(
-        '/api/customer-auth/logout',
-        {
-          method:'POST',
-          credentials:'same-origin',
-          cache:'no-store'
-        }
-      );
-
-      if(!response.ok){
-        throw new Error('Sign out failed.');
-      }
-
-      const data = await response.json();
-
-      if(!data.ok){
-        throw new Error('Sign out failed.');
-      }
-
-      showGuest();
-    }catch(error){
-      errorBox.textContent =
-        'Could not sign out. Please try again.';
-      errorBox.hidden = false;
-    }finally{
-      signOut.disabled = false;
-    }
-  });
+ try{
+ const r=await fetch('/api/customer-auth/me',{
+ credentials:'same-origin',cache:'no-store'
+ });
+ if(!r.ok){
+ showGuest();
+ return
+ }
+ const data=await r.json(),customer=data.customer||data.user;
+ if(data.ok&&customer)showCustomer(customer);
+ else showGuest()
+ }catch{
+ showGuest()
+ }
+} CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 22
+document.querySelectorAll('[data-profile]').forEach(p=>{
+ const trigger=p.querySelector('[data-profile-trigger]'),menu=p.querySelector('[data-profile-menu]'),
+ signOut=p.querySelector('[data-sign-out]'),err=p.querySelector('[data-profile-error]');trigger.addEventListener('click',
+ event=>{
+ event.stopPropagation();const opening=menu.hidden;closeProfileMenus();menu.hidden=!opening;trigger.setAttribute('aria-expanded',
+ String(opening));err.hidden=true
+ });menu.addEventListener('click',event=>event.stopPropagation());signOut.addEventListener('click',async()=>{
+ signOut.disabled=true;err.hidden=true;try{
+ const r=await fetch('/api/customer-auth/logout',{
+ method:'POST',credentials:'same-origin',cache:'no-store'
+ });const d=await r.json();if(!r.ok||!d.ok)throw Error('Sign out failed');showGuest()
+ }catch{
+ err.textContent='Could not sign out. Please try again.';err.hidden=false
+ }finally{
+ signOut.disabled=false
+ }
+ })
 });
-
-document.addEventListener('click',event => {
-  if(!event.target.closest('[data-profile]')){
-    closeProfileMenus();
-  }
+document.addEventListener('click',event=>{
+ if(!event.target.closest('[data-profile]'))closeProfileMenus()
 });
-
-document.addEventListener('keydown',event => {
-  if(event.key === 'Escape'){
-    closeProfileMenus();
-  }
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape')closeProfileMenus()
 });
-
 window.addEventListener('pageshow',loadCustomer);
-
 loadCustomer();
-
-/* Gentle guided flow */
-
-const reducedMotion = window.matchMedia(
-  '(prefers-reduced-motion: reduce)'
-);
-
-function gentlyReveal(nextId){
-  const next = document.getElementById(nextId);
-  if(!next) return;
-
-  requestAnimationFrame(() => {
-    const rect = next.getBoundingClientRect();
-    const safeBottom = window.innerHeight - 75;
-
-    if(rect.top <= safeBottom) return;
-
-    const needed = rect.top - safeBottom + 25;
-
-    const movement = Math.min(
-      85,
-      Math.max(0,needed)
-    );
-
-    if(movement < 12) return;
-
-    window.scrollBy({
-      top:movement,
-      behavior:reducedMotion.matches
-        ? 'auto'
-        : 'smooth'
-    });
-  });
+const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+function gentlyReveal(id){
+ const next=$(id);
+ if(!next)return;
+ requestAnimationFrame(()=>{
+ const rect=next.getBoundingClientRect(),needed=rect.top-(window.innerHeight-75)+25;if(needed<12)return;window.scrollBy({
+ top:Math.min(85,Math.max(0,needed)),behavior:reducedMotion.matches?'auto':'smooth'
+ })
+ })
 }
-
-const songTitle =
-  document.getElementById('songTitle');
-
-const songFile =
-  document.getElementById('songFile');
-
-const artistPhoto =
-  document.getElementById('artistPhoto');
-
-const styleSelect =
-  document.getElementById('style');
-
-const formatSelect =
-  document.getElementById('format');
-
-songTitle.addEventListener('change',() => {
-  if(songTitle.value.trim()){
-    gentlyReveal('fieldSong');
-  }
+const songTitle=$('songTitle'),songFile=$('songFile'),artistPhoto=$('artistPhoto'),
+ styleSelect=$('style'),formatSelect=$('format'),vision=$('vision'),status=$('studioStatus');
+songTitle.addEventListener('change',()=>{
+ if(songTitle.value.trim())gentlyReveal('fieldSong')
 });
-
-songFile.addEventListener('change',() => {
-  if(songFile.files.length){
-    gentlyReveal('fieldPhoto');
-  }
+songFile.addEventListener('change',()=>{
+ if(songFile.files.length)gentlyReveal('fieldPhoto')
 });
-
-artistPhoto.addEventListener('change',() => {
-  if(artistPhoto.files.length){
-    gentlyReveal('fieldStyle');
-  }
+artistPhoto.addEventListener('change',()=>{
+ if(artistPhoto.files.length)gentlyReveal('fieldStyle')
 });
-
-styleSelect.addEventListener('change',() => {
-  if(styleSelect.value){
-    gentlyReveal('fieldFormat');
-  }
-});
-
-formatSelect.addEventListener('change',() => {
-  gentlyReveal('fieldVision');
-});
-
-/* Customer preview form */
-
-const form =
-  document.getElementById('customerForm');
-
-const status =
-  document.getElementById('studioStatus');
-
-form.addEventListener('submit',event => {
-  event.preventDefault();
-
-  const song = songFile.files[0];
-
-  if(!song){
-    status.textContent =
-      'Please upload an MP3 or WAV song.';
-    return;
-  }
-
-  const filename = song.name.toLowerCase();
-
-  if(
-    !filename.endsWith('.mp3') &&
-    !filename.endsWith('.wav')
-  ){
-    status.textContent =
-      'Please select an MP3 or WAV file.';
-    return;
-  }
-
-  status.textContent =
-    'Your video concept is ready. ' +
-    'Customer ordering is not enabled yet. ' +
-    'No video has been generated or charged.';
-});
-</script>
-
-<style>
-/* Cut Loopz Media official logo */
-
-.brand .logo,
-.floating-brand .logo {
-  width:76px;
-  height:58px;
-  padding:9px;
-  border-radius:10px;
-  background:#101010;
-  overflow:hidden;
-  flex-shrink:0;
+styleSelect.addEventListener('change',()=>gentlyReveal('fieldFormat'));
+formatSelect.addEventListener('change',()=>gentlyReveal('fieldVision'));
+// This page creates planning data only. No paid endpoint is called.
+// Scene records stay in memory for this page session, not permanently stored.
+const scenes=Array.from({ CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 23
+ length:4
+},()=>({
+ direction:'',wardrobe:'',location:''
+}));
+const maxScenes=100;
+const grid=$('scenesGrid');
+function saveSceneInputs(){
+ grid.querySelectorAll('[data-scene-index]').forEach(el=>{
+ const i=Number(el.dataset.sceneIndex),field=el.dataset.sceneField;if(scenes[i]&&['direction',
+ 'wardrobe','location'].includes(field))scenes[i][field]=el.value
+ })
 }
-
-.brand .logo img,
-.floating-brand .logo img {
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  object-position:center -2px;
-  border-radius:7px;
+function sceneControl(i,field,label,placeholder,multi){
+ const wrap=document.createElement('div'),lab=document.createElement('label');
+ lab.textContent=label;
+ lab.htmlFor='scene-'+i+'-'+field;
+ const el=document.createElement(multi?'textarea':'input');
+ el.id=lab.htmlFor;
+ el.dataset.sceneIndex=String(i);
+ el.dataset.sceneField=field;
+ el.value=scenes[i][field];
+ el.placeholder=placeholder;
+ el.addEventListener('input',()=>{
+ scenes[i][field]=el.value
+ });
+ wrap.append(lab,el);
+ return wrap
 }
-
-@media(max-width:600px){
-  .brand .logo,
-  .floating-brand .logo {
-    width:64px;
-    height:50px;
-  }
+function renderScenes(){
+ saveSceneInputs();
+ grid.replaceChildren();
+ scenes.forEach((scene,i)=>{
+ const card=document.createElement('section');card.className='scene-card';card.setAttribute('aria-label',
+ 'Scene '+(i+1));const head=document.createElement('div');head.className='scene-top';const num=document.createElement('span');num.className='scene-number';num.textContent=String(i+1).padStart(2,
+ '0');const label=document.createElement('span');label.className='scene-name';label.textContent='Scene '+(i+1);head.append(num,
+ label);card.append(head,sceneControl(i,'direction','Action / Shot','Optional scene-specific action and camera notes',
+ true),sceneControl(i,'location','Location','Optional location',false),
+ sceneControl(i,'wardrobe','Wardrobe / Look','Optional wardrobe',false));grid.append(card)
+ });
+ $('sceneCount').textContent=scenes.length+' scenes';
+ $('removeScenes').disabled=scenes.length<=4;
+ $('addScenes').disabled=scenes.length>=maxScenes
 }
-</style>
-
-<script>
-(function(){
-  'use strict';
-
-  const logoPath =
-    '/a_sleek_cinematic_logo_on_a_black_background_a_g.png';
-
-  document.querySelectorAll(
-    '.brand .logo, .floating-brand .logo'
-  ).forEach(function(container){
-    const img = document.createElement('img');
-    img.src = logoPath;
-    img.alt = 'Cut Loopz Media film-reel logo';
-    img.loading = 'eager';
-    container.replaceChildren(img);
-  });
-})();
-</script>
-<script src="/cutloopz-home-upgrade.js" defer></script>
-</body>
+function setStatus(message,error=false){
+ status.textContent=message;
+ status.classList.toggle('error',error)
+}
+$('addScenes').addEventListener('click',()=>{
+ saveSceneInputs();if(scenes.length+2>maxScenes)return;scenes.push({
+ direction:'',wardrobe:'',location:''
+ },{
+ direction:'',wardrobe:'',location:'' CUTLOOPZ | CUSTOMER STUDIO — CLEAN CODE Page 24
+ });renderScenes();setStatus('Two blank scenes added. Existing instructions preserved.')
+});
+$('removeScenes').addEventListener('click',()=>{
+ saveSceneInputs();if(scenes.length<=4)return;const last=scenes.slice(-2);if(last.some(s=>Object.values(s).some(v=>v.trim()))&&!confirm('The last two scenes contain instructions. Remove them?'))return;scenes.splice(-2,
+ 2);renderScenes();setStatus('Last two scenes removed.')
+});
+$('applyPrompt').addEventListener('click',()=>{
+ const master=vision.value.trim();if(!master){
+ setStatus('Enter or paste a Director Prompt first.',true);return
+ }
+ saveSceneInputs();setStatus('Director Prompt established as the master creative brief. The individual scene boxes remain available for specific instructions; they do not override the master brief.');
+});
+function productionPlan(){
+ saveSceneInputs();
+ return {
+ version:'CutLoopz Customer Production Preview v1',title:songTitle.value.trim(),
+ format:formatSelect.value,style:styleSelect.value,directorPrompt:vision.value.trim(),
+ sceneCount:scenes.length,scenes:scenes.map((s,i)=>({
+ number:i+1,...s
+ })),note:'Planning only; not a video order or generated production.'
+ }
+}
+$('copyPlan').addEventListener('click',async()=>{
+ const content=JSON.stringify(productionPlan(),null,2);try{
+ await navigator.clipboard.writeText(content);setStatus('Production plan copied. No video generated or charge made.')
+ }catch{
+ setStatus('Clipboard unavailable. Please use your browser copy controls.',true)
+ }
+});
+$('customerForm').addEventListener('submit',event=>{
+ event.preventDefault();const song=songFile.files[0];if(!song){
+ setStatus('Please upload an MP3 or WAV song.',true);return
+ }
+ if(!/\.(mp3|wav)$/i.test(song.name)){
+ setStatus('Please select an MP3 or WAV file.',true);return
+ }
+ saveSceneInputs();setStatus('Your production concept is ready for review. Customer ordering is not enabled yet. No video has been generated or charged.')
+});
+renderScenes();
+ </script>
+ <script defer="" src="/cutloopz-home-upgrade.js">
+ </script>
+ </body>
 </html>
