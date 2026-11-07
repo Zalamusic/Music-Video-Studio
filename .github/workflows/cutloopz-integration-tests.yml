@@ -27,10 +27,13 @@ jobs:
           node --check cutloopz-duration-contract.js
           node --check cutloopz-generation-timeline.js
           node --check cutloopz-shot-ledger.js
+          node --check cutloopz-production-director.js
+          node --check cutloopz-cinema-engine.js
+          node --check cutloopz-unified-production.js
           node --check test-cutloopz-integration.js
 
       - name: Run unified integration tests
         run: node --test test-cutloopz-integration.js
 
       - name: Confirm verification completed
-        run: echo "CutLoopz integration tests completed."
+        run: echo "CutLoopz verification completed. No video generation requested."
