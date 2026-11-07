@@ -6,67 +6,164 @@
 <meta name="theme-color" content="#101724">
 <title>Unified Production | CutLoopz Media</title>
 <style>
-:root{color-scheme:dark;--bg:#101724;--card:#1b2838;--text:#f4f5f8;--muted:#c4ccda;--gold:#e4bd69;--edge:#45536b}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,sans-ser
-if}
-main{max-width:790px;margin:0 auto;padding:25px 17px 75px}header{border-bottom:1px solid var(--edge);padding-bottom:17px;mar
-gin-bottom:22px}
-h1{font-size:clamp(26px,6vw,36px);line-height:1.15;margin:8px 0 12px}h2{font-size:20px;margin:0 0 12px}
-p{margin:10px 0;color:var(--muted)}.tag{color:var(--gold);font-weight:750;font-size:13px;letter-spacing:.1em}
-section{border:1px solid var(--edge);border-radius:17px;padding:19px;margin:18px 0;background:var(--card)}
-label{display:block;margin:15px 0 6px;font-weight:650}input,textarea,select{width:100%;padding:13px;border:1px solid #68788e
-;border-radius:10px;background:#111b29;color:var(--text);font:inherit}
-textarea{resize:vertical;min-height:135px}input[type=file]{font-size:14px}button{border:0;border-radius:10px;background:var(
---gold);color:#172033;padding:13px 19px;font:inherit;font-weight:750;cursor:pointer;min-height:46px;margin-top:14px}button.s
-econdary{background:#35465d;color:#fff}button:disabled{opacity:.5;cursor:default}
-.inline{display:flex;gap:10px;align-items:center}.inline input{flex:1;min-width:0}.inline button{margin-top:0;white-space:no
-wrap}
-.notice{border:1px solid #93794c;padding:12px;border-radius:10px;color:#fbe5b1;background:#2d271c}
-pre{background:#101824;border:1px solid var(--edge);border-radius:10px;padding:14px;white-space:pre-wrap;overflow-wrap:anywh
-ere;font:14px/1.5 ui-monospace,monospace}
-#segments{padding-left:23px}#segments li{padding:7px 0;border-bottom:1px solid var(--edge)}.small{font-size:13px}
+:root{color-scheme:dark;
+--bg:#101724;
+--card:#1b2838;
+--text:#f4f5f8;
+--muted:#c4ccda;
+--gold:#e4bd69;
+--edge:#45536b}
+*{box-sizing:border-box}
+body{margin:0;
+background:var(--bg);
+color:var(--text);
+font:16px/1.55 system-ui,-apple-system,sans-serif}
+main{max-width:790px;
+margin:0 auto;
+padding:25px 17px 75px}
+header{border-bottom:1px solid var(--edge);
+padding-bottom:17px;
+margin-bottom:22px}
+h1{font-size:clamp(26px,6vw,36px);
+line-height:1.15;
+margin:8px 0 12px}
+h2{font-size:20px;
+margin:0 0 12px}
+p{margin:10px 0;
+color:var(--muted)}
+.tag{color:var(--gold);
+font-weight:750;
+font-size:13px;
+letter-spacing:.1em}
+section{border:1px solid var(--edge);
+border-radius:17px;
+padding:19px;
+margin:18px 0;
+background:var(--card)}
+label{display:block;
+margin:15px 0 6px;
+font-weight:650}
+input,textarea,select{width:100%;
+padding:13px;
+border:1px solid #68788e;
+border-radius:10px;
+background:#111b29;
+color:var(--text);
+font:inherit}
+textarea{resize:vertical; min-height:135px}
+input[type=file]{font-size:14px}
+/* A visible native file-picker target that works on Android. */
+.file-picker{position:relative;min-height:68px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid #8fa0b8;border-radius:11px;background:#111b29;padding:12px;cursor:pointer;overflow:hidden}
+.file-picker .pick-button{display:inline-block;background:var(--gold);color:#172033;border-radius:8px;padding:12px 15px;font-weight:750;pointer-events:none}
+.file-picker .file-name{color:var(--muted);flex:1;min-width:130px;overflow-wrap:anywhere;pointer-events:none}
+.file-picker input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2;font-size:30px;padding:0;border:0}
+.file-picker:focus-within{outline:3px solid var(--gold);outline-offset:2px}
+button{border:0;
+border-radius:10px;
+background:var(--gold);
+color:#172033;
+padding:13px 19px;
+font:inherit;
+font-weight:750;
+cursor:pointer;
+min-height:46px;
+margin-top:14px}
+button.secondary{background:#35465d;
+color:#fff}
+button:disabled{opacity:.5;
+cursor:default}
+.inline{display:flex;
+gap:10px;
+align-items:center}
+.inline input{flex:1;
+min-width:0}
+.inline button{margin-top:0;
+white-space:nowrap}
+.notice{border:1px solid #93794c;
+padding:12px;
+border-radius:10px;
+color:#fbe5b1;
+background:#2d271c}
+pre{background:#101824;
+border:1px solid var(--edge);
+border-radius:10px;
+padding:14px;
+white-space:pre-wrap;
+overflow-wrap:anywhere;
+font:14px/1.5 ui-monospace,monospace}
+#segments{padding-left:23px}
+#segments li{padding:7px 0;
+border-bottom:1px solid var(--edge)}
+.small{font-size:13px}
 </style>
 </head>
-<body><main>
-<header><div class="tag">CUTLOOPZ MEDIA · ADMINISTRATOR ONLY</div>
+<body>
+<main>
+<header>
+<div class="tag">CUTLOOPZ MEDIA · ADMINISTRATOR ONLY</div>
 <h1>Unified Production Director</h1>
 <p>30-second production planning, verified timelines, and persistent shot tracking.</p>
-<div class="notice">Planning-only interface. There is deliberately NO render or payment button. This page cannot launch GPU 
-generation.</div>
-</header>
-<section><h2>1. Administrator access and safety check</h2>
+<div class="notice">Planning-only interface. There is deliberately NO render or payment button. This page cannot launch GPU generation.</div>
+</header> <section>
+<h2>1. Administrator access and safety check</h2>
 <label for="key">Existing video administrator password</label>
-<div class="inline"><input id="key" type="password" autocomplete="off" placeholder="Enter your administrator key"><button id
-="reveal" type="button" class="secondary" aria-label="Show or hide password">Show</button></div>
+<div class="inline">
+<input id="key" type="password" autocomplete="off" placeholder="Enter your administrator key">
+<button id="reveal" type="button" class="secondary" aria-label="Show or hide password">Show</button>
+</div>
 <button id="check" type="button">Check production safeguards</button>
-<pre id="preflight" role="status">Not checked.</pre></section>
-<section><h2>2. Create a 30-second production plan</h2>
-<form id="planForm">
-<label for="title">Song title</label><input id="title" maxlength="120" required placeholder="Song title">
-<label for="audio">Song upload (MP3 or WAV, maximum 30 MB)</label><input id="audio" type="file" accept="audio/mpeg,audio/mp3
-,audio/wav,audio/x-wav,.mp3,.wav" required>
-<label for="photo">Original authorized artist photograph (JPEG, PNG, WebP; maximum 12 MB)</label><input id="photo" type="fil
-e" accept="image/jpeg,image/png,image/webp" required>
-<label for="prompt">Your Director instructions</label><textarea id="prompt" minlength="12" maxlength="4000" required placeho
-lder="Describe location, emotion, performance, camera movement, lighting and continuity."></textarea>
-<label for="lyrics">Lyrics (optional, maximum 12,000 characters)</label><textarea id="lyrics" maxlength="12000" placeholder=
-"Paste lyrics if available"></textarea>
-<label for="format">Orientation</label><select id="format"><option value="vertical">Vertical (9:16)</option><option value="l
-andscape">Landscape (16:9)</option></select>
-<p class="small">Planning analyzes uploaded audio and saves a private job. It does not generate a video. No customer-facing 
-ordering or payments are enabled here.</p>
-<button id="plan" type="submit">Create 30-second plan (no charge)</button></form>
-<pre id="status" role="status">No job planned.</pre>
-<div id="results" hidden><h2>Approved generation timeline</h2><p id="jobId"></p><ol id="segments"></ol></div>
+<pre id="preflight" role="status">Not checked.</pre>
 </section>
-<section><h2>3. Review an existing job</h2>
-<label for="lookup">Saved unified job ID</label><input id="lookup" placeholder="Paste job ID">
+<section>
+<h2>2. Create a 30-second production plan</h2>
+<form id="planForm">
+<label for="title">Song title</label>
+<input id="title" maxlength="120" required
+ placeholder="Song title">
+<label for="audio">Song upload (MP3 or WAV, maximum 30 MB)</label>
+<input id="audio" type="file"
+ accept="audio/mpeg,audio/mp3,audio/wav,audio/x-wav,.mp3,.wav" required>
+<label for="photo">Original authorized artist photograph (JPEG, PNG, WebP; maximum 12 MB)</label>
+<div class="file-picker">
+<span class="pick-button" aria-hidden="true">Choose Artist Photo</span>
+<span class="file-name" id="photoName" aria-live="polite">No photo selected</span>
+<input id="photo" type="file" aria-label="Choose original artist photograph"
+ accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" required>
+</div>
+<label for="prompt">Your Director instructions</label>
+<textarea id="prompt" minlength="12" maxlength="4000" required
+ placeholder="Describe location, emotion, performance, camera movement, lighting and continuity.">
+</textarea>
+<label for="lyrics">Lyrics (optional, maximum 12,000 characters)</label>
+<textarea id="lyrics" maxlength="12000" placeholder="Paste lyrics if available">
+</textarea>
+<label for="format">Orientation</label>
+<select id="format">
+<option value="vertical">Vertical (9:16)</option>
+<option value="landscape">Landscape (16:9)</option>
+</select>
+<p class="small">Planning analyzes uploaded audio and saves a private job. It does not generate a video. No customer-facing ordering or payments are enabled here.</p>
+<button id="plan" type="submit">Create 30-second plan (no charge)</button>
+</form>
+<pre id="status" role="status">No job planned.</pre>
+<div id="results" hidden>
+<h2>Approved generation timeline</h2>
+<p id="jobId">
+</p>
+<ol id="segments">
+</ol>
+</div>
+</section>
+<section>
+<h2>3. Review an existing job</h2>
+<label for="lookup">Saved unified job ID</label>
+<input id="lookup" placeholder="Paste job ID">
 <button class="secondary" type="button" id="review">Review saved shot status</button>
-<pre id="history" role="status">No job selected.</pre></section>
+<pre id="history" role="status">No job selected.</pre>
+</section>
 </main>
 <script>
-(()=>{
-'use strict';
+(()=>{ 'use strict';
 const $=id=>document.getElementById(id);
 const api='/api/unified-production';
 function headers(){return {'X-Video-Admin-Key':$('key').value.trim()};}
@@ -76,7 +173,12 @@ async function unpack(response){
  if(!response.ok||data.ok===false)throw new Error(data.error||'Request failed.');
  return data;
 }
-function message(error){return String(error?.message||error||'Unknown error');} $('reveal').addEventListener('click',()=>{
+function message(error){return String(error?.message||error||'Unknown error');}
+$('photo').addEventListener('change',()=>{
+ const file=$('photo').files?.[0];
+ $('photoName').textContent=file ? file.name : 'No photo selected';
+});
+$('reveal').addEventListener('click',()=>{
  const visible=$('key').type==='text';$('key').type=visible?'password':'text';$('reveal').textContent=visible?'Show':'Hide';
 });
 $('check').addEventListener('click',async()=>{
@@ -96,8 +198,7 @@ $('check').addEventListener('click',async()=>{
 $('planForm').addEventListener('submit',async(event)=>{
  event.preventDefault();
  if(!$('key').value.trim()){$('status').textContent='Enter your administrator key first.';return;}
- $('plan').disabled=true;$('results').hidden=true;$('status').textContent='Saving media and analyzing the 30-second plan...'
-;
+ $('plan').disabled=true;$('results').hidden=true;$('status').textContent='Saving media and analyzing the 30-second plan...';
  try{
  const audio=$('audio').files[0],photo=$('photo').files[0];
  if(!audio||!photo)throw new Error('Upload both a song and a photo.');
@@ -106,15 +207,13 @@ $('planForm').addEventListener('submit',async(event)=>{
  for(const key of ['title','prompt','lyrics','format'])form.append(key,$(key).value);
  form.append('audio',audio);form.append('photo',photo);
  const data=await unpack(await fetch(api+'/plan',{method:'POST',headers:headers(),body:form}));
- $('status').textContent='Planning completed. NO video was generated.\nJob ID: '+data.job.id+'\nSegments: '+data.job.totalS
-egments;
+ $('status').textContent='Planning completed. NO video was generated.\nJob ID: '+data.job.id+'\nSegments: '+data.job.totalSegments;
  $('jobId').textContent='Job ID: '+data.job.id;
  $('lookup').value=data.job.id;
  $('segments').replaceChildren();
  for(const shot of data.timeline?.segments||[]){
  const li=document.createElement('li');
- li.textContent='Segment '+shot.number+' · '+shot.startSeconds+'–'+shot.endSeconds+' sec · '+shot.durationSeconds+' sec ·
- '+shot.prompt.slice(0,160);
+ li.textContent='Segment '+shot.number+' · '+shot.startSeconds+'–'+shot.endSeconds+' sec · '+shot.durationSeconds+' sec · '+shot.prompt.slice(0,160);
  $('segments').append(li);
  }
  $('results').hidden=false;
@@ -123,14 +222,13 @@ egments;
 });
 $('review').addEventListener('click',async()=>{
  const id=$('lookup').value.trim();
- if(!/^[0-9a-f-]{36}$/i.test(id)){$('history').textContent='Enter a valid saved job ID.';return;}
- $('history').textContent='Loading saved job...';
+ if(!/^[0-9a-f-]{36}$/i.test(id)){$('history').textContent='Enter a valid saved job ID.';return;} $('history').textContent='Loading saved job...';
  try{
  const data=await unpack(await fetch(api+'/jobs/'+encodeURIComponent(id),{headers:headers(),cache:'no-store'}));
- $('history').textContent='Status: '+data.job.status+'\nPhase: '+data.job.phase+'\n'+(data.shots||[]).map(s=>'Shot '+s.numb
-er+': '+s.status).join('\n');
+ $('history').textContent='Status: '+data.job.status+'\nPhase: '+data.job.phase+'\n'+(data.shots||[]).map(s=>'Shot '+s.number+': '+s.status).join('\n');
  }catch(error){$('history').textContent=message(error);}
 });
 })();
 </script>
-</body></html>
+</body>
+</html>
