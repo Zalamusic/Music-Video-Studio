@@ -11,7 +11,7 @@ jobs:
   integration-tests:
     name: Verify Unified Production Engine
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
       - name: Checkout CutLoopz source
@@ -22,6 +22,14 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install application dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --ignore-scripts --no-audit --no-fund
+          else
+            npm install --ignore-scripts --no-audit --no-fund
+          fi
+
       - name: Check JavaScript syntax
         run: |
           node --check cutloopz-duration-contract.js
@@ -31,9 +39,20 @@ jobs:
           node --check cutloopz-cinema-engine.js
           node --check cutloopz-unified-production.js
           node --check test-cutloopz-integration.js
+          node --check test-cutloopz-unified-production.js
 
-      - name: Run unified integration tests
+      - name: Run foundation integration tests
         run: node --test test-cutloopz-integration.js
 
+      - name: Run unified production behavioral tests
+        env:
+          CUTLOOPZ_UNIFIED_30S_ENABLED: 'false'
+          CUTLOOPZ_UNIFIED_30S_SPEND_APPROVED: 'false'
+          ZALA_GPU_GENERATION_ENABLED: 'false'
+          ENABLE_PAID_GENERATION: 'false'
+        run: node --test test-cutloopz-unified-production.js
+
       - name: Confirm verification completed
-        run: echo "CutLoopz verification completed. No video generation requested."
+        run: |
+          echo "CutLoopz integration verification complete."
+          echo "Paid video generation was not authorized."
