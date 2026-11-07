@@ -2673,3 +2673,13 @@ import { registerCutLoopzPerformanceLab } from './cutloopz-performance-lab.js';
 
 registerCutLoopzPerformanceLab({ app, isVideoAdmin });
 
+
+import { registerCutLoopzUnifiedProduction } from './cutloopz-unified-production.js';
+
+registerCutLoopzUnifiedProduction({
+  app,
+  isVideoAdmin,
+  outputDirectory: OUT
+});
+
+
