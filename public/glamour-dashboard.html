@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+ <meta charset="utf-8"/>
+ <meta content="width=device-width, initial-scale=1" name="viewport"/>
+ <meta content="#121a2c" name="theme-color"/>
+ <title>
+ My Glamour Membership | CutLoopz Media
+ </title>
+ <style>
+ :root{color-scheme:dark;--bg:#11192b;--panel:#1b2941;--ink:#f6f8fd;--muted:#c5d1e4;--line:#3c4f6a;--gold:#e9c982}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 85% 0,#283957,transparent 45%),var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+a{color:#d3e5ff}
+main{max-width:900px;margin:auto;padding:24px 18px 65px}
+header{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line);padding-bottom:20px}
+.brand{font-size:20px;font-weight:800;text-decoration:none;color:var(--ink)}
+nav{display:flex;gap:16px;flex-wrap:wrap}
+h1{font-size:clamp(30px,6vw,45px);line-height:1.13;margin:20px 0 12px}
+h2{font-size:22px;margin:0 0 10px}
+p{color:var(--muted)}
+.eyebrow{font-weight:800;letter-spacing:.1em;color:var(--gold);font-size:12px;margin-top:32px}
+.panel{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:23px;margin:18px 0}
+.tag{display:inline-block;border:1px solid #a28958;border-radius:99px;padding:4px 10px;color:#f5dcaa;font-size:13px;font-weight:700}
+.row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.value{font-weight:800}
+.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.link{display:inline-block;padding:12px 16px;border:1px solid #a3bae0;border-radius:10px;text-decoration:none;font-weight:700}
+.link.primary{background:#e9c982;color:#141b2d;border-color:#e9c982}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.status{min-height:28px}
+.error{color:#ffd0c9}
+.notice{border-left:3px solid #d2ae6d;padding-left:12px}
+.tiny{font-size:13px}
+.hidden{display:none!important}
+@media(max-width:620px){.grid{grid-template-columns:1fr}
+}
+</style>
+ </head>
+ <body>
+ <main>
+ <header>
+ <a class="brand" href="/customer.html">
+ CUTLOOPZ MEDIA
+ </a>
+ <nav>
+ <a href="/account.html">
+ My Account
+ </a>
+ <a href="/glamour.html">
+ Glamour Plans
+ </a>
+ <a href="/customer.html">
+ Studio
+ </a>
+ </nav>
+ </header>
+ <div class="eyebrow">
+ YOUR MUSIC. YOUR VISION. YOUR VIDEO.
+ </div>
+ <h1>
+ My Glamour Membership
+ </h1> <p>
+ Membership details, wardrobe allowances, and renewal information in one place.
+ </p>
+ <div class="panel hidden" id="loginPrompt">
+ <h2>
+ Sign in to continue
+ </h2>
+ <p>
+ Your account must be signed in before your membership information can be shown.
+ </p>
+ <a class="link primary" href="/account.html">
+ Sign in or create account
+ </a>
+ </div>
+ <div class="hidden" id="accountPanel">
+ <section aria-labelledby="accountTitle" class="panel">
+ <span class="tag">
+ PRIVATE ACCOUNT
+ </span>
+ <h2 id="accountTitle">
+ Account overview
+ </h2>
+ <p id="accountName">
+ </p>
+ <div class="row">
+ <span>
+ Membership status
+ </span>
+ <span class="value">
+ Not yet connected
+ </span>
+ </div>
+ <div class="row">
+ <span>
+ Membership expiration
+ </span>
+ <span class="value">
+ Awaiting verified membership lookup
+ </span>
+ </div>
+ <div class="row">
+ <span>
+ Automatic renewal
+ </span>
+ <span class="value">
+ Off
+ </span>
+ </div>
+ </section>
+ <div class="grid">
+ <section class="panel">
+ <h2>
+ Basic Studio
+ </h2>
+ <p>
+ <strong>
+ 1 lead photo
+ </strong>
+ per production, with prompt-assisted wardrobe styling.
+ </p>
+ </section>
+ <section class="panel">
+ <h2>
+ Glamour Membership
+ </h2> <p>
+ <strong>
+ Up to 5 approved photos
+ </strong>
+ when your paid membership is active. Scene-by-scene look assignment will become available in the Director.
+ </p>
+ </section>
+ </div>
+ <section class="panel">
+ <h2>
+ Renewal reminders
+ </h2>
+ <p class="notice">
+ Planned email reminders: 20, 10, and 3 days before expiration, plus an expiration-day notice.
+ <strong>
+ Automated emails are not active yet.
+ </strong>
+ </p>
+ <p class="tiny">
+ There are no automatic renewal charges. Renewal checkout is not yet available.
+ </p>
+ </section>
+ </div>
+ <section class="panel">
+ <h2>
+ Prepaid Glamour plans
+ </h2>
+ <p aria-live="polite" class="status" id="pricesStatus" role="status">
+ Checking current plans…
+ </p>
+ <div class="grid" id="plans">
+ </div>
+ <div class="actions">
+ <a class="link primary" href="/glamour.html">
+ View all membership benefits
+ </a>
+ <a class="link" href="/customer.html">
+ Back to Studio
+ </a>
+ </div>
+ <p class="tiny">
+ Video creation is purchased separately at $79.99 per video. No membership payment or activation can occur on this page.
+ </p>
+ </section>
+ <p aria-live="polite" class="tiny" id="accountStatus" role="status">
+ Checking account sign-in…
+ </p>
+ </main>
+ <script>
+ 'use strict';
+const byId=id=>document.getElementById(id);
+const usd=cents=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100);
+const terms={month1:'1 month',month3:'3 months',month6:'6 months',year1:'1 year'};
+async function loadAccount(){
+ try{
+ const response=await fetch('/api/customer-auth/me',{credentials:'same-origin',cache:'no-store'});
+ if(response.status===401||response.status===403){byId('loginPrompt').classList.remove('hidden');byId('accountStatus').textContent='Please sign in to view your account.';return;}
+ const data=await response.json();
+ if(!response.ok||data.ok!==true||!data.user){byId('loginPrompt').classList.remove('hidden');byId('accountStatus').textContent='Sign in to access your account.';return;}
+ byId('accountPanel').classList.remove('hidden');
+ const user=data.user;
+ byId('accountName').textContent=(user.name||'CutLoopz member')+(user.email?' · '+user.email:'');
+ byId('accountStatus').textContent='Signed in. Membership status requires a verified account-linked endpoint, which is not enabled yet.';
+ }catch{
+ byId('loginPrompt').classList.remove('hidden'); byId('accountStatus').textContent='Could not verify your sign-in. Please try again.';
+ }
+}
+async function loadPlans(){
+ try{
+ const response=await fetch('/api/glamour/plans',{cache:'no-store'});
+ if(!response.ok)throw Error('Cannot retrieve current pricing.');
+ const data=await response.json();
+ if(data.ok!==true||!Array.isArray(data.plans))throw Error('Pricing response is invalid.');
+ const plans=byId('plans');plans.replaceChildren();
+ for(const p of data.plans){
+ if(!Object.hasOwn(terms,p.termId)||!Number.isInteger(p.amountCents))continue;
+ const item=document.createElement('div');item.className='panel';item.style.margin='0';
+ const term=document.createElement('h2');term.textContent=terms[p.termId];
+ const price=document.createElement('div');price.className='value';price.style.fontSize='29px';price.textContent=usd(p.amountCents);
+ const info=document.createElement('p');info.textContent='One upfront payment · No automatic renewal';
+ item.append(term,price,info);plans.append(item);
+ }
+ byId('pricesStatus').textContent='Current membership prices · Checkout coming soon';
+ }catch{
+ byId('pricesStatus').textContent='Membership prices are temporarily unavailable. Visit the Glamour plans page later.';
+ }
+}
+loadAccount();loadPlans();
+ </script>
+ </body>
+</html>
