@@ -2682,4 +2682,10 @@ registerCutLoopzUnifiedProduction({
   outputDirectory: OUT
 });
 
+import { registerCutLoopzGlamourRoutes } from './cutloopz-glamour-routes.js';
 
+registerCutLoopzGlamourRoutes({
+  app,
+  isVideoAdmin,
+  outputDirectory: OUT
+});
