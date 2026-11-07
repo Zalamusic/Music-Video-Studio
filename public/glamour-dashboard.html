@@ -1,43 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme="ivory" lang="en">
  <head>
  <meta charset="utf-8"/>
  <meta content="width=device-width, initial-scale=1" name="viewport"/>
- <meta content="#121a2c" name="theme-color"/>
+ <meta content="#f8f5ed" name="theme-color"/>
  <title>
  My Glamour Membership | CutLoopz Media
  </title>
  <style>
- :root{color-scheme:dark;--bg:#11192b;--panel:#1b2941;--ink:#f6f8fd;--muted:#c5d1e4;--line:#3c4f6a;--gold:#e9c982}
+ :root{color-scheme:light;
+--bg:#f8f5ed;
+--panel:#fffdf8;
+--ink:#292827;
+--muted:#5a5860;
+--line:#dfd4bd;
+--gold:#86601c;
+--link:#594015;
+--accent:#b68c4c;
+--button:#2f2c29;
+--button-ink:#fffaf0;
+--tag:#655022;
+--tag-border:#bda478;
+--glow:#efe2c8}
+html[data-theme="midnight"]{color-scheme:dark;
+--bg:#11192b;
+--panel:#1b2941;
+--ink:#f6f8fd;
+--muted:#c5d1e4;
+--line:#3c4f6a;
+--gold:#e9c982;
+--link:#d3e5ff;
+--accent:#d2ae6d;
+--button:#e9c982;
+--button-ink:#141b2d;
+--tag:#f5dcaa;
+--tag-border:#a28958;
+--glow:#283957}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 85% 0,#283957,transparent 45%),var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
-a{color:#d3e5ff}
-main{max-width:900px;margin:auto;padding:24px 18px 65px}
-header{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line);padding-bottom:20px}
-.brand{font-size:20px;font-weight:800;text-decoration:none;color:var(--ink)}
-nav{display:flex;gap:16px;flex-wrap:wrap}
-h1{font-size:clamp(30px,6vw,45px);line-height:1.13;margin:20px 0 12px}
-h2{font-size:22px;margin:0 0 10px}
+body{margin:0;
+background:radial-gradient(circle at 85% 0,var(--glow),transparent 45%),var(--bg);
+color:var(--ink);
+font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+a{color:var(--link)}
+main{max-width:900px;
+margin:auto;
+padding:24px 18px 65px}
+header{display:flex;
+justify-content:space-between;
+gap:16px;
+flex-wrap:wrap; align-items:center;
+border-bottom:1px solid var(--line);
+padding-bottom:20px}
+.brand{font-size:20px;
+font-weight:800;
+text-decoration:none;
+color:var(--ink)}
+nav{display:flex;
+gap:16px;
+flex-wrap:wrap}
+h1{font-size:clamp(30px,6vw,45px);
+line-height:1.13;
+margin:20px 0 12px}
+h2{font-size:22px;
+margin:0 0 10px}
 p{color:var(--muted)}
-.eyebrow{font-weight:800;letter-spacing:.1em;color:var(--gold);font-size:12px;margin-top:32px}
-.panel{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:23px;margin:18px 0}
-.tag{display:inline-block;border:1px solid #a28958;border-radius:99px;padding:4px 10px;color:#f5dcaa;font-size:13px;font-weight:700}
-.row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
+.eyebrow{font-weight:800;
+letter-spacing:.1em;
+color:var(--gold);
+font-size:12px;
+margin-top:32px}
+.panel{border:1px solid var(--line);
+background:var(--panel);
+border-radius:16px;
+padding:23px;
+margin:18px 0}
+.tag{display:inline-block;
+border:1px solid var(--tag-border);
+border-radius:99px;
+padding:4px 10px;
+color:var(--tag);
+font-size:13px;
+font-weight:700}
+.row{display:flex;
+justify-content:space-between;
+gap:16px;
+flex-wrap:wrap;
+padding:10px 0;
+border-bottom:1px solid var(--line)}
 .row:last-child{border:0}
 .value{font-weight:800}
 .muted{color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.link{display:inline-block;padding:12px 16px;border:1px solid #a3bae0;border-radius:10px;text-decoration:none;font-weight:700}
-.link.primary{background:#e9c982;color:#141b2d;border-color:#e9c982}
-.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.grid{display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:16px}
+.link{display:inline-block;
+padding:12px 16px;
+border:1px solid var(--accent);
+border-radius:10px;
+text-decoration:none;
+font-weight:700} .link.primary{background:var(--button);
+color:var(--button-ink);
+border-color:var(--button)}
+.actions{display:flex;
+flex-wrap:wrap;
+gap:12px;
+margin-top:18px}
 .status{min-height:28px}
-.error{color:#ffd0c9}
-.notice{border-left:3px solid #d2ae6d;padding-left:12px}
+.error{color:#b3261e}
+.notice{border-left:3px solid var(--accent);
+padding-left:12px}
 .tiny{font-size:13px}
 .hidden{display:none!important}
 @media(max-width:620px){.grid{grid-template-columns:1fr}
 }
-</style>
+.theme-picker{display:flex;
+align-items:center;
+gap:9px;
+flex-wrap:wrap;
+font-size:14px;
+font-weight:700}
+.theme-picker label{color:var(--muted)}
+.theme-picker select{background:var(--panel);
+color:var(--ink);
+border:1px solid var(--line);
+border-radius:9px;
+padding:9px 11px;
+font:inherit;
+max-width:210px}
+.theme-picker select:focus-visible,a:focus-visible{outline:3px solid var(--accent);
+outline-offset:3px}
+@media(max-width:620px){header{align-items:flex-start}
+.theme-picker{width:100%}
+}
+ </style>
  </head>
  <body>
  <main>
@@ -53,16 +148,29 @@ p{color:var(--muted)}
  Glamour Plans
  </a>
  <a href="/customer.html">
- Studio
- </a>
+ Studio </a>
  </nav>
+ <div class="theme-picker">
+ <label for="appearance">
+ Appearance
+ </label>
+ <select aria-label="Choose dashboard appearance" id="appearance">
+ <option value="ivory">
+ Warm Ivory &amp; Champagne
+ </option>
+ <option value="midnight">
+ Midnight Navy &amp; Gold
+ </option>
+ </select>
+ </div>
  </header>
  <div class="eyebrow">
  YOUR MUSIC. YOUR VISION. YOUR VIDEO.
  </div>
  <h1>
  My Glamour Membership
- </h1> <p>
+ </h1>
+ <p>
  Membership details, wardrobe allowances, and renewal information in one place.
  </p>
  <div class="panel hidden" id="loginPrompt">
@@ -90,8 +198,7 @@ p{color:var(--muted)}
  <span>
  Membership status
  </span>
- <span class="value">
- Not yet connected
+ <span class="value"> Not yet connected
  </span>
  </div>
  <div class="row">
@@ -126,7 +233,8 @@ p{color:var(--muted)}
  <section class="panel">
  <h2>
  Glamour Membership
- </h2> <p>
+ </h2>
+ <p>
  <strong>
  Up to 5 approved photos
  </strong>
@@ -140,8 +248,7 @@ p{color:var(--muted)}
  </h2>
  <p class="notice">
  Planned email reminders: 20, 10, and 3 days before expiration, plus an expiration-day notice.
- <strong>
- Automated emails are not active yet.
+ <strong> Automated emails are not active yet.
  </strong>
  </p>
  <p class="tiny">
@@ -190,8 +297,8 @@ async function loadAccount(){
  byId('accountName').textContent=(user.name||'CutLoopz member')+(user.email?' · '+user.email:'');
  byId('accountStatus').textContent='Signed in. Membership status requires a verified account-linked endpoint, which is not enabled yet.';
  }catch{
- byId('loginPrompt').classList.remove('hidden'); byId('accountStatus').textContent='Could not verify your sign-in. Please try again.';
- }
+ byId('loginPrompt').classList.remove('hidden');
+ byId('accountStatus').textContent='Could not verify your sign-in. Please try again.'; }
 }
 async function loadPlans(){
  try{
@@ -214,6 +321,21 @@ async function loadPlans(){
  }
 }
 loadAccount();loadPlans();
+// Appearance is saved only in this browser; no account or membership data is stored.
+(function configureAppearance(){
+ const themeKey='cutloopz-glamour-appearance';
+ const choice=document.getElementById('appearance');
+ let preferred='ivory';
+ try{const stored=localStorage.getItem(themeKey);if(stored==='ivory'||stored==='midnight')preferred=stored;}catch{}
+ const apply=theme=>{
+ const safeTheme=theme==='midnight'?'midnight':'ivory';
+ document.documentElement.dataset.theme=safeTheme;
+ choice.value=safeTheme;
+ document.querySelector('meta[name="theme-color"]').setAttribute('content',safeTheme==='midnight'?'#121a2c':'#f8f5ed');
+ };
+ apply(preferred);
+ choice.addEventListener('change',()=>{apply(choice.value);try{localStorage.setItem(themeKey,choice.value);}catch{}});
+})();
  </script>
  </body>
 </html>
