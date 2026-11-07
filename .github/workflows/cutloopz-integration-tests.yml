@@ -1,0 +1,36 @@
+
+name: CutLoopz Unified Integration Tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration-tests:
+    name: Verify Unified Production Engine
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout CutLoopz source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check cutloopz-duration-contract.js
+          node --check cutloopz-generation-timeline.js
+          node --check cutloopz-shot-ledger.js
+          node --check test-cutloopz-integration.js
+
+      - name: Run unified integration tests
+        run: node --test test-cutloopz-integration.js
+
+      - name: Confirm verification completed
+        run: echo "CutLoopz integration tests completed."
