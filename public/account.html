@@ -1,217 +1,1203 @@
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111219">
-<title>My Account | Cut Loopz Media</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=s
-wap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Your Account | Cut Loopz Media</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/zala-themes.css">
+<script src="/zala-themes.js" defer></script>
+
 <style>
-:root{color-scheme:dark}
-*,*::before,*::after{box-sizing:border-box}
-html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust
-:100%;scroll-padding-top:100px}
-body{display:block!important;position:relative;margin:0!important;width:100%!important;min-widt
-h:0!important;max-width:100%!important;overflow-x:hidden;background:#101117;color:#f6e8ca;font:
-16px/1.55 'DM Sans',Arial,sans-serif}
-a{color:#e9bd68}button,input{font:inherit}
-.site-header{position:sticky;top:0;z-index:1000;width:100%;max-width:100%;margin:0!important;ba
-ckground:#171820;border-bottom:1px solid #81622f;box-shadow:0 3px 16px #0008}
-.header-inner{width:100%;max-width:760px;margin:0 auto;padding:12px 16px;display:flex;flex-dire
-ction:row;justify-content:space-between;align-items:center;gap:12px;min-width:0}
-.brand{font-size:clamp(15px,4.5vw,20px);font-weight:800;color:#edc77b;overflow-wrap:anywhere;li
-ne-height:1.3}
-.back{display:inline-flex;align-items:center;justify-content:center;border:1px solid #9d7735;bo
-rder-radius:9px;padding:9px 12px;text-decoration:none;white-space:nowrap;font-size:14px;flex-sh
-rink:0}
-main{display:block!important;float:none!important;clear:both!important;width:100%!important;max
--width:760px!important;min-width:0!important;margin:0 auto!important;padding:25px 16px 45px!imp
-ortant}
-h1{color:#f4d48e;font-size:clamp(25px,6vw,34px);line-height:1.2;margin:0 0 12px;overflow-wrap:a
-nywhere}
-h2{color:#f4d48e;font-size:21px;line-height:1.3;overflow-wrap:anywhere}
-.sub{color:#d4c2a3;margin-top:0}
-.panel{display:block;width:100%;min-width:0;max-width:100%;background:#1d1e26;border:1px solid 
-#806431;border-radius:16px;padding:clamp(16px,4vw,25px);margin:20px 0;overflow-wrap:anywhere}
-.tabs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:20p
-x}
-.tabs button,.secondary{background:#2b2930;color:#f2d08c;border:1px solid #a47c37}
-button{display:inline-block;max-width:100%;min-width:0;min-height:46px;border-radius:10px;paddi
-ng:10px 14px;cursor:pointer;font-weight:700;white-space:normal;overflow-wrap:break-word}
-.tabs button[aria-pressed="true"],.primary{background:#b88b39;color:#121219;border:1px solid #b
-88b39}
-label{display:block;font-weight:700;margin:16px 0 7px}
-input{display:block;width:100%!important;min-width:0!important;max-width:100%!important;min-hei
-ght:48px;padding:12px!important;border:2px solid #b88b39;border-radius:9px;background:#fcf8ee!i
-mportant;color:#182234!important;font-size:16px!important;line-height:1.4!important;letter-spac
-ing:normal!important;text-align:left!important}
-input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #ffdf93;outline-offs
-et:2px}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
-.actions button{flex:1 1 130px}
-.message{min-height:24px;color:#f4d48e;margin:16px 0;overflow-wrap:anywhere}
-.message.error{color:#ffaaaa}
-.small{font-size:14px;color:#d4c2a3}
-[hidden]{display:none!important}
-.eye{margin-top:10px;padding:8px 12px}
-footer{display:block;width:100%;max-width:760px;margin:0 auto;padding:15px;text-align:center;co
-lor:#bfae8e;font-size:13px}
-@media(min-width:600px){.header-inner{padding:15px 24px}main{padding:35px 24px 50px!important}}
+:root {
+  --blue:#2469cc;
+  --navy:#17263c;
+  --muted:#3f5067;
+  --line:#d8e3f0;
+  --soft:#f4f8fe;
+  --gold:#c59a46;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:#fff;
+  color:var(--navy);
+  font:16px/1.6 "DM Sans",Arial,sans-serif;
+}
+main {
+  max-width:520px;
+  margin:0 auto;
+  padding:24px 16px 60px;
+}
+a {
+  color:var(--blue);
+  text-decoration:none;
+}
+header {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:32px;
+}
+.logo {
+  width:48px;
+  height:48px;
+  flex-shrink:0;
+  border-radius:12px;
+  overflow:hidden;
+  background:#101010;
+}
+.logo img {
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+.brand {font-weight:800}
+.sub {
+  font-size:11px;
+  letter-spacing:.5px;
+  color:var(--muted);
+}
+.studio-link {
+  margin-left:auto;
+  flex-shrink:0;
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.panel {
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--soft);
+  padding:24px;
+}
+h1 {
+  font-size:23px;
+  line-height:1.35;
+  font-weight:600;
+  letter-spacing:-.45px;
+  margin:0 0 10px;
+}
+p {color:var(--muted)}
+#description,#profileGreeting {
+  font-size:15px;
+  line-height:1.7;
+}
+.tabs {
+  display:flex;
+  gap:10px;
+  margin:22px 0;
+}
+.tabs button {
+  flex:1;
+  background:#fff;
+  color:var(--blue);
+  border:3px solid var(--blue);
+}
+.tabs button[aria-pressed="true"] {
+  background:var(--blue);
+  color:#fff;
+}
+label {
+  display:block;
+  font-weight:700;
+  margin:16px 0 7px;
+}
+input {
+  display:block;
+  width:100%;
+  padding:13px;
+  border:2px solid var(--blue);
+  border-radius:10px;
+  background:#fff;
+  color:var(--navy);
+  font:inherit;
+}
+.password-wrap {position:relative}
+.password-wrap input {padding-right:64px}
+.eye-button {
+  position:absolute;
+  right:5px;
+  top:5px;
+  min-height:40px;
+  min-width:44px;
+  padding:6px;
+  display:grid;
+  place-items:center;
+  background:#fff;
+  color:var(--blue);
+  border-radius:8px;
+}
+.eye-button svg {
+  width:23px;
+  height:23px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+button {
+  font:inherit;
+  cursor:pointer;
+  border:0;
+  border-radius:10px;
+  background:var(--blue);
+  color:#fff;
+  font-weight:700;
+  padding:12px 16px;
+  min-height:48px;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline:3px solid #f6b74a;
+  outline-offset:2px;
+}
+.submit {
+  width:100%;
+  margin-top:22px;
+}
+button:disabled {
+  opacity:.65;
+  cursor:wait;
+}
+.status {
+  min-height:26px;
+  margin-top:16px;
+  font-weight:600;
+}
+.error {color:#b42318}
+.success {color:#166534}
+.hidden {display:none!important}
+.account-actions {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:22px;
+}
+.account-actions a {
+  border:2px solid var(--blue);
+  padding:9px 14px;
+  border-radius:9px;
+  background:#fff;
+  font-weight:700;
+  display:inline-flex;
+  align-items:center;
+}
+.foot {
+  margin-top:24px;
+  text-align:center;
+  font-size:14px;
+}
+.loyalty {
+  margin-top:22px;
+  padding:22px 18px;
+  border:1px solid #cfdef4;
+  border-radius:16px;
+  background:#fff;
+}
+.loyalty-head {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.loyalty-symbol {
+  width:50px;
+  height:50px;
+  flex-shrink:0;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#e9f2ff;
+  font-size:25px;
+}
+.loyalty.unlocked {
+  border-color:#d6b36d;
+}
+.loyalty.unlocked .loyalty-symbol {
+  background:#fff1d4;
+}
+.loyalty h2,.history h2 {
+  margin:0;
+  font-size:19px;
+  line-height:1.3;
+}
+.loyalty-sub {
+  margin:3px 0 0;
+  font-size:12px;
+}
+.loyalty-progress-head {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin-top:23px;
+  font-size:14px;
+  font-weight:700;
+}
+.progress-track {
+  height:12px;
+  margin-top:10px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#e4ebf5;
+}
+.progress-fill {
+  width:0%;
+  height:100%;
+  border-radius:inherit;
+  background:var(--blue);
+  transition:width .6s ease;
+}
+.loyalty.unlocked .progress-fill {
+  background:var(--gold);
+}
+.milestones {
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+  gap:4px;
+}
+.milestone {
+  width:29px;
+  height:29px;
+  display:grid;
+  place-items:center;
+  border:1px solid #d8e3f0;
+  border-radius:50%;
+  background:#f4f8fe;
+  color:#65748a;
+  font-size:12px;
+  font-weight:800;
+}
+.milestone.complete {
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+.reward {
+  margin-top:20px;
+  padding:14px;
+  border-radius:12px;
+  background:#edf5ff;
+  font-size:14px;
+}
+.reward strong {color:#194d9a}
+.loyalty-note {
+  margin:13px 0 0;
+  font-size:12px;
+  line-height:1.6;
+}
+.prestige {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:17px;
+  font-size:13px;
+  color:#53637a;
+}
+.prestige strong {color:var(--navy)}
+.history {
+  margin-top:22px;
+  padding:20px 18px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+.history-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.history-intro {
+  font-size:13px;
+  margin:9px 0 16px;
+}
+.refresh {
+  min-height:36px;
+  padding:7px 12px;
+  font-size:12px;
+  border:1px solid var(--blue);
+  background:#fff;
+  color:var(--blue);
+}
+.history-message {
+  padding:17px 14px;
+  border-radius:12px;
+  background:var(--soft);
+  font-size:14px;
+  color:var(--muted);
+}
+.order-list {
+  display:grid;
+  gap:12px;
+}
+.order-card {
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:15px;
+  background:#fff;
+  overflow-wrap:anywhere;
+}
+.order-title {
+  font-weight:800;
+  font-size:15px;
+}
+.order-date {
+  font-size:12px;
+  color:var(--muted);
+  margin-top:3px;
+}
+.order-detail {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:10px;
+  font-size:13px;
+}
+.order-detail span:last-child {
+  font-weight:700;
+  text-align:right;
+}
+.qualifying {
+  color:#166534;
+  font-weight:700;
+  font-size:12px;
+  margin:12px 0 0;
+}
+.history-note {
+  font-size:12px;
+  margin:15px 0 0;
+}
+body.zala-themed {
+  --blue:var(--z-primary);
+  --navy:var(--z-text);
+  --muted:var(--z-muted);
+  --line:var(--z-border);
+  --soft:var(--z-panel);
+  --gold:var(--z-accent);
+  background:var(--z-gradient);
+  background-color:var(--z-bg);
+  color:var(--z-text);
+}
+body.zala-themed .panel,
+body.zala-themed .loyalty,
+body.zala-themed .history {
+  background:var(--z-surface);
+  border-color:var(--z-border);
+}
+body.zala-themed .tabs button,
+body.zala-themed .refresh,
+body.zala-themed .account-actions a {
+  border-color:var(--z-primary);
+}
+body.zala-themed .tabs button[aria-pressed="false"],
+body.zala-themed .refresh,
+body.zala-themed .account-actions a {
+  background:var(--z-surface);
+  color:var(--z-primary);
+}
+body.zala-themed .tabs button[aria-pressed="true"],
+body.zala-themed .submit,
+body.zala-themed #logoutButton {
+  background:var(--z-primary);
+  color:var(--z-primary-text);
+}
+body.zala-themed input,
+body.zala-themed .eye-button {
+  background:var(--z-surface);
+  color:var(--z-text);
+  border-color:var(--z-primary);
+}
+body.zala-themed .reward,
+body.zala-themed .history-message {
+  background:var(--z-panel);
+  color:var(--z-text);
+}
+body.zala-themed .order-card {
+  background:var(--z-surface);
+  border-color:var(--z-border);
+}
+body.zala-themed .progress-track {
+  background:var(--z-panel);
+}
+body.zala-themed .progress-fill {
+  background:var(--z-primary);
+}
+body.zala-themed .milestone {
+  background:var(--z-panel);
+  border-color:var(--z-border);
+  color:var(--z-muted);
+}
+body.zala-themed .milestone.complete {
+  background:var(--z-primary);
+  color:var(--z-primary-text);
+}
+body.zala-themed .prestige strong {
+  color:var(--z-text);
+}
+body.zala-themed .status.error {color:#d94a4a}
+body.zala-themed .status.success {color:#218653}
+body.zala-themed .zala-theme-control {
+  margin-top:24px;
+  box-shadow:0 8px 26px var(--z-glow);
+}
+@media(max-width:390px) {
+  .panel {padding:18px}
+  .brand {font-size:13px}
+  .sub {font-size:9px}
+  .studio-link {font-size:11px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .progress-fill {transition:none}
+}
 </style>
 </head>
+
 <body>
-<header class="site-header"><div class="header-inner"><div class="brand">Cut Loopz Media</div><
-a class="back" href="/customer.html">← Studio</a></div></header>
 <main>
-<h1>Your Hitmaker Account</h1>
-<p class="sub">Your Music. Your Vision. Your Video.</p>
-<section id="authPanel" class="panel">
-<div class="tabs"><button id="loginTab" type="button" aria-pressed="true">Sign In</button><butt
-on id="signupTab" type="button" aria-pressed="false">Sign Up</button></div>
-<form id="authForm">
-<div id="nameField" hidden><label for="name">Your name</label><input id="name" autocomplete="na me" maxlength="80"></div>
-<label for="email">Email</label><input id="email" type="email" autocomplete="email" required ma
-xlength="254">
-<label for="password">Password</label><input id="password" type="password" autocomplete="curren
-t-password" required maxlength="128">
-<button id="eye" class="secondary eye" type="button" aria-label="Show password">Show password</
-button>
-<p id="passwordHint" class="small" hidden>New passwords must contain 12–128 characters.</p>
-<div class="actions"><button class="primary" id="submitButton" type="submit">Sign In</button><b
-utton class="secondary" id="forgotButton" type="button">Forgot password?</button></div>
-</form>
-<form id="forgotForm" hidden>
-<label for="recoveryEmail">Account email</label><input id="recoveryEmail" type="email" required
- autocomplete="email">
-<div class="actions"><button class="primary" type="submit">Send reset link</button><button clas
-s="secondary" type="button" id="backLogin">Back to sign in</button></div>
-</form>
-<p id="authMessage" class="message" role="status" aria-live="polite"></p>
+
+<header>
+  <div class="logo">
+    <img
+      src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"
+      alt="Cut Loopz Media logo">
+  </div>
+  <div>
+    <div class="brand">Cut Loopz Media</div>
+    <div class="sub">CINEMATIC MUSIC VIDEO STUDIO</div>
+  </div>
+  <a href="/customer.html" class="studio-link">
+    ← Studio
+  </a>
+</header>
+
+<section class="panel" id="authPanel">
+  <h1 id="heading">Welcome back, hitmaker!</h1>
+  <p id="description">
+    Ready to make another hit? Sign in and let the creativity continue.
+  </p>
+
+  <div class="tabs" role="group" aria-label="Account action">
+    <button id="loginTab" type="button" aria-pressed="true">
+      Sign in
+    </button>
+    <button id="registerTab" type="button" aria-pressed="false">
+      Sign up
+    </button>
+  </div>
+
+  <form id="authForm">
+    <div id="nameField" class="hidden">
+      <label for="name">Your name</label>
+      <input id="name" name="name"
+        autocomplete="name" maxlength="100">
+    </div>
+
+    <label for="email">Email address</label>
+    <input id="email" name="email" type="email"
+      autocomplete="email" maxlength="254" required>
+
+    <label for="password">Password</label>
+    <div class="password-wrap">
+      <input id="password" name="password"
+        type="password"
+        autocomplete="current-password"
+        required minlength="12" maxlength="128">
+
+      <button id="togglePassword"
+        class="eye-button"
+        type="button"
+        aria-label="Show password"
+        aria-pressed="false"
+        title="Show password">
+        <svg id="eyeIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+
+    <p id="passwordHint" class="hidden">
+      Use a password of at least 12 characters.
+    </p>
+
+    <button class="submit" id="submitButton" type="submit">
+      Sign in
+    </button>
+  </form>
+  
+  <div id="forgotLinkArea" style="text-align:center;margin-top:16px">
+    <button type="button" id="forgotPasswordButton"
+      style="background:none;color:var(--blue);padding:8px;min-height:36px">
+      Forgot Password?
+    </button>
+  </div>
+
+  <form id="forgotForm" class="hidden">
+    <h2 style="font-size:20px">Reset your password</h2>
+    <p>Enter your account email address. We'll send you a secure reset link.</p>
+
+    <label for="forgotEmail">Email address</label>
+    <input id="forgotEmail" type="email"
+      autocomplete="email" maxlength="254" required>
+
+    <button type="submit" class="submit" id="sendResetButton">
+      Send Reset Link
+    </button>
+
+    <button type="button" id="backToLoginButton"
+      style="background:none;color:var(--blue);width:100%">
+      ← Back to Sign In
+    </button>
+  </form>
+
 </section>
-<section id="profilePanel" class="panel" hidden>
-<h2>Welcome, <span id="displayName">Hitmaker</span></h2>
-<p id="displayEmail"></p>
-<p class="small">Your account is signed in. Customer video ordering is not enabled yet.</p>
-<div class="actions"><a class="back" href="/customer.html">Open Customer Studio</a><button clas
-s="secondary" id="logoutButton" type="button">Sign Out</button></div>
-<h2>Platinum Hitmaker</h2>
-<p id="loyaltyText">Your completed paid-video progress will appear here when eligible orders ar
-e available.</p>
-<h2>Video History</h2>
-<div id="orderHistory" class="small">No completed video orders shown.</div>
-<p id="profileMessage" class="message" role="status"></p>
+
+<section class="panel hidden" id="profilePanel">
+  <h1 id="profileHeading">Welcome back to the studio!</h1>
+  <p id="profileGreeting">Your next masterpiece is waiting.</p>
+  <p id="welcome"></p>
+
+  <div class="loyalty" id="loyaltyPanel"
+    aria-labelledby="loyaltyTitle">
+    <div class="loyalty-head">
+      <div class="loyalty-symbol" aria-hidden="true">🏆</div>
+      <div>
+        <h2 id="loyaltyTitle">Platinum Hitmaker</h2>
+        <p class="loyalty-sub">
+          Your music. Your milestones. Your rewards.
+        </p>
+      </div>
+    </div>
+
+    <div class="loyalty-progress-head">
+      <span>Your progress</span>
+      <span id="progressText">0 of 6 videos</span>
+    </div>
+
+    <div class="progress-track"
+      id="progressTrack"
+      role="progressbar"
+      aria-label="Qualifying completed paid videos"
+      aria-valuemin="0"
+      aria-valuemax="6"
+      aria-valuenow="0">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="milestones" aria-hidden="true">
+      <span class="milestone">1</span>
+      <span class="milestone">2</span>
+      <span class="milestone">3</span>
+      <span class="milestone">4</span>
+      <span class="milestone">5</span>
+      <span class="milestone">6</span>
+    </div>
+
+    <div class="reward">
+      🎁 <strong>Your reward:</strong>
+      Complete 6 qualifying paid music videos
+      to unlock a one-time
+      <strong>20% discount on your 7th video.</strong>
+    </div>
+
+    <div class="prestige">
+      <span aria-hidden="true">🏅</span>
+      <span id="prestigeText">
+        <strong>Platinum Hitmaker insignia</strong>
+        — unlocks permanently after your sixth qualifying video.
+      </span>
+    </div>
+
+    <p class="loyalty-note" id="loyaltyNote">
+      Loading your verified progress...
+    </p>
+  </div>
+
+  <section class="history" aria-labelledby="historyTitle">
+    <div class="history-heading">
+      <h2 id="historyTitle">🎬 My Studio — Video Orders</h2>
+      <button type="button" class="refresh" id="refreshOrders">
+        Refresh
+      </button>
+    </div>
+
+    <p class="history-intro">
+      Your music video orders, all in one place.
+    </p>
+
+    <div id="orderHistory"
+      class="history-message"
+      role="status"
+      aria-live="polite">
+      Loading your order history...
+    </div>
+
+    <p class="history-note">
+      Only orders associated with your signed-in
+      account appear here. New customer ordering
+      and checkout are not yet available.
+    </p>
+  </section>
+
+  <div class="account-actions">
+    <a href="/customer.html#create">🎬 Create a Video</a>
+    <button type="button" id="logoutButton">Sign out</button>
+  </div>
 </section>
+
+<p id="status" class="status"
+  role="status" aria-live="polite"></p>
+
+<div class="foot">
+  <a href="/customer.html">← Back to Main Studio</a>
+</div>
+
 </main>
-<footer>A Director That Listens. · Cut Loopz Media</footer>
+
 <script>
 'use strict';
-const $=id=>document.getElementById(id);
-let mode='login';
-function message(value,error=false){$('authMessage').textContent=value;$('authMessage').classLi
-st.toggle('error',error)}
-function setMode(next){
- mode=next;$('authForm').hidden=false;$('forgotForm').hidden=true;
- $('nameField').hidden=next!=='signup';$('name').required=next==='signup';
- $('password').minLength=next==='signup'?12:0;
- $('password').autocomplete=next==='signup'?'new-password':'current-password';
- $('passwordHint').hidden=next!=='signup';
- $('submitButton').textContent=next==='signup'?'Create Account':'Sign In';
- $('loginTab').setAttribute('aria-pressed',String(next==='login'));
- $('signupTab').setAttribute('aria-pressed',String(next==='signup'));
- message('');
+
+const $ = id => document.getElementById(id);
+
+const messages = {
+  register: [
+    ['Hello, future hitmaker!',
+     'Welcome to Cut Loopz Media. Your next visual masterpiece starts here.'],
+    ['Your Music. Your Vision. Your Video.',
+     'Join the studio and bring your music to life.'],
+    ['The spotlight is waiting!',
+     'Create your account and get ready to tell your story on screen.']
+  ],
+  login: [
+    ['Welcome back, hitmaker!',
+     'Ready to make another hit? Sign in and let the creativity continue.'],
+    ['The studio missed you!',
+     "Got another track ready? Let's bring your sound to life."],
+    ["Look who's back!",
+     'Another song, another vision, another chance to create magic.'],
+    ['Your next hit is calling!',
+     'Your studio is waiting. Sign in and keep creating.']
+  ],
+  profile: [
+    ['Welcome back to the studio, {name}!',
+     'Your next masterpiece is waiting.'],
+    ['The spotlight is yours, {name}!',
+     'Ready to turn another great track into a cinematic experience?'],
+    ['Another hit on the way, {name}?',
+     "Let's make something unforgettable."]
+  ],
+  newProfile: [
+    ['Welcome to the studio, {name}!',
+     'Your creative journey starts here.'],
+    ['You’re officially a hitmaker, {name}!',
+     'Welcome to Cut Loopz Media.']
+  ]
+};
+
+const pageParams = new URLSearchParams(location.search);
+const studioView = pageParams.get('view') === 'studio';
+
+let mode = pageParams.get('mode') === 'signup'
+  ? 'register'
+  : 'login';
+
+let busy = false;
+let signedIn = false;
+let accountGeneration = 0;
+let historyRequest = 0;
+
+const currentGreeting = {
+  register:-1,
+  login:-1,
+  profile:-1,
+  newProfile:-1
+};
+
+function chooseGreeting(kind) {
+  const choices = messages[kind];
+  let index = Math.floor(Math.random() * choices.length);
+
+  if (choices.length > 1 &&
+      index === currentGreeting[kind]) {
+    index = (index + 1) % choices.length;
+  }
+
+  currentGreeting[kind] = index;
+  return choices[index];
 }
-async function request(route,options={}){
- const response=await fetch('/api/customer-auth/'+route,{
- credentials:'same-origin',cache:'no-store',...options
- });
- let data;
- try{data=await response.json()}catch{throw Error('The server returned an unexpected response.'
-)}
- if(!response.ok||!data.ok)throw Error(data.error||'Request failed.');
- return data;
+
+function message(value, error = false) {
+  $('status').textContent = value;
+  $('status').className =
+    'status ' + (error ? 'error' : 'success');
 }
-function showProfile(user){
- $('authPanel').hidden=true;$('profilePanel').hidden=false;
- $('displayName').textContent=user.name||'Hitmaker';
- $('displayEmail').textContent=user.email||'';
- $('profileMessage').textContent='';
- loadHistory();
+
+function hidePassword() {
+  $('password').type = 'password';
+  $('togglePassword').setAttribute('aria-pressed', 'false');
+  $('togglePassword').setAttribute('aria-label', 'Show password');
+  $('togglePassword').title = 'Show password';
+
+  $('eyeIcon').innerHTML =
+    '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>' +
+    '<circle cx="12" cy="12" r="3"/>';
 }
-function showAuth(){
- $('profilePanel').hidden=true;$('authPanel').hidden=false;
- setMode('login');
+
+function setMode(next) {
+  mode = next;
+  const registering = mode === 'register';
+
+  $('nameField').classList.toggle('hidden', !registering);
+  $('name').required = registering;
+
+  const [heading, description] = chooseGreeting(mode);
+  $('heading').textContent = heading;
+  $('description').textContent = description;
+
+  $('loginTab').setAttribute('aria-pressed', String(!registering));
+  $('registerTab').setAttribute('aria-pressed', String(registering));
+
+  $('submitButton').textContent =
+    registering ? 'Create account' : 'Sign in';
+
+  $('password').autocomplete =
+    registering ? 'new-password' : 'current-password';
+
+  $('passwordHint').classList.toggle('hidden', !registering);
+
+  hidePassword();
+  message('');
 }
-async function loadHistory(){ try{
- const r=await fetch('/api/customer-order-history',{credentials:'same-origin',cache:'no-store'
+
+$('togglePassword').addEventListener('click', () => {
+  const reveal = $('password').type === 'password';
+
+  $('password').type = reveal ? 'text' : 'password';
+
+  $('togglePassword').setAttribute(
+    'aria-pressed', String(reveal)
+  );
+  $('togglePassword').setAttribute(
+    'aria-label', reveal ? 'Hide password' : 'Show password'
+  );
+  $('togglePassword').title =
+    reveal ? 'Hide password' : 'Show password';
+
+  $('eyeIcon').innerHTML = reveal
+    ? '<path d="M3 3l18 18M10.6 5.1A11.7 11.7 0 0 1 12 5c6.5 0 10 7 10 7a15.6 15.6 0 0 1-3.2 4.1M6.2 6.2C3.5 8.2 2 12 2 12s3.5 7 10 7a10.6 10.6 0 0 0 4.2-.9M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'
+    : '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>';
 });
- if(!r.ok)return;
- const data=await r.json();
- if(data.loyalty){
- const count=Number(data.loyalty.qualifyingCompletedCount??data.loyalty.completedCount??0);
- if(Number.isFinite(count))$('loyaltyText').textContent=
- count+' of 6 qualifying completed paid videos toward Platinum Hitmaker status.';
- }
- if(Array.isArray(data.orders)&&data.orders.length){
- $('orderHistory').replaceChildren();
- data.orders.forEach(order=>{
- const p=document.createElement('p');
- p.textContent=(order.title||'Video order')+' — '+(order.status||'Status unavailable');
- $('orderHistory').append(p);
- });
- }
- }catch{/* History availability must not block sign-in. */}
+
+function resetLoyalty() {
+  $('progressText').textContent = '0 of 6 videos';
+  $('progressFill').style.width = '0%';
+  $('progressTrack').setAttribute('aria-valuenow', '0');
+  $('loyaltyPanel').classList.remove('unlocked');
+
+  document.querySelectorAll('.milestone').forEach(
+    element => element.classList.remove('complete')
+  );
+
+  $('prestigeText').textContent =
+    'Platinum Hitmaker insignia — unlocks permanently after your sixth qualifying video.';
+
+  $('loyaltyNote').textContent =
+    'Verified progress will appear here when available. Rewards and discounts are not currently being issued.';
 }
-$('loginTab').addEventListener('click',()=>setMode('login'));
-$('signupTab').addEventListener('click',()=>setMode('signup'));
-$('eye').addEventListener('click',()=>{
- const visible=$('password').type==='text';
- $('password').type=visible?'password':'text';
- $('eye').textContent=visible?'Show password':'Hide password';
+
+function updateLoyalty(loyalty) {
+  if (!loyalty || typeof loyalty !== 'object') {
+    resetLoyalty();
+    return;
+  }
+
+  const count = Math.floor(Math.max(
+    0,
+    Math.min(6, Number(loyalty.qualifyingVideos) || 0)
+  ));
+
+  const unlocked = loyalty.platinumUnlocked === true;
+
+  $('progressText').textContent = count + ' of 6 videos';
+  $('progressFill').style.width = (count / 6 * 100) + '%';
+  $('progressTrack').setAttribute('aria-valuenow', String(count));
+  $('loyaltyPanel').classList.toggle('unlocked', unlocked);
+
+  document.querySelectorAll('.milestone').forEach(
+    (element, index) => {
+      element.classList.toggle('complete', index < count);
+    }
+  );
+
+  $('prestigeText').textContent = unlocked
+    ? '🏅 Platinum Hitmaker milestone reached!'
+    : 'Platinum Hitmaker insignia — unlocks after your sixth qualifying video.';
+
+  $('loyaltyNote').textContent = unlocked
+    ? 'You have reached the Platinum Hitmaker milestone. Automatic badge issuance and seventh-video discount redemption are not yet active.'
+    : 'Progress reflects qualifying paid and completed videos verified by the server. Automatic rewards and checkout discounts are not yet active.';
+}
+
+function friendlyDate(value) {
+  if (!value) return 'Date unavailable';
+
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) {
+    return 'Date unavailable';
+  }
+
+  return date.toLocaleDateString(undefined, {
+    year:'numeric',
+    month:'short',
+    day:'numeric'
+  });
+}
+
+function statusLabel(value) {
+  const labels = {
+    pending:'Pending',
+    paid:'Paid',
+    completed:'Completed',
+    processing:'Processing',
+    queued:'Queued',
+    running:'In progress',
+    failed:'Failed',
+    refunded:'Refunded',
+    cancelled:'Cancelled',
+    canceled:'Cancelled'
+  };
+
+  return labels[String(value || '').toLowerCase()]
+    || 'Not available';
+}
+
+function makeDetail(label, value) {
+  const line = document.createElement('div');
+  line.className = 'order-detail';
+
+  const name = document.createElement('span');
+  name.textContent = label;
+
+  const detail = document.createElement('span');
+  detail.textContent = value;
+
+  line.append(name, detail);
+  return line;
+}
+
+function renderOrders(orders) {
+  const container = $('orderHistory');
+  container.replaceChildren();
+
+  if (!Array.isArray(orders) || orders.length === 0) {
+    container.className = 'history-message';
+    container.textContent =
+      '🎵 No music video orders yet. When customer ordering launches, your orders will appear here.';
+    return;
+  }
+
+  container.className = 'order-list';
+
+  orders.forEach(order => {
+    const card = document.createElement('article');
+    card.className = 'order-card';
+
+    const title = document.createElement('div');
+    title.className = 'order-title';
+    title.textContent = String(
+      order.title || 'Untitled Music Video'
+    );
+
+    const date = document.createElement('div');
+    date.className = 'order-date';
+    date.textContent = friendlyDate(order.createdAt);
+
+    card.append(title, date);
+    card.append(makeDetail('Payment', statusLabel(order.paymentStatus)));
+    card.append(makeDetail('Video', statusLabel(order.videoStatus)));
+
+    if (order.qualifiesForPlatinum === true) {
+      const qualifying = document.createElement('p');
+      qualifying.className = 'qualifying';
+      qualifying.textContent =
+        '✓ Counts toward Platinum Hitmaker';
+      card.append(qualifying);
+    }
+
+    container.append(card);
+  });
+}
+
+async function loadOrderHistory() {
+  if (!signedIn) return;
+
+  const generation = accountGeneration;
+  const requestNumber = ++historyRequest;
+
+  const isCurrent = () =>
+    signedIn &&
+    generation === accountGeneration &&
+    requestNumber === historyRequest;
+
+  $('refreshOrders').disabled = true;
+  $('orderHistory').className = 'history-message';
+  $('orderHistory').textContent = 'Loading your order history...';
+
+  try {
+    const response = await fetch('/api/customer-order-history', {
+      credentials:'same-origin',
+      cache:'no-store',
+      headers:{'Accept':'application/json'}
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error(
+        'The order history server returned an unexpected response.'
+      );
+    }
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || 'Could not load order history.');
+    }
+
+    if (!isCurrent()) return;
+
+    updateLoyalty(data.loyalty);
+    renderOrders(data.orders);
+
+  } catch (error) {
+    if (!isCurrent()) return;
+
+    resetLoyalty();
+    $('orderHistory').className = 'history-message';
+    $('orderHistory').textContent =
+      'Unable to load order history. ' +
+      error.message + ' Please try Refresh.';
+
+  } finally {
+    if (isCurrent()) {
+      $('refreshOrders').disabled = false;
+    }
+  }
+}
+
+function showUser(user, newlyRegistered = false) {
+  signedIn = true;
+  accountGeneration++;
+
+  $('authPanel').classList.add('hidden');
+  $('profilePanel').classList.remove('hidden');
+
+  const firstName = String(user.name || 'Hitmaker')
+    .trim().split(/\s+/)[0];
+
+  const [heading, greeting] = chooseGreeting(
+    newlyRegistered ? 'newProfile' : 'profile'
+  );
+
+  $('profileHeading').textContent =
+    heading.replace('{name}', firstName);
+  $('profileGreeting').textContent = greeting;
+
+  $('welcome').textContent =
+    'Signed in as ' +
+    String(user.name || 'Hitmaker') +
+    ' (' + String(user.email || '') + ').';
+
+  message('');
+  resetLoyalty();
+  void loadOrderHistory();
+}
+
+function showAuth() {
+  signedIn = false;
+  accountGeneration++;
+  historyRequest++;
+
+  $('profilePanel').classList.add('hidden');
+  $('authPanel').classList.remove('hidden');
+
+  $('refreshOrders').disabled = false;
+  $('orderHistory').replaceChildren();
+  resetLoyalty();
+  setMode('login');
+}
+
+async function request(route, options = {}) {
+  const response = await fetch(
+    '/api/customer-auth/' + route,
+    {
+      credentials:'same-origin',
+      cache:'no-store',
+      ...options
+    }
+  );
+
+  let data;
+
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error('The server returned an unexpected response.');
+  }
+
+  if (!response.ok || !data.ok) {
+    throw new Error(data.error || 'Request failed.');
+  }
+
+  return data;
+}
+
+function afterAuthentication(user, newlyRegistered = false) {
+  if (studioView) {
+    showUser(user, newlyRegistered);
+  } else {
+    window.location.assign('/customer.html');
+  }
+}
+
+$('loginTab').addEventListener('click', () => setMode('login'));
+$('registerTab').addEventListener('click', () => setMode('register'));
+
+$('refreshOrders').addEventListener(
+  'click',
+  () => void loadOrderHistory()
+);
+
+$('authForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (busy) return;
+
+  busy = true;
+  $('submitButton').disabled = true;
+  message('Please wait...');
+
+  try {
+    const body = {
+      email:$('email').value.trim(),
+      password:$('password').value
+    };
+
+    const registering = mode === 'register';
+
+    if (registering) {
+      body.name = $('name').value.trim();
+    }
+
+    const data = await request(
+      registering ? 'register' : 'login',
+      {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      }
+    );
+
+    $('password').value = '';
+    hidePassword();
+
+    afterAuthentication(data.user, registering);
+
+  } catch (error) {
+    message(error.message, true);
+
+  } finally {
+    busy = false;
+    $('submitButton').disabled = false;
+  }
 });
-$('forgotButton').addEventListener('click',()=>{
- $('authForm').hidden=true;$('forgotForm').hidden=false;
- $('recoveryEmail').value=$('email').value;message('');
+
+$('logoutButton').addEventListener('click', async () => {
+  if (busy) return;
+
+  busy = true;
+  $('logoutButton').disabled = true;
+
+  try {
+    await request('logout', {method:'POST'});
+    showAuth();
+    message('You have signed out.');
+
+  } catch (error) {
+    message(error.message, true);
+
+  } finally {
+    busy = false;
+    $('logoutButton').disabled = false;
+  }
 });
-$('backLogin').addEventListener('click',()=>setMode('login'));
-$('authForm').addEventListener('submit',async event=>{
- event.preventDefault();
- const button=$('submitButton');button.disabled=true;message('Checking your account...');
- try{
- const payload={email:$('email').value.trim(),password:$('password').value};
- if(mode==='signup')payload.name=$('name').value.trim();
- const data=await request(mode==='signup'?'register':'login',{
- method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
- });
- // Verify that the browser actually retained the session before claiming success.
- const verified=await request('me');
- showProfile(verified.user||data.user);
- }catch(error){message(error.message,true)}
- finally{button.disabled=false}
+
+$('forgotPasswordButton').addEventListener('click', () => {
+  $('authForm').classList.add('hidden');
+  $('forgotLinkArea').classList.add('hidden');
+  $('forgotForm').classList.remove('hidden');
+  document.querySelector('.tabs').classList.add('hidden');
+  $('heading').textContent = 'Forgot your password?';
+  $('description').textContent =
+    "We'll email you a secure link to create a new password.";
+  $('forgotEmail').value = $('email').value.trim();
+  message('');
 });
-$('forgotForm').addEventListener('submit',async event=>{
- event.preventDefault();const button=event.submitter;if(button)button.disabled=true;
- try{
- const data=await request('forgot-password',{
- method:'POST',headers:{'Content-Type':'application/json'},
- body:JSON.stringify({email:$('recoveryEmail').value.trim()})
- });
- message(data.message||'If an account exists, a reset email will be sent.');
- }catch(error){message(error.message,true)}
- finally{if(button)button.disabled=false}
+
+$('backToLoginButton').addEventListener('click', () => {
+  $('forgotForm').classList.add('hidden');
+  $('authForm').classList.remove('hidden');
+  $('forgotLinkArea').classList.remove('hidden');
+  document.querySelector('.tabs').classList.remove('hidden');
+  setMode('login');
 });
-$('logoutButton').addEventListener('click',async()=>{
- try{await request('logout',{method:'POST'});showAuth()}
- catch(error){$('profileMessage').textContent=error.message}
+
+$('forgotForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (busy) return;
+
+  busy = true;
+  $('sendResetButton').disabled = true;
+  message('Sending your reset link...');
+
+  try {
+    const data = await request('forgot-password', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email: $('forgotEmail').value.trim()
+      })
+    });
+
+    message(data.message ||
+      'If your account exists, a reset link will be emailed.');
+  } catch (error) {
+    message(error.message, true);
+  } finally {
+    busy = false;
+    $('sendResetButton').disabled = false;
+  }
 });
-(async()=>{
- const params=new URLSearchParams(location.search);
- setMode(params.get('mode')==='signup'?'signup':'login');
- try{const data=await request('me');showProfile(data.user)}
- catch(error){
- if(!/not signed in|unauthorized|session|authentication required/i.test(error.message))message
-(error.message,true);
- }
-})();
+
+setMode(mode);
+
+request('me')
+  .then(data => {
+    if (!signedIn && !busy) {
+      afterAuthentication(data.user);
+    }
+  })
+  .catch(() => {});
+
 </script>
-</body> </html>
+</body>
+</html>
