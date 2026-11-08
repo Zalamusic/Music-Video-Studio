@@ -1,3 +1,5 @@
+import {createProductionRouter} from './cutloopz-production-router.mjs';
+import {verifyProductionStorage} from './cutloopz-storage-preflight.mjs';
 import { createCinemaManifest } from './cutloopz-cinema-engine.js';
 import { createProductionPlan, getProductionScenePrompt } from './cutloopz-production-director.js';
 import {
@@ -88,6 +90,16 @@ await Promise.all([
  fs.mkdir(ORDERS, { recursive: true }),
  fs.mkdir(CUSTOMER_UPLOADS, { recursive: true })
 ]);
+// Fail closed: a paid full-production job must never start without writable storage.
+let fullProductionStorageReady = false;
+if (process.env.CUTLOOPZ_FULL_PRODUCTION_ENABLED === 'true') {
+ try {
+  await verifyProductionStorage({outputDir: OUT, productionDir: path.join(OUT, 'cutloopz-production')});
+  fullProductionStorageReady = true;
+ } catch (error) {
+  console.error('CutLoopz full production disabled: storage preflight failed:', error.message);
+ }
+}
 if (process.env.FAL_KEY) {
  fal.config({
  credentials: process.env.FAL_KEY
@@ -133,6 +145,18 @@ app.use('/api/performance-pilot', createPerformancePilotRouter({
   authorize: isVideoAdmin,
   enabled: () => process.env.CUTLOOPZ_PERFORMANCE_PILOT_ENABLED === 'true',
   paidEnabled: () => process.env.ENABLE_PAID_GENERATION === 'true'
+}));
+
+// Administrator-only persistent full-song production (disabled unless explicitly enabled).
+app.use('/api/cutloopz-production', createProductionRouter({
+  express, multer,
+  baseDir: path.join(OUT, 'cutloopz-production'),
+  authorize: isVideoAdmin,
+  origin: `http://127.0.0.1:${PORT}`,
+  adminKey: VIDEO_ADMIN_KEY || 'not-configured',
+  enabled: () => fullProductionStorageReady && process.env.CUTLOOPZ_FULL_PRODUCTION_ENABLED === 'true' &&
+    process.env.CUTLOOPZ_PERFORMANCE_PILOT_ENABLED === 'true' &&
+    process.env.ENABLE_PAID_GENERATION === 'true'
 }));
 
 app.get('/api/gpu/status', (req, res) => {
