@@ -3,854 +3,204 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#ffffff">
-<title>CutLoopz | Cinematic Music Video Studio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<link href="/zala-themes.css" rel="stylesheet">
-<script defer src="/zala-themes.js">
-</script>
-<link href="/customer-theme-fix.css" rel="stylesheet">
+<meta name="theme-color" content="#111219">
+<title>My Account | Cut Loopz Media</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesh
+eet">
 <style>
-:root{--blue:#2469cc;
---blue-dark:#1556b4;
---navy:#17263c;
---muted:#3f5067;
---line:#d8e3f0;
---soft:#f4f8fe;
---gold:#b1842e;
---gold-light:#e4bd69;
---photo:url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=85')}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;
-scroll-padding-top:165px}
-body{margin:0;
-background:#fff;
-color:var(--navy);
-font:16px/1.6 'DM Sans',Arial,sans-serif}
-button,input,select,textarea{font:inherit}
-a{text-decoration:none}
+:root{color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padd
+ing-top:100px}
+body{display:block!important;position:relative;margin:0!important;width:100%!important;min-width:0!important;max
+-width:100%!important;overflow-x:hidden;background:#101117;color:#f6e8ca;font:16px/1.55 'DM Sans',Arial,sans-ser
+if}
+a{color:#e9bd68}button,input{font:inherit}
+.site-header{position:sticky;top:0;z-index:1000;width:100%;max-width:100%;margin:0!important;background:#171820;
+border-bottom:1px solid #81622f;box-shadow:0 3px 16px #0008}
+.header-inner{width:100%;max-width:760px;margin:0 auto;padding:12px 16px;display:flex;flex-direction:row;justify
+-content:space-between;align-items:center;gap:12px;min-width:0}.header-inner .brand{flex:1;min-width:0}.header-i
+nner .back{flex:0 0 auto}
+.brand{font-size:clamp(15px,4.5vw,20px);font-weight:800;color:#edc77b;overflow-wrap:anywhere;line-height:1.3}
+.back{display:inline-flex;align-items:center;justify-content:center;border:1px solid #9d7735;border-radius:9px;p
+adding:9px 12px;text-decoration:none;white-space:nowrap;font-size:14px;flex-shrink:0;white-space:nowrap}
+main{display:block!important;float:none!important;clear:both!important;width:100%!important;max-width:760px!impo
+rtant;min-width:0!important;margin:0 auto!important;padding:25px 16px 45px!important}
+h1{color:#f4d48e;font-size:clamp(25px,6vw,34px);line-height:1.2;margin:0 0 12px;overflow-wrap:anywhere}
+h2{color:#f4d48e;font-size:21px;line-height:1.3;overflow-wrap:anywhere}
+.sub{color:#d4c2a3;margin-top:0}
+.panel{display:block;width:100%;min-width:0;max-width:100%;background:#1d1e26;border:1px solid #806431;border-ra
+dius:16px;padding:clamp(16px,4vw,25px);margin:20px 0;overflow-wrap:anywhere}
+.tabs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:20px}
+.tabs button,.secondary{background:#2b2930;color:#f2d08c;border:1px solid #a47c37}
+button{display:inline-block;max-width:100%;min-width:0;min-height:50px;border-radius:10px;padding:10px 14px;curs
+or:pointer;font-weight:700;white-space:normal;overflow-wrap:break-word}
+.tabs button[aria-pressed="true"],.primary{background:#b88b39;color:#121219;border:1px solid #b88b39}
+label{display:block;font-weight:700;margin:16px 0 7px}
+input{display:block;width:100%!important;min-width:0!important;max-width:100%!important;min-height:48px;padding:
+12px!important;border:2px solid #b88b39;border-radius:9px;background:#fcf8ee!important;color:#182234!important;f
+ont-size:16px!important;line-height:1.4!important;letter-spacing:normal!important;text-align:left!important}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #ffdf93;outline-offset:2px}
+.actions{display:grid;grid-template-columns:1fr;gap:12px;margin-top:18px;align-items:stretch}.actions button,.ac
+tions a{width:100%;text-align:center;min-height:50px}
+.actions button{flex:none}
+.message{min-height:24px;color:#f4d48e;margin:16px 0;overflow-wrap:anywhere}
+.message.error{color:#ffaaaa}
+.small{font-size:14px;color:#d4c2a3}
 [hidden]{display:none!important}
-.page,.floating-inner{max-width:940px;
-margin:auto}
-.page{padding:0 16px 40px}
-.main-header{padding:17px 0}
-.header-top,.floating-top{display:flex;
-align-items:center;
-justify-content:space-between;
-gap:8px}
-.brand,.floating-brand{display:flex;
-align-items:center;
-gap:10px;
-min-width:0}
-.logo{width:76px;
-height:58px;
-background:#101010;
-border-radius:10px;
-padding:9px;
-flex:none;
-overflow:hidden}
-.logo img{display:block;
-width:100%;
-height:100%;
-object-fit:contain}
-.brand-name{font:700 17px 'DM Sans',sans-serif;
-letter-spacing:.4px;
-color:#b58b41}
-.brand-sub,.mini-brand-sub{font-size:11px;
-color:var(--muted);
-font-weight:600}
-.brand-tagline{color:#b1883f;
-font-style:italic;
-font-size:12px}
-.account-actions{display:flex;
-gap:7px;
-align-items:center;
-flex-shrink:0}
-.account-actions a,.account-options a{border:2px solid var(--blue);
-background:#fff;
-color:var(--blue);
-border-radius:10px;
-padding:7px 10px;
-font-size:12px;
-font-weight:700;
-white-space:nowrap}
-.customer-profile{position:relative;
-flex-shrink:0} .profile-trigger{width:42px;
-height:42px;
-border:3px solid var(--blue);
-border-radius:50%;
-background:#eaf2ff;
-color:var(--blue-dark);
-font-weight:800;
-cursor:pointer}
-.profile-menu{position:absolute;
-right:0;
-top:calc(100% + 9px);
-z-index:1200;
-min-width:205px;
-border:1px solid var(--line);
-background:#fff;
-box-shadow:0 12px 24px #183a5e20;
-border-radius:12px;
-padding:10px}
-.profile-menu-name{font-weight:800;
-font-size:13px;
-overflow-wrap:anywhere;
-border-bottom:1px solid var(--line);
-padding:6px}
-.profile-menu a,.profile-menu button{display:block;
-width:100%;
-text-align:left;
-background:#fff;
-color:var(--navy);
-border:0;
-border-radius:8px;
-padding:10px;
-font-size:14px;
-font-weight:700;
-cursor:pointer}
-.profile-error{color:#b42318;
-font-size:12px}
-.tabs{display:flex;
-gap:9px;
-overflow-x:auto;
-scrollbar-width:none;
-white-space:nowrap;
-padding:2px 0}
-.tabs::-webkit-scrollbar{display:none}
-.tabs a{flex:none;
-padding:10px 14px;
-background:var(--soft);
-color:var(--navy);
-border-radius:10px;
-font-size:13px;
-font-weight:700}
-.tabs a.selected{background:var(--blue);
-color:#fff}
-.main-tabs{margin-top:15px}
-.hero{border:1px solid var(--line);
-border-radius:18px;
-overflow:hidden}
-.hero-photo{height:280px;
-background-image:linear-gradient(0deg,#08112d55,transparent 70%),var(--photo);
-background-position:center;
-background-size:cover;
-background-color:#142a56}
-.hero-content{padding:24px}
-h1{font-size:clamp(23px,3.1vw,29px);
-font-weight:600;
-margin:0 0 10px}
-h2{font-size:21px;
-margin:0 0 12px}
-h3{font-size:16px;
-margin:0 0 8px}
-.hero-sub{font-size:16px;
-color:var(--blue-dark);
-font-weight:600}
-.hero-description,.note,.card p,.panel p{font-size:14px;
-color:var(--muted);
-line-height:1.65}
-.hero-description{max-width:690px}
-.button,button.primary{display:inline-flex;
-align-items:center;
-justify-content:center;
-gap:7px; border:0;
-border-radius:10px;
-background:var(--blue);
-color:#fff;
-padding:11px 15px;
-font-weight:700;
-cursor:pointer}
-.button:hover,button.primary:hover{background:var(--blue-dark)}
-.tagline{font-size:13px;
-color:var(--muted);
-font-weight:600}
-.content{padding-top:28px}
-.cards{display:grid;
-grid-template-columns:repeat(3,minmax(0,1fr));
-gap:12px}
-.card,.panel{border:1px solid var(--line);
-border-radius:14px;
-padding:18px}
-.studio{padding:20px;
-background:var(--soft);
-border:1px solid var(--line);
-border-radius:17px}
-.field{margin:0 0 14px}
-.field label{display:block;
-font-weight:700;
-font-size:15px;
-margin:0 0 7px}
-.field-row{display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px}
-.studio input,.studio select,.studio textarea{display:block;
-width:100%;
-background:#fff;
-color:var(--navy);
-border:2px solid var(--blue);
-border-radius:11px;
-padding:11px 12px;
-font-size:16px;
-min-height:48px}
-.studio textarea{min-height:115px;
-resize:vertical}
-.studio input[type=file]{border-style:dashed}
-.studio input:focus-visible,.studio select:focus-visible,.studio textarea:focus-visible{outline:3px solid #2469cc33}
-.studio .primary{width:100%;
-margin-top:9px}
-.account-panel{background:#f7faff}
-.account-options{display:flex;
-flex-wrap:wrap;
-gap:10px}
-.floating-header{position:fixed;
-top:0;
-left:0;
-right:0;
-z-index:1000;
-background:#fffffff9;
-border-bottom:1px solid var(--line);
-box-shadow:0 4px 16px #142d551f;
-transform:translateY(-110%);
-opacity:0;
-visibility:hidden;
-pointer-events:none;
-transition:transform .3s,opacity .3s,visibility .3s}
-.floating-header.show{transform:translateY(0);
-opacity:1;
-visibility:visible;
-pointer-events:auto}
-.floating-inner{padding:7px 14px 10px}
-.floating-top{margin-bottom:7px}
-.floating-brand .logo{width:58px;
-height:44px;
-padding:6px}
-.mini-brand-name{font-size:13px;
-font-weight:800}
-.mini-hero{display:flex;
-gap:10px;
-align-items:center;
-margin-bottom:7px}
-.mini-photo{width:62px;
-height:48px;
-flex:none; border-radius:8px;
-background:var(--photo) center/cover}
-.mini-headline{font-size:14px;
-font-weight:700}
-.mini-sub{font-size:11px;
-color:var(--blue-dark)}
-.floating-account a{font-size:11px}
-.floating-profile .profile-trigger{width:36px;
-height:36px}
-.production-heading{display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
-flex-wrap:wrap;
-margin-top:25px}
-.production-heading h3{margin:0}
-.scenes-grid{display:grid;
-grid-template-columns:repeat(2,minmax(0,1fr));
-gap:11px;
-margin-top:11px}
-.scene-card{background:#172438;
-color:#fff;
-border:1px solid #82704c;
-border-radius:13px;
-padding:14px;
-min-width:0}
-.scene-top{display:flex;
-align-items:center;
-gap:10px;
-margin-bottom:10px}
-.scene-number{color:#e4bd69;
-font-size:25px;
-line-height:1;
-font-weight:800;
-letter-spacing:.5px;
-font-variant-numeric:tabular-nums}
-.scene-name{font-size:14px;
-font-weight:700}
-.scene-card label{display:block;
-color:#e7edf9;
-font-size:12px;
-font-weight:700;
-margin:8px 0 4px}
-.scene-card textarea,.scene-card input{background:#fff;
-border:1px solid #9fb1c6;
-color:#16233a;
-width:100%;
-border-radius:8px;
-padding:8px;
-font-size:14px;
-min-height:38px}
-.scene-card textarea{min-height:75px;
-resize:vertical}
-.scene-card textarea::placeholder,.scene-card input::placeholder{color:#52647b}
-.scene-actions{display:flex;
-gap:9px;
-flex-wrap:wrap;
-align-items:center;
-margin-top:12px}
-.scene-actions button{border-radius:9px;
-padding:9px 13px;
-border:1px solid #a88647;
-background:#fffaf0;
-color:#513b17;
-font-weight:700;
-cursor:pointer}
-.scene-actions button:disabled{opacity:.5;
-cursor:not-allowed}
-.scene-help{font-size:12px;
-color:var(--muted)}
-.prompt-tools{display:flex;
-flex-wrap:wrap;
-gap:9px;
-margin:8px 0 11px}
-.prompt-tools button{font-size:13px;
-border:1px solid #c5d7ec;
-background:#fff;
-color:#174f96;
-border-radius:9px;
-padding:8px 11px; font-weight:700;
-cursor:pointer}
-.free-feature{border:1px solid #d4c196;
-background:#fffcf5;
-border-radius:13px;
-padding:16px;
-margin:0 0 19px}
-.free-feature h3{color:#6a501b}
-.free-feature p{font-size:14px;
-color:#4b5262}
-.free-feature a{color:#1755a2;
-font-weight:800;
-text-decoration:underline}
-.small{font-size:12px;
-color:var(--muted)}
-.status{font-size:13px;
-margin:12px 0 0;
-min-height:18px}
-.status.error{color:#a32922}
-.back-top{position:fixed;
-right:17px;
-bottom:19px;
-width:44px;
-height:44px;
-border:0;
-border-radius:50%;
-background:#1c579e;
-color:#fff;
-box-shadow:0 5px 18px #122a4450;
-font-weight:800;
-z-index:900;
-cursor:pointer}
-footer{text-align:center;
-padding:25px 0;
-font-size:13px;
-color:var(--muted)}
-@media(max-width:600px){.hero-photo{height:195px}
-.hero-content{padding:18px}
-.cards,.field-row{grid-template-columns:1fr}
-.studio{padding:15px}
-.tabs{gap:6px}
-.tabs a{font-size:12px;
-padding:9px 10px}
-.brand .logo{width:64px;
-height:50px;
-padding:6px}
-.brand-name{font-size:14px}
-.brand-sub{font-size:9px}
-.brand-tagline{font-size:10px}
-.account-actions a{padding:6px 7px;
-font-size:11px}
-.scenes-grid{gap:8px}
-.scene-card{padding:10px}
-.scene-number{font-size:22px}
-.scene-name{font-size:12px}
-.scene-card textarea{min-height:85px}
-.scene-card input{font-size:13px;
-padding:7px}
-.floating-inner{padding:6px 12px}
-.mini-photo{display:none}
-}
-@media(max-width:360px){.tabs a{font-size:11px;
-padding:8px}
-.scene-card{padding:8px}
-.scene-number{font-size:20px}
-}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}
-.floating-header{transition:none}
-}
-/* Keep the scene board compact, even for full-length songs. */
-.scenes-grid{max-height:620px;
-overflow-y:auto;
-align-content:start;
-padding:3px;
-overscroll-behavior:contain}
-.free-feature,.free-feature p,.free-feature h3{color:#26364b!important}
-.free-feature{background:#fffcf5!important;
-border-color:#d4c196!important}
-.free-feature a{color:#1755a2!important}
-.scene-card,.scene-card label,.scene-name{color:#fff!important} .scene-number{color:#e4bd69!important}
-.scene-card input,.scene-card textarea{color:#16233a!important;
-background:#fff!important}
-@media(max-width:600px){.scenes-grid{max-height:510px}
-}
-/* CutLoopz gold landing presentation, with readable blue studio fields. */
-:root{--gold:#b1842e;
---gold-light:#e4bd69}
-.main-header{background:linear-gradient(180deg,#fffaf0 0%,#fff 100%)}
-.brand-name,.mini-brand-name{color:#9b6b1d;
-font-weight:800}
-.logo{width:76px;
-height:66px;
-background:#101722;
-border:2px solid #c59a48;
-padding:5px;
-box-shadow:0 3px 10px #85601b30}
-.logo img{object-fit:contain;
-width:100%;
-height:100%}
-.logo.logo-fallback{display:flex;
-align-items:center;
-justify-content:center;
-color:#e4bd69;
-font-size:22px;
-font-weight:800;
-letter-spacing:2px}
-.floating-brand .logo{width:58px;
-height:49px}
-.hero{border-color:#dfc995;
-box-shadow:0 7px 24px #9b6b1d14}
-.hero-content{background:linear-gradient(125deg,#fff9ed,#fff 75%)}
-.hero h1{color:#6c4a14;
-font-weight:800}
-.hero-sub{color:#94621a}
-.hero .button{background:linear-gradient(135deg,#b1842e,#8e611a);
-color:#fff}
-.hero .button:hover{background:#805617}
-.tabs a.selected{background:#a97823;
-color:#fff}
-.tabs a:hover{color:#855b19}
-.brand-tagline{color:#9b6b1d}
-.free-feature{background:#fffaf0;
-border-color:#d5b878}
-.scene-number{color:#f0c977}
-@media(max-width:600px){.brand .logo{width:64px;
-height:56px}
-}
+.eye{margin-top:10px;padding:8px 12px;display:block;width:100%}
+footer{display:block;width:100%;max-width:760px;margin:0 auto;padding:15px;text-align:center;color:#bfae8e;font-
+size:13px}
+@media(min-width:600px){.header-inner{padding:15px 24px}main{padding:35px 24px 50px!important}}
 </style>
 </head>
 <body>
-<div aria-hidden="true" class="floating-header" id="floatingHeader" inert>
-<div class="floating-inner">
-<div class="floating-top">
-<div class="floating-brand">
-<div class="logo">
-<img alt="Cut Loopz Media logo" src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png" 
-onerror="this.hidden=true;this.parentElement.classList.add('logo-fallback');this.parentElement.textContent='CL'">
-</div>
-<div>
-<div class="mini-brand-name">Cut Loopz Media</div>
-<div class="mini-brand-sub">Music Video Creation Studio</div>
-</div>
-</div>
-<div class="account-actions floating-account" data-guest-actions>
-<a href="/account.html">Sign In</a>
-<a href="/account.html?mode=signup">Sign Up</a>
-</div>
-<div class="customer-profile floating-profile" data-profile hidden>
-<button aria-expanded="false" aria-label="Open customer profile" class="profile-trigger" data-profile-trigger type="button">
-<span data-profile-initial>?</span>
-</button>
-<div class="profile-menu" data-profile-menu hidden>
-<div class="profile-menu-name" data-profile-name>
-</div>
-<a href="/account.html?view=studio">My Studio</a>
-<button data-sign-out type="button">Sign Out</button>
-<div class="profile-error" data-profile-error hidden>
-</div>
-</div> </div>
-</div>
-<div class="mini-hero">
-<div class="mini-photo">
-</div>
-<div>
-<div class="mini-headline">Your music deserves a video.</div>
-<div class="mini-sub">You made the music. We'll bring it to life.</div>
-</div>
-</div>
-<nav aria-label="Quick navigation" class="tabs">
-<a href="#home">Home</a>
-<a class="selected" href="#create">Create Video</a>
-<a href="/listening-director.html">Director</a>
-<a href="#pricing">Pricing</a>
-<a href="#examples">Examples</a>
-<a href="#how">How It Works</a>
-</nav>
-</div>
-</div>
-<div class="page">
-<header class="main-header" id="home">
-<div class="header-top">
-<div class="brand">
-<div class="logo">
-<img alt="Cut Loopz Media film-reel logo" src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png" 
-onerror="this.hidden=true;this.parentElement.classList.add('logo-fallback');this.parentElement.textContent='CL'">
-</div>
-<div>
-<div class="brand-name">Cut Loopz Media</div>
-<div class="brand-sub">Music Video Creation Studio</div>
-<div class="brand-tagline">Your Music. Your Vision. Your Video.</div>
-</div>
-</div>
-<div class="account-actions" data-guest-actions>
-<a href="/account.html">Sign In</a>
-<a href="/account.html?mode=signup">Sign Up</a>
-</div>
-<div class="customer-profile" data-profile hidden>
-<button aria-expanded="false" aria-label="Open customer profile" class="profile-trigger" data-profile-trigger type="button">
-<span data-profile-initial>?</span>
-</button>
-<div class="profile-menu" data-profile-menu hidden>
-<div class="profile-menu-name" data-profile-name>
-</div>
-<a href="/account.html?view=studio">My Studio</a>
-<button data-sign-out type="button">Sign Out</button>
-<div class="profile-error" data-profile-error hidden>
-</div>
-</div>
-</div>
-</div>
-<nav aria-label="Main navigation" class="tabs main-tabs">
-<a class="selected" href="#home">Home</a>
-<a href="#create">Create Video</a>
-<a href="/listening-director.html">Director</a>
-<a href="#pricing">Pricing</a>
-<a href="#examples">Examples</a>
-<a href="#how">How It Works</a>
-</nav>
-</header>
+<header class="site-header"><div class="header-inner"><div class="brand">Cut Loopz Media</div><a class="back" hr
+ef="/customer.html">← Studio</a></div></header>
 <main>
-<section class="hero" id="hero">
-<div aria-label="Cinematic live music performance" class="hero-photo" role="img">
-</div>
-<div class="hero-content">
-<h1>Your music deserves a video.</h1>
-<p class="hero-sub">You made the music. We'll bring it to life.</p>
-<p class="hero-description">Made it with Suno, Udio, or in your own studio? Turn your songs into breathtaking cinematic music videos—without 
-cameras, crews, or complicated editing.</p>
-<a class="button" href="#create">Create your music video</a>
-<p class="tagline">Your Music. Your Vision. Your Video.</p>
-</div>
-</section>
-<section class="content" id="how">
-<h2>How It Works</h2>
-<div class="cards">
-<div class="card">
-<h3>1. Upload Your Music</h3>
-<p>Select your song and add an artist photo for styles that use your appearance.</p> </div>
-<div class="card">
-<h3>2. Direct Your Vision</h3>
-<p>Evaluate your music, create a Director Prompt, and arrange cinematic scenes.</p>
-</div>
-<div class="card">
-<h3>3. Create Your Video</h3>
-<p>Once customer ordering launches, you'll be able to order your music video.</p>
-</div>
-</div>
-</section>
-<section class="content" id="create">
-<h2>Create Your Music Video</h2>
-<p class="note">Customer ordering is not enabled yet. Plan your video without payment or generation.</p>
-<div class="free-feature">
-<h3>Free Song Evaluation &amp; Director Prompt</h3>
-<p>Visit the Listening Director to explore your song and create a cinematic direction plan. Review the resulting prompt before using it in 
-the video setup below. Evaluation is separate from paid video creation.</p>
-<a href="/listening-director.html">Open Listening Director</a>
-<p class="small">Automatic one-click transfer requires an additional update to the evaluator page. For now, copy its Director Prompt into 
-the field below.</p>
-</div>
-<div class="studio">
-<form id="customerForm">
-<div class="field" id="fieldTitle">
-<label for="songTitle">Song Title</label>
-<input id="songTitle" maxlength="120" placeholder="Your song title">
-</div>
-<div class="field" id="fieldSong">
-<label for="songFile">Upload Your Song</label>
-<input accept=".mp3,.wav,audio/mpeg,audio/wav" id="songFile" type="file">
-</div>
-<div class="field" id="fieldDuration">
-<label for="audioLength">Audio Length (MM:SS)</label>
-<input id="audioLength" type="text" inputmode="numeric" placeholder="e.g. 4:01" pattern="[0-9]{1,3}:[0-5][0-9]" 
-aria-describedby="audioLengthHelp">
-<p class="small" id="audioLengthHelp">Detected automatically from the uploaded song when supported. You can enter or correct the duration 
-manually.</p>
-</div>
-<div class="field" id="fieldPhoto">
-<label for="artistPhoto">Upload Artist Photo</label>
-<input accept="image/jpeg,image/png,image/webp" id="artistPhoto" type="file">
-<p class="note">Photos are used for supported character-based and singing videos.</p>
-</div>
-<div class="field-row">
-<div class="field" id="fieldStyle">
-<label for="style">Cinematic Style</label>
-<select id="style">
-<option disabled selected value="">Choose a style</option>
-<option>Cinematic Realism</option>
-<option>Romantic Drama</option>
-<option>Hollywood Action</option>
-<option>Science Fiction</option>
-<option>Fantasy</option>
-<option>3D Animation</option>
-<option>Anime</option>
-<option>Urban Music Video</option>
-</select>
-</div>
-<div class="field" id="fieldFormat">
-<label for="format">Video Format</label>
-<select id="format">
-<option value="vertical">9:16 Vertical</option>
-<option value="landscape">16:9 Widescreen</option>
-</select>
-</div>
-</div>
-<div class="field" id="fieldVision">
-<label for="vision">Your Director Prompt / Creative Vision</label>
-<textarea id="vision" maxlength="12000" placeholder="Paste your free Director Prompt here, or describe your story, mood, wardrobe, camera 
-direction and locations.">
-</textarea>
-<div class="prompt-tools">
-<button id="applyPrompt" type="button">Apply Prompt to Scenes</button>
-<button id="copyPlan" type="button">Copy Production Plan</button>
-</div>
-<p class="small">The Director Prompt is the master creative brief. Scene details are optional refinements—not competing instructions.</p>
-</div>
-<div class="production-heading">
-<h3>Production Director — Scene Board</h3> <span class="small">Gold-numbered, two-column layout</span>
-</div>
-<p class="scene-help">Four scenes appear initially. When you enter a song length, the board can prepare additional scenes automatically in 
-pairs (one scene per approximately 15 seconds). The board scrolls inside its own area so the page stays compact. Each scene can have its own 
-action, location, and wardrobe.</p>
-<div aria-live="polite" class="scenes-grid" id="scenesGrid">
-</div>
-<div class="scene-actions">
-<button id="addScenes" type="button">+ Add 2 Scenes</button>
-<button id="removeScenes" type="button">Remove Last 2</button>
-<span class="small" id="sceneCount">
-</span>
-</div>
-<button class="primary" type="submit">Continue</button>
-<p aria-live="polite" class="status" id="studioStatus" role="status">
-</p>
+<h1>Your Hitmaker Account</h1>
+<p class="sub">Your Music. Your Vision. Your Video.</p>
+<section id="authPanel" class="panel">
+<div class="tabs"><button id="loginTab" type="button" aria-pressed="true">Sign In</button><button id="signupTab"
+ type="button" aria-pressed="false">Sign Up</button></div> <form id="authForm">
+<div id="nameField" hidden><label for="name">Your name</label><input id="name" autocomplete="name" maxlength="80
+"></div>
+<label for="email">Email</label><input id="email" type="email" autocomplete="email" required maxlength="254">
+<label for="password">Password</label><input id="password" type="password" autocomplete="current-password" requi
+red maxlength="128">
+<button id="eye" class="secondary eye" type="button" aria-label="Show password">Show password</button>
+<p id="passwordHint" class="small" hidden>New passwords must contain 12–128 characters.</p>
+<div class="actions"><button class="primary" id="submitButton" type="submit">Sign In</button><button class="seco
+ndary" id="forgotButton" type="button">Forgot password?</button></div>
 </form>
-</div>
+<form id="forgotForm" hidden>
+<label for="recoveryEmail">Account email</label><input id="recoveryEmail" type="email" required autocomplete="em
+ail">
+<div class="actions"><button class="primary" type="submit">Send reset link</button><button class="secondary" typ
+e="button" id="backLogin">Back to sign in</button></div>
+</form>
+<p id="authMessage" class="message" role="status" aria-live="polite"></p>
 </section>
-<section class="content" id="pricing">
-<h2>Pricing</h2>
-<div class="panel">
-<h3>Full-Length Cinematic Music Videos</h3>
-<p>Affordable per-video pricing is being finalized. No payments are collected on this preview.</p>
-</div>
-</section>
-<section class="content" id="examples">
-<h2>Video Examples</h2>
-<div class="panel">
-<p>Finished cinematic music-video examples will appear here.</p>
-</div>
-</section>
-<section class="content" id="account">
-<h2>Your Account</h2>
-<div class="panel account-panel">
-<h3>Welcome to Cut Loopz Media</h3>
-<p>Create your customer account or sign in to your personal music-video studio.</p>
-<p>Account registration and sign-in are available. Video orders, order tracking, and completed video history will be added as customer 
-ordering becomes available.</p>
-<div class="account-options">
-<a href="/account.html">Sign In</a>
-<a href="/account.html?mode=signup">Sign Up</a>
-</div>
-</div>
+<section id="profilePanel" class="panel" hidden>
+<h2>Welcome, <span id="displayName">Hitmaker</span></h2>
+<p id="displayEmail"></p>
+<p class="small">Your account is signed in. Customer video ordering is not enabled yet.</p>
+<div class="actions"><a class="back" href="/customer.html">Open Customer Studio</a><button class="secondary" id=
+"logoutButton" type="button">Sign Out</button></div>
+<h2>Platinum Hitmaker</h2>
+<p id="loyaltyText">Your completed paid-video progress will appear here when eligible orders are available.</p>
+<h2>Video History</h2>
+<div id="orderHistory" class="small">No completed video orders shown.</div>
+<p id="profileMessage" class="message" role="status"></p>
 </section>
 </main>
-<footer>Cut Loopz Media — Your Music. Your Vision. Your Video.</footer>
-</div>
-<button aria-label="Back to top" class="back-top" hidden id="backTop" type="button">↑</button>
+<footer>A Director That Listens. · Cut Loopz Media</footer>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-const floatingHeader=$('floatingHeader'),hero=$('hero'),backTop=$('backTop');
-let headerVisible=false;
-function closeProfileMenus(){document.querySelectorAll('[data-profile]').forEach(p=>{p.querySelector('[data-profile-menu]').hidden=true;
-p.querySelector('[data-profile-trigger]').setAttribute('aria-expanded','false')})} function updateHeader(){const 
-y=hero.getBoundingClientRect().bottom;
-const shouldShow=headerVisible?y<145:y<105;
-if(shouldShow!==headerVisible){headerVisible=shouldShow;
-floatingHeader.classList.toggle('show',shouldShow);
-floatingHeader.setAttribute('aria-hidden',String(!shouldShow));
-floatingHeader.inert=!shouldShow;
-if(!shouldShow)closeProfileMenus()}backTop.hidden=window.scrollY<350} window.addEventListener('scroll',updateHeader,{passive:true});
-window.addEventListener('resize',updateHeader);
-updateHeader();
-backTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: 
-reduce)').matches?'auto':'smooth'}));
-function showGuest(){closeProfileMenus();
-document.querySelectorAll('[data-guest-actions]').forEach(x=>x.hidden=false);
-document.querySelectorAll('[data-profile]').forEach(x=>x.hidden=true)} function showCustomer(user){const 
-name=String(user.name||user.firstName||user.email||'Customer').trim(),initial=Array.from(name)[0]?.toUpperCase()||'C';
-document.querySelectorAll('[data-guest-actions]').forEach(x=>x.hidden=true);
-document.querySelectorAll('[data-profile]').forEach(p=>{p.hidden=false;
-p.querySelector('[data-profile-initial]').textContent=initial;
-p.querySelector('[data-profile-name]').textContent=name})} async function loadCustomer(){try{const r=await 
-fetch('/api/customer-auth/me',{credentials:'same-origin',cache:'no-store'});
-if(!r.ok){showGuest();
-return}const data=await r.json(),customer=data.customer||data.user;
-if(data.ok&&customer)showCustomer(customer); else showGuest()}catch{showGuest()}} document.querySelectorAll('[data-profile]').forEach(p=>{const 
-trigger=p.querySelector('[data-profile-trigger]'),menu=p.querySelector('[data-profile-menu]'),signOut=p.querySelector('[data-sign-out]'),err=
-p.querySelector('[data-profile-error]');
-trigger.addEventListener('click',event=>{event.stopPropagation();
-const opening=menu.hidden;
-closeProfileMenus();
-menu.hidden=!opening;
-trigger.setAttribute('aria-expanded',String(opening));
-err.hidden=true});
-menu.addEventListener('click',event=>event.stopPropagation());
-signOut.addEventListener('click',async()=>{signOut.disabled=true;
-err.hidden=true;
-try{const r=await fetch('/api/customer-auth/logout',{method:'POST',credentials:'same-origin',cache:'no-store'});
-const d=await r.json();
-if(!r.ok||!d.ok)throw Error('Sign out failed');
-showGuest()}catch{err.textContent='Could not sign out. Please try again.';
-err.hidden=false}finally{signOut.disabled=false}})});
-document.addEventListener('click',event=>{if(!event.target.closest('[data-profile]'))closeProfileMenus()});
-document.addEventListener('keydown',event=>{if(event.key==='Escape')closeProfileMenus()});
-window.addEventListener('pageshow',loadCustomer);
-loadCustomer();
-const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-function gentlyReveal(id){const next=$(id);
-if(!next)return;
-requestAnimationFrame(()=>{const rect=next.getBoundingClientRect(),needed=rect.top-(window.innerHeight-75)+25;
-if(needed<12)return;
-window.scrollBy({top:Math.min(85,Math.max(0,needed)),behavior:reducedMotion.matches?'auto':'smooth'})})} const 
-songTitle=$('songTitle'),songFile=$('songFile'),artistPhoto=$('artistPhoto'),styleSelect=$('style'),formatSelect=$('format'),vision=$('vision'
-),status=$('studioStatus'),audioLength=$('audioLength');
-songTitle.addEventListener('change',()=>{if(songTitle.value.trim())gentlyReveal('fieldSong')});
-artistPhoto.addEventListener('change',()=>{if(artistPhoto.files.length)gentlyReveal('fieldStyle')});
-styleSelect.addEventListener('change',()=>gentlyReveal('fieldFormat'));
-formatSelect.addEventListener('change',()=>gentlyReveal('fieldVision'));
-function formatDuration(seconds){const n=Math.max(0,Math.round(seconds));
-return Math.floor(n/60)+':'+String(n%60).padStart(2,'0')} function durationSeconds(){const 
-m=/^(\d{1,3}):([0-5]\d)$/.exec(audioLength.value.trim());
-return m?Number(m[1])*60+Number(m[2]):null} let audioProbe=null,probeUrl=null;
-function expandScenesForDuration(){ const seconds=durationSeconds();
-if(!seconds||seconds<=0)return;
-const required=Math.min(maxScenes,Math.max(4,Math.ceil(Math.ceil(seconds/15)/2)*2));
-if(required<=scenes.length)return;
-saveSceneInputs();
-while(scenes.length<required)scenes.push({direction:'',wardrobe:'',location:''});
-renderScenes();
-setStatus('Audio length: '+audioLength.value+'. Prepared '+scenes.length+' scenes in pairs. Your existing scene instructions are 
-preserved.');
-} audioLength.addEventListener('change',()=>{if(audioLength.value.trim()&&!durationSeconds()){setStatus('Enter audio length as MM:SS, such 
-as 4:01.',true);
-return}expandScenesForDuration()});
-function releaseProbe(){if(audioProbe){audioProbe.removeAttribute('src');
-audioProbe.load();
-audioProbe=null}if(probeUrl){URL.revokeObjectURL(probeUrl);
-probeUrl=null}} songFile.addEventListener('change',()=>{releaseProbe();
-audioLength.value='';
-const song=songFile.files[0];
-if(!song)return;
-gentlyReveal('fieldDuration');
-if(!/\.(mp3|wav)$/i.test(song.name)){setStatus('Please select an MP3 or WAV file.',true);
-return}const probe=document.createElement('audio');
-audioProbe=probe;
-probe.preload='metadata';
-probeUrl=URL.createObjectURL(song);
-probe.onloadedmetadata=()=>{if(probe!==audioProbe)return;
-if(Number.isFinite(probe.duration)&&probe.duration>0){audioLength.value=formatDuration(probe.duration);
-expandScenesForDuration()}else{setStatus('Could not detect audio length. Please enter MM:SS manually.')}releaseProbe()};
-probe.onerror=()=>{if(probe!==audioProbe)return;
-releaseProbe();
-setStatus('Could not detect audio length. Please enter MM:SS manually.')};
-probe.src=probeUrl;
-probe.load()});
-// Customer planning preview only. No paid generation endpoint is called. const 
-scenes=Array.from({length:4},()=>({direction:'',wardrobe:'',location:''}));
-const maxScenes=100;
-const grid=$('scenesGrid');
-function saveSceneInputs(){grid.querySelectorAll('[data-scene-index]').forEach(el=>{const 
-i=Number(el.dataset.sceneIndex),field=el.dataset.sceneField;
-if(scenes[i]&&['direction','wardrobe','location'].includes(field))scenes[i][field]=el.value})} function 
-sceneControl(i,field,label,placeholder,multi){const wrap=document.createElement('div'),lab=document.createElement('label');
-lab.textContent=label;
-lab.htmlFor='scene-'+i+'-'+field; const el=document.createElement(multi?'textarea':'input');
-el.id=lab.htmlFor;
-el.dataset.sceneIndex=String(i);
-el.dataset.sceneField=field;
-el.value=scenes[i][field];
-el.placeholder=placeholder;
-el.addEventListener('input',()=>{scenes[i][field]=el.value});
-wrap.append(lab,el);
-return wrap} function renderScenes(){saveSceneInputs();
-grid.replaceChildren();
-scenes.forEach((scene,i)=>{const card=document.createElement('section');
-card.className='scene-card';
-card.setAttribute('aria-label','Scene '+(i+1));
-const head=document.createElement('div');
-head.className='scene-top';
-const num=document.createElement('span');
-num.className='scene-number';
-num.textContent=String(i+1).padStart(2,'0');
-const label=document.createElement('span');
-label.className='scene-name';
-label.textContent='Scene '+(i+1);
-head.append(num,label);
-card.append(head,sceneControl(i,'direction','Action / Shot','Optional scene-specific action and camera 
-notes',true),sceneControl(i,'location','Location','Optional location',false),sceneControl(i,'wardrobe','Wardrobe / Look','Optional 
-wardrobe',false));
-grid.append(card)});
-$('sceneCount').textContent=scenes.length+' scenes';
-$('removeScenes').disabled=scenes.length<=4;
-$('addScenes').disabled=scenes.length>=maxScenes} function setStatus(message,error=false){status.textContent=message;
-status.classList.toggle('error',error)} $('addScenes').addEventListener('click',()=>{saveSceneInputs();
-if(scenes.length+2>maxScenes)return;
-scenes.push({direction:'',wardrobe:'',location:''},{direction:'',wardrobe:'',location:''});
-renderScenes();
-setStatus('Two blank scenes added. Existing instructions preserved.')});
-$('removeScenes').addEventListener('click',()=>{saveSceneInputs();
-if(scenes.length<=4)return;
-const last=scenes.slice(-2);
-if(last.some(s=>Object.values(s).some(v=>v.trim()))&&!confirm('The last two scenes contain instructions. Remove them?'))return;
-scenes.splice(-2,2);
-renderScenes();
-setStatus('Last two scenes removed.')});
-$('applyPrompt').addEventListener('click',()=>{if(!vision.value.trim()){setStatus('Enter or paste a Director Prompt first.',true);
-return}saveSceneInputs();
-setStatus('Director Prompt established as the master creative brief. Scene details remain optional refinements; no automatic scene 
-generation has occurred.')});
-function productionPlan(){saveSceneInputs();
-return{version:'CutLoopz Customer Production Preview v1',title:songTitle.value.trim(),audioLength:audioLength.value.trim(),audioSeconds:durat
-ionSeconds(),format:formatSelect.value,style:styleSelect.value,directorPrompt:vision.value.trim(),sceneCount:scenes.length,scenes:scenes.map(
-(s,i)=>({number:i+1,...s})),note:'Planning only; not a video order or generated production.'}} 
-$('copyPlan').addEventListener('click',async()=>{const content=JSON.stringify(productionPlan(),null,2);
-try{await navigator.clipboard.writeText(content);
-setStatus('Production plan copied. No video generated or charge made.')}catch{setStatus('Clipboard unavailable. Please use your browser copy 
-controls.',true)}});
-$('customerForm').addEventListener('submit',event=>{event.preventDefault();
-const song=songFile.files[0];
-if(!song){setStatus('Please upload an MP3 or WAV song.',true);
-return}if(!/\.(mp3|wav)$/i.test(song.name)){setStatus('Please select an MP3 or WAV file.',true);
-return}if(audioLength.value.trim()&&durationSeconds()===null){setStatus('Audio Length must use MM:SS, for example 4:01.',true);
-return}expandScenesForDuration();
-saveSceneInputs();
-setStatus('Your production concept is ready for review. Customer ordering is not enabled yet. No video has been generated or charged.')});
-renderScenes();
-</script>
-<script defer src="/cutloopz-home-upgrade.js">
+let mode='login';
+function message(value,error=false){$('authMessage').textContent=value;$('authMessage').classList.toggle('error'
+,error)}
+function setMode(next){
+ mode=next;$('authForm').hidden=false;$('forgotForm').hidden=true;
+ $('nameField').hidden=next!=='signup';$('name').required=next==='signup';
+ $('password').minLength=next==='signup'?12:0;
+ $('password').autocomplete=next==='signup'?'new-password':'current-password';
+ $('passwordHint').hidden=next!=='signup';
+ $('submitButton').textContent=next==='signup'?'Create Account':'Sign In';
+ $('loginTab').setAttribute('aria-pressed',String(next==='login'));
+ $('signupTab').setAttribute('aria-pressed',String(next==='signup'));
+ message('');
+}
+async function request(route,options={}){
+ const response=await fetch('/api/customer-auth/'+route,{
+ credentials:'same-origin',cache:'no-store',...options
+ });
+ let data;
+ try{data=await response.json()}catch{throw Error('The server returned an unexpected response.')}
+ if(!response.ok||!data.ok)throw Error(data.error||'Request failed.');
+ return data;
+}
+function showProfile(user){
+ $('authPanel').hidden=true;$('profilePanel').hidden=false;
+ $('displayName').textContent=user.name||'Hitmaker';
+ $('displayEmail').textContent=user.email||'';
+ $('profileMessage').textContent='';
+ loadHistory(); }
+function showAuth(){
+ $('profilePanel').hidden=true;$('authPanel').hidden=false;
+ setMode('login');
+}
+async function loadHistory(){
+ try{
+ const r=await fetch('/api/customer-order-history',{credentials:'same-origin',cache:'no-store'});
+ if(!r.ok)return;
+ const data=await r.json();
+ if(data.loyalty){
+ const count=Number(data.loyalty.qualifyingCompletedCount??data.loyalty.completedCount??0);
+ if(Number.isFinite(count))$('loyaltyText').textContent=
+ count+' of 6 qualifying completed paid videos toward Platinum Hitmaker status.';
+ }
+ if(Array.isArray(data.orders)&&data.orders.length){
+ $('orderHistory').replaceChildren();
+ data.orders.forEach(order=>{
+ const p=document.createElement('p');
+ p.textContent=(order.title||'Video order')+' — '+(order.status||'Status unavailable');
+ $('orderHistory').append(p);
+ });
+ }
+ }catch{/* History availability must not block sign-in. */}
+}
+$('loginTab').addEventListener('click',()=>setMode('login'));
+$('signupTab').addEventListener('click',()=>setMode('signup'));
+$('eye').addEventListener('click',()=>{
+ const visible=$('password').type==='text';
+ $('password').type=visible?'password':'text';
+ $('eye').textContent=visible?'Show password':'Hide password';
+});
+$('forgotButton').addEventListener('click',()=>{
+ $('authForm').hidden=true;$('forgotForm').hidden=false;
+ $('recoveryEmail').value=$('email').value;message('');
+});
+$('backLogin').addEventListener('click',()=>setMode('login'));
+$('authForm').addEventListener('submit',async event=>{
+ event.preventDefault();
+ const button=$('submitButton');button.disabled=true;message('Checking your account...');
+ try{
+ const payload={email:$('email').value.trim(),password:$('password').value};
+ if(mode==='signup')payload.name=$('name').value.trim();
+ const data=await request(mode==='signup'?'register':'login',{
+ method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
+ });
+ // Verify that the browser actually retained the session before claiming success.
+ const verified=await request('me');
+ showProfile(verified.user||data.user);
+ }catch(error){message(error.message,true)}
+ finally{button.disabled=false}
+});
+$('forgotForm').addEventListener('submit',async event=>{
+ event.preventDefault();const button=event.submitter;if(button)button.disabled=true;
+ try{
+ const data=await request('forgot-password',{
+ method:'POST',headers:{'Content-Type':'application/json'},
+ body:JSON.stringify({email:$('recoveryEmail').value.trim()})
+ });
+ message(data.message||'If an account exists, a reset email will be sent.');
+ }catch(error){message(error.message,true)}
+ finally{if(button)button.disabled=false}
+});
+$('logoutButton').addEventListener('click',async()=>{
+ try{await request('logout',{method:'POST'});showAuth()} catch(error){$('profileMessage').textContent=error.message}
+});
+(async()=>{
+ const params=new URLSearchParams(location.search);
+ setMode(params.get('mode')==='signup'?'signup':'login');
+ try{const data=await request('me');showProfile(data.user)}
+ catch(error){
+ if(!/not signed in|unauthorized|session|authentication required/i.test(error.message))message(error.message,tr
+ue);
+ }
+})();
 </script>
 </body>
 </html>
