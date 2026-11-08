@@ -44,6 +44,8 @@ import {
  createCinematicEdit
 } from './cinematic-editing-engine.js';
 const app = express();
+// Respect Render HTTPS proxy when setting secure authentication cookies.
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 const OUT = process.env.OUTPUT_DIR || '/app/outputs';
 const JOBS = process.env.JOBS_DIR || path.join(OUT, 'jobs');
