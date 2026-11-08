@@ -73,7 +73,7 @@ pre{background:#101824;border:1px solid var(--edge);border-radius:10px;padding:1
 <div class="tag">CUTLOOPZ MEDIA · ADMINISTRATOR ONLY</div>
 <h1>Unified Production Director</h1>
 <p>30-second planning, six approved five-second Wan shots, private wardrobe references, and persistent shot tracking.</p>
-<div class="notice">Planning and shot approval only. This page has NO render or payment button and cannot launch GPU generation. Vocal synchronization is not connected to the
+<div class="notice">Planning and shot approval only. The planning controls below do not launch generation. A separate administrator-only production section is available further down when explicitly enabled. Vocal synchronization is not connected to the
  visual-only Wan renderer.</div>
 </header>
 <section>
@@ -143,9 +143,25 @@ pre{background:#101824;border:1px solid var(--edge);border-radius:10px;padding:1
 <label for="lookup">Saved unified job ID</label><input id="lookup" placeholder="Paste job ID">
 <button class="secondary" type="button" id="review">Review saved shot status</button>
 <pre id="history" role="status">No job selected.</pre>
-<p class="small">A prepared job can be checked here. Rendering is deliberately unavailable from this page.</p>
+<p class="small">A prepared job can be checked here. This visual-only planning workflow does not render; use the administrator Create Video section for performance generation.</p>
 </section>
 </main>
+<section id="fullProduction" aria-labelledby="fullProductionTitle">
+<h2 id="fullProductionTitle">Administrator · Create Video</h2>
+<p>Full-song performance pilot workflow. Requires server production switches and explicit paid approval. Customer generation stays disabled.</p>
+<form id="fullVideoForm">
+<label for="fullSong">Song (MP3 or WAV)</label><input id="fullSong" type="file" accept=".mp3,.wav,audio/*" required>
+<label for="fullPhoto">Artist reference photo</label><input id="fullPhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
+<label for="fullDuration">Video length</label><select id="fullDuration"></select>
+<label for="fullBudget">Maximum approved generation budget (USD)</label><input id="fullBudget" type="number" min="0" step="0.01" value="3.00" required>
+<label><input id="fullApproval" type="checkbox" required> I authorize paid provider requests up to this budget. Estimated $0.50 per five-second clip; actual charges may differ.</label>
+<button type="submit" id="fullCreate">Create Video Job</button>
+</form>
+<div class="inline"><button type="button" id="fullAdvance" class="secondary">Advance / Check Next Clip</button><button type="button" id="fullAssemble" class="secondary">Assemble Completed Video</button></div>
+<label for="fullJobId">Production job ID</label><input id="fullJobId" placeholder="Created job ID, or paste existing ID">
+<pre id="fullStatus" role="status">No production job created.</pre>
+<p class="small">The Create Video Job button saves a job. Generation begins only when you press Advance / Check Next Clip; each new clip can incur a charge. Keep the job ID to resume later. Completed videos require administrator quality review.</p>
+</section>
 <button id="backTop" type="button" aria-label="Back to top" title="Back to top">↑</button>
 <script>
 (() => {
@@ -358,6 +374,21 @@ pre{background:#101824;border:1px solid var(--edge);border-radius:10px;padding:1
  catch (e) {
  $('history').textContent = message(e);
  } });
+})();
+</script>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),api='/api/cutloopz-production';
+for(let n=15;n<=360;n+=5){const o=document.createElement('option');o.value=n;o.textContent=n<60?n+' seconds':Math.floor(n/60)+'m '+String(n%60).padStart(2,'0')+'s';if(n===30)o.selected=true;$('fullDuration').append(o)}
+const show=x=>{$('fullStatus').textContent=typeof x==='string'?x:JSON.stringify(x,null,2)};
+const key=()=>$('key').value.trim();
+async function request(route,method='GET',body){if(!key())throw Error('Enter your administrator key above.');const r=await fetch(api+route,{method,headers:{'X-Video-Admin-Key':key(),...(typeof body==='string'?{'Content-Type':'application/json'}:{})},body});const j=await r.json();if(!r.ok||j.ok===false)throw Error(j.error||'Request failed');return j}
+$('fullDuration').addEventListener('change',()=>{$('fullBudget').value=(Number($('fullDuration').value)/5*.5).toFixed(2)});
+$('fullVideoForm').addEventListener('submit',async e=>{e.preventDefault();$('fullCreate').disabled=true;show('Creating job (no provider request yet)...');try{const b=new FormData();b.append('song',$('fullSong').files[0]);b.append('photo',$('fullPhoto').files[0]);b.append('durationSeconds',$('fullDuration').value);b.append('maximumEstimatedUSD',$('fullBudget').value);b.append('approvePaidGeneration',$('fullApproval').checked?'yes':'no');const j=await request('/jobs','POST',b);$('fullJobId').value=j.jobId;show(j)}catch(err){show('Error: '+err.message)}finally{$('fullCreate').disabled=false}});
+$('fullAdvance').addEventListener('click',async()=>{const id=$('fullJobId').value.trim();if(!id)return show('Create a job or enter a job ID.');if(!confirm('This action may submit one new paid five-second generation request. Continue?'))return;try{show(await request('/jobs/'+encodeURIComponent(id)+'/advance','POST',JSON.stringify({confirmPaidClip:'yes'})))}catch(e){show('Error: '+e.message)}});
+const view=document.createElement('button');view.type='button';view.textContent='View assembled video';view.style.margin='8px';$('fullAssemble').insertAdjacentElement('afterend',view);
+view.addEventListener('click',async()=>{const id=$('fullJobId').value.trim();if(!id)return show('Enter a job ID.');try{const r=await fetch(api+'/jobs/'+encodeURIComponent(id)+'/video',{headers:{'X-Video-Admin-Key':key()}});if(!r.ok)throw Error('Assembled video not available yet');const blob=await r.blob();const url=URL.createObjectURL(blob);const player=document.createElement('video');player.controls=true;player.playsInline=true;player.style.maxWidth='100%';player.style.display='block';player.style.margin='12px 0';player.src=url;const old=document.getElementById('fullVideoPreview');if(old){URL.revokeObjectURL(old.src);old.remove()}player.id='fullVideoPreview';view.insertAdjacentElement('afterend',player);show('Private administrator preview. Singing and identity quality are not verified.')}catch(e){show('Error: '+e.message)}});
+$('fullAssemble').addEventListener('click',async()=>{const id=$('fullJobId').value.trim();if(!id)return show('Enter a job ID.');try{show(await request('/jobs/'+encodeURIComponent(id)+'/assemble','POST'));show('Assembly complete. Select View assembled video to preview privately.')}catch(e){show('Error: '+e.message)}});
 })();
 </script>
 </body>
