@@ -5,63 +5,87 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#111219">
 <title>My Account | Cut Loopz Media</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="
-stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=s
+wap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#101117;color:#f6e8ca;font:16px/1.6 'DM Sans',Arial,sans-serif}
+:root{color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust
+:100%;scroll-padding-top:100px}
+body{display:block!important;position:relative;margin:0!important;width:100%!important;min-widt
+h:0!important;max-width:100%!important;overflow-x:hidden;background:#101117;color:#f6e8ca;font:
+16px/1.55 'DM Sans',Arial,sans-serif}
 a{color:#e9bd68}button,input{font:inherit}
-header,main,footer{max-width:760px;margin:auto;padding:20px}
-header{display:flex;justify-content:space-between;align-items:center;gap:15px}
-.brand{font-size:20px;font-weight:800;color:#edc77b}
-.back{border:1px solid #9d7735;border-radius:9px;padding:8px 12px;text-decoration:none}
-main{padding-top:35px}
-h1{color:#f4d48e;font-size:clamp(26px,5vw,35px);margin:0 0 8px}
-h2{color:#f4d48e}
+.site-header{position:sticky;top:0;z-index:1000;width:100%;max-width:100%;margin:0!important;ba
+ckground:#171820;border-bottom:1px solid #81622f;box-shadow:0 3px 16px #0008}
+.header-inner{width:100%;max-width:760px;margin:0 auto;padding:12px 16px;display:flex;flex-dire
+ction:row;justify-content:space-between;align-items:center;gap:12px;min-width:0}
+.brand{font-size:clamp(15px,4.5vw,20px);font-weight:800;color:#edc77b;overflow-wrap:anywhere;li
+ne-height:1.3}
+.back{display:inline-flex;align-items:center;justify-content:center;border:1px solid #9d7735;bo
+rder-radius:9px;padding:9px 12px;text-decoration:none;white-space:nowrap;font-size:14px;flex-sh
+rink:0}
+main{display:block!important;float:none!important;clear:both!important;width:100%!important;max
+-width:760px!important;min-width:0!important;margin:0 auto!important;padding:25px 16px 45px!imp
+ortant}
+h1{color:#f4d48e;font-size:clamp(25px,6vw,34px);line-height:1.2;margin:0 0 12px;overflow-wrap:a
+nywhere}
+h2{color:#f4d48e;font-size:21px;line-height:1.3;overflow-wrap:anywhere}
 .sub{color:#d4c2a3;margin-top:0}
-.panel{background:#1d1e26;border:1px solid #806431;border-radius:16px;padding:24px;margin:18px 0}
-.tabs{display:flex;gap:10px;margin-bottom:20px}
+.panel{display:block;width:100%;min-width:0;max-width:100%;background:#1d1e26;border:1px solid 
+#806431;border-radius:16px;padding:clamp(16px,4vw,25px);margin:20px 0;overflow-wrap:anywhere}
+.tabs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:20p
+x}
 .tabs button,.secondary{background:#2b2930;color:#f2d08c;border:1px solid #a47c37}
-button{border-radius:10px;padding:12px 17px;cursor:pointer;font-weight:700}
-.tabs button[aria-pressed="true"],.primary{background:#b88b39;color:#121219;border:1px solid #b88b39}
-label{display:block;font-weight:700;margin:14px 0 6px}
-input{width:100%;padding:12px;border:2px solid #b88b39;border-radius:9px;background:#fcf8ee;color:#182234
-;font-size:16px}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-.message{min-height:24px;color:#f4d48e;margin:16px 0}
+button{display:inline-block;max-width:100%;min-width:0;min-height:46px;border-radius:10px;paddi
+ng:10px 14px;cursor:pointer;font-weight:700;white-space:normal;overflow-wrap:break-word}
+.tabs button[aria-pressed="true"],.primary{background:#b88b39;color:#121219;border:1px solid #b
+88b39}
+label{display:block;font-weight:700;margin:16px 0 7px}
+input{display:block;width:100%!important;min-width:0!important;max-width:100%!important;min-hei
+ght:48px;padding:12px!important;border:2px solid #b88b39;border-radius:9px;background:#fcf8ee!i
+mportant;color:#182234!important;font-size:16px!important;line-height:1.4!important;letter-spac
+ing:normal!important;text-align:left!important}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #ffdf93;outline-offs
+et:2px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.actions button{flex:1 1 130px}
+.message{min-height:24px;color:#f4d48e;margin:16px 0;overflow-wrap:anywhere}
 .message.error{color:#ffaaaa}
-.small{font-size:13px;color:#d4c2a3}
+.small{font-size:14px;color:#d4c2a3}
 [hidden]{display:none!important}
-.eye{margin-top:8px;padding:7px 12px}
-footer{text-align:center;color:#bfae8e;font-size:13px}
+.eye{margin-top:10px;padding:8px 12px}
+footer{display:block;width:100%;max-width:760px;margin:0 auto;padding:15px;text-align:center;co
+lor:#bfae8e;font-size:13px}
+@media(min-width:600px){.header-inner{padding:15px 24px}main{padding:35px 24px 50px!important}}
 </style>
 </head>
 <body>
-<header><div class="brand">Cut Loopz Media</div><a class="back" href="/customer.html">← Studio</a></heade
-r>
+<header class="site-header"><div class="header-inner"><div class="brand">Cut Loopz Media</div><
+a class="back" href="/customer.html">← Studio</a></div></header>
 <main>
 <h1>Your Hitmaker Account</h1>
 <p class="sub">Your Music. Your Vision. Your Video.</p>
 <section id="authPanel" class="panel">
-<div class="tabs"><button id="loginTab" type="button" aria-pressed="true">Sign In</button><button id="sig
-nupTab" type="button" aria-pressed="false">Sign Up</button></div>
+<div class="tabs"><button id="loginTab" type="button" aria-pressed="true">Sign In</button><butt
+on id="signupTab" type="button" aria-pressed="false">Sign Up</button></div>
 <form id="authForm">
-<div id="nameField" hidden><label for="name">Your name</label><input id="name" autocomplete="name" maxlen
-gth="80"></div>
-<label for="email">Email</label><input id="email" type="email" autocomplete="email" required maxlength="2
-54">
-<label for="password">Password</label><input id="password" type="password" autocomplete="current-password
-" required maxlength="128">
-<button id="eye" class="secondary eye" type="button" aria-label="Show password">Show password</button>
+<div id="nameField" hidden><label for="name">Your name</label><input id="name" autocomplete="na me" maxlength="80"></div>
+<label for="email">Email</label><input id="email" type="email" autocomplete="email" required ma
+xlength="254">
+<label for="password">Password</label><input id="password" type="password" autocomplete="curren
+t-password" required maxlength="128">
+<button id="eye" class="secondary eye" type="button" aria-label="Show password">Show password</
+button>
 <p id="passwordHint" class="small" hidden>New passwords must contain 12–128 characters.</p>
-<div class="actions"><button class="primary" id="submitButton" type="submit">Sign In</button><button clas
-s="secondary" id="forgotButton" type="button">Forgot password?</button></div>
+<div class="actions"><button class="primary" id="submitButton" type="submit">Sign In</button><b
+utton class="secondary" id="forgotButton" type="button">Forgot password?</button></div>
 </form>
 <form id="forgotForm" hidden>
-<label for="recoveryEmail">Account email</label><input id="recoveryEmail" type="email" required autocompl
-ete="email">
-<div class="actions"><button class="primary" type="submit">Send reset link</button><button class="seconda
-ry" type="button" id="backLogin">Back to sign in</button></div>
+<label for="recoveryEmail">Account email</label><input id="recoveryEmail" type="email" required
+ autocomplete="email">
+<div class="actions"><button class="primary" type="submit">Send reset link</button><button clas
+s="secondary" type="button" id="backLogin">Back to sign in</button></div>
 </form>
 <p id="authMessage" class="message" role="status" aria-live="polite"></p>
 </section>
@@ -69,10 +93,11 @@ ry" type="button" id="backLogin">Back to sign in</button></div>
 <h2>Welcome, <span id="displayName">Hitmaker</span></h2>
 <p id="displayEmail"></p>
 <p class="small">Your account is signed in. Customer video ordering is not enabled yet.</p>
-<div class="actions"><a class="back" href="/customer.html">Open Customer Studio</a><button class="seconda
-ry" id="logoutButton" type="button">Sign Out</button></div> <h2>Platinum Hitmaker</h2>
-<p id="loyaltyText">Your completed paid-video progress will appear here when eligible orders are availabl
-e.</p>
+<div class="actions"><a class="back" href="/customer.html">Open Customer Studio</a><button clas
+s="secondary" id="logoutButton" type="button">Sign Out</button></div>
+<h2>Platinum Hitmaker</h2>
+<p id="loyaltyText">Your completed paid-video progress will appear here when eligible orders ar
+e available.</p>
 <h2>Video History</h2>
 <div id="orderHistory" class="small">No completed video orders shown.</div>
 <p id="profileMessage" class="message" role="status"></p>
@@ -83,8 +108,8 @@ e.</p>
 'use strict';
 const $=id=>document.getElementById(id);
 let mode='login';
-function message(value,error=false){$('authMessage').textContent=value;$('authMessage').classList.toggle(
-'error',error)}
+function message(value,error=false){$('authMessage').textContent=value;$('authMessage').classLi
+st.toggle('error',error)}
 function setMode(next){
  mode=next;$('authForm').hidden=false;$('forgotForm').hidden=true;
  $('nameField').hidden=next!=='signup';$('name').required=next==='signup';
@@ -101,7 +126,8 @@ async function request(route,options={}){
  credentials:'same-origin',cache:'no-store',...options
  });
  let data;
- try{data=await response.json()}catch{throw Error('The server returned an unexpected response.')}
+ try{data=await response.json()}catch{throw Error('The server returned an unexpected response.'
+)}
  if(!response.ok||!data.ok)throw Error(data.error||'Request failed.');
  return data;
 }
@@ -116,9 +142,9 @@ function showAuth(){
  $('profilePanel').hidden=true;$('authPanel').hidden=false;
  setMode('login');
 }
-async function loadHistory(){
- try{
- const r=await fetch('/api/customer-order-history',{credentials:'same-origin',cache:'no-store'});
+async function loadHistory(){ try{
+ const r=await fetch('/api/customer-order-history',{credentials:'same-origin',cache:'no-store'
+});
  if(!r.ok)return;
  const data=await r.json();
  if(data.loyalty){
@@ -142,7 +168,8 @@ $('eye').addEventListener('click',()=>{
  const visible=$('password').type==='text';
  $('password').type=visible?'password':'text';
  $('eye').textContent=visible?'Show password':'Hide password';
-}); $('forgotButton').addEventListener('click',()=>{
+});
+$('forgotButton').addEventListener('click',()=>{
  $('authForm').hidden=true;$('forgotForm').hidden=false;
  $('recoveryEmail').value=$('email').value;message('');
 });
@@ -182,9 +209,9 @@ $('logoutButton').addEventListener('click',async()=>{
  setMode(params.get('mode')==='signup'?'signup':'login');
  try{const data=await request('me');showProfile(data.user)}
  catch(error){
- if(error.message!=='Not signed in.')message(error.message,true);
+ if(!/not signed in|unauthorized|session|authentication required/i.test(error.message))message
+(error.message,true);
  }
 })();
 </script>
-</body>
-</html>
+</body> </html>
