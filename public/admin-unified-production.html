@@ -146,6 +146,29 @@ pre{background:#101824;border:1px solid var(--edge);border-radius:10px;padding:1
 <p class="small">A prepared job can be checked here. This visual-only planning workflow does not render; use the administrator Create Video section for performance generation.</p>
 </section>
 </main>
+<section id="localProduction" aria-labelledby="localProductionTitle" style="max-width:790px;margin:22px auto;padding:20px">
+<h2 id="localProductionTitle">Independent Production · Local Engine</h2>
+<p>Administrator-only production using the configured CutLoopz model service. No automatic external-provider fallback. The local model must be installed and loaded before generation can begin.</p>
+<button type="button" id="localHealth" class="secondary">Check local engine readiness</button>
+<pre id="localHealthResult" role="status">Not checked. Local generation is disabled unless configured on the server.</pre>
+<form id="localVideoForm">
+<label for="localSong">Song (MP3 or WAV)</label><input id="localSong" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" required>
+<label for="localPhoto">Artist photo (JPG, PNG or WebP)</label><input id="localPhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
+<label for="localDuration">Video length</label><select id="localDuration"></select>
+<label><input id="localApproval" type="checkbox" required> I approve local GPU generation for this job. I understand GPU operation can have costs even without a paid video API.</label>
+<button type="submit" id="localCreate" disabled>Create Local Video Job</button>
+</form>
+<label for="localJobId">Local job ID (save this to resume)</label><input id="localJobId" placeholder="Job ID">
+<div class="inline" style="flex-wrap:wrap">
+<button type="button" class="secondary" id="localRefresh">Refresh progress</button>
+<button type="button" class="secondary" id="localAdvance" disabled>Generate / Check Next 5s</button>
+<button type="button" class="secondary" id="localAssemble" disabled>Assemble finished video</button>
+<button type="button" class="secondary" id="localView">Preview finished video</button>
+</div>
+<pre id="localStatus" role="status">No local job created.</pre>
+<div id="localPlayer"></div>
+<p class="small">This is the independent generation path. The older paid-provider workflow remains below for compatibility, but is not used by these controls. A functioning model and GPU are still required for actual footage and singing quality must be reviewed.</p>
+</section>
 <section id="fullProduction" aria-labelledby="fullProductionTitle">
 <h2 id="fullProductionTitle">Administrator · Create Video</h2>
 <p>Full-song performance pilot workflow. Requires server production switches and explicit paid approval. Customer generation stays disabled.</p>
@@ -389,6 +412,25 @@ $('fullAdvance').addEventListener('click',async()=>{const id=$('fullJobId').valu
 const view=document.createElement('button');view.type='button';view.textContent='View assembled video';view.style.margin='8px';$('fullAssemble').insertAdjacentElement('afterend',view);
 view.addEventListener('click',async()=>{const id=$('fullJobId').value.trim();if(!id)return show('Enter a job ID.');try{const r=await fetch(api+'/jobs/'+encodeURIComponent(id)+'/video',{headers:{'X-Video-Admin-Key':key()}});if(!r.ok)throw Error('Assembled video not available yet');const blob=await r.blob();const url=URL.createObjectURL(blob);const player=document.createElement('video');player.controls=true;player.playsInline=true;player.style.maxWidth='100%';player.style.display='block';player.style.margin='12px 0';player.src=url;const old=document.getElementById('fullVideoPreview');if(old){URL.revokeObjectURL(old.src);old.remove()}player.id='fullVideoPreview';view.insertAdjacentElement('afterend',player);show('Private administrator preview. Singing and identity quality are not verified.')}catch(e){show('Error: '+e.message)}});
 $('fullAssemble').addEventListener('click',async()=>{const id=$('fullJobId').value.trim();if(!id)return show('Enter a job ID.');try{show(await request('/jobs/'+encodeURIComponent(id)+'/assemble','POST'));show('Assembly complete. Select View assembled video to preview privately.')}catch(e){show('Error: '+e.message)}});
+})();
+</script>
+<script>
+(()=>{
+const el=id=>document.getElementById(id),api='/api/cutloopz-production';
+const status=value=>el('localStatus').textContent=typeof value==='string'?value:JSON.stringify(value,null,2);
+const admin=()=>{const k=el('key').value.trim();if(!k)throw Error('Enter the administrator key at the top of this page.');return k};
+async function call(route,method='GET',body){const r=await fetch(api+route,{method,headers:{'X-Video-Admin-Key':admin(),...(typeof body==='string'?{'Content-Type':'application/json'}:{})},body,cache:'no-store'});let data;try{data=await r.json()}catch{throw Error('Server returned an unreadable response')}if(!r.ok||data.ok===false)throw Error(data.error||'Request failed');return data}
+for(let n=15;n<=360;n+=5){const option=document.createElement('option');option.value=String(n);option.textContent=n<60?n+' seconds':Math.floor(n/60)+'m '+String(n%60).padStart(2,'0')+'s';option.selected=n===30;el('localDuration').append(option)}
+let localEngineReady=false;
+const setReady=ready=>{localEngineReady=ready===true;el('localCreate').disabled=!localEngineReady;el('localAdvance').disabled=!localEngineReady;el('localAssemble').disabled=!localEngineReady};
+el('localHealth').addEventListener('click',async()=>{setReady(false);try{const h=await call('/local/status');el('localHealthResult').textContent=JSON.stringify(h,null,2);setReady(h.modelLoaded===true)}catch(e){el('localHealthResult').textContent='Local model unavailable: '+e.message}});
+el('localVideoForm').addEventListener('submit',async e=>{e.preventDefault();el('localCreate').disabled=true;try{const b=new FormData();b.append('song',el('localSong').files[0]);b.append('photo',el('localPhoto').files[0]);b.append('durationSeconds',el('localDuration').value);b.append('approveLocalGeneration',el('localApproval').checked?'yes':'no');const j=await call('/local/jobs','POST',b);el('localJobId').value=j.jobId;status(j)}catch(err){status('Cannot create local job: '+err.message)}finally{el('localCreate').disabled=!localEngineReady}});
+const id=()=>{const value=el('localJobId').value.trim();if(!/^[0-9a-f-]{36}$/i.test(value))throw Error('Enter a valid local job ID');return encodeURIComponent(value)};
+el('localRefresh').addEventListener('click',async()=>{try{status(await call('/local/jobs/'+id()))}catch(e){status(e.message)}});
+el('localAdvance').addEventListener('click',async()=>{try{if(!confirm('Generate or check the next five-second local clip? GPU operation may incur costs.'))return;status(await call('/local/jobs/'+id()+'/advance','POST',JSON.stringify({confirmLocalClip:'yes'})))}catch(e){status(e.message)}});
+el('localAssemble').addEventListener('click',async()=>{try{status(await call('/local/jobs/'+id()+'/assemble','POST'))}catch(e){status(e.message)}});
+let videoUrl=null;
+el('localView').addEventListener('click',async()=>{try{const r=await fetch(api+'/local/jobs/'+id()+'/video',{headers:{'X-Video-Admin-Key':admin()},cache:'no-store'});if(!r.ok)throw Error('Completed local video not available yet');const blob=await r.blob();if(!blob.type.includes('video')&&blob.size<1000)throw Error('Invalid video response');if(videoUrl)URL.revokeObjectURL(videoUrl);videoUrl=URL.createObjectURL(blob);const player=document.createElement('video');player.controls=true;player.playsInline=true;player.style.width='100%';player.style.maxWidth='100%';player.src=videoUrl;el('localPlayer').replaceChildren(player);status('Local video ready for administrator review.')}catch(e){status(e.message)}});
 })();
 </script>
 </body>
