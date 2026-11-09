@@ -11,6 +11,8 @@ const multer=()=>({fields:()=> (_req,_res,next)=>next()});multer.memoryStorage=(
 const dir=await mkdtemp(path.join(tmpdir(),'cutloopz-router-'));
 const response=()=>({statusCode:200,status(n){this.statusCode=n;return this},json(v){this.body=v;return this}});
 try{
+ process.env.CUTLOOPZ_PROVIDER_PRICE_VERIFIED='true';
+ process.env.CUTLOOPZ_VERIFIED_CLIP_PRICE_USD='0.5';
  createProductionRouter({express,multer,baseDir:dir,authorize:()=>true,origin:'http://127.0.0.1:9999',adminKey:'test',enabled:()=>true});
  const status=response();await routes.get('GET /status')({},status);assert.equal(status.body.enabled,true);
  const p=spawnSync('ffmpeg',['-hide_banner','-loglevel','error','-f','lavfi','-i','sine=frequency=440:duration=16','-f','mp3','-'],{encoding:null});assert.equal(p.status,0);

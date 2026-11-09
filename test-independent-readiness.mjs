@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {checkIndependentReadiness} from './cutloopz-independent-readiness.mjs';
+const noEnv=checkIndependentReadiness({env:{},checkBinary:()=>true,checkFile:()=>true});
+assert.equal(noEnv.ready,false);
+assert.equal(noEnv.paidCallsMade,false);
+assert.equal(noEnv.checks.find(x=>x.id==='independent-route-integrated').ok,false);
+const configured=checkIndependentReadiness({env:{CUTLOOPZ_INDEPENDENT_BACKEND:'local',CUTLOOPZ_LOCAL_GENERATOR_URL:'http://127.0.0.1:8080',CUTLOOPZ_LOCAL_MODEL_PATH:'/models/test'},checkBinary:()=>true,checkFile:()=>true});
+assert.equal(configured.ready,false,'Cannot claim ready before router integration');
+assert.equal(configured.checks.filter(x=>x.ok).length,5);
+const remote=checkIndependentReadiness({env:{CUTLOOPZ_INDEPENDENT_BACKEND:'local',CUTLOOPZ_LOCAL_GENERATOR_URL:'https://external.example.com',CUTLOOPZ_LOCAL_MODEL_PATH:'/models/test'},checkBinary:()=>true,checkFile:()=>true});
+assert.equal(remote.checks.find(x=>x.id==='local-generator-configured').ok,false);
+console.log('Independent readiness tests: 3 passed');

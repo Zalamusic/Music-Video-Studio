@@ -8,6 +8,7 @@ const terminal = new Set(['ready','failed','dry-run']);
 const allowed = new Set(['created','submitting','submitted','processing','ready','failed','needs-review']);
 export function createPilotOrchestrator({baseDir,adapter,clock=()=>new Date().toISOString(),unitPriceUSD=0.5,pricingVerified=false}={}){
  if(!path.isAbsolute(baseDir||'')||!adapter?.submit||!adapter?.status)throw Error('Missing orchestrator dependencies');
+ if(!Number.isFinite(unitPriceUSD)||unitPriceUSD<=0)throw Error('Clip price must be a finite positive number');
  const inFlight=new Set();
  const file=id=>{if(!/^[0-9a-f-]{36}$/i.test(id))throw Error('Invalid job ID');return path.join(baseDir,id,'job.json')};
  async function write(job){const p=file(job.id);await fs.mkdir(path.dirname(p),{recursive:true});const tmp=p+'.'+randomUUID()+'.tmp';await fs.writeFile(tmp,JSON.stringify(job,null,2));await fs.rename(tmp,p);return job;}
@@ -16,7 +17,7 @@ export function createPilotOrchestrator({baseDir,adapter,clock=()=>new Date().to
   if(!Number.isInteger(durationSeconds)||durationSeconds<15||durationSeconds>360||durationSeconds%5)throw Error('Duration must be 15–360 seconds in five-second increments');
   if(!path.isAbsolute(photoPath||'')||!path.isAbsolute(songPath||''))throw Error('Absolute input paths required');
   const estimate=durationSeconds/5*unitPriceUSD;
-  if(approved!==true || maximumEstimatedUSD<estimate)throw Error('Explicit budget approval required');
+  if(approved!==true || !Number.isFinite(maximumEstimatedUSD) || maximumEstimatedUSD<=0 || maximumEstimatedUSD<estimate)throw Error('Explicit finite budget approval required');
   const job={id:randomUUID(),createdAt:clock(),durationSeconds,estimatedUSD:estimate,maximumEstimatedUSD,unitPriceUSD,pricingVerified,photoPath,songPath,status:'created',clips:Array.from({length:durationSeconds/5},(_,i)=>({number:i+1,startSeconds:i*5,status:'created',pilotId:null}))};
   return write(job);
  }
