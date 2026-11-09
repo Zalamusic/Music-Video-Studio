@@ -58,6 +58,13 @@ jobs:
           ENABLE_PAID_GENERATION: 'false'
         run: node --test test-cutloopz-unified-production.js
 
+      
+      - name: Run real FFmpeg video assembly test
+        env:
+          ENABLE_PAID_GENERATION: 'false'
+          CUTLOOPZ_PERFORMANCE_PILOT_ENABLED: 'false'
+        run: node --test test-assembler-real-ffmpeg.mjs
+
       - name: Confirm verification completed
         run: |
           echo "CutLoopz integration verification complete."
