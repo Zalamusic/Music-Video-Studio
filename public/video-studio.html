@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0d2347">
-<title>Zala QI's World | Video Studio</title>
+<title>CutLoopz | Administrator Video Studio</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(145deg,#07152b,#123e78);color:#fff;font-family:Arial,sans-serif;min-height:100vh;padding:20px 14px 50px}
@@ -35,11 +35,11 @@ footer{text-align:center;color:#bbd9ff;padding:20px}
 <body>
 <main>
 <header>
-<div class="logo">ZQ</div>
-<h1>Zala QI's World</h1>
+<div class="logo">CL</div>
+<h1>CutLoopz Media</h1>
 <div class="subtitle">
-Independent Video Studio<br>
-Your music. Your vision. Your world.
+Administrator Video Studio<br>
+A Director That Listens. A Video That Performs.
 </div>
 </header>
 
@@ -62,6 +62,13 @@ accept="image/jpeg,image/png,image/webp" required>
 <input id="audio" name="audio" type="file"
 accept=".mp3,.wav,audio/mpeg,audio/wav" required>
 
+<label for="engine">Production Engine</label>
+<select id="engine" name="engine">
+<option value="upgraded">Upgraded CutLoopz local cinematic engine (readiness required)</option>
+<option value="legacy">Original photo-animation engine (legacy comparison only)</option>
+</select>
+<p class="note" id="engineNote">The upgraded engine uses the local scene generator and assembly route. Singing is not yet verified; this test must not be represented as a finished singing performance.</p>
+<button id="checkEngine" class="secondary" type="button">Check upgraded engine readiness (no charge)</button>
 <label for="motion">Camera Motion</label>
 <select id="motion" name="motion">
 <option value="zoom">Cinematic Zoom In</option>
@@ -75,6 +82,11 @@ accept=".mp3,.wav,audio/mpeg,audio/wav" required>
 <option value="15">15 Seconds</option>
 <option value="30">30 Seconds</option>
 <option value="60">60 Seconds</option>
+<option value="120">2 Minutes (upgraded only)</option>
+<option value="180">3 Minutes (upgraded only)</option>
+<option value="240">4 Minutes (upgraded only)</option>
+<option value="300">5 Minutes (upgraded only)</option>
+<option value="360">6 Minutes (upgraded only)</option>
 </select>
 
 <label for="concept">Creative Direction</label>
@@ -82,9 +94,7 @@ accept=".mp3,.wav,audio/mpeg,audio/wav" required>
 placeholder="Describe your video concept, location, mood, or visual style."></textarea>
 
 <p class="note">
-Independent Engine v1 animates a photograph.
-Creative direction is saved for future capabilities;
-it does not yet generate new scenes.
+Legacy engine animates a photograph. The upgraded engine generates local visual scenes when a compatible GPU worker is online. Singing performance remains unverified; creative direction is not yet passed to the local generator.
 </p>
 
 <label for="adminPassword">Administrator Password</label>
@@ -95,7 +105,10 @@ autocomplete="off" required placeholder="Enter administrator password">
 🎬 Generate Video
 </button>
 </form>
-
+<div id="upgradedControls" style="display:none">
+<button type="button" id="nextScene" class="secondary">Generate next upgraded scene (local GPU)</button>
+<button type="button" id="assembleScenes" class="secondary">Assemble verified scenes with original song</button>
+</div>
 <div id="status" role="status" aria-live="polite">
 Ready to create your video.
 </div>
@@ -114,9 +127,9 @@ Download Video
 </section>
 
 <a href="/" class="button" style="background:#ffffff;color:#1269c7">
-Return to Zala QI's World
+Return to CutLoopz
 </a>
-<footer>© Zala QI's World — Video Studio</footer>
+<footer>© CutLoopz Media — Administrator Studio</footer>
 </main>
 
 <script>
@@ -130,6 +143,40 @@ const player = document.getElementById('player');
 const downloadButton = document.getElementById('downloadButton');
 
 let generating = false;
+let localJobId = null;
+const productionBase = '/api/cutloopz-production';
+function adminHeaders(json=false) {
+ const key=document.getElementById('adminPassword').value.trim();
+ return {'X-Video-Admin-Key':key,...(json?{'Content-Type':'application/json'}:{})};
+}
+async function productionRequest(path, options={}) {
+ const response=await fetch(productionBase+path,{...options,headers:{...adminHeaders(Boolean(options.body && typeof options.body==='string')),...(options.headers||{})}});
+ const data=await response.json();
+ if(!response.ok||!data.ok)throw Error(data.error||'Production request failed (HTTP '+response.status+')');
+ return data;
+}
+document.getElementById('checkEngine').addEventListener('click',async()=>{
+ if(!document.getElementById('adminPassword').value.trim())return setStatus('Enter the administrator password before checking readiness.');
+ try { const d=await productionRequest('/local/status');
+ setStatus('Local engine: '+(d.readyToSubmit?'model loaded; ready for a visual-only test':'not ready')+'. Model: '+(d.modelId||'unknown')+'. Singing capability is NOT verified.');
+ } catch(e){setStatus('Upgraded engine unavailable: '+e.message+'. No generation started.');}
+});
+document.getElementById('engine').addEventListener('change',()=>{localJobId=null;document.getElementById('upgradedControls').style.display='none';});
+document.getElementById('nextScene').addEventListener('click',async()=>{
+ if(!localJobId)return;
+ try{setStatus('Generating the next local scene. This may take time.');const d=await productionRequest('/local/jobs/'+encodeURIComponent(localJobId)+'/advance',{method:'POST',body:JSON.stringify({confirmLocalClip:'yes'})});setStatus('Local scene status: '+JSON.stringify(d.job?.status||d.job||'updated')+'; generate another scene until all are complete.');}
+ catch(e){setStatus('Scene generation stopped: '+e.message);}
+});
+document.getElementById('assembleScenes').addEventListener('click',async()=>{
+ if(!localJobId)return;
+ try{setStatus('Validating and assembling the finished local scenes...');await productionRequest('/local/jobs/'+encodeURIComponent(localJobId)+'/assemble',{method:'POST',body:'{}'});
+ const url=productionBase+'/local/jobs/'+encodeURIComponent(localJobId)+'/video';
+ // The protected endpoint requires the admin header. Fetch it as a blob, not a bare video URL.
+ const response=await fetch(url,{headers:adminHeaders()});if(!response.ok)throw Error('Finished media not available ('+response.status+')');
+ const blob=await response.blob();if(blob.type&&!blob.type.includes('video'))throw Error('Server did not return a video');
+ loadVideo(URL.createObjectURL(blob));setStatus('Verified local visual video ready. Singing performance remains unverified.');
+ }catch(e){setStatus('Assembly unavailable: '+e.message);}
+});
 
 function setStatus(message) {
   statusText.textContent = message;
@@ -192,6 +239,8 @@ generateButton.addEventListener('click', async () => {
     return;
   }
 
+  const selectedEngine=document.getElementById('engine').value;
+  if(selectedEngine==='legacy' && Number(document.getElementById('seconds').value)>60){setStatus('Legacy engine supports only 15, 30 or 60 seconds.');return;}
   const formData = new FormData();
   formData.append('photo', photo);
   formData.append('audio', audio);
@@ -204,9 +253,22 @@ generateButton.addEventListener('click', async () => {
   generateButton.disabled = true;
   result.style.display = 'none';
 
-  setStatus('Uploading files and generating your video. Please keep this page open.');
+  setStatus(selectedEngine==='upgraded'?'Checking the local upgraded engine and submitting the visual production job...':'Generating with the legacy animation engine...');
 
   try {
+    if(selectedEngine==='upgraded') {
+      const health=await productionRequest('/local/status');
+      if(!health.readyToSubmit)throw Error('Upgraded local model is not loaded. No legacy fallback will be used.');
+      const upgradedForm=new FormData();
+      upgradedForm.append('photo',photo);upgradedForm.append('song',audio);
+      upgradedForm.append('durationSeconds',document.getElementById('seconds').value);
+      upgradedForm.append('approveLocalGeneration','yes');
+      const created=await productionRequest('/local/jobs',{method:'POST',body:upgradedForm});
+      localJobId=created.jobId;
+      document.getElementById('upgradedControls').style.display='block';
+      setStatus('Upgraded visual job '+localJobId+' created. Generate each scene, then assemble. This engine has NOT been verified for singing.');
+      return;
+    }
     const response = await fetch('/api/independent-video/create', {
       method: 'POST',
       headers: {
@@ -247,3 +309,4 @@ generateButton.addEventListener('click', async () => {
 </script>
 </body>
 </html>
+
