@@ -1,3 +1,4 @@
+
 name: CutLoopz Full Express Startup Check
 
 on:
@@ -25,7 +26,7 @@ jobs:
       CI: 'true'
       NODE_ENV: test
       PORT: '19080'
-      OUTPUT_DIR: ${{ runner.temp }}/cutloopz-express-test-output
+      OUTPUT_DIR: /tmp/cutloopz-express-test-output
       PAYPAL_ENV: sandbox
       PAYPAL_CLIENT_ID: ''
       PAYPAL_CLIENT_SECRET: ''
@@ -62,6 +63,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p "$OUTPUT_DIR"
           LOG="$RUNNER_TEMP/cutloopz-express.log"
           node server.js > "$LOG" 2>&1 &
           SERVER_PID=$!
@@ -70,41 +72,48 @@ jobs:
           READY=0
           for i in $(seq 1 60); do
             if ! kill -0 "$SERVER_PID" 2>/dev/null; then
-              echo 'FAIL: Express process exited during startup.'
+              echo 'FAIL: Express exited during startup.'
               cat "$LOG"
               exit 1
             fi
+
             STATUS=$(curl --connect-timeout 1 --max-time 2 -sS -o /dev/null -w '%{http_code}' \
               "http://127.0.0.1:$PORT/customer.html" 2>/dev/null || true)
+
             if [ "$STATUS" = '200' ]; then
               READY=1
               break
             fi
             sleep 1
           done
+
           if [ "$READY" != '1' ]; then
-            echo 'FAIL: Express did not serve /customer.html within 60 seconds.'
+            echo 'FAIL: Express did not serve customer.html.'
             cat "$LOG"
             exit 1
           fi
 
-          curl --fail --silent --show-error "http://127.0.0.1:$PORT/customer.html" \
+          curl --fail --silent --show-error \
+            "http://127.0.0.1:$PORT/customer.html" \
             -o "$RUNNER_TEMP/cutloopz-customer.html"
+
           if ! grep -qi '<html' "$RUNNER_TEMP/cutloopz-customer.html"; then
-            echo 'FAIL: /customer.html did not serve an HTML document.'
+            echo 'FAIL: Response was not HTML.'
             exit 1
           fi
 
-          echo 'PASS: The real Express process launched and served the customer page.'
-          echo 'Unauthenticated sandbox history response:'
-          curl -sS -o /dev/null -w '%{http_code}\n' \
-            "http://127.0.0.1:$PORT/api/paypal/sandbox-orders" || true
+          echo 'PASS: Express started and served customer.html.'
+
+          echo 'Checking unauthenticated sandbox orders endpoint.'
+          STATUS=$(curl -sS -o /dev/null -w '%{http_code}' \
+            "http://127.0.0.1:$PORT/api/paypal/sandbox-orders" || true)
+          echo "Sandbox orders HTTP status: $STATUS"
 
       - name: Upload Express startup log
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cutloopz-express-startup-log
-          path: ${{ runner.temp }}/cutloopz-express.log
+          path: /tmp/cutloopz-express.log
           if-no-files-found: ignore
           retention-days: 7
