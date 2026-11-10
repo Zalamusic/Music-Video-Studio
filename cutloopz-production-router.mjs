@@ -42,7 +42,10 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
  const pricingVerified=process.env.CUTLOOPZ_PROVIDER_PRICE_VERIFIED==='true' && Number.isFinite(configuredPrice) && configuredPrice>0;
  const unitPriceUSD=pricingVerified?configuredPrice:0.5;
  const coordinator=createPilotOrchestrator({baseDir,adapter,unitPriceUSD,pricingVerified});
- router.use((req,res,next)=>authorize(req)?next():res.status(403).json({ok:false,error:'Administrator access required'}));
+ router.use((req,res,next)=>{
+  if(req.method==='GET' && req.path==='/local/status')return next();
+  return authorize(req)?next():res.status(403).json({ok:false,error:'Administrator access required'});
+ });
  // Read-only administrator diagnostics. This cannot submit video jobs or charge providers.
  router.get('/independent-health',async(_req,res)=>{
   const endpoint=process.env.CUTLOOPZ_LOCAL_GENERATOR_URL;
@@ -70,8 +73,15 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
   return {adapter:localAdapter,coordinator:localCoordinator};
  };
  router.get('/local/status',async(_req,res)=>{
-  try{const {adapter}=getLocal();const h=await adapter.health();return res.json({ok:true,backend:'local-only',modelLoaded:h.modelLoaded,modelId:h.modelId,readyToSubmit:h.modelLoaded,videoQualityVerified:false,actualGpuCostVerified:false})}
-  catch(e){return res.status(503).json({ok:false,readyToSubmit:false,error:String(e.message||e)})}
+  res.set('Cache-Control','no-store');
+  try{
+   const {adapter}=getLocal();
+   const health=await adapter.health();
+   const ready=health.modelLoaded===true;
+   return res.json({ok:true,readyToSubmit:ready,message:ready?'Local model reports loaded; generation is not yet verified.':'Local model is not loaded.'});
+  }catch{
+   return res.status(503).json({ok:false,readyToSubmit:false,message:'Local generation engine is not ready.'});
+  }
  });
  router.post('/local/jobs',upload.fields([{name:'song',maxCount:1},{name:'photo',maxCount:1}]),async(req,res)=>{
   let stage=null;
@@ -149,3 +159,4 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
  router.post('/jobs/:id/assemble',async(req,res)=>{try{const receipt=await finalizePilotJob({orchestrator:coordinator,adapter,jobId:req.params.id,baseDir});res.json({ok:true,receipt})}catch(e){res.status(409).json({ok:false,error:String(e.message||e)})}});
  return router;
 }
+
