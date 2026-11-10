@@ -69,6 +69,7 @@ accept=".mp3,.wav,audio/mpeg,audio/wav" required>
 </select>
 <p class="note" id="engineNote">The upgraded engine uses the local scene generator and assembly route. Singing is not yet verified; this test must not be represented as a finished singing performance.</p>
 <button id="checkEngine" class="secondary" type="button">Check upgraded engine readiness (no charge)</button>
+<div id="engineStatus" role="status" aria-live="polite" style="margin-top:12px;padding:14px;border-radius:10px;background:#edf5ff;color:#173c65;line-height:1.5">Engine status has not been checked.</div>
 <label for="motion">Camera Motion</label>
 <select id="motion" name="motion">
 <option value="zoom">Cinematic Zoom In</option>
@@ -155,11 +156,25 @@ async function productionRequest(path, options={}) {
  if(!response.ok||!data.ok)throw Error(data.error||'Production request failed (HTTP '+response.status+')');
  return data;
 }
-document.getElementById('checkEngine').addEventListener('click',async()=>{
- if(!document.getElementById('adminPassword').value.trim())return setStatus('Enter the administrator password before checking readiness.');
- try { const d=await productionRequest('/local/status');
- setStatus('Local engine: '+(d.readyToSubmit?'model loaded; ready for a visual-only test':'not ready')+'. Model: '+(d.modelId||'unknown')+'. Singing capability is NOT verified.');
- } catch(e){setStatus('Upgraded engine unavailable: '+e.message+'. No generation started.');}
+const engineStatus = document.getElementById('engineStatus');
+const checkEngineButton = document.getElementById('checkEngine');
+function showEngineStatus(message){ engineStatus.textContent=message; setStatus(message); }
+checkEngineButton.addEventListener('click',async()=>{
+ const password=document.getElementById('adminPassword').value.trim();
+ if(!password){showEngineStatus('Enter your administrator password below, then check again. No generation started.');return;}
+ checkEngineButton.disabled=true;
+ showEngineStatus('Checking the upgraded engine connection… No generation started.');
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),15000);
+ try {
+  const response=await fetch(productionBase+'/local/status',{headers:adminHeaders(),signal:controller.signal});
+  const raw=await response.text();
+  let d;
+  try{d=JSON.parse(raw);}catch{throw Error('Server returned an unexpected response (HTTP '+response.status+').');}
+  if(!response.ok||!d.ok)throw Error(d.error||'HTTP '+response.status);
+  showEngineStatus(d.readyToSubmit?'Engine connection confirmed; model reports ready for a visual-only test. Singing is not verified.':'Backend connected, but local video model is NOT ready. No video started. Model: '+(d.modelId||'not reported'));
+ }catch(e){showEngineStatus(e.name==='AbortError'?'Readiness request timed out after 15 seconds. No video started.':'Readiness check failed: '+e.message+'. No video started.');}
+ finally{clearTimeout(timeout);checkEngineButton.disabled=false;}
 });
 document.getElementById('engine').addEventListener('change',()=>{localJobId=null;document.getElementById('upgradedControls').style.display='none';});
 document.getElementById('nextScene').addEventListener('click',async()=>{
