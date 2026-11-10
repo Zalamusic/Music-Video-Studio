@@ -68,6 +68,8 @@ accept=".mp3,.wav,audio/mpeg,audio/wav" required>
 <option value="legacy">Original photo-animation engine (legacy comparison only)</option>
 </select>
 <p class="note" id="engineNote">The upgraded engine uses the local scene generator and assembly route. Singing is not yet verified; this test must not be represented as a finished singing performance.</p>
+<label for="readinessPassword">Administrator Password — Engine Readiness</label>
+<input id="readinessPassword" type="password" autocomplete="off" placeholder="Enter your existing administrator password">
 <button id="checkEngine" class="secondary" type="button">Check upgraded engine readiness (no charge)</button>
 <div id="engineStatus" role="status" aria-live="polite" style="margin-top:12px;padding:14px;border-radius:10px;background:#edf5ff;color:#173c65;line-height:1.5">Engine status has not been checked.</div>
 <label for="motion">Camera Motion</label>
@@ -160,14 +162,14 @@ const engineStatus = document.getElementById('engineStatus');
 const checkEngineButton = document.getElementById('checkEngine');
 function showEngineStatus(message){ engineStatus.textContent=message; setStatus(message); }
 checkEngineButton.addEventListener('click',async()=>{
- const password=document.getElementById('adminPassword').value.trim();
- if(!password){showEngineStatus('Enter your administrator password below, then check again. No generation started.');return;}
+ const password=document.getElementById('readinessPassword').value.trim();
+ if(!password){showEngineStatus('Enter your administrator password above to check engine readiness. No generation started.');return;}
  checkEngineButton.disabled=true;
  showEngineStatus('Checking the upgraded engine connection… No generation started.');
  const controller=new AbortController();
  const timeout=setTimeout(()=>controller.abort(),15000);
  try {
-  const response=await fetch(productionBase+'/local/status',{headers:adminHeaders(),signal:controller.signal});
+  const response=await fetch(productionBase+'/local/status',{headers:{'X-Video-Admin-Key':password},signal:controller.signal});
   const raw=await response.text();
   let d;
   try{d=JSON.parse(raw);}catch{throw Error('Server returned an unexpected response (HTTP '+response.status+').');}
