@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/cutloopz-typography.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d2347">
+<title>CutLoopz | Administrator Video Studio</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(145deg,#07152b,#123e78);color:#fff;font-family:Arial,sans-serif;min-height:100vh;padding:20px 14px 50px}
+main{max-width:680px;margin:auto}
+header{text-align:center;padding:20px 0}
+.logo{display:inline-flex;align-items:center;justify-content:center;width:65px;height:65px;border-radius:18px;background:#2498ff;font-weight:bold;font-size:26px}
+h1{font-size:28px;margin:15px 0 6px}
+.subtitle{color:#bbd9ff;line-height:1.6}
+.panel{background:#fff;color:#162c48;padding:24px;border-radius:20px;margin:20px 0;box-shadow:0 10px 35px #0003}
+h2{margin-top:0;font-size:21px}
+label{display:block;font-weight:bold;margin:20px 0 8px}
+input,select,textarea{display:block;width:100%;padding:14px;border:1px solid #b8cbe0;border-radius:10px;font:inherit;background:#f7fbff;color:#162c48}
+textarea{min-height:110px;resize:vertical}
+input[type=file]{padding:12px}
+button,.button{display:block;width:100%;padding:16px;background:#1269c7;color:#fff;border:0;border-radius:11px;font-size:16px;font-weight:bold;text-align:center;text-decoration:none;cursor:pointer;margin-top:14px}
+button:disabled{opacity:.55;cursor:wait}
+button.secondary{background:#24476e}
+.note{font-size:13px;color:#61758e;line-height:1.6}
+#status{margin-top:16px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap}
+video{display:block;width:100%;max-height:520px;background:#000;border-radius:12px}
+#videoResult{display:none}
+.actions{display:grid;gap:10px}
+footer{text-align:center;color:#bbd9ff;padding:20px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="logo">CL</div>
+<h1>CutLoopz Media</h1>
+<div class="subtitle">
+Administrator Video Studio<br>
+A Director That Listens. A Video That Performs.
+</div>
+</header>
+
+<section class="panel">
+<h2>Create Your Video</h2>
+<p class="note">
+Upload your photo and music to create a video
+with cinematic camera movement.
+</p>
+
+<form id="videoForm" enctype="multipart/form-data">
+<label for="title">Video Title</label>
+<input id="title" name="title" placeholder="Enter your video title" required>
+
+<label for="photo">Artist Photo</label>
+<input id="photo" name="photo" type="file"
+accept="image/jpeg,image/png,image/webp" required>
+
+<label for="audio">Song (MP3 or WAV)</label>
+<input id="audio" name="audio" type="file"
+accept=".mp3,.wav,audio/mpeg,audio/wav" required>
+
+<label for="engine">Production Engine</label>
+<select id="engine" name="engine">
+<option value="upgraded">Upgraded CutLoopz local cinematic engine (readiness required)</option>
+<option value="legacy">Original photo-animation engine (legacy comparison only)</option>
+</select>
+<p class="note" id="engineNote">The upgraded engine uses the local scene generator and assembly route. Singing is not yet verified; this test must not be represented as a finished singing performance.</p>
+<button id="checkEngine" class="secondary" type="button">Check upgraded engine readiness (no charge)</button>
+<label for="motion">Camera Motion</label>
+<select id="motion" name="motion">
+<option value="zoom">Cinematic Zoom In</option>
+<option value="zoomOut">Cinematic Zoom Out</option>
+<option value="panLeft">Pan Left</option>
+<option value="panRight">Pan Right</option>
+</select>
+
+<label for="seconds">Video Duration</label>
+<select id="seconds" name="seconds">
+<option value="15">15 Seconds</option>
+<option value="30">30 Seconds</option>
+<option value="60">60 Seconds</option>
+<option value="120">2 Minutes (upgraded only)</option>
+<option value="180">3 Minutes (upgraded only)</option>
+<option value="240">4 Minutes (upgraded only)</option>
+<option value="300">5 Minutes (upgraded only)</option>
+<option value="360">6 Minutes (upgraded only)</option>
+</select>
+
+<label for="concept">Creative Direction</label>
+<textarea id="concept" name="concept"
+placeholder="Describe your video concept, location, mood, or visual style."></textarea>
+
+<p class="note">
+Legacy engine animates a photograph. The upgraded engine generates local visual scenes when a compatible GPU worker is online. Singing performance remains unverified; creative direction is not yet passed to the local generator.
+</p>
+
+<label for="adminPassword">Administrator Password</label>
+<input id="adminPassword" type="password"
+autocomplete="off" required placeholder="Enter administrator password">
+
+<button id="generateButton" type="button">
+🎬 Generate Video
+</button>
+</form>
+<div id="upgradedControls" style="display:none">
+<button type="button" id="nextScene" class="secondary">Generate next upgraded scene (local GPU)</button>
+<button type="button" id="assembleScenes" class="secondary">Assemble verified scenes with original song</button>
+</div>
+<div id="status" role="status" aria-live="polite">
+Ready to create your video.
+</div>
+</section>
+
+<section class="panel" id="videoResult">
+<h2>Your Finished Video</h2>
+<video id="player" controls playsinline preload="metadata"></video>
+<div class="actions">
+<button type="button" class="secondary" id="replayButton">↻ Replay Video</button>
+<button type="button" class="secondary" id="fullscreenButton">⛶ Fullscreen</button>
+<a id="downloadButton" class="button" download="zala-video.mp4">
+Download Video
+</a>
+</div>
+</section>
+
+<a href="/" class="button" style="background:#ffffff;color:#1269c7">
+Return to CutLoopz
+</a>
+<footer>© CutLoopz Media — Administrator Studio</footer>
+</main>
+
+<script>
+'use strict';
+
+const form = document.getElementById('videoForm');
+const statusText = document.getElementById('status');
+const generateButton = document.getElementById('generateButton');
+const result = document.getElementById('videoResult');
+const player = document.getElementById('player');
+const downloadButton = document.getElementById('downloadButton');
+
+let generating = false;
+let localJobId = null;
+const productionBase = '/api/cutloopz-production';
+function adminHeaders(json=false) {
+ const key=document.getElementById('adminPassword').value.trim();
+ return {'X-Video-Admin-Key':key,...(json?{'Content-Type':'application/json'}:{})};
+}
+async function productionRequest(path, options={}) {
+ const response=await fetch(productionBase+path,{...options,headers:{...adminHeaders(Boolean(options.body && typeof options.body==='string')),...(options.headers||{})}});
+ const data=await response.json();
+ if(!response.ok||!data.ok)throw Error(data.error||'Production request failed (HTTP '+response.status+')');
+ return data;
+}
+document.getElementById('checkEngine').addEventListener('click',async()=>{
+ if(!document.getElementById('adminPassword').value.trim())return setStatus('Enter the administrator password before checking readiness.');
+ try { const d=await productionRequest('/local/status');
+ setStatus('Local engine: '+(d.readyToSubmit?'model loaded; ready for a visual-only test':'not ready')+'. Model: '+(d.modelId||'unknown')+'. Singing capability is NOT verified.');
+ } catch(e){setStatus('Upgraded engine unavailable: '+e.message+'. No generation started.');}
+});
+document.getElementById('engine').addEventListener('change',()=>{localJobId=null;document.getElementById('upgradedControls').style.display='none';});
+document.getElementById('nextScene').addEventListener('click',async()=>{
+ if(!localJobId)return;
+ try{setStatus('Generating the next local scene. This may take time.');const d=await productionRequest('/local/jobs/'+encodeURIComponent(localJobId)+'/advance',{method:'POST',body:JSON.stringify({confirmLocalClip:'yes'})});setStatus('Local scene status: '+JSON.stringify(d.job?.status||d.job||'updated')+'; generate another scene until all are complete.');}
+ catch(e){setStatus('Scene generation stopped: '+e.message);}
+});
+document.getElementById('assembleScenes').addEventListener('click',async()=>{
+ if(!localJobId)return;
+ try{setStatus('Validating and assembling the finished local scenes...');await productionRequest('/local/jobs/'+encodeURIComponent(localJobId)+'/assemble',{method:'POST',body:'{}'});
+ const url=productionBase+'/local/jobs/'+encodeURIComponent(localJobId)+'/video';
+ // The protected endpoint requires the admin header. Fetch it as a blob, not a bare video URL.
+ const response=await fetch(url,{headers:adminHeaders()});if(!response.ok)throw Error('Finished media not available ('+response.status+')');
+ const blob=await response.blob();if(blob.type&&!blob.type.includes('video'))throw Error('Server did not return a video');
+ loadVideo(URL.createObjectURL(blob));setStatus('Verified local visual video ready. Singing performance remains unverified.');
+ }catch(e){setStatus('Assembly unavailable: '+e.message);}
+});
+
+function setStatus(message) {
+  statusText.textContent = message;
+}
+
+function loadVideo(url) {
+  player.src = url;
+  player.load();
+  downloadButton.href = url;
+  result.style.display = 'block';
+  result.scrollIntoView({behavior:'smooth'});
+}
+
+document.getElementById('replayButton').addEventListener('click', () => {
+  player.currentTime = 0;
+  player.play().catch(() => {});
+});
+
+document.getElementById('fullscreenButton').addEventListener('click', () => {
+  if (player.requestFullscreen) {
+    player.requestFullscreen();
+  }
+});
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+});
+
+generateButton.addEventListener('click', async () => {
+  if (generating) return;
+
+  if (!form.reportValidity()) return;
+
+  const photo = document.getElementById('photo').files[0];
+  const audio = document.getElementById('audio').files[0];
+  const password = document.getElementById('adminPassword').value.trim();
+
+  if (!photo || !audio || !password) {
+    setStatus('Please upload a photo, upload a song, and enter your administrator password.');
+    return;
+  }
+
+  const allowedImages = ['image/jpeg','image/png','image/webp'];
+  const audioName = audio.name.toLowerCase();
+
+  if (!allowedImages.includes(photo.type)) {
+    setStatus('Please choose a JPG, PNG, or WebP photo.');
+    return;
+  }
+
+  if (!audioName.endsWith('.mp3') && !audioName.endsWith('.wav')) {
+    setStatus('Please choose an MP3 or WAV song.');
+    return;
+  }
+
+  const maxBytes = 30 * 1024 * 1024;
+
+  if (photo.size > maxBytes || audio.size > maxBytes) {
+    setStatus('Each uploaded file must be 30 MB or smaller.');
+    return;
+  }
+
+  const selectedEngine=document.getElementById('engine').value;
+  if(selectedEngine==='legacy' && Number(document.getElementById('seconds').value)>60){setStatus('Legacy engine supports only 15, 30 or 60 seconds.');return;}
+  const formData = new FormData();
+  formData.append('photo', photo);
+  formData.append('audio', audio);
+  formData.append('seconds', document.getElementById('seconds').value);
+  formData.append('motion', document.getElementById('motion').value);
+  formData.append('title', document.getElementById('title').value);
+  formData.append('concept', document.getElementById('concept').value);
+
+  generating = true;
+  generateButton.disabled = true;
+  result.style.display = 'none';
+
+  setStatus(selectedEngine==='upgraded'?'Checking the local upgraded engine and submitting the visual production job...':'Generating with the legacy animation engine...');
+
+  try {
+    if(selectedEngine==='upgraded') {
+      const health=await productionRequest('/local/status');
+      if(!health.readyToSubmit)throw Error('Upgraded local model is not loaded. No legacy fallback will be used.');
+      const upgradedForm=new FormData();
+      upgradedForm.append('photo',photo);upgradedForm.append('song',audio);
+      upgradedForm.append('durationSeconds',document.getElementById('seconds').value);
+      upgradedForm.append('approveLocalGeneration','yes');
+      const created=await productionRequest('/local/jobs',{method:'POST',body:upgradedForm});
+      localJobId=created.jobId;
+      document.getElementById('upgradedControls').style.display='block';
+      setStatus('Upgraded visual job '+localJobId+' created. Generate each scene, then assemble. This engine has NOT been verified for singing.');
+      return;
+    }
+    const response = await fetch('/api/independent-video/create', {
+      method: 'POST',
+      headers: {
+        'X-Video-Admin-Key': password
+      },
+      body: formData
+    });
+
+    const raw = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      throw new Error(
+        'The server returned an unexpected response (HTTP ' +
+        response.status + '). Check Render logs.'
+      );
+    }
+
+    if (!response.ok || !data.ok || !data.url) {
+      throw new Error(
+        data.error ||
+        'Video generation failed (HTTP ' + response.status + ').'
+      );
+    }
+
+    loadVideo(data.url);
+    setStatus('Your video is ready! You can play, replay, or download it.');
+
+  } catch (error) {
+    setStatus('Unable to generate video: ' + (error.message || 'Unknown error.'));
+  } finally {
+    generating = false;
+    generateButton.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
