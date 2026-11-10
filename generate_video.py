@@ -247,10 +247,9 @@ def main():
         required=True
     )
 
-    parser.add_argument(
-        "--image-url",
-        required=True
-    )
+    image_source = parser.add_mutually_exclusive_group(required=True)
+    image_source.add_argument("--image-url")
+    image_source.add_argument("--image-file")
 
     parser.add_argument(
         "--output",
@@ -359,11 +358,23 @@ def main():
             "Preparing artist reference image..."
         )
 
-        download_image(
-            args.image_url,
-            image_path,
-            args.format
-        )
+        if args.image_file:
+            # Same-host worker upload: do not expose customer photos via public URLs.
+            from PIL import Image, ImageOps
+            source = Path(args.image_file).resolve(strict=True)
+            if not source.is_file() or source.stat().st_size > MAX_IMAGE_BYTES:
+                raise ValueError("Invalid local reference image")
+            with Image.open(source) as raw:
+                raw.verify()
+            with Image.open(source) as raw:
+                image = ImageOps.exif_transpose(raw).convert("RGB")
+                target = IMAGE_SIZES[args.format]
+                image.thumbnail(target, Image.Resampling.LANCZOS)
+                background = Image.new("RGB", target, (16,16,16))
+                background.paste(image, ((target[0]-image.width)//2,(target[1]-image.height)//2))
+                background.save(image_path, "JPEG", quality=95)
+        else:
+            download_image(args.image_url, image_path, args.format)
 
         command = [
             sys.executable,
