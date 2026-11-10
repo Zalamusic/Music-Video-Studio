@@ -1,0 +1,110 @@
+name: CutLoopz Full Express Startup Check
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - '.github/workflows/cutloopz-full-express-startup.yml'
+      - 'server.js'
+      - '**/*.js'
+      - '**/*.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'public/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  start-real-express:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CI: 'true'
+      NODE_ENV: test
+      PORT: '19080'
+      OUTPUT_DIR: /tmp/cutloopz-express-test-output
+      PAYPAL_ENV: sandbox
+      PAYPAL_CLIENT_ID: ''
+      PAYPAL_CLIENT_SECRET: ''
+      FAL_KEY: ''
+      ENABLE_PAID_GENERATION: 'false'
+      CUTLOOPZ_FULL_PRODUCTION_ENABLED: 'false'
+      ZALA_GPU_GENERATION_ENABLED: 'false'
+      CUTLOOPZ_PERFORMANCE_PILOT_ENABLED: 'false'
+
+    steps:
+      - name: Check out test branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install application dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f package-lock.json ]; then
+            npm ci --ignore-scripts --no-audit --no-fund
+          else
+            npm install --ignore-scripts --no-audit --no-fund
+          fi
+          npm ls --depth=0
+
+      - name: Verify server JavaScript syntax
+        run: node --check server.js
+
+      - name: Launch actual Express application and verify HTTP
+        shell: bash
+        run: |
+          set -euo pipefail
+          LOG="/tmp/cutloopz-express.log"
+          node server.js > "$LOG" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          READY=0
+          for i in $(seq 1 60); do
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              echo 'FAIL: Express process exited during startup.'
+              cat "$LOG"
+              exit 1
+            fi
+            STATUS=$(curl --connect-timeout 1 --max-time 2 -sS -o /dev/null -w '%{http_code}' \
+              "http://127.0.0.1:$PORT/customer.html" 2>/dev/null || true)
+            if [ "$STATUS" = '200' ]; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" != '1' ]; then
+            echo 'FAIL: Express did not serve /customer.html within 60 seconds.'
+            cat "$LOG"
+            exit 1
+          fi
+
+          curl --fail --silent --show-error "http://127.0.0.1:$PORT/customer.html" \
+            -o "$RUNNER_TEMP/cutloopz-customer.html"
+          if ! grep -qi '<html' "$RUNNER_TEMP/cutloopz-customer.html"; then
+            echo 'FAIL: /customer.html did not serve an HTML document.'
+            exit 1
+          fi
+
+          echo 'PASS: The real Express process launched and served the customer page.'
+          echo 'Unauthenticated sandbox history response:'
+          curl -sS -o /dev/null -w '%{http_code}\n' \
+            "http://127.0.0.1:$PORT/api/paypal/sandbox-orders" || true
+
+      - name: Upload Express startup log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cutloopz-express-startup-log
+          path: /tmp/cutloopz-express.log
+          if-no-files-found: ignore
+          retention-days: 7
