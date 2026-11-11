@@ -1,6 +1,6 @@
 {
-  "release_id": "CUTLOOPZ_STUDIO_V5B_NO_CREDITS_SUNO_57TESTS",
-  "expected_test_count": 57,
+  "release_id": "CUTLOOPZ_STUDIO_V5C_LINK_NAV_60TESTS",
+  "expected_test_count": 60,
   "site_branch": "cutloopz-production-test",
   "features": [
     "My Studio five-step guided workflow",
@@ -18,18 +18,21 @@
     "No unauthorized streaming-service audio extraction",
     "Preview search-indexing disabled until explicit public launch approval",
     "Prominent NO CREDITS. JUST VIDEO. planned per-video pricing promise with clear preview limitation",
-    "SUNO uppercase and bold on homepage and Studio link intake"
+    "SUNO uppercase and bold on homepage and Studio link intake",
+    "Song URL without uploaded MP3/WAV skips the audio-only Analyzer and opens the Listening Director on Next",
+    "Back from link-only Director returns to the Song & Artist page",
+    "Explicit note distinguishes saved URL from audio analysis and automatic lyrics import"
   ],
   "files_sha256": {
     "server.js": "9abb5f2f04cdee8b68d4ab8f5168ad4ee53848dfec2dd8f92e9c0d7ecf5a9cfa",
     "customer-auth.js": "8b96438ebdc6efa0000e9b1f553801e41974305eb23bcfc1749513266c546e70",
     "public/customer.html": "f5376dbec2f4b8c963fe21aa84072080ca149be1fab1e7abcb0bdc9e6c1770ac",
     "public/index.html": "b7ac4f0cb0bfbccc644e6062ce1ef8e9f771d74d3d1bd58d81f9fc37c5f865c6",
-    "public/my-studio.html": "0422cff2fb3776fa485cf74ece7db5644de79c0aff716b58d92f3ff95673b085",
-    "public/my-studio.js": "b513c92d9477f7a76d250311f4c3ad3f2474c1145677b410e4b30ee054c6f348",
-    "public/my-studio.css": "dcd4f624ffd4215895a1139daf0be19d364de9ea47d3dd14c5c4b52823cf24a2",
-    "public/cutloopz-song-link.js": "983e1c11002101b1665a9b8cda20b97454a5facd51bcb220fe8851e1a4f8935f",
-    "test-song-link-intake.mjs": "4e80d41320f3e7a498a297290c660797b39bf256d22027bfe860f4c2ee1dc9c1",
+    "public/my-studio.html": "e64b634b4c4e259b7ed51285442217d9f5168a7d2674e08cfda375c4d0a242f9",
+    "public/my-studio.js": "caf653a332de19cd89c74cb62389ca91190a046f8bbab6d37a29f10a4e4dcbad",
+    "public/my-studio.css": "8ada284f13994ebf481803a35ad335760572bd25e0f3dfe479b14f3bcca74a2a",
+    "public/cutloopz-song-link.js": "debc935f8174a1814ff68c01488736edd35d5f32c37955e9d1183cad2e04b586",
+    "test-song-link-intake.mjs": "8e7504f9c79e333d486493880d3a428b88f0ae62a499ebfb2df8ed9b93db62e1",
     "test-v5b-no-credits-suno.mjs": "00659e78ca6be8914322b4505f33d3911d3b1d930a6280564e7d425400fa1a20"
   }
 }

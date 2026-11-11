@@ -30,5 +30,19 @@
     if(def.key==='youtube'&&url.pathname.toLowerCase()==='/watch')clean.searchParams.set('v',url.searchParams.get('v'));
     return {ok:true,provider:def.key,name:def.name,url:clean.toString(),requiresAudioUpload:true};
   }
-  root.CutLoopzSongLink=Object.freeze({inspect});
+  // Keep navigation deterministic and testable. A link never represents audio.
+  function navigation(current, action, {hasAudio=false,linkAccepted=false}={}){
+    const page=Math.max(0,Math.min(4,Number(current)||0));
+    if(action==='next'){
+      if(page===4)return 0;
+      if(page===0 && linkAccepted && !hasAudio)return 2;
+      return page+1;
+    }
+    if(action==='back'){
+      if(page===2 && linkAccepted && !hasAudio)return 0;
+      return Math.max(0,page-1);
+    }
+    return page;
+  }
+  root.CutLoopzSongLink=Object.freeze({inspect,navigation});
 })(typeof window!=='undefined'?window:globalThis);

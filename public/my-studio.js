@@ -147,6 +147,25 @@
    if(Number.isInteger(destination))showPage(destination);
    notify('saveStatus',account?'Account draft ready':'Draft saved on this device');
  }
+ // A saved song URL is not an analyzed audio file. Link-only projects bypass
+ // the audio-only page; users can still supply lyrics and a photo on Page 1.
+ function validSongLink(){return window.CutLoopzSongLink?.inspect($('songLink').value)?.ok===true;}
+ function linkOnlyProject(){return !lastSongFile && validSongLink();}
+ function pageAfter(action){
+   return window.CutLoopzSongLink.navigation(page,action,{
+     hasAudio: Boolean(lastSongFile),linkAccepted:validSongLink()
+   });
+ }
+ function updateStepNavigation(){
+   $('nextBtn').textContent=page===4?'Back to Start':page===0 && linkOnlyProject()?'Next: Listening Director →':'Next →';
+   $('backBtn').textContent=page===2 && linkOnlyProject()?'← Song & Artist':'← Back';
+   const note=$('directorSourceNotice');
+   const link=window.CutLoopzSongLink?.inspect($('songLink').value);
+   if(page===2 && link?.ok && !lastSongFile){
+     note.textContent=`${link.name} link saved. The audio has not been analyzed and lyrics have not been imported automatically. Use your lyrics and creative direction, or go Back to Page 1 to add them.`;
+     note.hidden=false;
+   }else{note.hidden=true;note.textContent='';}
+ }
  function showPage(index){
    page=Math.max(0,Math.min(4,index));
    document.querySelectorAll('.wizard-step').forEach(section=>{section.hidden=Number(section.dataset.step)!==page});
@@ -155,7 +174,7 @@
    $('stepCounter').textContent=`Page ${page+1} of 5`;
    $('stepProgress').setAttribute('aria-valuenow',String(page+1));
    $('progressFill').style.width=`${20*(page+1)}%`;
-   $('backBtn').disabled=page===0;$('nextBtn').textContent=page===4?'Back to Start':'Next →';
+   $('backBtn').disabled=page===0;updateStepNavigation();
    if(page===1)refreshAnalysisIntro();
    if(page===3)renderScenes();if(page===4)renderReview();
    scheduleSave();
@@ -183,12 +202,14 @@
      status.textContent=parsed?.error||'Paste a public song share link.';
      status.style.color=announce?'#ffafaa':'';
      open.hidden=true;open.removeAttribute('href');
+     updateStepNavigation();
      return false;
    }
    status.style.color='';
-   status.textContent=`${parsed.name} link attached to your project. Use your authorized audio file for beat analysis; the Director can work from lyrics now.`;
+   status.textContent=lastSongFile?`${parsed.name} link saved. Your selected MP3/WAV can be analyzed on Page 2.`:`${parsed.name} link saved. Next opens the Listening Director, skipping MP3-only analysis. Audio and lyrics are not imported automatically.`;
    open.href=parsed.url;open.hidden=false;
    if(announce){scheduleSave();refreshAnalysisIntro();}
+   updateStepNavigation();
    return true;
  }
  function renderAnalysis(){
@@ -277,7 +298,7 @@
  }
  for(const id of fieldNames){const input=$(id);input.addEventListener('input',scheduleSave);input.addEventListener('change',()=>{if(['duration','sceneSeconds'].includes(id))clearOrphanedStoryboard();scheduleSave()});}
  $('useSongLink').addEventListener('click',()=>{renderLinkStatus(true)});
- $('songLink').addEventListener('input',()=>{const a=$('openSongLink');a.hidden=true;a.removeAttribute('href');$('songLinkStatus').textContent='Tap Use Link to confirm this source.';});
+ $('songLink').addEventListener('input',()=>{const a=$('openSongLink');a.hidden=true;a.removeAttribute('href');$('songLinkStatus').textContent='Tap Use Link to confirm this source.';updateStepNavigation();});
  $('songLink').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();renderLinkStatus(true);}});
  $('duration').addEventListener('change',()=>{syncCustomTime();clearOrphanedStoryboard();scheduleSave()});
  $('customTime').addEventListener('input',()=>{clearOrphanedStoryboard();scheduleSave()});
@@ -287,7 +308,7 @@
    if(f && (!/\.(mp3|wav)$/i.test(f.name)||f.size>25*1024*1024)){alert('Select an MP3 or WAV under 25 MB.');$('songAudio').value='';lastSongFile=null;return;}
    lastSongFile=f;musicResult=null;renderAnalysis();
    $('songAudio').dataset.previousName=f?.name||'';
-   updateUploadLabels();refreshAnalysisIntro();scheduleSave();
+   updateUploadLabels();refreshAnalysisIntro();updateStepNavigation();scheduleSave();
    mediaWrite('audio',f).catch(()=>notify('audioLabel',`Selected: ${f?.name||'none'}. Browser could not retain this file after refresh; keep this page open until analysis.`,true));
  });
  $('artistPhoto').addEventListener('change',()=>{
@@ -300,7 +321,15 @@
    updatePhotoPreview(f);updateUploadLabels();scheduleSave();
    mediaWrite('photo',f).catch(()=>notify('photoLabel',`Selected: ${f?.name||'none'}. Browser could not retain this photo after refresh.`,true));
  });
- $('nextBtn').addEventListener('click',()=>{if(page===0 && !Number.isFinite(selectedDuration())){alert('Enter a valid custom duration between 0:15 and 6:00.');return;}showPage(page===4?0:page+1)});$('backBtn').addEventListener('click',()=>showPage(page-1));
+ $('nextBtn').addEventListener('click',()=>{
+   if(page===0){
+     if(!Number.isFinite(selectedDuration())){alert('Enter a valid custom duration between 0:15 and 6:00.');return;}
+     // Do not quietly discard a malformed URL or lead the user into an MP3-only screen.
+     if($('songLink').value.trim()&&!renderLinkStatus(true)&&!lastSongFile){$('songLink').focus();return;}
+   }
+   showPage(pageAfter('next'));
+ });
+ $('backBtn').addEventListener('click',()=>showPage(pageAfter('back')));
  $('analyzeBtn').addEventListener('click',analyze);$('directorBtn').addEventListener('click',makeStoryboard);
  $('scenePrev').addEventListener('click',()=>{scenePage=Math.max(0,scenePage-1);renderScenes();scheduleSave()});
  $('sceneNext').addEventListener('click',()=>{scenePage=Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,scenePage+1);renderScenes();scheduleSave()});

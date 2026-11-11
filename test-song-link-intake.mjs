@@ -59,3 +59,36 @@ test('V5 marketing does not claim third-party audio extraction, payments or GPU 
  assert.match(html,/Generate Video — Not Enabled/);
  assert.match(home,/Your music deserves a video/);
 });
+
+test('V5C link-only navigation skips audio analyzer and Back returns to Page 1',async()=>{
+ const context={window:{},URL};
+ vm.runInNewContext(await read('./public/cutloopz-song-link.js'),context);
+ const route=context.window.CutLoopzSongLink.navigation;
+ assert.equal(route(0,'next',{hasAudio:false,linkAccepted:true}),2);
+ assert.equal(route(2,'back',{hasAudio:false,linkAccepted:true}),0);
+ assert.equal(route(2,'next',{hasAudio:false,linkAccepted:true}),3);
+ assert.equal(route(3,'back',{hasAudio:false,linkAccepted:true}),2);
+ assert.equal(route(4,'next',{hasAudio:false,linkAccepted:true}),0);
+});
+test('V5C uploaded audio still visits analyzer even when a link is saved',async()=>{
+ const context={window:{},URL};
+ vm.runInNewContext(await read('./public/cutloopz-song-link.js'),context);
+ const route=context.window.CutLoopzSongLink.navigation;
+ assert.equal(route(0,'next',{hasAudio:true,linkAccepted:true}),1);
+ assert.equal(route(0,'next',{hasAudio:true,linkAccepted:false}),1);
+ assert.equal(route(1,'next',{hasAudio:true,linkAccepted:true}),2);
+ assert.equal(route(2,'back',{hasAudio:true,linkAccepted:true}),1);
+ assert.equal(route(0,'next',{hasAudio:false,linkAccepted:false}),1);
+});
+test('V5C Studio routes link-only projects and explains missing audio and lyrics',async()=>{
+ const [html,js,helper]=await Promise.all([read('./public/my-studio.html'),read('./public/my-studio.js'),read('./public/cutloopz-song-link.js')]);
+ assert.match(html,/id="directorSourceNotice"/);
+ assert.match(html,/song link takes you directly to the Listening Director/i);
+ assert.match(js,/showPage\(pageAfter\('next'\)\)/);
+ assert.match(js,/showPage\(pageAfter\('back'\)\)/);
+ assert.match(js,/Next: Listening Director/);
+ assert.match(js,/lyrics have not been imported automatically/i);
+ assert.match(js,/!renderLinkStatus\(true\)&&!lastSongFile/);
+ assert.match(helper,/linkAccepted && !hasAudio/);
+ assert.doesNotMatch(js,/fetch\(['"]https:\/\/suno\.com/);
+});
