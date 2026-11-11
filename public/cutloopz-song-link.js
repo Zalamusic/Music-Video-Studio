@@ -10,7 +10,11 @@
     {key:'udio',name:'Udio',hosts:['udio.com','www.udio.com'],parts:[/^\/(songs|song)\/[a-z0-9_-]+(?:\/.*)?$/i]},
     {key:'youtube',name:'YouTube',hosts:['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com'],parts:[/^\/watch$/i,/^\/shorts\/[a-z0-9_-]+\/?$/i]},
     {key:'youtube',name:'YouTube',hosts:['youtu.be','www.youtu.be'],parts:[/^\/[a-z0-9_-]{6,}(?:\/)?$/i]},
-    {key:'spotify',name:'Spotify',hosts:['open.spotify.com'],parts:[/^\/(track|episode)\/[a-z0-9]+\/?$/i]},
+    // Spotify shares both canonical songs and regionalized /intl-XX/ URLs.
+    {key:'spotify',name:'Spotify',hosts:['open.spotify.com'],parts:[/^\/(?:intl-[a-z]{2}(?:-[a-z]{2})?\/)?(track|episode)\/[a-z0-9]{6,64}\/?$/i]},
+    // Android/iOS Share often produces an official shortened Spotify URL.
+    // Save as a reference only: the short link destination is not resolved or streamed.
+    {key:'spotify',name:'Spotify',hosts:['spotify.link','www.spotify.link'],parts:[/^\/[a-z0-9_-]{5,80}\/?$/i]},
     {key:'soundcloud',name:'SoundCloud',hosts:['soundcloud.com','www.soundcloud.com'],parts:[/^\/[a-z0-9_.-]+\/[a-z0-9_.-]+\/?$/i]},
   ];
   function inspect(value){
@@ -22,7 +26,11 @@
       return {ok:false,error:'Use an ordinary HTTPS song link without embedded login credentials.'};
     const host=url.hostname.toLowerCase();
     const def=definitions.find(x=>x.hosts.includes(host)&&x.parts.some(p=>p.test(url.pathname)));
-    if(!def)return {ok:false,error:'Supported song links: SUNO, Udio, YouTube, Spotify, or SoundCloud. Use the official song share URL.'};
+    if(!def){
+      if(host==='open.spotify.com' || host==='spotify.link' || host==='www.spotify.link')
+        return {ok:false,error:'For Spotify, use Copy Song Link from a track (or the official spotify.link short share URL). Artist, album, and playlist links are not individual songs.'};
+      return {ok:false,error:'Supported song links: SUNO, Udio, YouTube, Spotify, or SoundCloud. Use the official song share URL.'};
+    }
     if(def.key==='youtube' && url.pathname.toLowerCase()==='/watch' && !/^[a-z0-9_-]{6,20}$/i.test(url.searchParams.get('v')||''))
       return {ok:false,error:'This YouTube link is missing its video ID.'};
     // Strip navigation/tracking query data; do not retain sensitive auth tokens.

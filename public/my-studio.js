@@ -115,7 +115,7 @@
    scenes=Array.isArray(draft.scenes)?draft.scenes.slice(0,40).map(s=>({number:Number(s.number)||1,startSeconds:Number(s.startSeconds)||0,endSeconds:Number(s.endSeconds)||0,emotion:safeText(s.emotion).slice(0,55),location:safeText(s.location).slice(0,500),action:safeText(s.action).slice(0,800),prompt:safeText(s.prompt).slice(0,4000)})):[];
    scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,Number(draft.scenePage)||0));
    page=Math.max(0,Math.min(4,Number(draft.page)||0));
-   restoring=false;updateUploadLabels();refreshAnalysisIntro();renderAnalysis();showPage(page);
+   restoring=false;updateUploadLabels();refreshAnalysisIntro();renderAnalysis();showPage(page,{reposition:false});
  }
  async function initialize(){
    let localDraft=null,localUpdatedAt=0,serverUpdatedAt=0;
@@ -144,7 +144,7 @@
    // Deep links override the saved page, but do not reset any project fields.
    const urlPage=new URLSearchParams(location.search).get('step');
    const destination={song:0,analyze:1,director:2,storyboard:3,review:4}[urlPage];
-   if(Number.isInteger(destination))showPage(destination);
+   if(Number.isInteger(destination))showPage(destination,{reposition:false});
    notify('saveStatus',account?'Account draft ready':'Draft saved on this device');
  }
  // A saved song URL is not an analyzed audio file. Link-only projects bypass
@@ -166,7 +166,9 @@
      note.hidden=false;
    }else{note.hidden=true;note.textContent='';}
  }
- function showPage(index){
+ // Keep mobile navigation anchored to the newly opened page, not the former
+ // footer or artist-photo scroll position. Hydration must not jump the page.
+ function showPage(index,{reposition=true}={}){
    page=Math.max(0,Math.min(4,index));
    document.querySelectorAll('.wizard-step').forEach(section=>{section.hidden=Number(section.dataset.step)!==page});
    $('stepTitle').textContent=pageTitles[page];$('stepSubtitle').textContent=pageDescriptions[page];
@@ -178,6 +180,12 @@
    if(page===1)refreshAnalysisIntro();
    if(page===3)renderScenes();if(page===4)renderReview();
    scheduleSave();
+   if(reposition){
+     const visibleHeading=page===0?$('songHeading'):document.querySelector(`.wizard-step[data-step="${page}"] h3`);
+     // Explicit instant alignment prevents the previous step's scroll offset
+     // lingering after Back/Next and avoids triggering the on-screen keyboard.
+     visibleHeading?.scrollIntoView({block:'start',behavior:'instant'});
+   }
  }
  function clearOrphanedStoryboard(){
    if(!scenes.length)return;

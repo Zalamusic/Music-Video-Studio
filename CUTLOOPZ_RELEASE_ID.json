@@ -1,6 +1,6 @@
 {
-  "release_id": "CUTLOOPZ_STUDIO_V5C_LINK_NAV_60TESTS",
-  "expected_test_count": 60,
+  "release_id": "CUTLOOPZ_STUDIO_V5D_SPOTIFY_SCROLL_63TESTS",
+  "expected_test_count": 63,
   "site_branch": "cutloopz-production-test",
   "features": [
     "My Studio five-step guided workflow",
@@ -21,7 +21,9 @@
     "SUNO uppercase and bold on homepage and Studio link intake",
     "Song URL without uploaded MP3/WAV skips the audio-only Analyzer and opens the Listening Director on Next",
     "Back from link-only Director returns to the Song & Artist page",
-    "Explicit note distinguishes saved URL from audio analysis and automatic lyrics import"
+    "Explicit note distinguishes saved URL from audio analysis and automatic lyrics import",
+    "Spotify shortened and localized track links recognized as reference-only (no music downloads)",
+    "Back/Next returns to top of the correct Studio step without losing scroll position on initial draft restore"
   ],
   "files_sha256": {
     "server.js": "9abb5f2f04cdee8b68d4ab8f5168ad4ee53848dfec2dd8f92e9c0d7ecf5a9cfa",
@@ -29,10 +31,11 @@
     "public/customer.html": "f5376dbec2f4b8c963fe21aa84072080ca149be1fab1e7abcb0bdc9e6c1770ac",
     "public/index.html": "b7ac4f0cb0bfbccc644e6062ce1ef8e9f771d74d3d1bd58d81f9fc37c5f865c6",
     "public/my-studio.html": "e64b634b4c4e259b7ed51285442217d9f5168a7d2674e08cfda375c4d0a242f9",
-    "public/my-studio.js": "caf653a332de19cd89c74cb62389ca91190a046f8bbab6d37a29f10a4e4dcbad",
-    "public/my-studio.css": "8ada284f13994ebf481803a35ad335760572bd25e0f3dfe479b14f3bcca74a2a",
-    "public/cutloopz-song-link.js": "debc935f8174a1814ff68c01488736edd35d5f32c37955e9d1183cad2e04b586",
+    "public/my-studio.js": "406418d65e6b82ee2ecb7a8a15e8ab6cd883d975a124c847bd49c11667bd04c0",
+    "public/my-studio.css": "1cc7d048f7b03bae6b80f2db66dc9bf1d07b644022ac377bf59b3ed6cb432d00",
+    "public/cutloopz-song-link.js": "652066d26435cd6cec3a72a4a51589425dd72699bd6957b26b16be26a8eed551",
     "test-song-link-intake.mjs": "8e7504f9c79e333d486493880d3a428b88f0ae62a499ebfb2df8ed9b93db62e1",
-    "test-v5b-no-credits-suno.mjs": "00659e78ca6be8914322b4505f33d3911d3b1d930a6280564e7d425400fa1a20"
+    "test-v5b-no-credits-suno.mjs": "00659e78ca6be8914322b4505f33d3911d3b1d930a6280564e7d425400fa1a20",
+    "test-v5d-spotify-back-scroll.mjs": "90913c0ecbecf653ee343f44e09a065fd96d231a44dc6c4d022a35f6f0a2b63e"
   }
 }

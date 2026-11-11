@@ -42,3 +42,6 @@
 
 /* V5C link-only planning: informative, not a fake audio-analysis result. */
 .studio-link-note{border:1px solid rgba(226,181,87,.42);background:rgba(204,163,74,.09);border-radius:12px;padding:12px 14px;color:var(--text,#f6eee5);font-size:clamp(.92rem,2.5vw,1rem);line-height:1.55;margin:0 0 15px;}
+
+/* V5D: mobile Back/Next must land at the new step heading, clear of edges. */
+.wizard-step > h3:first-child{scroll-margin-top:20px;}

@@ -9,7 +9,7 @@ test('Homepage Director opens Studio stage 3, while My Studio opens the central 
  assert.ok(!home.includes('href="/my-studio.html?step=analyze">Director'));
  const js=await readFile(new URL('my-studio.js',files),'utf8');
  assert.match(js,/director:2/);
- assert.match(js,/if\(Number\.isInteger\(destination\)\)showPage\(destination\)/);
+ assert.match(js,/if\(Number\.isInteger\(destination\)\)showPage\(destination,\{reposition:false\}\)/);
 });
 test('Page 2 reuses Page 1 song and retained media stays private in browser',async()=>{
  const html=await readFile(new URL('my-studio.html',files),'utf8');
