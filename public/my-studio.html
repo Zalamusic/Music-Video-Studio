@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/my-studio.css">
+<link rel="stylesheet" href="/cutloopz-welcome.css">
+<script src="/cutloopz-welcome.js" defer></script>
 <script src="/my-studio.js" defer></script>
 </head>
 <body>
@@ -19,26 +21,27 @@
 <main class="shell" id="studioWorkspace">
  <div class="intro"><div><span class="eyebrow">YOUR MUSIC · YOUR VISION · YOUR VIDEO</span><h1>My Studio</h1><p>One step at a time. Your creative work stays with your project.</p></div><div class="status-wrap"><span id="signInStatus" class="status-chip">Checking account…</span><span id="saveStatus" class="save-message" role="status">Loading draft…</span></div></div>
  <div class="studio-frame">
-  <div class="step-header"><div><span class="eyebrow" id="stepTag">PAGE 01 / 05</span><h2 id="stepTitle">Your Song</h2><p id="stepSubtitle">Bring your music into the Studio.</p></div><button type="button" id="newProject" class="subtle">New Project</button></div>
+  <div class="step-header"><div><span class="eyebrow" id="stepTag">PAGE 01 / 05</span><h2 id="stepTitle">Your Song &amp; Artist</h2><p id="stepSubtitle">Bring your music into the Studio.</p></div><button type="button" id="newProject" class="subtle">New Project</button></div>
   <div class="progress" role="progressbar" aria-label="Project progress" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1" id="stepProgress"><span id="progressFill"></span></div>
   <div class="workspace-content">
    <section class="wizard-step" data-step="0" aria-labelledby="songHeading">
     <h3 id="songHeading">01 · Song details</h3>
     <div class="fields"><div class="field"><label for="title">Song title</label><input id="title" maxlength="120" placeholder="Enter your song title" autocomplete="off"></div><div class="field"><label for="duration">Video duration</label><select id="duration"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240">4 minutes</option><option value="300">5 minutes</option><option value="360">6 minutes</option><option value="custom">Custom (15 sec–6 min)</option></select><div id="customTimeField" hidden><label for="customTime">Exact duration (M:SS)</label><input id="customTime" inputmode="numeric" maxlength="4" placeholder="3:46"><p class="hint">For example 3:46 or 4:01. Maximum 6:00.</p></div></div></div>
-    <div class="field"><label for="songAudio">Upload MP3 or WAV <span class="optional">(optional for planning)</span></label><input id="songAudio" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav"><p class="hint" id="audioLabel">Choose an audio file for beat-informed analysis. Maximum 25 MB. Selected files stay on this device until uploaded for analysis.</p></div>
+    <div class="field"><label for="songAudio">Upload MP3 or WAV <span class="optional">(optional for planning)</span></label><input id="songAudio" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav"><p class="hint" id="audioLabel" role="status">Choose an MP3 or WAV (max 25 MB). Your browser will retain the selection privately for analysis on Page 2.</p></div>
+    <div class="photo-upload-panel"><div class="photo-panel-heading"><span class="photo-panel-icon" aria-hidden="true">▧</span><div><label for="artistPhoto">Artist Photo <span class="optional">(optional for planning)</span></label><p class="hint">Add the artist's main reference photo here. Glamour Shots and additional looks remain separate membership features.</p></div></div><input id="artistPhoto" type="file" accept="image/jpeg,image/png,image/webp"><p class="hint" id="photoLabel" role="status">JPG, PNG or WebP · Max 12 MB · Saved privately in this browser for your current project.</p><div class="photo-preview" id="photoPreviewWrap" hidden><img id="photoPreview" alt="Preview of the selected artist reference photo"></div></div>
     <div class="field"><label for="lyrics">Lyrics <span class="optional">(recommended for emotional direction)</span></label><textarea id="lyrics" rows="5" maxlength="12000" placeholder="Paste the lyrics here. Add [00:15] timestamps if you have them."></textarea></div>
-    <p class="helper">You can create a free Director storyboard without uploading a song. Untimed lyric placement will be approximate.</p>
+    <p class="helper">Your song and photo stay in this browser's private storage until you start a New Project or clear this site's data. They are not synced to other devices. You can also create a free Director storyboard using lyrics alone.</p>
    </section>
    <section class="wizard-step" data-step="1" aria-labelledby="analyzeHeading" hidden>
     <h3 id="analyzeHeading">02 · Free Song Analyzer</h3><p class="helper">Analyze musical rhythm and energy; no administrator password, payment, or GPU needed.</p>
-    <div class="analysis-box"><p id="analysisIntro">Upload an MP3 or WAV on Page 1, then select Analyze Song.</p><button type="button" id="analyzeBtn" class="gold">Analyze Song</button><p id="analyzeStatus" role="status" class="operation-status"></p>
+    <div class="analysis-box"><p id="analysisIntro" role="status">Your selected song from Page 1 will be used automatically. You do not need to upload it again.</p><button type="button" id="analyzeBtn" class="gold">Analyze Song</button><p id="analyzeStatus" role="status" class="operation-status"></p>
      <div id="analysisResult" hidden><div class="metric-grid"><div><small>Estimated tempo</small><strong id="bpmValue">—</strong></div><div><small>Audio length</small><strong id="audioDurationValue">—</strong></div><div><small>Energy segments</small><strong id="energyValue">—</strong></div></div><p class="hint" id="analysisCaveat"></p></div>
     </div><p class="helper">No song uploaded? Skip to the Listening Director. It can still interpret the lyrics and your creative instructions.</p>
    </section>
    <section class="wizard-step" data-step="2" aria-labelledby="directorHeading" hidden>
     <h3 id="directorHeading">03 · Listening Director</h3><p class="helper">Your Director interprets the lyrics, overall mood, style, and any analyzed audio. You can edit everything before generating a storyboard.</p>
     <div class="fields"><div class="field"><label for="visualStyle">Cinematic style</label><select id="visualStyle"><option>Cinematic Realism</option><option>Romantic Drama</option><option>Urban Music Video</option><option>Hollywood Action</option><option>Science Fiction</option><option>Fantasy</option><option>3D Animation</option><option>Anime</option><option>Music Performance</option></select></div><div class="field"><label for="format">Video format</label><select id="format"><option value="vertical">9:16 Vertical</option><option value="landscape">16:9 Widescreen</option></select></div></div>
-    <div class="fields"><div class="field"><label for="sceneSeconds">Length per scene</label><select id="sceneSeconds"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></select></div><div class="field"><label for="artistPhoto">Artist reference photo <span class="optional">(optional)</span></label><input id="artistPhoto" type="file" accept="image/jpeg,image/png,image/webp"><p class="hint" id="photoLabel">JPG, PNG or WebP. One reference photo in the standard Studio.</p></div></div>
+    <div class="fields"><div class="field"><label for="sceneSeconds">Length per scene</label><select id="sceneSeconds"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></select></div></div><p class="hint">Your artist reference photo is selected on Page 1. Tap Back to change it.</p>
     <div class="field"><label for="direction">Your creative direction</label><textarea id="direction" maxlength="4000" rows="5" placeholder="Describe the mood, location, action, performance, wardrobe, movement, and story. For example: confident performance in a city at night with smooth, natural movements."></textarea></div>
     <div class="field"><label for="characterNotes">Artist appearance and continuity</label><textarea id="characterNotes" maxlength="1000" rows="2" placeholder="Optional: hairstyle, distinctive outfits, expression, visual continuity..."></textarea></div>
     <button type="button" id="directorBtn" class="gold">Create Free Director Storyboard</button><p id="directorStatus" class="operation-status" role="status"></p>
@@ -57,7 +60,8 @@
   <footer class="step-footer"><button type="button" id="backBtn" class="subtle" disabled>← Back</button><span id="stepCounter">Page 1 of 5</span><button type="button" id="nextBtn" class="gold">Next →</button></footer>
  </div>
  <section class="below-studio" aria-label="Other Studio tools"><a class="tool-card" href="/account.html?view=studio"><span aria-hidden="true">▣</span><strong>My Videos & Account</strong><small>Track saved orders and loyalty rewards.</small></a><a class="tool-card" href="/glamour.html"><span aria-hidden="true">✦</span><strong>Glamour Membership</strong><small>Optional subscriber-only wardrobe and photo features.</small></a></section>
- <p class="legal">Your changes are saved as a draft on this device. Signed-in accounts also attempt to sync draft text to the server. For security, audio and photo files are not saved as part of drafts; reselect them after refreshing or switching devices.</p>
+ <p class="legal">Draft text saves on this device, and signed-in text drafts can sync to your account. Uploaded song and artist photo are kept privately in this browser (not on your account); changing devices may require reselecting them. Clear this project with New Project.</p>
 </main>
+<button id="backToTop" class="back-to-top" type="button" aria-label="Back to top" title="Back to top" hidden><span aria-hidden="true">↑</span></button>
 </body>
 </html>

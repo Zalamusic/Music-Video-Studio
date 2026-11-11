@@ -1,0 +1,307 @@
+TAP version 13
+# Subtest: every inline browser script in public HTML compiles
+ok 1 - every inline browser script in public HTML compiles
+  ---
+  duration_ms: 26.468549
+  type: 'test'
+  ...
+# Subtest: admin Director constructs six five-second shot forms and uses actual readiness field
+ok 2 - admin Director constructs six five-second shot forms and uses actual readiness field
+  ---
+  duration_ms: 2.804437
+  type: 'test'
+  ...
+# {"test":"synthetic video assembly","durationSeconds":15,"outputExists":true,"deliveryAuthorized":false,"lipSyncVerified":false}
+# Subtest: test-assembler-real-ffmpeg.mjs
+ok 2 - test-assembler-real-ffmpeg.mjs
+  ---
+  duration_ms: 1929.303138
+  type: 'test'
+  ...
+# Subtest: No-admin creative director prepares 30-second storyboard
+ok 4 - No-admin creative director prepares 30-second storyboard
+  ---
+  duration_ms: 12.067978
+  type: 'test'
+  ...
+# Subtest: Safe music plan strips extraneous provider fields
+ok 5 - Safe music plan strips extraneous provider fields
+  ---
+  duration_ms: 0.157387
+  type: 'test'
+  ...
+# Subtest: Unreasonable creative durations rejected
+ok 6 - Unreasonable creative durations rejected
+  ---
+  duration_ms: 0.313241
+  type: 'test'
+  ...
+# Subtest: Invalid audio magic rejected
+ok 7 - Invalid audio magic rejected
+  ---
+  duration_ms: 0.237537
+  type: 'test'
+  ...
+# Subtest: Creative rate gate denies excess operations
+ok 8 - Creative rate gate denies excess operations
+  ---
+  duration_ms: 0.171868
+  type: 'test'
+  ...
+# Subtest: Homepage creation is only in My Studio
+ok 9 - Homepage creation is only in My Studio
+  ---
+  duration_ms: 4.02352
+  type: 'test'
+  ...
+# Subtest: Public editor does not contain administrator secret control
+ok 10 - Public editor does not contain administrator secret control
+  ---
+  duration_ms: 1.000845
+  type: 'test'
+  ...
+# Subtest: independent health reports missing, invalid, and reachable local generator without submissions
+ok 11 - independent health reports missing, invalid, and reachable local generator without submissions
+  ---
+  duration_ms: 29.390448
+  type: 'test'
+  ...
+# Subtest: local model readiness is admin protected and does not allow public GPU probing
+ok 12 - local model readiness is admin protected and does not allow public GPU probing
+  ---
+  duration_ms: 1.975741
+  type: 'test'
+  ...
+# Independent readiness tests: 3 passed
+# Subtest: test-independent-readiness.mjs
+ok 5 - test-independent-readiness.mjs
+  ---
+  duration_ms: 38.8015
+  type: 'test'
+  ...
+# PASS synthetic 30s local transport -> six clips -> portrait assembly -> audio -> private receipt. No model or GPU used.
+# Subtest: full local 30-second portrait job assembles six synthetic clips and original audio, without provider calls
+ok 14 - full local 30-second portrait job assembles six synthetic clips and original audio, without provider calls
+  ---
+  duration_ms: 3169.984784
+  type: 'test'
+  ...
+# Subtest: automatic local route refuses disabled flag or missing full-job approval before any GPU access
+ok 15 - automatic local route refuses disabled flag or missing full-job approval before any GPU access
+  ---
+  duration_ms: 3.631972
+  type: 'test'
+  ...
+# Subtest: one administrator start processes six local clips and finalizes once
+ok 16 - one administrator start processes six local clips and finalizes once
+  ---
+  duration_ms: 3.496408
+  type: 'test'
+  ...
+# Subtest: uncertain generator submission stops without retrying the same clip
+ok 17 - uncertain generator submission stops without retrying the same clip
+  ---
+  duration_ms: 0.681335
+  type: 'test'
+  ...
+# Subtest: unloaded model rejects auto run before GPU submission
+ok 18 - unloaded model rejects auto run before GPU submission
+  ---
+  duration_ms: 0.216105
+  type: 'test'
+  ...
+# Subtest: duplicate starts do not submit duplicate clips
+ok 19 - duplicate starts do not submit duplicate clips
+  ---
+  duration_ms: 0.293672
+  type: 'test'
+  ...
+# Subtest: refuses public and cloud endpoints
+ok 20 - refuses public and cloud endpoints
+  ---
+  duration_ms: 0.857499
+  type: 'test'
+  ...
+# Subtest: local health handshake is read-only
+ok 21 - local health handshake is read-only
+  ---
+  duration_ms: 1.619755
+  type: 'test'
+  ...
+# Subtest: submission requires authorization before reading files
+ok 22 - submission requires authorization before reading files
+  ---
+  duration_ms: 0.44577
+  type: 'test'
+  ...
+# Subtest: rejects malformed job identifiers before network
+ok 23 - rejects malformed job identifiers before network
+  ---
+  duration_ms: 0.300062
+  type: 'test'
+  ...
+# Subtest: local generator forwards real WAV and PNG types rather than mislabeled MP3/JPEG
+ok 24 - local generator forwards real WAV and PNG types rather than mislabeled MP3/JPEG
+  ---
+  duration_ms: 29.758221
+  type: 'test'
+  ...
+# Subtest: local generator refuses invalid media before submission
+ok 25 - local generator refuses invalid media before submission
+  ---
+  duration_ms: 5.436716
+  type: 'test'
+  ...
+# Subtest: rejects non-MP4 generator output without writing a file
+ok 26 - rejects non-MP4 generator output without writing a file
+  ---
+  duration_ms: 10.369364
+  type: 'test'
+  ...
+# Subtest: accepts MP4 file signature and writes atomically
+ok 27 - accepts MP4 file signature and writes atomically
+  ---
+  duration_ms: 7.138114
+  type: 'test'
+  ...
+# Subtest: aborts oversized streamed generator response before buffering full video
+ok 28 - aborts oversized streamed generator response before buffering full video
+  ---
+  duration_ms: 334.028168
+  type: 'test'
+  ...
+# Subtest: rejects oversized song before network submission
+ok 29 - rejects oversized song before network submission
+  ---
+  duration_ms: 8.409126
+  type: 'test'
+  ...
+# Subtest: rejects oversized photo before network submission
+ok 30 - rejects oversized photo before network submission
+  ---
+  duration_ms: 6.335857
+  type: 'test'
+  ...
+# Subtest: valid media signatures preserve usable file extensions for model runner
+ok 31 - valid media signatures preserve usable file extensions for model runner
+  ---
+  duration_ms: 1.095397
+  type: 'test'
+  ...
+# Subtest: rejects unsupported, empty, spoofed and oversized media
+ok 32 - rejects unsupported, empty, spoofed and oversized media
+  ---
+  duration_ms: 0.563307
+  type: 'test'
+  ...
+# Subtest: artist photo is available on Page 1, not hidden on Director page
+ok 33 - artist photo is available on Page 1, not hidden on Director page
+  ---
+  duration_ms: 0.693382
+  type: 'test'
+  ...
+# Subtest: readable mobile copy is not reduced to 10px
+ok 34 - readable mobile copy is not reduced to 10px
+  ---
+  duration_ms: 0.111678
+  type: 'test'
+  ...
+# PASS: ready-only assembly, clip downloads, restart-safe clip reuse, receipt, and no customer release (mock clips)
+# Subtest: test-pilot-finalize.mjs
+ok 15 - test-pilot-finalize.mjs
+  ---
+  duration_ms: 47.674114
+  type: 'test'
+  ...
+# PASS: multipart paid submission, admin authentication, status polling, clip download, and approval guard (mock HTTP only)
+# Subtest: test-pilot-http-adapter.mjs
+ok 16 - test-pilot-http-adapter.mjs
+  ---
+  duration_ms: 54.108389
+  type: 'test'
+  ...
+# PASS: six-clip sequential coordination, durable state, cost approval, and no automatic retry on uncertain submission
+# Subtest: test-pilot-orchestrator.mjs
+ok 17 - test-pilot-orchestrator.mjs
+  ---
+  duration_ms: 72.589731
+  type: 'test'
+  ...
+# PASS: fail-closed pricing gate; budget approval; no calls when price unverified
+# Subtest: test-price-gate.mjs
+ok 18 - test-price-gate.mjs
+  ---
+  duration_ms: 49.541471
+  type: 'test'
+  ...
+# Subtest: reject non-finite and nonpositive unit prices
+ok 39 - reject non-finite and nonpositive unit prices
+  ---
+  duration_ms: 1.086204
+  type: 'test'
+  ...
+# Subtest: reject non-finite budgets without creating jobs
+ok 40 - reject non-finite budgets without creating jobs
+  ---
+  duration_ms: 14.98811
+  type: 'test'
+  ...
+# PASS: unknown provider pricing blocks creation and paid clip advancement
+# Subtest: test-production-price-lock.mjs
+ok 20 - test-production-price-lock.mjs
+  ---
+  duration_ms: 46.571245
+  type: 'test'
+  ...
+# PASS: real ffprobe audio preflight, admin job creation, persisted job retrieval, approval rejection, duration rejection, per-clip confirmation rejection (no external provider or Express dependency)
+# Subtest: test-production-router-no-deps.mjs
+ok 21 - test-production-router-no-deps.mjs
+  ---
+  duration_ms: 256.598404
+  type: 'test'
+  ...
+# PASS production API mounted
+# PASS admin authentication on all production routes
+# PASS server paid flag gate
+# PASS server full production flag gate
+# PASS UI uploads song and photo
+# PASS UI explicit paid confirmation
+# PASS API requires per clip confirmation
+# PASS adapter sends pilot paid confirmation
+# PASS pilot requires paid confirmation
+# PASS adapter/pilot startSeconds contract
+# PASS adapter/pilot upload field contract
+# PASS video protected by administrator route
+# PASS storage preflight gate
+# PASS admin Studio reads local readiness correctly
+# PASS local model status gated by administrator
+# 15 static release contracts passed; NOT a live server test
+# Subtest: test-release-contract.mjs
+ok 22 - test-release-contract.mjs
+  ---
+  duration_ms: 30.975671
+  type: 'test'
+  ...
+# PASS: persisted provider ID survives coordinator restart; no duplicate paid submission
+# Subtest: test-restart-recovery.mjs
+ok 23 - test-restart-recovery.mjs
+  ---
+  duration_ms: 47.53946
+  type: 'test'
+  ...
+# PASS: write/read/delete storage preflight; rejects relative paths
+# Subtest: test-storage-preflight.mjs
+ok 24 - test-storage-preflight.mjs
+  ---
+  duration_ms: 65.254095
+  type: 'test'
+  ...
+1..45
+# tests 45
+# suites 0
+# pass 45
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3378.334145

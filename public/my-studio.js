@@ -2,9 +2,57 @@
 (() => {
  const $=id=>document.getElementById(id);
  const fieldNames=['title','duration','lyrics','visualStyle','format','sceneSeconds','direction','characterNotes'];
- const pageTitles=['Your Song','Song Analyzer','Listening Director','Your Storyboard','Review Your Vision'];
+ const pageTitles=['Your Song & Artist','Song Analyzer','Listening Director','Your Storyboard','Review Your Vision'];
  const pageDescriptions=['Bring your music into the Studio.','Learn its rhythm and energy.','Shape the story and visual performance.','Fine-tune each numbered scene.','Check every creative choice before production.'];
  const storagePrefix='cutloopz:artist-studio:v1:';
+ const MEDIA_DB_NAME='cutloopz-studio-media-v1';
+ // Audio and photos are kept in browser-owned IndexedDB, never in localStorage or
+ // the account text-draft API. A browser may refuse storage; in that case the file
+ // remains usable for the current page session and we clearly explain the limit.
+ let mediaDbPromise=null;
+ function mediaDb(){
+   if(mediaDbPromise)return mediaDbPromise;
+   mediaDbPromise=new Promise((resolve,reject)=>{
+     if(!('indexedDB' in window)){reject(Error('Browser file storage unavailable'));return;}
+     const request=indexedDB.open(MEDIA_DB_NAME,1);
+     request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('files'))request.result.createObjectStore('files');};
+     request.onsuccess=()=>resolve(request.result);
+     request.onerror=()=>reject(request.error||Error('Unable to open file storage'));
+     request.onblocked=()=>reject(Error('File storage blocked'));
+   }).catch(error=>{mediaDbPromise=null;throw error});
+   return mediaDbPromise;
+ }
+ async function mediaWrite(kind,file){
+   const db=await mediaDb();
+   return new Promise((resolve,reject)=>{
+     const tx=db.transaction('files','readwrite');
+     const key=storageKey+':'+kind;
+     if(file)tx.objectStore('files').put({name:file.name,type:file.type,modified:file.lastModified,blob:file},key);
+     else tx.objectStore('files').delete(key);
+     tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error||Error('Unable to save file'));
+     tx.onabort=()=>reject(tx.error||Error('File storage aborted'));
+   });
+ }
+ async function mediaRead(kind){
+   const db=await mediaDb();
+   return new Promise((resolve,reject)=>{
+     const tx=db.transaction('files','readonly');
+     const request=tx.objectStore('files').get(storageKey+':'+kind);
+     request.onsuccess=()=>{
+       const entry=request.result;
+       if(!entry||!(entry.blob instanceof Blob)||!entry.name){resolve(null);return;}
+       resolve(new File([entry.blob],entry.name,{type:entry.type||'',lastModified:entry.modified||Date.now()}));
+     };
+     request.onerror=()=>reject(request.error||Error('Cannot read retained file'));
+   });
+ }
+ function refreshAnalysisIntro(){
+   const label=$('analysisIntro');if(!label)return;
+   if(lastSongFile){label.textContent=`Ready to analyze: ${lastSongFile.name}. This is the song you selected on Page 1; no second upload needed.`;return;}
+   const name=$('songAudio').dataset.previousName;
+   label.textContent=name?`Your draft remembers “${name}”, but the actual audio file is unavailable in this browser. Go Back to Page 1 and choose the MP3 or WAV again.`:'No music selected yet. Choose a song on Page 1, or skip analysis and go directly to the Listening Director.';
+ }
+
  const durationOptions=[15,30,60,120,180,240,300,360];
  function selectedDuration(){
   if($('duration').value!=='custom')return Number($('duration').value);
@@ -14,7 +62,7 @@
  }
  function syncCustomTime(){ $('customTimeField').hidden=$('duration').value!=='custom'; }
  let storageKey=storagePrefix+'guest', account=null, saveTimer=null, serverTimer=null;
- let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false;
+ let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false, photoPreviewUrl=null;
  const notify=(id,text,bad=false)=>{const node=$(id);if(node){node.textContent=text;node.style.color=bad?'#ffafaa':'';}};
  const safeText=value=>String(value==null?'':value);
  const serializable=()=>({title:$('title').value,lyrics:$('lyrics').value,songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),style:$('visualStyle').value,format:$('format').value,direction:$('direction').value,
@@ -63,23 +111,35 @@
    scenes=Array.isArray(draft.scenes)?draft.scenes.slice(0,40).map(s=>({number:Number(s.number)||1,startSeconds:Number(s.startSeconds)||0,endSeconds:Number(s.endSeconds)||0,emotion:safeText(s.emotion).slice(0,55),location:safeText(s.location).slice(0,500),action:safeText(s.action).slice(0,800),prompt:safeText(s.prompt).slice(0,4000)})):[];
    scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,Number(draft.scenePage)||0));
    page=Math.max(0,Math.min(4,Number(draft.page)||0));
-   restoring=false;updateUploadLabels();renderAnalysis();showPage(page);
+   restoring=false;updateUploadLabels();refreshAnalysisIntro();renderAnalysis();showPage(page);
  }
  async function initialize(){
-   let localDraft=null;
+   let localDraft=null,localUpdatedAt=0,serverUpdatedAt=0;
    try{
     const res=await fetch('/api/customer-auth/me',{credentials:'same-origin',cache:'no-store'});
     if(res.ok){const d=await res.json();account=d.user||d.customer||null;}
    }catch{}
    storageKey=storagePrefix+(account?.id?'account:'+account.id:'guest');
    $('signInStatus').textContent=account?`Signed in: ${account.name||account.email||'Artist'}`:'Guest Studio · Free tools';
-   try{const saved=JSON.parse(localStorage.getItem(storageKey)||'null');localDraft=saved?.draft||null;}catch{}
+   try{const saved=JSON.parse(localStorage.getItem(storageKey)||'null');localDraft=saved?.draft||null;localUpdatedAt=Number(saved?.at)||0;}catch{}
    let serverDraft=null;
-   if(account){try{const r=await fetch('/api/customer-auth/studio/draft',{credentials:'same-origin',cache:'no-store'});if(r.ok){serverDraft=(await r.json()).draft;}}catch{}}
-   hydrate(serverDraft||localDraft);
+   if(account){try{const r=await fetch('/api/customer-auth/studio/draft',{credentials:'same-origin',cache:'no-store'});if(r.ok){const response=await r.json();serverDraft=response.draft;serverUpdatedAt=Date.parse(response.updatedAt)||0;}}catch{}}
+   // Use the most recent draft when account sync and local edits differ.
+   hydrate(localDraft && (localUpdatedAt>=serverUpdatedAt || !serverDraft)?localDraft:serverDraft);
+   const restoredName=$('songAudio').dataset.previousName;
+   const restoredPhotoName=$('artistPhoto').dataset.previousName;
+   try{
+     const [audio,photo]=await Promise.all([mediaRead('audio'),mediaRead('photo')]);
+     if(audio&&audio.name===restoredName&&audio.size<=25*1024*1024&&/\.(mp3|wav)$/i.test(audio.name))lastSongFile=audio;
+     if(photo&&photo.name===restoredPhotoName&&photo.size<=12*1024*1024&&['image/jpeg','image/png','image/webp'].includes(photo.type)){
+       lastPhotoFile=photo;updatePhotoPreview(photo);
+     }
+   }catch{ /* A retained file is optional; the artist can select it again. */ }
+   updateUploadLabels();refreshAnalysisIntro();
+   // Deep links override the saved page, but do not reset any project fields.
    const urlPage=new URLSearchParams(location.search).get('step');
-   if(!localDraft&&!serverDraft&&urlPage==='analyze')showPage(1);
-   if(!localDraft&&!serverDraft&&urlPage==='director')showPage(2);
+   const destination={song:0,analyze:1,director:2,storyboard:3,review:4}[urlPage];
+   if(Number.isInteger(destination))showPage(destination);
    notify('saveStatus',account?'Account draft ready':'Draft saved on this device');
  }
  function showPage(index){
@@ -91,6 +151,7 @@
    $('stepProgress').setAttribute('aria-valuenow',String(page+1));
    $('progressFill').style.width=`${20*(page+1)}%`;
    $('backBtn').disabled=page===0;$('nextBtn').textContent=page===4?'Back to Start':'Next →';
+   if(page===1)refreshAnalysisIntro();
    if(page===3)renderScenes();if(page===4)renderReview();
    scheduleSave();
  }
@@ -99,9 +160,16 @@
    const count=Math.ceil(selectedDuration()/Number($('sceneSeconds').value));
    if(count!==scenes.length){scenes=[];scenePage=0;musicResult=null;}
  }
+ function updatePhotoPreview(file){
+   if(photoPreviewUrl){URL.revokeObjectURL(photoPreviewUrl);photoPreviewUrl=null;}
+   const wrap=$('photoPreviewWrap'),img=$('photoPreview');
+   if(!file){wrap.hidden=true;img.removeAttribute('src');return;}
+   photoPreviewUrl=URL.createObjectURL(file);
+   img.src=photoPreviewUrl;wrap.hidden=false;
+ }
  function updateUploadLabels(){
-  if(lastSongFile)$('audioLabel').textContent=`Selected: ${lastSongFile.name}. Ready for free analysis.`;
-  if(lastPhotoFile)$('photoLabel').textContent=`Selected: ${lastPhotoFile.name}. Kept on this device until production is enabled.`;
+  if(lastSongFile)$('audioLabel').textContent=`Ready: ${lastSongFile.name}. Saved privately on this device. Page 2 uses this selection automatically.`;
+  if(lastPhotoFile)$('photoLabel').textContent=`Ready: ${lastPhotoFile.name}. Saved privately on this device.`;
  }
  function renderAnalysis(){
    if(!musicResult){$('analysisResult').hidden=true;return;}
@@ -113,7 +181,7 @@
    $('analysisCaveat').textContent=musicResult.note||'Tempo and energy are estimates; analysis does not transcribe vocals.';
  }
  async function analyze(){
-   if(!lastSongFile){notify('analyzeStatus','Choose an MP3 or WAV on Page 1. You can skip analysis and use the Director.',true);return;}
+   if(!lastSongFile){notify('analyzeStatus','The actual MP3/WAV file is missing. Tap Back, select it on Page 1, then return here. Or skip analysis and use the Director.',true);return;}
    if(lastSongFile.size>25*1024*1024){notify('analyzeStatus','The song must be smaller than 25 MB.',true);return;}
    const form=new FormData();form.append('audio',lastSongFile);
    const btn=$('analyzeBtn');btn.disabled=true;notify('analyzeStatus','Analyzing rhythm and intensity…');
@@ -174,12 +242,14 @@
  function newProject(){
    if(!window.confirm('Start a new project? Your current saved draft will be cleared.'))return;
    const oldKey=storageKey;localStorage.removeItem(oldKey);
+   Promise.all([mediaWrite('audio',null),mediaWrite('photo',null)]).catch(()=>notify('saveStatus','Project reset; stored files could not be cleared. Clear site data in browser settings.',true));
    if(account)fetch('/api/customer-auth/studio/draft',{method:'DELETE',credentials:'same-origin'}).catch(()=>{});
    for(const id of fieldNames){const element=$(id);element.value=element.tagName==='SELECT'?element.options[0].value:'';}
    $('duration').value='30';$('customTime').value='';syncCustomTime();$('sceneSeconds').value='15';$('format').value='vertical';$('songAudio').value='';$('artistPhoto').value='';
    $('songAudio').dataset.previousName='';$('artistPhoto').dataset.previousName='';lastSongFile=null;lastPhotoFile=null;
    $('audioLabel').textContent='Choose an audio file for beat-informed analysis. Maximum 25 MB.';
-   $('photoLabel').textContent='JPG, PNG or WebP. One reference photo in the standard Studio.';
+   $('photoLabel').textContent='JPG, PNG or WebP · Max 12 MB · One reference photo in the standard Studio.';
+   updatePhotoPreview(null);
    scenes=[];musicResult=null;scenePage=0;renderAnalysis();notify('directorStatus','');notify('analyzeStatus','');showPage(0);
  }
  for(const id of fieldNames){const input=$(id);input.addEventListener('input',scheduleSave);input.addEventListener('change',()=>{if(['duration','sceneSeconds'].includes(id))clearOrphanedStoryboard();scheduleSave()});}
@@ -189,17 +259,33 @@
  $('songAudio').addEventListener('change',()=>{
    const f=$('songAudio').files?.[0]||null;
    if(f && (!/\.(mp3|wav)$/i.test(f.name)||f.size>25*1024*1024)){alert('Select an MP3 or WAV under 25 MB.');$('songAudio').value='';lastSongFile=null;return;}
-   lastSongFile=f;musicResult=null;renderAnalysis();updateUploadLabels();scheduleSave();
+   lastSongFile=f;musicResult=null;renderAnalysis();
+   $('songAudio').dataset.previousName=f?.name||'';
+   updateUploadLabels();refreshAnalysisIntro();scheduleSave();
+   mediaWrite('audio',f).catch(()=>notify('audioLabel',`Selected: ${f?.name||'none'}. Browser could not retain this file after refresh; keep this page open until analysis.`,true));
  });
  $('artistPhoto').addEventListener('change',()=>{
    const f=$('artistPhoto').files?.[0]||null;
-   if(f&&(!/\.(png|jpe?g|webp)$/i.test(f.name)||f.size>12*1024*1024)){alert('Choose a JPG, PNG or WebP under 12 MB.');$('artistPhoto').value='';lastPhotoFile=null;return;}
-   lastPhotoFile=f;updateUploadLabels();scheduleSave();
+   if(f&&(!/\.(png|jpe?g|webp)$/i.test(f.name)||!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>12*1024*1024)){
+     alert('Choose a JPG, PNG or WebP under 12 MB.');$('artistPhoto').value='';lastPhotoFile=null;updatePhotoPreview(null);return;
+   }
+   lastPhotoFile=f;
+   $('artistPhoto').dataset.previousName=f?.name||'';
+   updatePhotoPreview(f);updateUploadLabels();scheduleSave();
+   mediaWrite('photo',f).catch(()=>notify('photoLabel',`Selected: ${f?.name||'none'}. Browser could not retain this photo after refresh.`,true));
  });
  $('nextBtn').addEventListener('click',()=>{if(page===0 && !Number.isFinite(selectedDuration())){alert('Enter a valid custom duration between 0:15 and 6:00.');return;}showPage(page===4?0:page+1)});$('backBtn').addEventListener('click',()=>showPage(page-1));
  $('analyzeBtn').addEventListener('click',analyze);$('directorBtn').addEventListener('click',makeStoryboard);
  $('scenePrev').addEventListener('click',()=>{scenePage=Math.max(0,scenePage-1);renderScenes();scheduleSave()});
  $('sceneNext').addEventListener('click',()=>{scenePage=Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,scenePage+1);renderScenes();scheduleSave()});
  $('editSong').addEventListener('click',()=>showPage(0));$('editDirector').addEventListener('click',()=>showPage(2));$('editStoryboard').addEventListener('click',()=>showPage(3));$('newProject').addEventListener('click',newProject);
- window.addEventListener('pagehide',saveLocal);initialize();
+ const backToTop=$('backToTop');
+ function updateBackToTop(){backToTop.hidden=window.scrollY<180;}
+ backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}));
+ window.addEventListener('scroll',updateBackToTop,{passive:true});
+ window.addEventListener('resize',updateBackToTop);
+ updateBackToTop();
+ // Show the one-time new-customer welcome after account registration redirected here.
+ window.CutLoopzWelcome?.consume();
+ window.addEventListener('pagehide',()=>{saveLocal();if(photoPreviewUrl)URL.revokeObjectURL(photoPreviewUrl);});initialize();
 })();

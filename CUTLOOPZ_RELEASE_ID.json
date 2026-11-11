@@ -1,0 +1,27 @@
+{
+  "release_id": "CUTLOOPZ_STUDIO_V4_WELCOME_TOP_51TESTS",
+  "expected_test_count": 51,
+  "site_branch": "cutloopz-production-test",
+  "features": [
+    "My Studio five-step guided workflow",
+    "Artist photo beside audio upload",
+    "Page 2 uses Page 1 selected song",
+    "Homepage Director deep links to Page 3",
+    "Browser-local media retention",
+    "Free creative planning without admin password",
+    "Floating Back to Top button",
+    "One-time floating new customer welcome after successful registration",
+    "Private generation and payments disabled"
+  ],
+  "files_sha256": {
+    "public/customer.html": "a1be7561e68e415789eb2722334667896b392b3b8888da86e0b48d7ae3b75dd4",
+    "public/account.html": "577730ca6ce7182406e1cac049a62f447d522a8e3d1978d774d8b93610468dd3",
+    "public/my-studio.html": "d0f4e4ad26a639fbfa9b76f5b74def32d24b3749ad3976f4118963f623c5a9c0",
+    "public/my-studio.js": "9d4f8e169d9e3d40663accc7defa6a89bcfb47b537bf89fb2681e20e511c5f0b",
+    "public/my-studio.css": "3dac88af3c448f522b1b1b3d782ea8322ba44b37758fbd569c88a0c25d44a961",
+    "public/cutloopz-welcome.js": "608f1542ce76208cc1b441aac8a37f03d63d09b8f2f43dbaff5607920e6195ae",
+    "public/cutloopz-welcome.css": "70f308c325b347f519cf3d3e7e78ceb0ad9b37e3f4330de5563d0358388ce7e0",
+    "test-new-customer-welcome.mjs": "2be7267411e07f8b2884d127c2cd24f879dcaa8f27874296ccf79ddaad925770",
+    "test-studio-back-to-top.mjs": "5ef53c3d5bcb74660b1cca5feb06be585aea919d4247ea98ab950bf6bddb5d38"
+  }
+}

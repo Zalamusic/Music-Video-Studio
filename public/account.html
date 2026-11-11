@@ -12,6 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/zala-themes.css">
+<link rel="stylesheet" href="/cutloopz-welcome.css">
+<script src="/cutloopz-welcome.js" defer></script>
 <script src="/zala-themes.js" defer></script>
 
 <style>
@@ -1063,8 +1065,12 @@ async function request(route, options = {}) {
 }
 
 function afterAuthentication(user, newlyRegistered = false) {
+  // Only a successful new-account registration triggers the one-time floating welcome.
+  // Signing in, refreshing, and restoring an existing session never trigger it.
+  if (newlyRegistered) window.CutLoopzWelcome?.queue(user);
   if (studioView) {
     showUser(user, newlyRegistered);
+    if (newlyRegistered) window.CutLoopzWelcome?.consume();
   } else {
     window.location.replace('/my-studio.html');
   }
