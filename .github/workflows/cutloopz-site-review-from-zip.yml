@@ -1,0 +1,94 @@
+name: CutLoopz Restore Verified Site Review ZIP
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - 'CUTLOOPZ_SITE_REVIEW_RELEASE.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cutloopz-site-review-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  restore-verify:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out production test branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Validate and restore selected ZIP (preserve existing workflows)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+          import stat
+
+          archive = Path('CUTLOOPZ_SITE_REVIEW_RELEASE.zip')
+          prefix = 'Music-Video-Studio-cutloopz-production-test/'
+          if not archive.is_file():
+              raise SystemExit('Release ZIP is not present in the branch.')
+          with ZipFile(archive) as z:
+              members = [i for i in z.infolist() if not i.is_dir()]
+              if len(members) > 250 or sum(i.file_size for i in members) > 40 * 1024 * 1024:
+                  raise SystemExit('Unexpected ZIP size or file count.')
+              names = [i.filename for i in members]
+              required = [prefix + 'server.js', prefix + 'package.json',
+                          prefix + 'public/customer.html',
+                          prefix + 'public/admin-unified-production.html',
+                          prefix + 'cutloopz-production-router.mjs']
+              if any(name not in names for name in required):
+                  raise SystemExit('Not a complete CutLoopz production release.')
+              restored = 0
+              for info in members:
+                  if not info.filename.startswith(prefix):
+                      raise SystemExit('Unexpected root directory in ZIP.')
+                  name = info.filename[len(prefix):]
+                  rel = PurePosixPath(name)
+                  if not name or rel.is_absolute() or '..' in rel.parts or '\\' in name:
+                      raise SystemExit('Unsafe archive path.')
+                  if stat.S_IFMT(info.external_attr >> 16) == stat.S_IFLNK:
+                      raise SystemExit('Archive symlink not permitted.')
+                  if name.startswith('.github/workflows/'):
+                      continue  # Never overwrite Actions via ZIP import
+                  if rel.name.startswith('.env') or rel.suffix in ('.key','.pem'):
+                      raise SystemExit('Secrets/private keys are not permitted in upload.')
+                  target = Path(name)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(info))
+                  restored += 1
+          archive.unlink()  # ZIP does not remain in the repository HEAD
+          print(f'Restored {restored} source files from verified release ZIP.')
+          PY
+
+      - name: Verify JavaScript and full offline regression suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check server.js
+          node --test test-*.mjs
+
+      - name: Commit verified site files to test branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'CutLoopz Release Automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Everything already up to date.'
+            exit 0
+          fi
+          git commit -m 'Restore verified CutLoopz site review release'
+          git push origin HEAD:cutloopz-production-test
