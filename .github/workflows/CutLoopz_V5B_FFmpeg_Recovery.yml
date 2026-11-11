@@ -1,0 +1,203 @@
+name: CutLoopz Studio V5B FFmpeg Recovery Verified Release
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - 'CUTLOOPZ_STUDIO_V5B_NO_CREDITS_SUNO_57TESTS.zip'
+      - '.github/workflows/CutLoopz_V5B_FFmpeg_Recovery.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cutloopz-studio-v5b-recovery-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  restore-v5:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CI: 'true'
+      NODE_ENV: test
+      ENABLE_PAID_GENERATION: 'false'
+      CUTLOOPZ_FULL_PRODUCTION_ENABLED: 'false'
+      CUTLOOPZ_LOCAL_GENERATION_ENABLED: 'false'
+      CUTLOOPZ_LOCAL_AUTO_RUN_ENABLED: 'false'
+      ZALA_GPU_GENERATION_ENABLED: 'false'
+
+    steps:
+      - name: Check out test branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact release ZIP before extracting
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYVALIDATE'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+          import hashlib, json, stat
+
+          archive = Path('CUTLOOPZ_STUDIO_V5B_NO_CREDITS_SUNO_57TESTS.zip')
+          prefix = 'Music-Video-Studio-cutloopz-production-test/'
+          expected_hash = '3bb074879dd2c8c820316758725677e11d664a98b9eb725f1fd7149a0e8e0129'
+          if not archive.exists():
+              raise SystemExit('Expected uniquely named release ZIP is missing. No source changes made.')
+          actual_hash = hashlib.sha256(archive.read_bytes()).hexdigest()
+          if actual_hash != expected_hash:
+              raise SystemExit(f'Wrong ZIP version: expected SHA256 {expected_hash}, received {actual_hash}. No source changes made.')
+          with ZipFile(archive) as z:
+              members = [entry for entry in z.infolist() if not entry.is_dir()]
+              names = [i.filename for i in members]
+              if len(names) != len(set(names)) or len(names) > 250 or sum(i.file_size for i in members) > 40 * 1024 * 1024:
+                  raise SystemExit('Unsafe or unexpected release ZIP contents.')
+              required = [prefix + p for p in ('server.js','package.json','public/customer.html',
+                  'public/my-studio.html','public/my-studio.js','public/admin-unified-production.html',
+                  'cutloopz-production-router.mjs','test-creative-preview.mjs',
+                  'test-my-studio-photo-layout.mjs','test-studio-navigation-and-media.mjs','test-new-customer-welcome.mjs','test-studio-back-to-top.mjs','public/cutloopz-welcome.js','public/cutloopz-welcome.css','public/cutloopz-song-link.js','test-song-link-intake.mjs','test-v5b-no-credits-suno.mjs','CUTLOOPZ_RELEASE_ID.json')]
+              if any(p not in names for p in required):
+                  raise SystemExit('ZIP missing My Studio V5B required files. No source changes made.')
+              release = json.loads(z.read(prefix+'CUTLOOPZ_RELEASE_ID.json'))
+              if release.get('release_id') != 'CUTLOOPZ_STUDIO_V5B_NO_CREDITS_SUNO_57TESTS' or release.get('expected_test_count') != 57:
+                  raise SystemExit('ZIP release marker does not match required V5B.')
+              for n in names:
+                  if not n.startswith(prefix):
+                      raise SystemExit('Unexpected ZIP root.')
+                  rel=PurePosixPath(n[len(prefix):])
+                  if rel.is_absolute() or '..' in rel.parts or '\\' in n or not rel.parts:
+                      raise SystemExit('Unsafe ZIP path.')
+              for info in members:
+                  if stat.S_IFMT(info.external_attr >> 16) == stat.S_IFLNK:
+                      raise SystemExit('Symlink in release ZIP is prohibited.')
+              home=z.read(prefix+'public/customer.html').decode('utf-8')
+              studio=z.read(prefix+'public/my-studio.html').decode('utf-8')
+              if 'href="/my-studio.html"' not in home:
+                  raise SystemExit('Homepage does not route to My Studio. No source changes made.')
+              if 'id="artistPhoto"' not in studio or 'id="photoPreview"' not in studio:
+                  raise SystemExit('Artist Photo and preview missing. No source changes made.')
+              if home.count('href="/my-studio.html?step=director">Director') != 2:
+                  raise SystemExit('Homepage Director must open Page 3, not Page 1 or 2.')
+              js=z.read(prefix+'public/my-studio.js').decode('utf-8')
+              if "mediaRead('audio')" not in js or "mediaWrite('audio',f)" not in js:
+                  raise SystemExit('Page 1 retained audio integration missing.')
+              account=z.read(prefix+'public/account.html').decode('utf-8')
+              welcome=z.read(prefix+'public/cutloopz-welcome.js').decode('utf-8')
+              if 'CutLoopzWelcome?.queue(user)' not in account or 'CutLoopzWelcome?.consume()' not in js:
+                  raise SystemExit('Welcome is not connected to new signup and Studio.')
+              if 'sessionStorage.removeItem(KEY)' not in welcome or 'cutloopzWelcome' not in welcome:
+                  raise SystemExit('Welcome is not one-time or is missing its floating component.')
+              if 'id="backToTop"' not in studio:
+                  raise SystemExit('Floating Back to Top button missing.')
+              if 'id="songLink"' not in studio or 'id="useSongLink"' not in studio:
+                  raise SystemExit('New link intake missing from Studio.')
+              if 'SUNO Links' not in home or 'my-studio.html?source=link' not in home:
+                  raise SystemExit('Homepage link compatibility marketing and CTA missing.')
+              if 'NO CREDITS. JUST VIDEO.' not in home or '<strong class="cutloopz-platform">SUNO</strong>' not in home:
+                  raise SystemExit('Required SUNO and no-credits homepage positioning missing.')
+              if 'NO CREDITS. JUST VIDEO.' not in studio or 'studio-platform studio-suno' not in studio:
+                  raise SystemExit('Required SUNO and no-credits Studio positioning missing.')
+              if 'songLink' not in z.read(prefix+'customer-auth.js').decode('utf-8'):
+                  raise SystemExit('Account draft does not persist song URLs.')
+              if 'noindex, nofollow, noarchive' not in z.read(prefix+'server.js').decode('utf-8'):
+                  raise SystemExit('Preview cannot guarantee noindex.')
+          print('V5B ZIP SHA256, 57-test marker, song links, account draft and protected preview verified.')
+          PYVALIDATE
+
+      - name: Use existing FFmpeg or provision static binaries without apt
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The previous job stalled in apt-get update on a migrating Ubuntu runner.
+          # Never contact Ubuntu apt mirrors or modify global runner packages.
+          if command -v ffmpeg >/dev/null 2>&1 && command -v ffprobe >/dev/null 2>&1 && ffmpeg -hide_banner -encoders 2>/dev/null | grep -F libx264 >/dev/null; then
+            echo 'Using existing FFmpeg and FFprobe with libx264.'
+          else
+            echo 'Runner FFmpeg is missing or lacks libx264. Provisioning pinned static binaries.'
+            tools_dir="$RUNNER_TEMP/cutloopz-static-media"
+            bin_dir="$RUNNER_TEMP/cutloopz-media-bin"
+            mkdir -p "$tools_dir" "$bin_dir"
+            timeout 180s npm install \
+              --prefix "$tools_dir" --no-audit --no-fund \
+              --fetch-retries=1 --fetch-timeout=45000 \
+              --save=false --package-lock=false \
+              ffmpeg-static@5.3.0 ffprobe-static@3.1.0
+            ffmpeg_bin="$(MEDIA_DIR="$tools_dir" node -e 'process.stdout.write(require(process.env.MEDIA_DIR+"/node_modules/ffmpeg-static"))')"
+            ffprobe_bin="$(MEDIA_DIR="$tools_dir" node -e 'process.stdout.write(require(process.env.MEDIA_DIR+"/node_modules/ffprobe-static").path)')"
+            test -x "$ffmpeg_bin"
+            test -x "$ffprobe_bin"
+            ln -s "$ffmpeg_bin" "$bin_dir/ffmpeg"
+            ln -s "$ffprobe_bin" "$bin_dir/ffprobe"
+            export PATH="$bin_dir:$PATH"
+            echo "$bin_dir" >> "$GITHUB_PATH"
+          fi
+          command -v ffmpeg
+          command -v ffprobe
+          ffmpeg -hide_banner -encoders 2>/dev/null | grep -F libx264
+          timeout 20s ffmpeg -hide_banner -loglevel error -y -f lavfi -i 'color=c=black:s=64x64:r=1:d=1' -frames:v 1 -c:v libx264 -pix_fmt yuv420p -f null -
+          timeout 20s ffmpeg -hide_banner -loglevel error -y -f lavfi -i 'sine=frequency=440:duration=1' -f mp3 "$RUNNER_TEMP/cutloopz-smoke.mp3"
+          test -s "$RUNNER_TEMP/cutloopz-smoke.mp3"
+          timeout 20s ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 "$RUNNER_TEMP/cutloopz-smoke.mp3"
+
+      - name: Extract verified ZIP without overwriting GitHub workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEXTRACT'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+          archive=Path('CUTLOOPZ_STUDIO_V5B_NO_CREDITS_SUNO_57TESTS.zip')
+          prefix='Music-Video-Studio-cutloopz-production-test/'
+          count=0
+          with ZipFile(archive) as z:
+              for entry in z.infolist():
+                  if entry.is_dir():
+                      continue
+                  rel=PurePosixPath(entry.filename[len(prefix):])
+                  if rel.parts[0] == '.github':
+                      continue
+                  if rel.name.startswith('.env') or rel.suffix.lower() in ('.key','.pem'):
+                      raise SystemExit('Refusing private key or environment file.')
+                  target=Path(str(rel))
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(entry))
+                  count+=1
+          archive.unlink()
+          print(f'Restored {count} verified V5B source files. ZIP removed from commit.')
+          PYEXTRACT
+
+      - name: Run complete offline tests and require exactly 57 passes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check server.js
+          node --test test-*.mjs | tee "$RUNNER_TEMP/cutloopz-v5.tap"
+          grep -Fx '# tests 57' "$RUNNER_TEMP/cutloopz-v5.tap"
+          grep -Fx '# pass 57' "$RUNNER_TEMP/cutloopz-v5.tap"
+          grep -Fx '# fail 0' "$RUNNER_TEMP/cutloopz-v5.tap"
+
+      - name: Commit confirmed My Studio source to test branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Remove only the stale, previously failed ZIP after all V5B checks pass.
+          rm -f CUTLOOPZ_SITE_REVIEW_RELEASE.zip
+          git config user.name 'CutLoopz Release Automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Already on the verified V5B release.'
+          else
+            git commit -m 'Deploy CutLoopz V5B SUNO and no-credits release (57 tests)'
+            git push origin HEAD:cutloopz-production-test
+          fi
