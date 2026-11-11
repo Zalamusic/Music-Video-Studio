@@ -1,0 +1,125 @@
+name: CutLoopz Recover Site Review Release
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - '.github/workflows/cutloopz-site-review-recovery.yml'
+      - 'CUTLOOPZ_SITE_REVIEW_RELEASE.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cutloopz-site-recovery-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  restore-and-verify:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      NODE_ENV: test
+      ENABLE_PAID_GENERATION: 'false'
+      CUTLOOPZ_FULL_PRODUCTION_ENABLED: 'false'
+      CUTLOOPZ_LOCAL_GENERATION_ENABLED: 'false'
+      CUTLOOPZ_LOCAL_AUTO_RUN_ENABLED: 'false'
+      ZALA_GPU_GENERATION_ENABLED: 'false'
+
+    steps:
+      - name: Check out test branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install and verify FFmpeg media dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          # FFmpeg is mandatory: several tests synthesize clips and audio.
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1 || ! ffmpeg -hide_banner -encoders 2>/dev/null | grep -F libx264 >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends ffmpeg
+          fi
+          ffmpeg -version | head -n 1
+          ffprobe -version | head -n 1
+          ffmpeg -hide_banner -loglevel error -y -f lavfi -i 'color=c=black:s=64x64:r=1:d=1' -frames:v 1 -c:v libx264 -pix_fmt yuv420p -f null -
+          ffmpeg -hide_banner -loglevel error -y -f lavfi -i 'sine=frequency=440:duration=1' -f mp3 /tmp/cutloopz-ci-smoke.mp3
+          test -s /tmp/cutloopz-ci-smoke.mp3
+
+      - name: Validate and extract release ZIP safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+          import stat
+
+          archive = Path('CUTLOOPZ_SITE_REVIEW_RELEASE.zip')
+          prefix = 'Music-Video-Studio-cutloopz-production-test/'
+          if not archive.is_file():
+              raise SystemExit('Release ZIP missing: the previous upload did not reach the test branch.')
+          with ZipFile(archive) as z:
+              entries = [entry for entry in z.infolist() if not entry.is_dir()]
+              if not entries or len(entries) > 250 or sum(e.file_size for e in entries) > 40 * 1024 * 1024:
+                  raise SystemExit('Unexpected ZIP file count or uncompressed size.')
+              names = {e.filename for e in entries}
+              required = [prefix + x for x in ('server.js', 'package.json',
+                  'public/customer.html', 'public/admin-unified-production.html',
+                  'cutloopz-production-router.mjs')]
+              if not all(x in names for x in required):
+                  raise SystemExit('ZIP is not a complete CutLoopz site review release.')
+              restored = 0
+              for entry in entries:
+                  full_name = entry.filename
+                  if not full_name.startswith(prefix):
+                      raise SystemExit('Unexpected root folder inside ZIP.')
+                  name = full_name[len(prefix):]
+                  rel = PurePosixPath(name)
+                  if not name or rel.is_absolute() or '..' in rel.parts or '\\' in name:
+                      raise SystemExit('Unsafe archive path.')
+                  if rel.parts[0] == '.git' or (rel.parts[0] == '.github' and len(rel.parts) > 1 and rel.parts[1] == 'workflows'):
+                      continue  # Never overwrite Git internals or CI workflows.
+                  if stat.S_IFMT(entry.external_attr >> 16) == stat.S_IFLNK:
+                      raise SystemExit('Archive contains a symlink.')
+                  if rel.name.startswith('.env') or rel.suffix.lower() in ('.key', '.pem'):
+                      raise SystemExit('Private configuration file found in ZIP.')
+                  target = Path(name)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(entry))
+                  restored += 1
+          archive.unlink()  # Remove archive from branch once verified.
+          print(f'Extracted {restored} CutLoopz source files.')
+          PY
+
+      - name: Verify JavaScript and all 36 offline regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --version
+          node --check server.js
+          node --test test-*.mjs
+
+      - name: Commit verified site source to the existing test branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'CutLoopz Release Automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Release files are already current.'
+            exit 0
+          fi
+          git commit -m 'Restore verified CutLoopz site source after CI media preflight'
+          git push origin HEAD:cutloopz-production-test
