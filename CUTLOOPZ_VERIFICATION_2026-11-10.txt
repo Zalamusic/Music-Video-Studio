@@ -1,0 +1,227 @@
+TAP version 13
+# Subtest: every inline browser script in public HTML compiles
+ok 1 - every inline browser script in public HTML compiles
+  ---
+  duration_ms: 42.903846
+  type: 'test'
+  ...
+# Subtest: admin Director constructs six five-second shot forms and uses actual readiness field
+ok 2 - admin Director constructs six five-second shot forms and uses actual readiness field
+  ---
+  duration_ms: 6.968818
+  type: 'test'
+  ...
+# {"test":"synthetic video assembly","durationSeconds":15,"outputExists":true,"deliveryAuthorized":false,"lipSyncVerified":false}
+# Subtest: test-assembler-real-ffmpeg.mjs
+ok 2 - test-assembler-real-ffmpeg.mjs
+  ---
+  duration_ms: 2036.819676
+  type: 'test'
+  ...
+# Subtest: independent health reports missing, invalid, and reachable local generator without submissions
+ok 4 - independent health reports missing, invalid, and reachable local generator without submissions
+  ---
+  duration_ms: 33.47269
+  type: 'test'
+  ...
+# Subtest: local model readiness is admin protected and does not allow public GPU probing
+ok 5 - local model readiness is admin protected and does not allow public GPU probing
+  ---
+  duration_ms: 3.66325
+  type: 'test'
+  ...
+# Independent readiness tests: 3 passed
+# Subtest: test-independent-readiness.mjs
+ok 4 - test-independent-readiness.mjs
+  ---
+  duration_ms: 57.307392
+  type: 'test'
+  ...
+# Subtest: refuses public and cloud endpoints
+ok 7 - refuses public and cloud endpoints
+  ---
+  duration_ms: 0.86428
+  type: 'test'
+  ...
+# Subtest: local health handshake is read-only
+ok 8 - local health handshake is read-only
+  ---
+  duration_ms: 3.652894
+  type: 'test'
+  ...
+# Subtest: submission requires authorization before reading files
+ok 9 - submission requires authorization before reading files
+  ---
+  duration_ms: 0.45194
+  type: 'test'
+  ...
+# Subtest: rejects malformed job identifiers before network
+ok 10 - rejects malformed job identifiers before network
+  ---
+  duration_ms: 0.249255
+  type: 'test'
+  ...
+# Subtest: local generator forwards real WAV and PNG types rather than mislabeled MP3/JPEG
+ok 11 - local generator forwards real WAV and PNG types rather than mislabeled MP3/JPEG
+  ---
+  duration_ms: 39.07363
+  type: 'test'
+  ...
+# Subtest: local generator refuses invalid media before submission
+ok 12 - local generator refuses invalid media before submission
+  ---
+  duration_ms: 4.292026
+  type: 'test'
+  ...
+# Subtest: rejects non-MP4 generator output without writing a file
+ok 13 - rejects non-MP4 generator output without writing a file
+  ---
+  duration_ms: 14.982326
+  type: 'test'
+  ...
+# Subtest: accepts MP4 file signature and writes atomically
+ok 14 - accepts MP4 file signature and writes atomically
+  ---
+  duration_ms: 6.818717
+  type: 'test'
+  ...
+# Subtest: aborts oversized streamed generator response before buffering full video
+ok 15 - aborts oversized streamed generator response before buffering full video
+  ---
+  duration_ms: 366.410967
+  type: 'test'
+  ...
+# Subtest: rejects oversized song before network submission
+ok 16 - rejects oversized song before network submission
+  ---
+  duration_ms: 7.631218
+  type: 'test'
+  ...
+# Subtest: rejects oversized photo before network submission
+ok 17 - rejects oversized photo before network submission
+  ---
+  duration_ms: 3.01105
+  type: 'test'
+  ...
+# PASS: ready-only assembly, clip downloads, restart-safe clip reuse, receipt, and no customer release (mock clips)
+# Subtest: test-pilot-finalize.mjs
+ok 9 - test-pilot-finalize.mjs
+  ---
+  duration_ms: 94.25592
+  type: 'test'
+  ...
+# PASS: multipart paid submission, admin authentication, status polling, clip download, and approval guard (mock HTTP only)
+# Subtest: test-pilot-http-adapter.mjs
+ok 10 - test-pilot-http-adapter.mjs
+  ---
+  duration_ms: 100.933769
+  type: 'test'
+  ...
+# PASS: six-clip sequential coordination, durable state, cost approval, and no automatic retry on uncertain submission
+# Subtest: test-pilot-orchestrator.mjs
+ok 11 - test-pilot-orchestrator.mjs
+  ---
+  duration_ms: 116.115761
+  type: 'test'
+  ...
+# PASS: fail-closed pricing gate; budget approval; no calls when price unverified
+# Subtest: test-price-gate.mjs
+ok 12 - test-price-gate.mjs
+  ---
+  duration_ms: 43.64459
+  type: 'test'
+  ...
+# Subtest: reject non-finite and nonpositive unit prices
+ok 22 - reject non-finite and nonpositive unit prices
+  ---
+  duration_ms: 1.281277
+  type: 'test'
+  ...
+# Subtest: reject non-finite budgets without creating jobs
+ok 23 - reject non-finite budgets without creating jobs
+  ---
+  duration_ms: 9.391738
+  type: 'test'
+  ...
+# CUTLOOPZ PRODUCTION DIRECTOR TEST
+# SCENE 1
+# Time: 0-15s
+# Prompt: CutLoopz cinematic music video: Cinematic Test Song. Shot 1. CUSTOMER'S CREATIVE DIRECTION (authoritative): An emotional R&B story in one elegant apartment. Keep the same woman throughout. No concert stages, rooftops, or unrelated locations. Location: quiet apartment living room beside a window. On-screen action: Story phase: emotional setup. The performer glances toward a familiar part of the environment, briefly remembering, then returns to the present.. Framing: intimate close-up. Camera movement: almost imperceptible dolly-in. Lighting: muted nostalgic indirect light. Emotional direction: reflection. Song lyric context (not on-screen text): I remember when you held me close. Approved storyboard direction: CutLoopz cinematic music video for "Cinematic Test Song". Scene 1 of 3; 0–15 seconds. Customer direction (priority): An emotional R&B story in one elegant apartment. Keep the same woman throughout. No concert stages, rooftops, or unrelated locations.. Story continuity: emotional setup. Maintain the same central performer and consistent visual world. Emotion: reflection. Song-wide emotional theme: reflection. Emotional subtext: nostalgia.  Lyric inspiration: I remember when you held me close. Location: quiet apartment living room beside a window. On-screen action: The performer glances toward a familiar part of the environment, briefly remembering, then returns to the present. Camera framing: intimate close-up. Movement: almost imperceptible dolly-in. Lighting: muted nostalgic indirect light. Performance pace: slow, natural, unhurried. Audio energy: unverified; energy movement: steady. Visually interpreted as: restrained. Style: photorealistic; 16:9. Preserve the supplied performer reference identity, hairstyle, wardrobe and body proportions across all shots when a reference image is provided. Natural human anatomy, facial expression, realistic movement, grounded gravity and lighting; a single continuous shot. No unrelated subplots, forced new characters, excessive scene changes, morphing, slideshow, subtitles, logos or watermarks. Keep the performer recognizable from the ORIGINAL authorized reference photograph. Preserve facial structure, hairstyle and skin tone. Never replace the original identity reference with an unverified generated frame. Visual style: photorealistic. Composition: widescreen horizontal. Natural motion, coherent anatomy, intentional composition, stable background, no unwanted text or watermarks. Do not introduce unrelated locations, characters, props or costumes.
+# SCENE 2
+# Time: 15-30s
+# Prompt: CutLoopz cinematic music video: Cinematic Test Song. Shot 2. CUSTOMER'S CREATIVE DIRECTION (authoritative): An emotional R&B story in one elegant apartment. Keep the same woman throughout. No concert stages, rooftops, or unrelated locations. Location: quiet apartment living room beside a window. On-screen action: Story phase: development and deepening. The performer looks toward a familiar space as a memory returns, keeping the moment grounded.. Framing: patient medium shot. Camera movement: almost imperceptible dolly-in. Lighting: muted nostalgic indirect light. Emotional direction: reflection. Song lyric context (not on-screen text): Now I am standing here alone. Approved storyboard direction: CutLoopz cinematic music video for "Cinematic Test Song". Scene 2 of 3; 15–30 seconds. Customer direction (priority): An emotional R&B story in one elegant apartment. Keep the same woman throughout. No concert stages, rooftops, or unrelated locations.. Story continuity: development and deepening. Maintain the same central performer and consistent visual world. Emotion: reflection. Song-wide emotional theme: reflection.   Lyric inspiration: Now I am standing here alone. Location: quiet apartment living room beside a window. On-screen action: The performer looks toward a familiar space as a memory returns, keeping the moment grounded. Camera framing: patient medium shot. Movement: almost imperceptible dolly-in. Lighting: muted nostalgic indirect light. Performance pace: slow, natural, unhurried. Audio energy: unverified; energy movement: steady. Visually interpreted as: restrained. Style: photorealistic; 16:9. Preserve the supplied performer reference identity, hairstyle, wardrobe and body proportions across all shots when a reference image is provided. Natural human anatomy, facial expression, realistic movement, grounded gravity and lighting; a single continuous shot. No unrelated subplots, forced new characters, excessive scene changes, morphing, slideshow, subtitles, logos or watermarks. Keep the performer recognizable from the ORIGINAL authorized reference photograph. Preserve facial structure, hairstyle and skin tone. Never replace the original identity reference with an unverified generated frame. Visual style: photorealistic. Composition: widescreen horizontal. Natural motion, coherent anatomy, intentional composition, stable background, no unwanted text or watermarks. Do not introduce unrelated locations, characters, props or costumes.
+# SCENE 3
+# Time: 30-45s
+# Prompt: CutLoopz cinematic music video: Cinematic Test Song. Shot 3. CUSTOMER'S CREATIVE DIRECTION (authoritative): An emotional R&B story in one elegant apartment. Keep the same woman throughout. No concert stages, rooftops, or unrelated locations. Location: quiet apartment living room beside a window. On-screen action: Story phase: resolution or lingering final image. The performer sits quietly in thought while the camera observes without interruption. End on an earned, understated feeling of emotional safety; avoid forced celebration.. Framing: over-the-shoulder-style profile. Camera movement: restrained locked-off frame. Lighting: softly brightening natural light suggesting acceptance. Emotional direction: reflection. Song lyric context (not on-screen text): I finally found the strength to go. Approved storyboard direction: CutLoopz cinematic music video for "Cinematic Test Song". Scene 3 of 3; 30–45 seconds. Customer direction (priority): An emotional R&B story in one elegant apartment. Keep the same woman throughout. No concert stages, rooftops, or unrelated locations.. Story continuity: resolution or lingering final image. Maintain the same central performer and consistent visual world. Emotion: reflection. Song-wide emotional theme: reflection.   Lyric inspiration: I finally found the strength to go. Location: quiet apartment living room beside a window. On-screen action: The performer sits quietly in thought while the camera observes without interruption. End on an earned, understated feeling of emotional safety; avoid forced celebration. Camera framing: over-the-shoulder-style profile. Movement: restrained locked-off frame. Lighting: softly brightening natural light suggesting acceptance. Performance pace: slow, natural, unhurried. Audio energy: unverified; energy movement: steady. Visually interpreted as: restrained. Style: photorealistic; 16:9. Preserve the supplied performer reference identity, hairstyle, wardrobe and body proportions across all shots when a reference image is provided. Natural human anatomy, facial expression, realistic movement, grounded gravity and lighting; a single continuous shot. No unrelated subplots, forced new characters, excessive scene changes, morphing, slideshow, subtitles, logos or watermarks. Keep the performer recognizable from the ORIGINAL authorized reference photograph. Preserve facial structure, hairstyle and skin tone. Never replace the original identity reference with an unverified generated frame. Visual style: photorealistic. Composition: widescreen horizontal. Natural motion, coherent anatomy, intentional composition, stable background, no unwanted text or watermarks. Do not introduce unrelated locations, characters, props or costumes.
+# PASS: Scene timing
+# PASS: Storyboard generation
+# PASS: Character-reference requirement
+# PASS: Invalid scene protection
+# PASS: Maximum song duration
+# ALL TEST ASSERTIONS PASSED
+# NOTE: Budget estimates and creative quality require separate validation.
+# Subtest: test-production-director.js
+ok 14 - test-production-director.js
+  ---
+  duration_ms: 96.210721
+  type: 'test'
+  ...
+# PASS: unknown provider pricing blocks creation and paid clip advancement
+# Subtest: test-production-price-lock.mjs
+ok 15 - test-production-price-lock.mjs
+  ---
+  duration_ms: 56.829683
+  type: 'test'
+  ...
+# PASS: real ffprobe audio preflight, admin job creation, persisted job retrieval, approval rejection, duration rejection, per-clip confirmation rejection (no external provider or Express dependency)
+# Subtest: test-production-router-no-deps.mjs
+ok 16 - test-production-router-no-deps.mjs
+  ---
+  duration_ms: 291.159794
+  type: 'test'
+  ...
+# PASS production API mounted
+# PASS admin authentication on all production routes
+# PASS server paid flag gate
+# PASS server full production flag gate
+# PASS UI uploads song and photo
+# PASS UI explicit paid confirmation
+# PASS API requires per clip confirmation
+# PASS adapter sends pilot paid confirmation
+# PASS pilot requires paid confirmation
+# PASS adapter/pilot startSeconds contract
+# PASS adapter/pilot upload field contract
+# PASS video protected by administrator route
+# PASS storage preflight gate
+# PASS admin Studio reads local readiness correctly
+# PASS local model status gated by administrator
+# 15 static release contracts passed; NOT a live server test
+# Subtest: test-release-contract.mjs
+ok 17 - test-release-contract.mjs
+  ---
+  duration_ms: 34.797122
+  type: 'test'
+  ...
+# PASS: persisted provider ID survives coordinator restart; no duplicate paid submission
+# Subtest: test-restart-recovery.mjs
+ok 18 - test-restart-recovery.mjs
+  ---
+  duration_ms: 54.494876
+  type: 'test'
+  ...
+# PASS: write/read/delete storage preflight; rejects relative paths
+# Subtest: test-storage-preflight.mjs
+ok 19 - test-storage-preflight.mjs
+  ---
+  duration_ms: 69.923824
+  type: 'test'
+  ...
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2057.522326

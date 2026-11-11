@@ -24,3 +24,19 @@ test('independent health reports missing, invalid, and reachable local generator
   r=response();await health({},r);assert.equal(r.statusCode,200);assert.equal(r.body.modelLoaded,true);assert.equal(r.body.independentGenerationReady,false);assert.deepEqual(requests,[['GET','/health']]);
  }finally{if(server)await new Promise(resolve=>server.close(resolve));if(previous===undefined)delete process.env.CUTLOOPZ_LOCAL_GENERATOR_URL;else process.env.CUTLOOPZ_LOCAL_GENERATOR_URL=previous;await rm(dir,{recursive:true,force:true})}
 });
+
+
+test('local model readiness is admin protected and does not allow public GPU probing',async()=>{
+ let gate; const router={use(fn){gate=fn},get(){},post(){}};
+ const express={Router:()=>router};
+ const multer=()=>({fields:()=>()=>{}});multer.memoryStorage=()=>({});
+ const dir=await mkdtemp(path.join(tmpdir(),'cutloopz-admin-gate-'));
+ try{
+  createProductionRouter({express,multer,baseDir:dir,authorize:req=>req.authorized===true,origin:'http://127.0.0.1:9999',adminKey:'test'});
+  let nextCalled=false;
+  const unauthorized=response();gate({method:'GET',path:'/local/status',authorized:false},unauthorized,()=>{nextCalled=true});
+  assert.equal(unauthorized.statusCode,403);assert.equal(nextCalled,false);
+  gate({method:'GET',path:'/local/status',authorized:true},response(),()=>{nextCalled=true});
+  assert.equal(nextCalled,true);
+ }finally{await rm(dir,{recursive:true,force:true})}
+});

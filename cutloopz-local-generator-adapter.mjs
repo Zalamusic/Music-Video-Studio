@@ -19,7 +19,8 @@ export function createLocalGeneratorAdapter({endpoint,fetchImpl=fetch}={}){
  };
  return {
   async health(){const b=await request('health');return {ok:true,modelLoaded:b.modelLoaded===true,modelId:typeof b.modelId==='string'?b.modelId:null}},
-  async submit({songPath,photoPath,startSeconds,allowPaidTest}={}){
+  async submit({songPath,photoPath,startSeconds,format='landscape',allowPaidTest}={}){
+   if(!['vertical','landscape'].includes(format))throw Error('Invalid video orientation');
    if(allowPaidTest!=='yes')throw Error('Explicit generation authorization required');
    if(!Number.isFinite(startSeconds)||startSeconds<0||startSeconds>355||startSeconds%5)throw Error('Invalid clip start');
    const songInfo=await fs.stat(songPath),photoInfo=await fs.stat(photoPath);
@@ -37,7 +38,7 @@ export function createLocalGeneratorAdapter({endpoint,fetchImpl=fetch}={}){
    const form=new FormData();
    form.set('song',new Blob([song],{type:wav?'audio/wav':'audio/mpeg'}),wav?'song.wav':'song.mp3');
    form.set('photo',new Blob([photo],{type:png?'image/png':webp?'image/webp':'image/jpeg'}),png?'photo.png':webp?'photo.webp':'photo.jpg');
-   form.set('startSeconds',String(startSeconds));form.set('durationSeconds','5');
+   form.set('startSeconds',String(startSeconds));form.set('durationSeconds','5');form.set('format',format);
    const b=await request('jobs',{method:'POST',body:form});if(!uuid.test(b.id||'')||!['queued','processing'].includes(b.status))throw Error('Invalid generator job receipt');return b;
   },
   async status(id){if(!uuid.test(id||''))throw Error('Invalid job ID');const b=await request(`jobs/${id}`);if(!['queued','processing','ready','failed'].includes(b.status))throw Error('Invalid generator status');return b},

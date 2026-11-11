@@ -155,17 +155,20 @@ pre{background:#101824;border:1px solid var(--edge);border-radius:10px;padding:1
 <label for="localSong">Song (MP3 or WAV)</label><input id="localSong" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" required>
 <label for="localPhoto">Artist photo (JPG, PNG or WebP)</label><input id="localPhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
 <label for="localDuration">Video length</label><select id="localDuration"></select>
+<label for="localFormat">Video format</label><select id="localFormat"><option value="vertical" selected>Vertical (9:16)</option><option value="landscape">Widescreen (16:9)</option></select>
 <label><input id="localApproval" type="checkbox" required> I approve local GPU generation for this job. I understand GPU operation can have costs even without a paid video API.</label>
 <button type="submit" id="localCreate" disabled>Create Local Video Job</button>
 </form>
 <label for="localJobId">Local job ID (save this to resume)</label><input id="localJobId" placeholder="Job ID">
 <div class="inline" style="flex-wrap:wrap">
 <button type="button" class="secondary" id="localRefresh">Refresh progress</button>
+<button type="button" id="localAutoRun" disabled>Run entire local job automatically</button>
 <button type="button" class="secondary" id="localAdvance" disabled>Generate / Check Next 5s</button>
 <button type="button" class="secondary" id="localAssemble" disabled>Assemble finished video</button>
 <button type="button" class="secondary" id="localView">Preview finished video</button>
 </div>
 <pre id="localStatus" role="status">No local job created.</pre>
+<p class="small" id="localAutoNote">Automatic mode remains locked until the administrator enables it on the server. It runs ONLY on the configured local model, may consume GPU time, and stops on uncertain submissions. A site deployment alone never activates it.</p>
 <div id="localPlayer"></div>
 <p class="small">This is the independent generation path. The older paid-provider workflow remains below for compatibility, but is not used by these controls. A functioning model and GPU are still required for actual footage and singing quality must be reviewed.</p>
 </section>
@@ -249,10 +252,45 @@ pre{background:#101824;border:1px solid var(--edge);border-radius:10px;padding:1
  const started = anyManualText || anyChangedSelect;
  const badge = card.querySelector('.shot-indicator');
  const state = complete ? 'complete' : started ? 'progress' : 'empty';
- badge.textContent = complete ? ' const show = () => { const file = control.files?.[0]; output.textContent = file ? 'Selected: ' + file.name : 'No look selected'; };
- control.addEventListener('change', () => { show(); refreshShotStatuses(); });
- control.addEventListener('input', () => { show(); refreshShotStatuses(); });
+ badge.textContent = complete ? 'Complete' : started ? 'In progress' : 'Not started';
+ badge.className = 'shot-indicator ' + state;
+ return complete;
  }
+ function refreshShotStatuses() {
+  for (const card of document.querySelectorAll('#shotCards .shot')) shotStatus(card);
+ }
+ function createShotCard(number) {
+  const card = el('details', {className:'shot', 'data-number':String(number)});
+  const summary = el('summary');
+  const name = el('span', {className:'shot-summary-name'}, 'Shot ' + number + ' · ' + ((number-1)*5) + '–' + (number*5) + ' seconds');
+  const indicator = el('span', {className:'shot-indicator empty'}, 'Not started');
+  const chevron = el('span', {className:'shot-summary-chevron', 'aria-hidden':'true'}, '⌄');
+  summary.append(name, indicator, chevron);
+  const content = el('div', {className:'shot-content'});
+  addField(content,number,'location','Location / setting');
+  addField(content,number,'wardrobe','Wardrobe matching approved photograph');
+  addField(content,number,'expression','Expression and emotional direction');
+  addField(content,number,'lighting','Lighting');
+  addField(content,number,'storyBeat','Story beat and action directions','textarea',340);
+  addField(content,number,'continuityNote','Continuity with surrounding shots','textarea',160);
+  addField(content,number,'framing','Camera framing','select');
+  addField(content,number,'camera','Camera movement','select');
+  addField(content,number,'action','Performer action','select');
+  addField(content,number,'visualStyle','Visual style','select');
+  addField(content,number,'lookId','Approved photo reference');
+  card.append(summary,content);
+  card.addEventListener('input',refreshShotStatuses);
+  card.addEventListener('change',refreshShotStatuses);
+  return card;
+ }
+ for (let number=1;number<=6;number++) $('shotCards').append(createShotCard(number));
+ // Reflect selected media names; these controls previously had no working binding.
+ for (const [field,output] of [['audio','audioName'],['photo','photoName'],...([2,3,4,5].map(n=>['look'+n,'look'+n+'Name']))]) {
+  const control=$(field),label=$(output);
+  const show=()=>{const file=control.files?.[0];label.textContent=file?'Selected: '+file.name:(field.startsWith('look')?'No look selected':'No file selected');};
+  control.addEventListener('change',()=>{show();refreshShotStatuses();});
+ }
+ refreshShotStatuses();
  const lyricsBox = $('lyrics');
  function showLyricsBeginning() {
  if (!lyricsBox)
@@ -421,12 +459,34 @@ const status=value=>el('localStatus').textContent=typeof value==='string'?value:
 const admin=()=>{const k=el('key').value.trim();if(!k)throw Error('Enter the administrator key at the top of this page.');return k};
 async function call(route,method='GET',body){const r=await fetch(api+route,{method,headers:{'X-Video-Admin-Key':admin(),...(typeof body==='string'?{'Content-Type':'application/json'}:{})},body,cache:'no-store'});let data;try{data=await r.json()}catch{throw Error('Server returned an unreadable response')}if(!r.ok||data.ok===false)throw Error(data.error||'Request failed');return data}
 for(let n=15;n<=360;n+=5){const option=document.createElement('option');option.value=String(n);option.textContent=n<60?n+' seconds':Math.floor(n/60)+'m '+String(n%60).padStart(2,'0')+'s';option.selected=n===30;el('localDuration').append(option)}
-let localEngineReady=false;
-const setReady=ready=>{localEngineReady=ready===true;el('localCreate').disabled=!localEngineReady;el('localAdvance').disabled=!localEngineReady;el('localAssemble').disabled=!localEngineReady};
-el('localHealth').addEventListener('click',async()=>{setReady(false);try{const h=await call('/local/status');el('localHealthResult').textContent=JSON.stringify(h,null,2);setReady(h.modelLoaded===true)}catch(e){el('localHealthResult').textContent='Local model unavailable: '+e.message}});
-el('localVideoForm').addEventListener('submit',async e=>{e.preventDefault();el('localCreate').disabled=true;try{const b=new FormData();b.append('song',el('localSong').files[0]);b.append('photo',el('localPhoto').files[0]);b.append('durationSeconds',el('localDuration').value);b.append('approveLocalGeneration',el('localApproval').checked?'yes':'no');const j=await call('/local/jobs','POST',b);el('localJobId').value=j.jobId;status(j)}catch(err){status('Cannot create local job: '+err.message)}finally{el('localCreate').disabled=!localEngineReady}});
+let localEngineReady=false, localAutoAvailable=false, localPollTimer=null, localAutoRunning=false;
+const setReady=ready=>{localEngineReady=ready===true;el('localCreate').disabled=!localEngineReady||localAutoRunning;el('localAdvance').disabled=!localEngineReady||localAutoRunning;el('localAssemble').disabled=!localEngineReady||localAutoRunning;el('localAutoRun').disabled=!(localEngineReady&&localAutoAvailable)||localAutoRunning};
+el('localHealth').addEventListener('click',async()=>{setReady(false);try{const h=await call('/local/status');el('localHealthResult').textContent=JSON.stringify(h,null,2);localAutoAvailable=h.autoRunEnabled===true;el('localAutoNote').textContent=localAutoAvailable?'Automatic local generation is enabled by the operator. Each job still needs your explicit approval. GPU runtime may have a cost.':'Automatic local generation is disabled on the server; no GPU job can start with this button.';setReady(h.readyToSubmit===true)}catch(e){el('localHealthResult').textContent='Local model unavailable: '+e.message}});
+el('localVideoForm').addEventListener('submit',async e=>{e.preventDefault();el('localCreate').disabled=true;try{const b=new FormData();b.append('song',el('localSong').files[0]);b.append('photo',el('localPhoto').files[0]);b.append('durationSeconds',el('localDuration').value);b.append('format',el('localFormat').value);b.append('approveLocalGeneration',el('localApproval').checked?'yes':'no');const j=await call('/local/jobs','POST',b);el('localJobId').value=j.jobId;status(j)}catch(err){status('Cannot create local job: '+err.message)}finally{el('localCreate').disabled=!localEngineReady}});
 const id=()=>{const value=el('localJobId').value.trim();if(!/^[0-9a-f-]{36}$/i.test(value))throw Error('Enter a valid local job ID');return encodeURIComponent(value)};
-el('localRefresh').addEventListener('click',async()=>{try{status(await call('/local/jobs/'+id()))}catch(e){status(e.message)}});
+async function refreshLocalAutomation(){
+ try{
+  const update=await call('/local/jobs/'+id()+'/automation');
+  status(update);
+  localAutoRunning=update.automation.state==='running';setReady(localEngineReady);
+  if(!localAutoRunning){
+   if(localPollTimer){clearInterval(localPollTimer);localPollTimer=null;}
+  }
+ }catch(e){status('Progress unavailable: '+e.message);if(localPollTimer){clearInterval(localPollTimer);localPollTimer=null;}}
+}
+el('localRefresh').addEventListener('click',async()=>{try{await refreshLocalAutomation()}catch(e){status(e.message)}});
+el('localAutoRun').addEventListener('click',async()=>{
+ try{
+  if(!el('localApproval').checked)throw Error('Approve local GPU generation for this job first.');
+  if(!confirm('Run ALL local clips for this job and assemble the result automatically? This may consume GPU time. No paid external provider will be used.'))return;
+  el('localAutoRun').disabled=true;
+  const result=await call('/local/jobs/'+id()+'/auto-run','POST',JSON.stringify({confirmLocalFullJob:'yes'}));
+  status(result);
+  localAutoRunning=result.automation.state==='running';setReady(localEngineReady);
+  if(localPollTimer)clearInterval(localPollTimer);
+  localPollTimer=setInterval(refreshLocalAutomation,3500);
+ }catch(e){status('Auto-run not started: '+e.message)}finally{setReady(localEngineReady)}
+});
 el('localAdvance').addEventListener('click',async()=>{try{if(!confirm('Generate or check the next five-second local clip? GPU operation may incur costs.'))return;status(await call('/local/jobs/'+id()+'/advance','POST',JSON.stringify({confirmLocalClip:'yes'})))}catch(e){status(e.message)}});
 el('localAssemble').addEventListener('click',async()=>{try{status(await call('/local/jobs/'+id()+'/assemble','POST'))}catch(e){status(e.message)}});
 let videoUrl=null;
