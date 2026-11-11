@@ -1,0 +1,167 @@
+name: CutLoopz Studio V4 New Customer Welcome Verified Release
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - 'CUTLOOPZ_STUDIO_V4_WELCOME_TOP_51TESTS.zip'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cutloopz-studio-v4-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  restore-v4:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      NODE_ENV: test
+      ENABLE_PAID_GENERATION: 'false'
+      CUTLOOPZ_FULL_PRODUCTION_ENABLED: 'false'
+      CUTLOOPZ_LOCAL_GENERATION_ENABLED: 'false'
+      CUTLOOPZ_LOCAL_AUTO_RUN_ENABLED: 'false'
+      ZALA_GPU_GENERATION_ENABLED: 'false'
+
+    steps:
+      - name: Check out test branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact release ZIP before extracting
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYVALIDATE'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+          import hashlib, json, stat
+
+          archive = Path('CUTLOOPZ_STUDIO_V4_WELCOME_TOP_51TESTS.zip')
+          prefix = 'Music-Video-Studio-cutloopz-production-test/'
+          expected_hash = 'bf1882698e2a7e9ae059c82225af5f6a4d936ae094b59cb941d8f2a4277704a4'
+          if not archive.exists():
+              raise SystemExit('Expected uniquely named release ZIP is missing. No source changes made.')
+          actual_hash = hashlib.sha256(archive.read_bytes()).hexdigest()
+          if actual_hash != expected_hash:
+              raise SystemExit(f'Wrong ZIP version: expected SHA256 {expected_hash}, received {actual_hash}. No source changes made.')
+          with ZipFile(archive) as z:
+              members = [entry for entry in z.infolist() if not entry.is_dir()]
+              names = [i.filename for i in members]
+              if len(names) != len(set(names)) or len(names) > 250 or sum(i.file_size for i in members) > 40 * 1024 * 1024:
+                  raise SystemExit('Unsafe or unexpected release ZIP contents.')
+              required = [prefix + p for p in ('server.js','package.json','public/customer.html',
+                  'public/my-studio.html','public/my-studio.js','public/admin-unified-production.html',
+                  'cutloopz-production-router.mjs','test-creative-preview.mjs',
+                  'test-my-studio-photo-layout.mjs','test-studio-navigation-and-media.mjs','test-new-customer-welcome.mjs','test-studio-back-to-top.mjs','public/cutloopz-welcome.js','public/cutloopz-welcome.css','CUTLOOPZ_RELEASE_ID.json')]
+              if any(p not in names for p in required):
+                  raise SystemExit('ZIP missing My Studio V4 required files. No source changes made.')
+              release = json.loads(z.read(prefix+'CUTLOOPZ_RELEASE_ID.json'))
+              if release.get('release_id') != 'CUTLOOPZ_STUDIO_V4_WELCOME_TOP_51TESTS' or release.get('expected_test_count') != 51:
+                  raise SystemExit('ZIP release marker does not match required V4.')
+              for n in names:
+                  if not n.startswith(prefix):
+                      raise SystemExit('Unexpected ZIP root.')
+                  rel=PurePosixPath(n[len(prefix):])
+                  if rel.is_absolute() or '..' in rel.parts or '\\' in n or not rel.parts:
+                      raise SystemExit('Unsafe ZIP path.')
+              for info in members:
+                  if stat.S_IFMT(info.external_attr >> 16) == stat.S_IFLNK:
+                      raise SystemExit('Symlink in release ZIP is prohibited.')
+              home=z.read(prefix+'public/customer.html').decode('utf-8')
+              studio=z.read(prefix+'public/my-studio.html').decode('utf-8')
+              if 'href="/my-studio.html"' not in home:
+                  raise SystemExit('Homepage does not route to My Studio. No source changes made.')
+              if 'id="artistPhoto"' not in studio or 'id="photoPreview"' not in studio:
+                  raise SystemExit('Artist Photo and preview missing. No source changes made.')
+              if home.count('href="/my-studio.html?step=director">Director') != 2:
+                  raise SystemExit('Homepage Director must open Page 3, not Page 1 or 2.')
+              js=z.read(prefix+'public/my-studio.js').decode('utf-8')
+              if "mediaRead('audio')" not in js or "mediaWrite('audio',f)" not in js:
+                  raise SystemExit('Page 1 retained audio integration missing.')
+              account=z.read(prefix+'public/account.html').decode('utf-8')
+              welcome=z.read(prefix+'public/cutloopz-welcome.js').decode('utf-8')
+              if 'CutLoopzWelcome?.queue(user)' not in account or 'CutLoopzWelcome?.consume()' not in js:
+                  raise SystemExit('Welcome is not connected to new signup and Studio.')
+              if 'sessionStorage.removeItem(KEY)' not in welcome or 'cutloopzWelcome' not in welcome:
+                  raise SystemExit('Welcome is not one-time or is missing its floating component.')
+              if 'id="backToTop"' not in studio:
+                  raise SystemExit('Floating Back to Top button missing.')
+          print('Release ID, SHA256, files, homepage link, and artist photo verified.')
+          PYVALIDATE
+
+      - name: Verify FFmpeg is capable of offline media tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1 || ! ffmpeg -hide_banner -encoders 2>/dev/null | grep -F libx264 >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends ffmpeg
+          fi
+          ffmpeg -hide_banner -loglevel error -y -f lavfi -i 'color=c=black:s=64x64:r=1:d=1' -frames:v 1 -c:v libx264 -pix_fmt yuv420p -f null -
+          ffmpeg -hide_banner -loglevel error -y -f lavfi -i 'sine=frequency=440:duration=1' -f mp3 "$RUNNER_TEMP/cutloopz-smoke.mp3"
+          test -s "$RUNNER_TEMP/cutloopz-smoke.mp3"
+
+      - name: Extract verified ZIP without overwriting GitHub workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEXTRACT'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+          archive=Path('CUTLOOPZ_STUDIO_V4_WELCOME_TOP_51TESTS.zip')
+          prefix='Music-Video-Studio-cutloopz-production-test/'
+          count=0
+          with ZipFile(archive) as z:
+              for entry in z.infolist():
+                  if entry.is_dir():
+                      continue
+                  rel=PurePosixPath(entry.filename[len(prefix):])
+                  if rel.parts[0] == '.github':
+                      continue
+                  if rel.name.startswith('.env') or rel.suffix.lower() in ('.key','.pem'):
+                      raise SystemExit('Refusing private key or environment file.')
+                  target=Path(str(rel))
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(entry))
+                  count+=1
+          archive.unlink()
+          print(f'Restored {count} verified V4 source files. ZIP removed from commit.')
+          PYEXTRACT
+
+      - name: Run complete offline tests and require exactly 51 passes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check server.js
+          node --test test-*.mjs | tee "$RUNNER_TEMP/cutloopz-v4.tap"
+          grep -Fx '# tests 51' "$RUNNER_TEMP/cutloopz-v4.tap"
+          grep -Fx '# pass 51' "$RUNNER_TEMP/cutloopz-v4.tap"
+          grep -Fx '# fail 0' "$RUNNER_TEMP/cutloopz-v4.tap"
+
+      - name: Commit confirmed My Studio source to test branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Remove only the stale, previously failed ZIP after all V2 checks pass.
+          rm -f CUTLOOPZ_SITE_REVIEW_RELEASE.zip
+          git config user.name 'CutLoopz Release Automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Already on the verified V4 release.'
+          else
+            git commit -m 'Deploy verified My Studio V4 floating welcome and navigation (51 tests)'
+            git push origin HEAD:cutloopz-production-test
+          fi
