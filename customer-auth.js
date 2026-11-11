@@ -715,7 +715,7 @@ export function createCustomerAuthRouter({
       return res.status(413).json({ok:false,error:'Project draft exceeds 100 KB.'});
     // Strip unrecognized keys; never store client-supplied account identifiers.
     const allowed=['title','lyrics','songSeconds','sceneSeconds','style','format','direction',
-      'songName','photoName','characterNotes','scenePage','page','scenes','musicResult'];
+      'songLink','songName','photoName','characterNotes','scenePage','page','scenes','musicResult'];
     const draft = Object.fromEntries(allowed.filter(key => Object.hasOwn(source,key)).map(key=>[key,source[key]]));
     try {
       drafts = drafts.filter(item=>item.userId!==session.user.id);

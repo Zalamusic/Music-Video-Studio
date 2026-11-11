@@ -23,3 +23,19 @@
 .back-to-top:hover{filter:brightness(1.06)}
 .back-to-top:focus-visible{outline:3px solid #fff2cc;outline-offset:3px}
 @media(max-width:620px){.back-to-top{right:max(12px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));width:48px;height:48px}}
+
+/* V5: link-aware song intake, accessible and compact on mobile. */
+.song-link-panel{border:1px solid #735936;border-radius:14px;background:#16151b;padding:14px;margin:4px 0 14px}
+.song-link-heading{display:flex;align-items:center;gap:10px}.song-link-heading label{display:block;font-size:17px;font-weight:800;color:var(--gold-strong)}.song-link-heading .hint{margin:2px 0 9px}
+.song-link-glyph{display:grid;place-items:center;flex:none;width:37px;height:37px;color:#1f1609;background:var(--gold);border-radius:10px;font-size:23px;font-weight:800}
+.song-link-input-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:stretch}
+.song-link-input-row input{margin:0;min-width:0}.song-link-input-row button{min-width:96px}
+.song-link-panel .operation-status{margin:10px 0 4px}.song-link-panel .hint{line-height:1.5}.song-link-panel a{display:inline-block;margin:1px 0 7px;font-size:15px;font-weight:700;text-decoration:underline}
+.source-tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.source-tags span{border:1px solid #b59a62;background:#32291d;color:#f5deb0;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:800}
+@media(max-width:440px){.song-link-input-row{grid-template-columns:1fr}.song-link-input-row button{width:100%}}
+
+/* V5B: uppercase, heavy SUNO branding and transparent per-video value promise. */
+.studio-platform{font-weight:800;color:var(--text)}.studio-suno{font-weight:900;color:var(--gold-strong);letter-spacing:.045em}
+.studio-no-credits{border-left:3px solid var(--gold-strong);background:#24211d;border-radius:0 10px 10px 0;padding:11px 14px;margin:0 0 16px}
+.studio-no-credits strong{display:block;font-size:18px;line-height:1.3;font-weight:900;color:var(--gold-strong);letter-spacing:.02em}
+.studio-no-credits p{margin:4px 0 0;font-size:14px;color:var(--muted);line-height:1.55}

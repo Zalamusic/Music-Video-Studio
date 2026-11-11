@@ -119,6 +119,9 @@ const customerUpload = multer({
  files: 6
  }
 });
+// Search metadata is prepared for launch, but private preview must not be indexed.
+// Only an explicitly approved official launch may set CUTLOOPZ_PUBLIC_LAUNCH=true.
+app.use((req,res,next)=>{if(process.env.CUTLOOPZ_PUBLIC_LAUNCH!=='true')res.set('X-Robots-Tag','noindex, nofollow, noarchive');next();});
 app.use(express.json({
  limit: '128kb'
 }));

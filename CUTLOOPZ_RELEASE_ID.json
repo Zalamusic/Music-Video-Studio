@@ -1,6 +1,6 @@
 {
-  "release_id": "CUTLOOPZ_STUDIO_V4_WELCOME_TOP_51TESTS",
-  "expected_test_count": 51,
+  "release_id": "CUTLOOPZ_STUDIO_V5B_NO_CREDITS_SUNO_57TESTS",
+  "expected_test_count": 57,
   "site_branch": "cutloopz-production-test",
   "features": [
     "My Studio five-step guided workflow",
@@ -11,17 +11,25 @@
     "Free creative planning without admin password",
     "Floating Back to Top button",
     "One-time floating new customer welcome after successful registration",
-    "Private generation and payments disabled"
+    "Private generation and payments disabled",
+    "Suno, Udio, YouTube, Spotify and SoundCloud link intake for Director planning",
+    "Song link retained with signed-in account draft",
+    "Homepage search metadata and song-source promotional CTA",
+    "No unauthorized streaming-service audio extraction",
+    "Preview search-indexing disabled until explicit public launch approval",
+    "Prominent NO CREDITS. JUST VIDEO. planned per-video pricing promise with clear preview limitation",
+    "SUNO uppercase and bold on homepage and Studio link intake"
   ],
   "files_sha256": {
-    "public/customer.html": "a1be7561e68e415789eb2722334667896b392b3b8888da86e0b48d7ae3b75dd4",
-    "public/account.html": "577730ca6ce7182406e1cac049a62f447d522a8e3d1978d774d8b93610468dd3",
-    "public/my-studio.html": "d0f4e4ad26a639fbfa9b76f5b74def32d24b3749ad3976f4118963f623c5a9c0",
-    "public/my-studio.js": "9d4f8e169d9e3d40663accc7defa6a89bcfb47b537bf89fb2681e20e511c5f0b",
-    "public/my-studio.css": "3dac88af3c448f522b1b1b3d782ea8322ba44b37758fbd569c88a0c25d44a961",
-    "public/cutloopz-welcome.js": "608f1542ce76208cc1b441aac8a37f03d63d09b8f2f43dbaff5607920e6195ae",
-    "public/cutloopz-welcome.css": "70f308c325b347f519cf3d3e7e78ceb0ad9b37e3f4330de5563d0358388ce7e0",
-    "test-new-customer-welcome.mjs": "2be7267411e07f8b2884d127c2cd24f879dcaa8f27874296ccf79ddaad925770",
-    "test-studio-back-to-top.mjs": "5ef53c3d5bcb74660b1cca5feb06be585aea919d4247ea98ab950bf6bddb5d38"
+    "server.js": "9abb5f2f04cdee8b68d4ab8f5168ad4ee53848dfec2dd8f92e9c0d7ecf5a9cfa",
+    "customer-auth.js": "8b96438ebdc6efa0000e9b1f553801e41974305eb23bcfc1749513266c546e70",
+    "public/customer.html": "f5376dbec2f4b8c963fe21aa84072080ca149be1fab1e7abcb0bdc9e6c1770ac",
+    "public/index.html": "b7ac4f0cb0bfbccc644e6062ce1ef8e9f771d74d3d1bd58d81f9fc37c5f865c6",
+    "public/my-studio.html": "0422cff2fb3776fa485cf74ece7db5644de79c0aff716b58d92f3ff95673b085",
+    "public/my-studio.js": "b513c92d9477f7a76d250311f4c3ad3f2474c1145677b410e4b30ee054c6f348",
+    "public/my-studio.css": "dcd4f624ffd4215895a1139daf0be19d364de9ea47d3dd14c5c4b52823cf24a2",
+    "public/cutloopz-song-link.js": "983e1c11002101b1665a9b8cda20b97454a5facd51bcb220fe8851e1a4f8935f",
+    "test-song-link-intake.mjs": "4e80d41320f3e7a498a297290c660797b39bf256d22027bfe860f4c2ee1dc9c1",
+    "test-v5b-no-credits-suno.mjs": "00659e78ca6be8914322b4505f33d3911d3b1d930a6280564e7d425400fa1a20"
   }
 }

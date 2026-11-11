@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="/my-studio.css">
 <link rel="stylesheet" href="/cutloopz-welcome.css">
 <script src="/cutloopz-welcome.js" defer></script>
+<script src="/cutloopz-song-link.js" defer></script>
 <script src="/my-studio.js" defer></script>
 </head>
 <body>
@@ -27,6 +28,13 @@
    <section class="wizard-step" data-step="0" aria-labelledby="songHeading">
     <h3 id="songHeading">01 · Song details</h3>
     <div class="fields"><div class="field"><label for="title">Song title</label><input id="title" maxlength="120" placeholder="Enter your song title" autocomplete="off"></div><div class="field"><label for="duration">Video duration</label><select id="duration"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240">4 minutes</option><option value="300">5 minutes</option><option value="360">6 minutes</option><option value="custom">Custom (15 sec–6 min)</option></select><div id="customTimeField" hidden><label for="customTime">Exact duration (M:SS)</label><input id="customTime" inputmode="numeric" maxlength="4" placeholder="3:46"><p class="hint">For example 3:46 or 4:01. Maximum 6:00.</p></div></div></div>
+    <div class="song-link-panel" id="songLinkPanel" aria-labelledby="songLinkHeading">
+      <div class="song-link-heading"><span class="song-link-glyph" aria-hidden="true">↗</span><div><label id="songLinkHeading" for="songLink">Paste Song Link</label><p class="hint"><strong class="studio-platform studio-suno">SUNO</strong> · <strong class="studio-platform">Udio</strong> · <strong class="studio-platform">YouTube</strong> · <strong class="studio-platform">Spotify</strong> · <strong class="studio-platform">SoundCloud</strong></p></div></div>
+      <div class="song-link-input-row"><input id="songLink" type="url" maxlength="2048" inputmode="url" placeholder="https://suno.com/song/…" autocomplete="off" spellcheck="false"><button type="button" class="gold" id="useSongLink">Use Link</button></div>
+      <p id="songLinkStatus" class="operation-status" role="status">Paste a public song link to attach its source to your project.</p>
+      <a id="openSongLink" href="#" rel="noopener noreferrer" target="_blank" hidden>Open original song ↗</a>
+      <p class="hint">A link saves the song source for your Director project. To analyze beats or generate with the actual audio, upload your authorized MP3/WAV below. CutLoopz does not rip or download audio from streaming platforms.</p>
+    </div>
     <div class="field"><label for="songAudio">Upload MP3 or WAV <span class="optional">(optional for planning)</span></label><input id="songAudio" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav"><p class="hint" id="audioLabel" role="status">Choose an MP3 or WAV (max 25 MB). Your browser will retain the selection privately for analysis on Page 2.</p></div>
     <div class="photo-upload-panel"><div class="photo-panel-heading"><span class="photo-panel-icon" aria-hidden="true">▧</span><div><label for="artistPhoto">Artist Photo <span class="optional">(optional for planning)</span></label><p class="hint">Add the artist's main reference photo here. Glamour Shots and additional looks remain separate membership features.</p></div></div><input id="artistPhoto" type="file" accept="image/jpeg,image/png,image/webp"><p class="hint" id="photoLabel" role="status">JPG, PNG or WebP · Max 12 MB · Saved privately in this browser for your current project.</p><div class="photo-preview" id="photoPreviewWrap" hidden><img id="photoPreview" alt="Preview of the selected artist reference photo"></div></div>
     <div class="field"><label for="lyrics">Lyrics <span class="optional">(recommended for emotional direction)</span></label><textarea id="lyrics" rows="5" maxlength="12000" placeholder="Paste the lyrics here. Add [00:15] timestamps if you have them."></textarea></div>
@@ -52,7 +60,7 @@
     <div id="storyContent" hidden><div class="story-head"><div><strong id="scenePairLabel">Scenes 1–2</strong><span id="storyEmotion"></span></div><div class="scene-nav"><button type="button" id="scenePrev" class="subtle">← Scenes</button><button type="button" id="sceneNext" class="subtle">Next scenes →</button></div></div><div id="sceneCards" class="scene-grid"></div><p class="helper">Changing scenes updates your draft only; it does not start video generation.</p></div>
    </section>
    <section class="wizard-step" data-step="4" aria-labelledby="reviewHeading" hidden>
-    <h3 id="reviewHeading">05 · Review Your Vision</h3><p class="helper">Make sure the creative choices are right before your future video-production order.</p>
+    <h3 id="reviewHeading">05 · Review Your Vision</h3><p class="helper">Make sure the creative choices are right before your future video-production order.</p><div class="studio-no-credits"><strong>NO CREDITS. JUST VIDEO.</strong><p>When ordering opens, the price, included deliverables, and revision terms will be clear before checkout. No credit packs or token counting.</p></div>
     <div id="reviewSummary" class="review-grid"></div><div class="review-actions"><button type="button" id="editSong" class="subtle">Edit Song</button><button type="button" id="editDirector" class="subtle">Edit Director</button><button type="button" id="editStoryboard" class="subtle">Edit Scenes</button></div>
     <div class="blocked"><strong>Video generation is not available in this preview.</strong><p>Free analysis, Director planning, editing, and drafts are active. No video will be submitted or charged. We will enable production only after the independent GPU pipeline is proven.</p><button type="button" disabled aria-disabled="true">Generate Video — Not Enabled</button></div>
    </section>

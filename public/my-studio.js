@@ -1,7 +1,7 @@
 'use strict';
 (() => {
  const $=id=>document.getElementById(id);
- const fieldNames=['title','duration','lyrics','visualStyle','format','sceneSeconds','direction','characterNotes'];
+ const fieldNames=['songLink','title','duration','lyrics','visualStyle','format','sceneSeconds','direction','characterNotes'];
  const pageTitles=['Your Song & Artist','Song Analyzer','Listening Director','Your Storyboard','Review Your Vision'];
  const pageDescriptions=['Bring your music into the Studio.','Learn its rhythm and energy.','Shape the story and visual performance.','Fine-tune each numbered scene.','Check every creative choice before production.'];
  const storagePrefix='cutloopz:artist-studio:v1:';
@@ -50,6 +50,8 @@
    const label=$('analysisIntro');if(!label)return;
    if(lastSongFile){label.textContent=`Ready to analyze: ${lastSongFile.name}. This is the song you selected on Page 1; no second upload needed.`;return;}
    const name=$('songAudio').dataset.previousName;
+   const link=window.CutLoopzSongLink?.inspect($('songLink').value);
+   if(link?.ok){label.textContent=`${link.name} link is saved. Beat analysis requires an authorized MP3/WAV on Page 1. You can continue to the Listening Director with your lyrics now.`;return;}
    label.textContent=name?`Your draft remembers “${name}”, but the actual audio file is unavailable in this browser. Go Back to Page 1 and choose the MP3 or WAV again.`:'No music selected yet. Choose a song on Page 1, or skip analysis and go directly to the Listening Director.';
  }
 
@@ -65,7 +67,7 @@
  let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false, photoPreviewUrl=null;
  const notify=(id,text,bad=false)=>{const node=$(id);if(node){node.textContent=text;node.style.color=bad?'#ffafaa':'';}};
  const safeText=value=>String(value==null?'':value);
- const serializable=()=>({title:$('title').value,lyrics:$('lyrics').value,songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),style:$('visualStyle').value,format:$('format').value,direction:$('direction').value,
+ const serializable=()=>({songLink:(window.CutLoopzSongLink?.inspect($('songLink').value)?.url)||'',title:$('title').value,lyrics:$('lyrics').value,songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),style:$('visualStyle').value,format:$('format').value,direction:$('direction').value,
   characterNotes:$('characterNotes').value,songName:lastSongFile?.name||$('songAudio').dataset.previousName||'',photoName:lastPhotoFile?.name||$('artistPhoto').dataset.previousName||'',page,scenePage,scenes,musicResult});
  function saveLocal(){
    try{localStorage.setItem(storageKey,JSON.stringify({at:Date.now(),draft:serializable()}));return true;}
@@ -92,6 +94,8 @@
  function hydrate(draft){
    if(!draft || typeof draft!=='object')return;
    restoring=true;
+   $('songLink').value=safeText(draft.songLink).slice(0,2048);
+   renderLinkStatus(false);
    $('title').value=safeText(draft.title).slice(0,120);
    $('lyrics').value=safeText(draft.lyrics).slice(0,12000);
    const seconds=Number(draft.songSeconds);
@@ -136,6 +140,7 @@
      }
    }catch{ /* A retained file is optional; the artist can select it again. */ }
    updateUploadLabels();refreshAnalysisIntro();
+   if(new URLSearchParams(location.search).get('source')==='link')$('songLink').focus({preventScroll:true});
    // Deep links override the saved page, but do not reset any project fields.
    const urlPage=new URLSearchParams(location.search).get('step');
    const destination={song:0,analyze:1,director:2,storyboard:3,review:4}[urlPage];
@@ -170,6 +175,21 @@
  function updateUploadLabels(){
   if(lastSongFile)$('audioLabel').textContent=`Ready: ${lastSongFile.name}. Saved privately on this device. Page 2 uses this selection automatically.`;
   if(lastPhotoFile)$('photoLabel').textContent=`Ready: ${lastPhotoFile.name}. Saved privately on this device.`;
+ }
+ function renderLinkStatus(announce=true){
+   const parsed=window.CutLoopzSongLink?.inspect($('songLink').value);
+   const status=$('songLinkStatus'),open=$('openSongLink');
+   if(!parsed?.ok){
+     status.textContent=parsed?.error||'Paste a public song share link.';
+     status.style.color=announce?'#ffafaa':'';
+     open.hidden=true;open.removeAttribute('href');
+     return false;
+   }
+   status.style.color='';
+   status.textContent=`${parsed.name} link attached to your project. Use your authorized audio file for beat analysis; the Director can work from lyrics now.`;
+   open.href=parsed.url;open.hidden=false;
+   if(announce){scheduleSave();refreshAnalysisIntro();}
+   return true;
  }
  function renderAnalysis(){
    if(!musicResult){$('analysisResult').hidden=true;return;}
@@ -234,6 +254,8 @@
  function addReview(label,value){const box=document.createElement('div'),small=document.createElement('small'),strong=document.createElement('strong');small.textContent=label;strong.textContent=value||'Not provided';box.append(small,strong);$('reviewSummary').appendChild(box)}
  function renderReview(){
   $('reviewSummary').replaceChildren();
+  const linked=window.CutLoopzSongLink?.inspect($('songLink').value);
+  addReview('Music source',lastSongFile?'Uploaded MP3/WAV':linked?.ok?`${linked.name} link (audio upload required)`:'Not attached');if(linked?.ok)addReview('Song share link',linked.url);
   addReview('Song',$('title').value||'Untitled');addReview('Duration',`${selectedDuration()} seconds`);
   addReview('Style',$('visualStyle').value);addReview('Format',$('format').value==='landscape'?'16:9 Landscape':'9:16 Vertical');
   addReview('Director direction',$('direction').value.slice(0,350));addReview('Scenes',`${scenes.length} editable scenes`);
@@ -245,6 +267,7 @@
    Promise.all([mediaWrite('audio',null),mediaWrite('photo',null)]).catch(()=>notify('saveStatus','Project reset; stored files could not be cleared. Clear site data in browser settings.',true));
    if(account)fetch('/api/customer-auth/studio/draft',{method:'DELETE',credentials:'same-origin'}).catch(()=>{});
    for(const id of fieldNames){const element=$(id);element.value=element.tagName==='SELECT'?element.options[0].value:'';}
+   $('songLinkStatus').textContent='Paste a public song link to attach its source to your project.';$('songLinkStatus').style.color='';$('openSongLink').hidden=true;$('openSongLink').removeAttribute('href');
    $('duration').value='30';$('customTime').value='';syncCustomTime();$('sceneSeconds').value='15';$('format').value='vertical';$('songAudio').value='';$('artistPhoto').value='';
    $('songAudio').dataset.previousName='';$('artistPhoto').dataset.previousName='';lastSongFile=null;lastPhotoFile=null;
    $('audioLabel').textContent='Choose an audio file for beat-informed analysis. Maximum 25 MB.';
@@ -253,6 +276,9 @@
    scenes=[];musicResult=null;scenePage=0;renderAnalysis();notify('directorStatus','');notify('analyzeStatus','');showPage(0);
  }
  for(const id of fieldNames){const input=$(id);input.addEventListener('input',scheduleSave);input.addEventListener('change',()=>{if(['duration','sceneSeconds'].includes(id))clearOrphanedStoryboard();scheduleSave()});}
+ $('useSongLink').addEventListener('click',()=>{renderLinkStatus(true)});
+ $('songLink').addEventListener('input',()=>{const a=$('openSongLink');a.hidden=true;a.removeAttribute('href');$('songLinkStatus').textContent='Tap Use Link to confirm this source.';});
+ $('songLink').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();renderLinkStatus(true);}});
  $('duration').addEventListener('change',()=>{syncCustomTime();clearOrphanedStoryboard();scheduleSave()});
  $('customTime').addEventListener('input',()=>{clearOrphanedStoryboard();scheduleSave()});
  window.addEventListener('resize',()=>{if(page===3)renderScenes()});
