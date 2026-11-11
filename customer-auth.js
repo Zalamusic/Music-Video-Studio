@@ -210,9 +210,12 @@ export function createCustomerAuthRouter({
 
   const usersFile = path.join(directory, 'users.json');
   const sessionsFile = path.join(directory, 'sessions.json');
+  const draftsFile = path.join(directory, 'studio-drafts.json');
 
   let users = [];
   let sessions = [];
+  let drafts = [];
+  const draftAttempts = new Map();
   let initialized = false;
   let initializationPromise = null;
   let writeQueue = Promise.resolve();
@@ -240,10 +243,12 @@ export function createCustomerAuthRouter({
 
         const loadedUsers = await readJson(usersFile);
         const loadedSessions = await readJson(sessionsFile);
+        const loadedDrafts = await readJson(draftsFile);
 
         if (
           !Array.isArray(loadedUsers) ||
-          !Array.isArray(loadedSessions)
+          !Array.isArray(loadedSessions) ||
+          !Array.isArray(loadedDrafts)
         ) {
           throw new Error(
             'Invalid customer account storage.'
@@ -252,6 +257,7 @@ export function createCustomerAuthRouter({
 
         users = loadedUsers;
         sessions = loadedSessions;
+        drafts = loadedDrafts;
         initialized = true;
       })().catch(error => {
         initializationPromise = null;
@@ -284,6 +290,7 @@ export function createCustomerAuthRouter({
 
       await writeAtomic(usersFile, users);
       await writeAtomic(sessionsFile, sessions);
+      await writeAtomic(draftsFile, drafts);
     });
 
     writeQueue = operation.catch(() => {});
@@ -674,6 +681,56 @@ export function createCustomerAuthRouter({
           'Unable to reset your password.'
       });
     }
+  });
+
+  // Account-owned drafts: never use the administrator key for free creative work.
+  // Do not store actual audio/photo bytes here. They must be selected again after refresh.
+  function sameOrigin(req) {
+    const origin = req.get('origin');
+    if (!origin) return true; // Native clients may omit Origin; cookies still required.
+    try { return new URL(origin).host === req.get('host') &&
+      ['https:', 'http:'].includes(new URL(origin).protocol); }
+    catch { return false; }
+  }
+  router.get('/studio/draft', (req, res) => {
+    const session = findSession(req);
+    if (!session) return res.status(401).json({ok:false,error:'Sign in to sync your draft.'});
+    const entry = drafts.find(item => item.userId === session.user.id);
+    res.json({ok:true,draft:entry?.draft || null,updatedAt:entry?.updatedAt || null});
+  });
+  router.put('/studio/draft', async (req, res) => {
+    const session = findSession(req);
+    if (!session) return res.status(401).json({ok:false,error:'Sign in to save your draft.'});
+    if (!sameOrigin(req)) return res.status(403).json({ok:false,error:'Invalid request origin.'});
+    const now = Date.now();
+    const previous = draftAttempts.get(session.user.id);
+    const item = !previous || now - previous.started > 900000 ? {started:now,count:1} : {started:previous.started,count:previous.count+1};
+    draftAttempts.set(session.user.id,item);
+    if(item.count>120)return res.status(429).json({ok:false,error:'Draft save limit reached. Try again later.'});
+    const source = req.body?.draft;
+    if (!source || typeof source!=='object' || Array.isArray(source))
+      return res.status(400).json({ok:false,error:'Invalid project draft.'});
+    const serialized = JSON.stringify(source);
+    if (!serialized || Buffer.byteLength(serialized,'utf8')>100000)
+      return res.status(413).json({ok:false,error:'Project draft exceeds 100 KB.'});
+    // Strip unrecognized keys; never store client-supplied account identifiers.
+    const allowed=['title','lyrics','songSeconds','sceneSeconds','style','format','direction',
+      'songName','photoName','characterNotes','scenePage','page','scenes','musicResult'];
+    const draft = Object.fromEntries(allowed.filter(key => Object.hasOwn(source,key)).map(key=>[key,source[key]]));
+    try {
+      drafts = drafts.filter(item=>item.userId!==session.user.id);
+      const updatedAt = new Date().toISOString();
+      drafts.push({userId:session.user.id,draft,updatedAt});
+      await save();
+      res.json({ok:true,updatedAt});
+    } catch(error) {res.status(503).json({ok:false,error:'Draft storage unavailable.'});}
+  });
+  router.delete('/studio/draft', async(req,res)=>{
+    const session=findSession(req);
+    if(!session)return res.status(401).json({ok:false,error:'Sign in first.'});
+    if(!sameOrigin(req))return res.status(403).json({ok:false,error:'Invalid request origin.'});
+    try{drafts=drafts.filter(item=>item.userId!==session.user.id);await save();res.json({ok:true});}
+    catch{res.status(503).json({ok:false,error:'Draft storage unavailable.'})}
   });
 
   router.get('/me', (req, res) => {

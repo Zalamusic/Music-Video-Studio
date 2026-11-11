@@ -1,3 +1,4 @@
+import {createCreativePreviewRouter} from './cutloopz-creative-preview.mjs';
 import {createProductionRouter} from './cutloopz-production-router.mjs';
 import {verifyProductionStorage} from './cutloopz-storage-preflight.mjs';
 import { createCinemaManifest } from './cutloopz-cinema-engine.js';
@@ -119,8 +120,10 @@ const customerUpload = multer({
  }
 });
 app.use(express.json({
- limit: '16kb'
+ limit: '128kb'
 }));
+// Public no-charge creative previews; no administrator key, GPU or billing.
+app.use('/api/creative-preview',createCreativePreviewRouter({express,multer}));
 app.use(
  '/api/customer-auth',
  createCustomerAuthRouter({

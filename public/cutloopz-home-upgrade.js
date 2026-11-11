@@ -218,7 +218,7 @@
  if (heading) heading.textContent = 'Welcome Back to Cut Loopz Media';
  if (intro) intro.textContent =
  'Your personal studio is ready. Open My Studio to manage your account.';
- const studio = makeLink('My Studio', '/account.html?view=studio');
+ const studio = makeLink('My Studio', '/my-studio.html');
  const signOut = document.createElement('button');
  signOut.type = 'button';
  signOut.className = 'cutloopz-account-signout';

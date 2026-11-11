@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
-<title>Your Account | Cut Loopz Media</title>
+<title>Your Account | CutLoopz Media</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -470,13 +470,13 @@ body.zala-themed .zala-theme-control {
   <div class="logo">
     <img
       src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"
-      alt="Cut Loopz Media logo">
+      alt="CutLoopz Media logo">
   </div>
   <div>
-    <div class="brand">Cut Loopz Media</div>
+    <div class="brand">CutLoopz Media</div>
     <div class="sub">CINEMATIC MUSIC VIDEO STUDIO</div>
   </div>
-  <a href="/customer.html" class="studio-link">
+  <a href="/my-studio.html" class="studio-link">
     ← Studio
   </a>
 </header>
@@ -651,7 +651,7 @@ body.zala-themed .zala-theme-control {
   </section>
 
   <div class="account-actions">
-    <a href="/customer.html#create">🎬 Create a Video</a>
+    <a href="/my-studio.html">🎬 Create a Video</a>
     <button type="button" id="logoutButton">Sign out</button>
   </div>
 </section>
@@ -660,7 +660,7 @@ body.zala-themed .zala-theme-control {
   role="status" aria-live="polite"></p>
 
 <div class="foot">
-  <a href="/customer.html">← Back to Main Studio</a>
+  <a href="/my-studio.html">← Back to My Studio</a>
 </div>
 
 </main>
@@ -673,7 +673,7 @@ const $ = id => document.getElementById(id);
 const messages = {
   register: [
     ['Hello, future hitmaker!',
-     'Welcome to Cut Loopz Media. Your next visual masterpiece starts here.'],
+     'Welcome to CutLoopz Media. Your next visual masterpiece starts here.'],
     ['Your Music. Your Vision. Your Video.',
      'Join the studio and bring your music to life.'],
     ['The spotlight is waiting!',
@@ -701,7 +701,7 @@ const messages = {
     ['Welcome to the studio, {name}!',
      'Your creative journey starts here.'],
     ['You’re officially a hitmaker, {name}!',
-     'Welcome to Cut Loopz Media.']
+     'Welcome to CutLoopz Media.']
   ]
 };
 
@@ -1066,7 +1066,7 @@ function afterAuthentication(user, newlyRegistered = false) {
   if (studioView) {
     showUser(user, newlyRegistered);
   } else {
-    window.location.replace('/customer.html');
+    window.location.replace('/my-studio.html');
   }
 }
 

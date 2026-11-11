@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101014">
+<title>My Studio | CutLoopz Media</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/my-studio.css">
+<script src="/my-studio.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#studioWorkspace">Skip to Studio</a>
+<header class="site-header">
+ <a class="brand" href="/customer.html" aria-label="CutLoopz Media home"><img src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png" alt=""><span><strong>CutLoopz Media</strong><small>A Director That Listens. A Video That Performs.</small></span></a>
+ <nav class="topnav" aria-label="Studio navigation"><a class="active" href="/my-studio.html">My Studio</a><a href="/account.html?view=studio">My Videos & Account</a><a href="/glamour.html">Glamour Membership</a><a href="/customer.html">Home</a></nav>
+</header>
+<main class="shell" id="studioWorkspace">
+ <div class="intro"><div><span class="eyebrow">YOUR MUSIC · YOUR VISION · YOUR VIDEO</span><h1>My Studio</h1><p>One step at a time. Your creative work stays with your project.</p></div><div class="status-wrap"><span id="signInStatus" class="status-chip">Checking account…</span><span id="saveStatus" class="save-message" role="status">Loading draft…</span></div></div>
+ <div class="studio-frame">
+  <div class="step-header"><div><span class="eyebrow" id="stepTag">PAGE 01 / 05</span><h2 id="stepTitle">Your Song</h2><p id="stepSubtitle">Bring your music into the Studio.</p></div><button type="button" id="newProject" class="subtle">New Project</button></div>
+  <div class="progress" role="progressbar" aria-label="Project progress" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1" id="stepProgress"><span id="progressFill"></span></div>
+  <div class="workspace-content">
+   <section class="wizard-step" data-step="0" aria-labelledby="songHeading">
+    <h3 id="songHeading">01 · Song details</h3>
+    <div class="fields"><div class="field"><label for="title">Song title</label><input id="title" maxlength="120" placeholder="Enter your song title" autocomplete="off"></div><div class="field"><label for="duration">Video duration</label><select id="duration"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240">4 minutes</option><option value="300">5 minutes</option><option value="360">6 minutes</option><option value="custom">Custom (15 sec–6 min)</option></select><div id="customTimeField" hidden><label for="customTime">Exact duration (M:SS)</label><input id="customTime" inputmode="numeric" maxlength="4" placeholder="3:46"><p class="hint">For example 3:46 or 4:01. Maximum 6:00.</p></div></div></div>
+    <div class="field"><label for="songAudio">Upload MP3 or WAV <span class="optional">(optional for planning)</span></label><input id="songAudio" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav"><p class="hint" id="audioLabel">Choose an audio file for beat-informed analysis. Maximum 25 MB. Selected files stay on this device until uploaded for analysis.</p></div>
+    <div class="field"><label for="lyrics">Lyrics <span class="optional">(recommended for emotional direction)</span></label><textarea id="lyrics" rows="5" maxlength="12000" placeholder="Paste the lyrics here. Add [00:15] timestamps if you have them."></textarea></div>
+    <p class="helper">You can create a free Director storyboard without uploading a song. Untimed lyric placement will be approximate.</p>
+   </section>
+   <section class="wizard-step" data-step="1" aria-labelledby="analyzeHeading" hidden>
+    <h3 id="analyzeHeading">02 · Free Song Analyzer</h3><p class="helper">Analyze musical rhythm and energy; no administrator password, payment, or GPU needed.</p>
+    <div class="analysis-box"><p id="analysisIntro">Upload an MP3 or WAV on Page 1, then select Analyze Song.</p><button type="button" id="analyzeBtn" class="gold">Analyze Song</button><p id="analyzeStatus" role="status" class="operation-status"></p>
+     <div id="analysisResult" hidden><div class="metric-grid"><div><small>Estimated tempo</small><strong id="bpmValue">—</strong></div><div><small>Audio length</small><strong id="audioDurationValue">—</strong></div><div><small>Energy segments</small><strong id="energyValue">—</strong></div></div><p class="hint" id="analysisCaveat"></p></div>
+    </div><p class="helper">No song uploaded? Skip to the Listening Director. It can still interpret the lyrics and your creative instructions.</p>
+   </section>
+   <section class="wizard-step" data-step="2" aria-labelledby="directorHeading" hidden>
+    <h3 id="directorHeading">03 · Listening Director</h3><p class="helper">Your Director interprets the lyrics, overall mood, style, and any analyzed audio. You can edit everything before generating a storyboard.</p>
+    <div class="fields"><div class="field"><label for="visualStyle">Cinematic style</label><select id="visualStyle"><option>Cinematic Realism</option><option>Romantic Drama</option><option>Urban Music Video</option><option>Hollywood Action</option><option>Science Fiction</option><option>Fantasy</option><option>3D Animation</option><option>Anime</option><option>Music Performance</option></select></div><div class="field"><label for="format">Video format</label><select id="format"><option value="vertical">9:16 Vertical</option><option value="landscape">16:9 Widescreen</option></select></div></div>
+    <div class="fields"><div class="field"><label for="sceneSeconds">Length per scene</label><select id="sceneSeconds"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></select></div><div class="field"><label for="artistPhoto">Artist reference photo <span class="optional">(optional)</span></label><input id="artistPhoto" type="file" accept="image/jpeg,image/png,image/webp"><p class="hint" id="photoLabel">JPG, PNG or WebP. One reference photo in the standard Studio.</p></div></div>
+    <div class="field"><label for="direction">Your creative direction</label><textarea id="direction" maxlength="4000" rows="5" placeholder="Describe the mood, location, action, performance, wardrobe, movement, and story. For example: confident performance in a city at night with smooth, natural movements."></textarea></div>
+    <div class="field"><label for="characterNotes">Artist appearance and continuity</label><textarea id="characterNotes" maxlength="1000" rows="2" placeholder="Optional: hairstyle, distinctive outfits, expression, visual continuity..."></textarea></div>
+    <button type="button" id="directorBtn" class="gold">Create Free Director Storyboard</button><p id="directorStatus" class="operation-status" role="status"></p>
+   </section>
+   <section class="wizard-step" data-step="3" aria-labelledby="storyHeading" hidden>
+    <h3 id="storyHeading">04 · Your Storyboard</h3><p class="helper">Each scene is numbered. Edit instructions or move between scene pairs without losing your changes.</p>
+    <div id="storyEmpty" class="empty-state">No storyboard yet. Return to Page 3 and select <strong>Create Free Director Storyboard</strong>.</div>
+    <div id="storyContent" hidden><div class="story-head"><div><strong id="scenePairLabel">Scenes 1–2</strong><span id="storyEmotion"></span></div><div class="scene-nav"><button type="button" id="scenePrev" class="subtle">← Scenes</button><button type="button" id="sceneNext" class="subtle">Next scenes →</button></div></div><div id="sceneCards" class="scene-grid"></div><p class="helper">Changing scenes updates your draft only; it does not start video generation.</p></div>
+   </section>
+   <section class="wizard-step" data-step="4" aria-labelledby="reviewHeading" hidden>
+    <h3 id="reviewHeading">05 · Review Your Vision</h3><p class="helper">Make sure the creative choices are right before your future video-production order.</p>
+    <div id="reviewSummary" class="review-grid"></div><div class="review-actions"><button type="button" id="editSong" class="subtle">Edit Song</button><button type="button" id="editDirector" class="subtle">Edit Director</button><button type="button" id="editStoryboard" class="subtle">Edit Scenes</button></div>
+    <div class="blocked"><strong>Video generation is not available in this preview.</strong><p>Free analysis, Director planning, editing, and drafts are active. No video will be submitted or charged. We will enable production only after the independent GPU pipeline is proven.</p><button type="button" disabled aria-disabled="true">Generate Video — Not Enabled</button></div>
+   </section>
+  </div>
+  <footer class="step-footer"><button type="button" id="backBtn" class="subtle" disabled>← Back</button><span id="stepCounter">Page 1 of 5</span><button type="button" id="nextBtn" class="gold">Next →</button></footer>
+ </div>
+ <section class="below-studio" aria-label="Other Studio tools"><a class="tool-card" href="/account.html?view=studio"><span aria-hidden="true">▣</span><strong>My Videos & Account</strong><small>Track saved orders and loyalty rewards.</small></a><a class="tool-card" href="/glamour.html"><span aria-hidden="true">✦</span><strong>Glamour Membership</strong><small>Optional subscriber-only wardrobe and photo features.</small></a></section>
+ <p class="legal">Your changes are saved as a draft on this device. Signed-in accounts also attempt to sync draft text to the server. For security, audio and photo files are not saved as part of drafts; reselect them after refreshing or switching devices.</p>
+</main>
+</body>
+</html>
