@@ -68,4 +68,16 @@ app.post('/jobs',upload.fields([{name:'song',maxCount:1},{name:'photo',maxCount:
 });
 app.get('/jobs/:id',(req,res)=>{const job=jobs.get(req.params.id);if(!job)return res.status(404).json({ok:false,error:'Job not found'});res.json({ok:true,status:job.status,error:job.error})});
 app.get('/jobs/:id/video',async(req,res)=>{const job=jobs.get(req.params.id);if(!job||job.status!=='ready')return res.status(404).json({ok:false,error:'Video not ready'});const p=path.join(root,job.id,'video.mp4');try{await fs.access(p);res.type('mp4');res.set('Cache-Control','no-store');createReadStream(p).pipe(res)}catch{res.status(404).json({ok:false,error:'Video missing'})}});
-app.listen(port,'127.0.0.1',()=>console.log(`CutLoopz local model worker on 127.0.0.1:${port}; runner ${runner?'configured':'missing'}`));
+
+const proxyEnabled = process.env.CUTLOOPZ_WORKER_PROXY_ENABLED === 'true';
+
+if (proxyEnabled && !sharedToken) {
+  throw Error('Worker proxy requires CUTLOOPZ_WORKER_SHARED_TOKEN');
+}
+
+const bindHost = proxyEnabled ? '0.0.0.0' : '127.0.0.1';
+
+app.listen(port, bindHost, () => {
+  console.log(`CutLoopz local model worker on ${bindHost}:${port}; runner ${runner ? 'configured' : 'missing'}`);
+});
+
