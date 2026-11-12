@@ -86,6 +86,21 @@ jobs:
             find public -type f -name '*.js' -print0 | xargs -0 -r -n1 node --check
           fi
 
+      - name: Install and verify FFmpeg for real-media assembly tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg
+          command -v ffmpeg
+          command -v ffprobe
+          ffmpeg -hide_banner -version | head -n 1
+          ffprobe -hide_banner -version | head -n 1
+          if ! ffmpeg -hide_banner -encoders 2>/dev/null | grep -q 'libx264'; then
+            echo 'Required libx264 encoder is missing' >&2
+            exit 1
+          fi
+
       - name: Test the actual checked-out branch (no network GPU calls)
         shell: bash
         run: |
@@ -95,4 +110,35 @@ jobs:
             echo 'No tests found' >&2
             exit 1
           fi
-          node --test "${tests[@]}"
+          set +e
+          node --test "${tests[@]}" 2>&1 | tee cutloopz-audit-test-results.log
+          test_status=${PIPESTATUS[0]}
+          set -e
+          python3 - <<'PYRESULTS'
+          from pathlib import Path
+          import os, re
+          log=Path('cutloopz-audit-test-results.log').read_text(errors='replace')
+          failures=re.findall(r'^not ok \d+ - .+$',log,flags=re.M)
+          summary=['## CutLoopz current-branch test failures','',
+                   f'**Failing test entries: {len(failures)}**','']
+          if failures:
+            summary.extend(' - '+line for line in failures)
+          else:
+            summary.append('No failing test names reported.')
+          summary.extend(['','Full TAP output is stored as the **cutloopz-audit-test-log** Actions artifact.',
+                          'This run does not deploy, start GPU pods or enable generation.'])
+          if os.environ.get('GITHUB_STEP_SUMMARY'):
+            with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('\n'.join(summary)+'\n')
+          print('\n'.join(summary))
+          PYRESULTS
+          exit "$test_status"
+
+      - name: Attach complete audit test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cutloopz-audit-test-log
+          path: cutloopz-audit-test-results.log
+          if-no-files-found: ignore
+          retention-days: 7
