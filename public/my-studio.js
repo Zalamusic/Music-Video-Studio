@@ -65,10 +65,35 @@
  function syncCustomTime(){ $('customTimeField').hidden=$('duration').value!=='custom'; }
  let storageKey=storagePrefix+'guest', account=null, saveTimer=null, serverTimer=null;
  let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false, photoPreviewUrl=null;
+ let analysisSourceKey='', storyboardSourceKey='', pendingRestore=null, sourceVersion=0;
  const notify=(id,text,bad=false)=>{const node=$(id);if(node){node.textContent=text;node.style.color=bad?'#ffafaa':'';}};
  const safeText=value=>String(value==null?'':value);
+ // Source signatures are provenance checks, not security hashes. Never attach an old
+ // analysis or storyboard to a different song, including after draft restoration.
+ // Compact double fingerprint avoids storing duplicate copies of lyrics in drafts.
+ // It is not used for authentication, signatures, or security decisions.
+ function fingerprint(parts){
+   const text=JSON.stringify(parts);let a=2166136261,b=2246822519;
+   for(let i=0;i<text.length;i++){const c=text.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b+c,0x9e3779b1);}
+   return `${text.length}:${(a>>>0).toString(16)}:${(b>>>0).toString(16)}`;
+ }
+ const fileIdentity=file=>file?[file.name,file.size,file.lastModified]:null;
+ const musicKey=()=>fingerprint([$('title').value.trim(),$('songLink').value.trim(),fileIdentity(lastSongFile)]);
+ const storyKey=()=>fingerprint([musicKey(),$('lyrics').value,$('direction').value,$('characterNotes').value,
+   selectedDuration(),Number($('sceneSeconds').value),$('visualStyle').value,$('format').value,fileIdentity(lastPhotoFile),analysisSourceKey]);
+ function invalidateSongOutputs({music=false}={}){
+   sourceVersion++;
+   const hadStory=scenes.length>0;
+   scenes=[];scenePage=0;storyboardSourceKey='';
+   $('storyEmotion').textContent='';
+   if(music){musicResult=null;analysisSourceKey='';renderAnalysis();}
+   if(hadStory){notify('directorStatus','Song or direction changed. Previous storyboard cleared; generate a new one for this song.');
+     if(page===3)renderScenes();}
+   scheduleSave();
+ }
+
  const serializable=()=>({songLink:(window.CutLoopzSongLink?.inspect($('songLink').value)?.url)||'',title:$('title').value,lyrics:$('lyrics').value,songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),style:$('visualStyle').value,format:$('format').value,direction:$('direction').value,
-  characterNotes:$('characterNotes').value,songName:lastSongFile?.name||$('songAudio').dataset.previousName||'',photoName:lastPhotoFile?.name||$('artistPhoto').dataset.previousName||'',page,scenePage,scenes,musicResult});
+  characterNotes:$('characterNotes').value,songName:lastSongFile?.name||$('songAudio').dataset.previousName||'',photoName:lastPhotoFile?.name||$('artistPhoto').dataset.previousName||'',page,scenePage,scenes,musicResult,analysisSourceKey,storyboardSourceKey});
  function saveLocal(){
    try{localStorage.setItem(storageKey,JSON.stringify({at:Date.now(),draft:serializable()}));return true;}
    catch{notify('saveStatus','Storage is full. Draft not saved.',true);return false;}
@@ -111,11 +136,16 @@
    $('artistPhoto').dataset.previousName=safeText(draft.photoName).slice(0,180);
    if(draft.songName)$('audioLabel').textContent=`Previously selected: ${draft.songName}. Reselect this file to analyze it again.`;
    if(draft.photoName)$('photoLabel').textContent=`Previously selected: ${draft.photoName}. Reselect this photo before production.`;
-   musicResult=draft.musicResult && typeof draft.musicResult==='object'?draft.musicResult:null;
-   scenes=Array.isArray(draft.scenes)?draft.scenes.slice(0,40).map(s=>({number:Number(s.number)||1,startSeconds:Number(s.startSeconds)||0,endSeconds:Number(s.endSeconds)||0,emotion:safeText(s.emotion).slice(0,55),location:safeText(s.location).slice(0,500),action:safeText(s.action).slice(0,800),prompt:safeText(s.prompt).slice(0,4000)})):[];
+   // Defer old output restoration until the original song file has actually
+   // been restored and the recorded input signatures still match. Legacy
+   // drafts with no signatures are not allowed to carry creative output.
+   pendingRestore={musicResult:draft.musicResult,analysisSourceKey:safeText(draft.analysisSourceKey),
+     storyboardSourceKey:safeText(draft.storyboardSourceKey),scenePage:Number(draft.scenePage)||0,
+     scenes:Array.isArray(draft.scenes)?draft.scenes.slice(0,40).map(s=>({number:Number(s.number)||1,startSeconds:Number(s.startSeconds)||0,endSeconds:Number(s.endSeconds)||0,emotion:safeText(s.emotion).slice(0,55),location:safeText(s.location).slice(0,500),action:safeText(s.action).slice(0,800),prompt:safeText(s.prompt).slice(0,4000)})):[]};
+   musicResult=null;analysisSourceKey='';scenes=[];storyboardSourceKey='';$('storyEmotion').textContent='';
    scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,Number(draft.scenePage)||0));
    page=Math.max(0,Math.min(4,Number(draft.page)||0));
-   restoring=false;updateUploadLabels();refreshAnalysisIntro();renderAnalysis();showPage(page,{reposition:false});
+   updateUploadLabels();refreshAnalysisIntro();renderAnalysis();showPage(page,{reposition:false});restoring=false;
  }
  async function initialize(){
    let localDraft=null,localUpdatedAt=0,serverUpdatedAt=0;
@@ -139,7 +169,20 @@
        lastPhotoFile=photo;updatePhotoPreview(photo);
      }
    }catch{ /* A retained file is optional; the artist can select it again. */ }
-   updateUploadLabels();refreshAnalysisIntro();
+   if(pendingRestore){
+     const restored=pendingRestore;pendingRestore=null;
+     if(lastSongFile && restored.analysisSourceKey && restored.analysisSourceKey===musicKey()
+       && restored.musicResult && typeof restored.musicResult==='object'){
+       musicResult=restored.musicResult;analysisSourceKey=restored.analysisSourceKey;
+     }
+     if(restored.storyboardSourceKey && restored.storyboardSourceKey===storyKey()){
+       scenes=restored.scenes;
+     }
+     storyboardSourceKey=scenes.length?restored.storyboardSourceKey:'';
+     scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,restored.scenePage));
+   }
+   renderAnalysis();if(page===3)renderScenes();
+   updateUploadLabels();refreshAnalysisIntro();scheduleSave();
    if(new URLSearchParams(location.search).get('source')==='link')$('songLink').focus({preventScroll:true});
    // Deep links override the saved page, but do not reset any project fields.
    const urlPage=new URLSearchParams(location.search).get('step');
@@ -190,7 +233,7 @@
  function clearOrphanedStoryboard(){
    if(!scenes.length)return;
    const count=Math.ceil(selectedDuration()/Number($('sceneSeconds').value));
-   if(count!==scenes.length){scenes=[];scenePage=0;musicResult=null;}
+   if(count!==scenes.length)invalidateSongOutputs();
  }
  function updatePhotoPreview(file){
    if(photoPreviewUrl){URL.revokeObjectURL(photoPreviewUrl);photoPreviewUrl=null;}
@@ -234,21 +277,33 @@
    if(lastSongFile.size>25*1024*1024){notify('analyzeStatus','The song must be smaller than 25 MB.',true);return;}
    const form=new FormData();form.append('audio',lastSongFile);
    const btn=$('analyzeBtn');btn.disabled=true;notify('analyzeStatus','Analyzing rhythm and intensity…');
+   const expectedKey=musicKey(),version=sourceVersion;
    try{
     const response=await fetch('/api/creative-preview/music-analysis',{method:'POST',body:form});const payload=await response.json();
     if(!response.ok||!payload.ok)throw Error(payload.error||'Unable to analyze audio');
-    musicResult=payload;renderAnalysis();scheduleSave();notify('analyzeStatus','Song analysis complete. Continue to the Director.');
+    if(version!==sourceVersion || expectedKey!==musicKey()){
+      notify('analyzeStatus','Song changed during analysis. Old result discarded; analyze the current file again.',true);return;
+    }
+    musicResult=payload;analysisSourceKey=expectedKey;scenes=[];storyboardSourceKey='';scenePage=0;
+    renderAnalysis();scheduleSave();notify('analyzeStatus','Song analysis complete for this selected file. Continue to the Director.');
    }catch(error){notify('analyzeStatus',error.message,true)}finally{btn.disabled=false;}
  }
  async function makeStoryboard(){
    const btn=$('directorBtn');btn.disabled=true;notify('directorStatus','Creating your numbered storyboard…');
    try{
+    if(musicResult && analysisSourceKey!==musicKey()){
+      musicResult=null;analysisSourceKey='';renderAnalysis();
+    }
+    const expectedKey=storyKey(),version=sourceVersion;
     const input={title:$('title').value||'Untitled Song',lyrics:$('lyrics').value,prompt:[ $('direction').value,$('characterNotes').value&&`Artist identity: ${$('characterNotes').value}`].filter(Boolean).join('\n').slice(0,4000),songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),visualStyle:$('visualStyle').value,format:$('format').value,musicPlan:musicResult?.plan||null};
     const res=await fetch('/api/creative-preview/storyboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});
     const data=await res.json();if(!res.ok||!data.ok)throw Error(data.error||'Cannot create storyboard');
+    if(version!==sourceVersion || expectedKey!==storyKey()){
+      notify('directorStatus','Inputs changed while creating the storyboard. Old result discarded.',true);return;
+    }
     if(scenes.length&&!window.confirm('Replace the existing storyboard, including any manual edits?')){notify('directorStatus','Existing storyboard preserved.');return;}
     scenes=(data.plan.scenes||[]).map(s=>({number:s.number,startSeconds:s.startSeconds,endSeconds:s.endSeconds,emotion:s.emotion,location:s.location,action:s.action,prompt:s.prompt}));
-    scenePage=0;
+    scenePage=0;storyboardSourceKey=expectedKey;
     $('storyEmotion').textContent=`Emotional direction: ${data.plan.storyEmotion||'unclassified'}`;
     notify('directorStatus',`Storyboard ready · ${scenes.length} editable scenes. No video created.`);
     showPage(3);
@@ -302,19 +357,28 @@
    $('audioLabel').textContent='Choose an audio file for beat-informed analysis. Maximum 25 MB.';
    $('photoLabel').textContent='JPG, PNG or WebP · Max 12 MB · One reference photo in the standard Studio.';
    updatePhotoPreview(null);
-   scenes=[];musicResult=null;scenePage=0;renderAnalysis();notify('directorStatus','');notify('analyzeStatus','');showPage(0);
+   sourceVersion++;scenes=[];musicResult=null;analysisSourceKey='';storyboardSourceKey='';pendingRestore=null;$('storyEmotion').textContent='';
+   scenePage=0;renderAnalysis();notify('directorStatus','');notify('analyzeStatus','');showPage(0);
  }
- for(const id of fieldNames){const input=$(id);input.addEventListener('input',scheduleSave);input.addEventListener('change',()=>{if(['duration','sceneSeconds'].includes(id))clearOrphanedStoryboard();scheduleSave()});}
+ for(const id of fieldNames){
+   const input=$(id);
+   input.addEventListener('input',()=>{
+     if(['title','songLink','lyrics','direction','characterNotes','visualStyle','format','duration','sceneSeconds'].includes(id))
+       invalidateSongOutputs({music:['title','songLink'].includes(id)});
+     else scheduleSave();
+   });
+   input.addEventListener('change',()=>scheduleSave());
+ }
  $('useSongLink').addEventListener('click',()=>{renderLinkStatus(true)});
  $('songLink').addEventListener('input',()=>{const a=$('openSongLink');a.hidden=true;a.removeAttribute('href');$('songLinkStatus').textContent='Tap Use Link to confirm this source.';updateStepNavigation();});
  $('songLink').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();renderLinkStatus(true);}});
- $('duration').addEventListener('change',()=>{syncCustomTime();clearOrphanedStoryboard();scheduleSave()});
- $('customTime').addEventListener('input',()=>{clearOrphanedStoryboard();scheduleSave()});
+ $('duration').addEventListener('change',()=>{syncCustomTime();invalidateSongOutputs()});
+ $('customTime').addEventListener('input',()=>invalidateSongOutputs());
  window.addEventListener('resize',()=>{if(page===3)renderScenes()});
  $('songAudio').addEventListener('change',()=>{
    const f=$('songAudio').files?.[0]||null;
-   if(f && (!/\.(mp3|wav)$/i.test(f.name)||f.size>25*1024*1024)){alert('Select an MP3 or WAV under 25 MB.');$('songAudio').value='';lastSongFile=null;return;}
-   lastSongFile=f;musicResult=null;renderAnalysis();
+   if(f && (!/\.(mp3|wav)$/i.test(f.name)||f.size>25*1024*1024)){alert('Select an MP3 or WAV under 25 MB.');$('songAudio').value='';lastSongFile=null;invalidateSongOutputs({music:true});return;}
+   lastSongFile=f;invalidateSongOutputs({music:true});
    $('songAudio').dataset.previousName=f?.name||'';
    updateUploadLabels();refreshAnalysisIntro();updateStepNavigation();scheduleSave();
    mediaWrite('audio',f).catch(()=>notify('audioLabel',`Selected: ${f?.name||'none'}. Browser could not retain this file after refresh; keep this page open until analysis.`,true));
@@ -322,9 +386,9 @@
  $('artistPhoto').addEventListener('change',()=>{
    const f=$('artistPhoto').files?.[0]||null;
    if(f&&(!/\.(png|jpe?g|webp)$/i.test(f.name)||!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>12*1024*1024)){
-     alert('Choose a JPG, PNG or WebP under 12 MB.');$('artistPhoto').value='';lastPhotoFile=null;updatePhotoPreview(null);return;
+     alert('Choose a JPG, PNG or WebP under 12 MB.');$('artistPhoto').value='';lastPhotoFile=null;invalidateSongOutputs();updatePhotoPreview(null);return;
    }
-   lastPhotoFile=f;
+   lastPhotoFile=f;invalidateSongOutputs();
    $('artistPhoto').dataset.previousName=f?.name||'';
    updatePhotoPreview(f);updateUploadLabels();scheduleSave();
    mediaWrite('photo',f).catch(()=>notify('photoLabel',`Selected: ${f?.name||'none'}. Browser could not retain this photo after refresh.`,true));

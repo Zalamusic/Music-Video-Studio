@@ -33,7 +33,7 @@ const EMOTIONS = {
  ['support', 4], ['supportive', 4], ['protected', 4],
  ['you can count on me', 7], ['here for you', 6],
  ['stand by you', 6], ['trust me', 5], ['stay together', 4],
- ['always there', 4], ['not alone', 6], ['stay', 3], ['remain', 3],
+ ['always there', 4], ['not alone', 6],
  ['still here', 4], ['rely on me', 5],
  ['shelter', 3], ['peace of mind', 5], ['depend on me', 5]
  ],
@@ -87,7 +87,8 @@ const EMOTIONS = {
  ['independent', 5], ['independence', 5], ['self worth', 5],
  ['ambitious', 4], ['empowered', 5], ['unstoppable', 5],
  ['bragging', 5], ['swagger', 5], ['boast', 5],
- ['accomplished', 4], ['self esteem', 5]
+ ['accomplished', 4], ['self esteem', 5], ['baddie', 7], ['boss energy', 6], ['boss', 4],
+ ['run the show', 6], ['call my own shots', 7], ['my own rules', 6]
  ],
  luxury: [
  ['luxury', 6], ['designer', 5], ['diamonds', 5],
@@ -385,7 +386,7 @@ const ACTIONS = {
  'The performer pauses and glances back, suggesting emotional distance.'
  ],
  hope: [
- 'The performer takes a small, deliberate step into warmer light, suggesting renewed trust.',
+ 'The performer takes a small, deliberate step into warmer light, suggesting new possibility.',
  'A guarded expression softens into a subtle sense of relief and possibility.',
  'The performer looks ahead and moves forward calmly, signaling emotional progress.'
  ],
@@ -594,8 +595,7 @@ export function createStoryIntelligencePlan({
  || `${candidates[index % candidates.length]} Allow the ${narrativeBeat} to develop naturally.`;
  }
  usedActions.add(normalize(action));
- if (narrativeBeat.includes('resolution') && emotionalFamily(overall) === 'intimate'
- && !['heartbreak', 'grief', 'conflict'].includes(overall)) {
+ if (narrativeBeat.includes('resolution') && overall === 'reassurance') {
  action = `${action} End on an earned, understated feeling of emotional safety; avoid forced celebration.`;
  }
  // The current Listening Director renders production prompts from intensity,
