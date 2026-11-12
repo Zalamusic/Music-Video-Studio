@@ -7,7 +7,7 @@ import multer from 'multer';
 import {promises as fs, createReadStream, constants as fsConstants} from 'node:fs';
 import {detectLocalMedia} from './cutloopz-local-media-validation.mjs';
 import {spawn} from 'node:child_process';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,timingSafeEqual} from 'node:crypto';
 import path from 'node:path';
 import os from 'node:os';
 const app=express();
@@ -15,6 +15,21 @@ const root=path.resolve(process.env.CUTLOOPZ_WORKER_DIR||path.join(os.tmpdir(),'
 const runner=process.env.CUTLOOPZ_MODEL_RUNNER||'';
 const modelId=process.env.CUTLOOPZ_MODEL_ID||'unconfigured';
 const port=Number(process.env.CUTLOOPZ_WORKER_PORT||8765);
+const sharedToken=process.env.CUTLOOPZ_WORKER_SHARED_TOKEN||'';
+// Workers remain loopback-only. When accessed through an outbound HTTPS tunnel,
+// this gate protects health, uploads, job status, and output downloads equally.
+if(sharedToken&&!/^[A-Za-z0-9_-]{32,512}$/.test(sharedToken))throw Error('Invalid CUTLOOPZ_WORKER_SHARED_TOKEN');
+app.disable('x-powered-by');
+app.use((req,res,next)=>{
+ res.set('Cache-Control','no-store');
+ if(!sharedToken)return next(); // only safe for loopback with NO public tunnel
+ const candidate=req.get('authorization')||'';
+ const expected=Buffer.from(`Bearer ${sharedToken}`);
+ const provided=Buffer.from(candidate);
+ if(provided.length!==expected.length||!timingSafeEqual(provided,expected))
+  return res.status(401).json({ok:false,error:'Worker authentication required'});
+ return next();
+});
 const jobs=new Map();let busy=false;
 const upload=multer({storage:multer.memoryStorage(),limits:{files:2,fileSize:32*1024*1024}});
 const ready=async()=>{if(!runner||process.env.CUTLOOPZ_MODEL_ENABLED!=='true')return false;try{const s=await fs.stat(runner);if(!s.isFile())return false;await fs.access(runner,fsConstants.X_OK);return true}catch{return false}};

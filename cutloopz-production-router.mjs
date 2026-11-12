@@ -50,7 +50,7 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
   const endpoint=process.env.CUTLOOPZ_LOCAL_GENERATOR_URL;
   if(!endpoint)return res.status(503).json({ok:false,configured:false,reachable:false,modelLoaded:false,independentGenerationReady:false,error:'Local generator URL is not configured'});
   try{
-   const generator=createLocalGeneratorAdapter({endpoint});
+   const generator=createLocalGeneratorAdapter({endpoint,remoteHost:process.env.CUTLOOPZ_REMOTE_GENERATOR_HOST,remoteToken:process.env.CUTLOOPZ_WORKER_SHARED_TOKEN});
    const health=await generator.health();
    return res.json({ok:true,configured:true,reachable:true,modelLoaded:health.modelLoaded,modelId:health.modelId,independentGenerationReady:false,note:'Model health does not prove generation or singing performance; end-to-end verification is required'});
   }catch(e){return res.status(503).json({ok:false,configured:true,reachable:false,modelLoaded:false,independentGenerationReady:false,error:String(e.message||e)})}
@@ -64,7 +64,7 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
   if(!localEnabled())throw Error('Independent generation is disabled');
   if(!localEndpoint)throw Error('Local generator URL is not configured');
   if(!localAdapter){
-   localAdapter=createLocalGeneratorAdapter({endpoint:localEndpoint});
+   localAdapter=createLocalGeneratorAdapter({endpoint:localEndpoint,remoteHost:process.env.CUTLOOPZ_REMOTE_GENERATOR_HOST,remoteToken:process.env.CUTLOOPZ_WORKER_SHARED_TOKEN});
    // A nominal unit is used only for the existing coordinator's accounting schema.
    // It is NOT a cloud price or a claim about GPU operating costs.
    localCoordinator=createPilotOrchestrator({baseDir:path.join(baseDir,'local'),adapter:localAdapter,unitPriceUSD:0.01,pricingVerified:true});
@@ -77,13 +77,26 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
  };
  router.get('/local/status',async(_req,res)=>{
   res.set('Cache-Control','no-store');
+  // Read-only diagnostics must work even when generation is intentionally off.
+  const enabledNow=localEnabled();
+  const base={ok:true,configured:!!localEndpoint,connected:false,modelLoaded:false,
+   generationEnabled:enabledNow,readyToSubmit:false,
+   autoRunEnabled:process.env.CUTLOOPZ_LOCAL_AUTORUN_ENABLED==='true'};
+  if(!localEndpoint)return res.json({...base,message:'Generator address is not configured in Render. No GPU request was made.'});
   try{
-   const {adapter}=getLocal();
+   const adapter=createLocalGeneratorAdapter({endpoint:localEndpoint,
+    remoteHost:process.env.CUTLOOPZ_REMOTE_GENERATOR_HOST,
+    remoteToken:process.env.CUTLOOPZ_WORKER_SHARED_TOKEN});
    const health=await adapter.health();
-   const ready=health.modelLoaded===true;
-   return res.json({ok:true,readyToSubmit:ready,autoRunEnabled:process.env.CUTLOOPZ_LOCAL_AUTORUN_ENABLED==='true',message:ready?'Local model reports loaded; generation is not yet verified.':'Local model is not loaded.'});
-  }catch{
-   return res.status(503).json({ok:false,readyToSubmit:false,message:'Local generation engine is not ready.'});
+   return res.json({...base,connected:true,modelLoaded:health.modelLoaded,modelId:health.modelId,
+    readyToSubmit:enabledNow&&health.modelLoaded,
+    message:!health.modelLoaded?'Worker reachable, but model runner is not loaded.':
+     !enabledNow?'Worker reports loaded; generation remains disabled until explicitly enabled.':
+     'Worker reports loaded. This does not verify video or vocal performance.'});
+  }catch(error){
+   const reason=error instanceof TypeError?'Worker unreachable (transport or TLS failure)':
+    String(error?.message||'Connection check failed');
+   return res.json({...base,message:`Engine check failed: ${reason}. No generation was requested.`});
   }
  });
  router.post('/local/jobs',upload.fields([{name:'song',maxCount:1},{name:'photo',maxCount:1}]),async(req,res)=>{

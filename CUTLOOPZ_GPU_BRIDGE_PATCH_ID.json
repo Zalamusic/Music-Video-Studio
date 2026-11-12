@@ -1,0 +1,16 @@
+{
+  "patch_id": "CUTLOOPZ_SECURE_GPU_BRIDGE_2026_11_12_OFFLINE",
+  "base_git_commit": "bfcf19116139e03103c381b297e9c19c671542b3",
+  "status": "OFFLINE_ONLY_NOT_DEPLOYED",
+  "requires_gpu_restart": false,
+  "generation_enabled": false,
+  "files_sha256": {
+    "cutloopz-local-generator-adapter.mjs": "f6682fa3a7afa272c609d191ceb930feb16e79b30619d7a1ea0af3ec1f2564c1",
+    "cutloopz-local-model-service.mjs": "35896d93138009e3d200e737ac1603f0be4d040d7409f896beecc44b7cf5f2e6",
+    "cutloopz-production-router.mjs": "10b51e4d3a78fa952fc3236155cf358ede47f4439af54eca82f48c02db99c236",
+    "public/admin-unified-production.html": "24b6fff82cd7952c980979e7a1eaa22d59c1d5921ff3b8fe671431f301aefd44",
+    "test-cutloopz-secure-gpu-bridge.mjs": "94dfaccd8a14ca841a21ff6290f94f4da021b51aa0baaa17b28705fdd76f75ce",
+    "test-cutloopz-local-status-diagnostics.mjs": "eb873f1bb7793a0db935eeacffa825eb37fecccf9becfd94d3b1bb986d2e9ecb",
+    "CUTLOOPZ_SECURE_GPU_BRIDGE_2026-11-12.md": "5bafdcf6a0c9357a93c51e615fc137b966f5cb894a5aea62dbcf7678a990cc2d"
+  }
+}

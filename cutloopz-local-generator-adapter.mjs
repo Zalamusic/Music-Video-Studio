@@ -5,15 +5,35 @@
  */
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
+import {isIP} from 'node:net';
 const MAX_SONG_BYTES=32*1024*1024;
 const MAX_PHOTO_BYTES=12*1024*1024;
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-export function createLocalGeneratorAdapter({endpoint,fetchImpl=fetch}={}){
+/** Remote transport is opt-in: exact HTTPS host + shared secret, no redirects.
+ * Loopback remains the default. A tunnel is transport only, never a model.
+ */
+export function createLocalGeneratorAdapter({endpoint,remoteHost,remoteToken,fetchImpl=fetch}={}){
  let root;try{root=new URL(endpoint)}catch{throw Error('Invalid local generator URL')}
- if(root.protocol!=='http:'||!['127.0.0.1','localhost','[::1]'].includes(root.hostname)||root.username||root.password||root.search||root.hash||root.pathname!=='/')throw Error('Generator must be a plain HTTP loopback root URL');
+ const bareRoot=!root.username&&!root.password&&!root.search&&!root.hash&&root.pathname==='/';
+ const loopback=root.protocol==='http:'&&['127.0.0.1','localhost','[::1]'].includes(root.hostname);
+ const isPublicHttps=root.protocol==='https:'&&root.port===''&&
+  /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/i.test(root.hostname)&&
+  root.hostname.includes('.')&&!isIP(root.hostname)&&!/(^|\.)(localhost|local|internal)$/.test(root.hostname);
+ const approvedHost=typeof remoteHost==='string'&&remoteHost.length>0&&
+  !remoteHost.includes('/')&&!remoteHost.includes(':')&&root.hostname===remoteHost.toLowerCase();
+ const approvedToken=typeof remoteToken==='string'&&remoteToken.length>=32&&remoteToken.length<=512&&
+  /^[A-Za-z0-9_-]+$/.test(remoteToken);
+ const remote=isPublicHttps&&approvedHost&&approvedToken;
+ if(!bareRoot||(!loopback&&!remote))throw Error('Generator must use HTTP loopback or explicitly approved, authenticated HTTPS host');
  const url=route=>new URL(route,root);
+ const secureHeaders=(headers)=>{
+  if(!approvedToken||(!remote&&!loopback))return headers;
+  const h=new Headers(headers);
+  h.set('Authorization',`Bearer ${remoteToken}`);
+  return h;
+ };
  const request=async(route,opts={})=>{
-  const r=await fetchImpl(url(route),{...opts,signal:AbortSignal.timeout(30000),redirect:'error'});
+  const r=await fetchImpl(url(route),{...opts,headers:secureHeaders(opts.headers),signal:AbortSignal.timeout(30000),redirect:'error'});
   if(!r.ok)throw Error(`Local generator HTTP ${r.status}`);
   const b=await r.json();if(b?.ok!==true)throw Error('Invalid local generator response');return b;
  };
@@ -42,7 +62,7 @@ export function createLocalGeneratorAdapter({endpoint,fetchImpl=fetch}={}){
    const b=await request('jobs',{method:'POST',body:form});if(!uuid.test(b.id||'')||!['queued','processing'].includes(b.status))throw Error('Invalid generator job receipt');return b;
   },
   async status(id){if(!uuid.test(id||''))throw Error('Invalid job ID');const b=await request(`jobs/${id}`);if(!['queued','processing','ready','failed'].includes(b.status))throw Error('Invalid generator status');return b},
-  async download(id,destination){if(!uuid.test(id||'')||!path.isAbsolute(destination||''))throw Error('Invalid download arguments');const r=await fetchImpl(url(`jobs/${id}/video`),{signal:AbortSignal.timeout(120000),redirect:'error'});if(!r.ok)throw Error(`Local video HTTP ${r.status}`);const len=Number(r.headers?.get?.('content-length'));if(Number.isFinite(len)&&len>120*1024*1024)throw Error('Video exceeds size limit');const maxBytes=120*1024*1024;
+  async download(id,destination){if(!uuid.test(id||'')||!path.isAbsolute(destination||''))throw Error('Invalid download arguments');const r=await fetchImpl(url(`jobs/${id}/video`),{headers:secureHeaders(),signal:AbortSignal.timeout(120000),redirect:'error'});if(!r.ok)throw Error(`Local video HTTP ${r.status}`);const len=Number(r.headers?.get?.('content-length'));if(Number.isFinite(len)&&len>120*1024*1024)throw Error('Video exceeds size limit');const maxBytes=120*1024*1024;
    await fs.mkdir(path.dirname(destination),{recursive:true});
    const temp=destination+'.partial';
    let total=0;let header=Buffer.alloc(0);
