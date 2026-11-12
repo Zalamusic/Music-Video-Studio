@@ -1,0 +1,931 @@
+# CutLoopz full-source Studio upgrade. Readable HTML, CSS and JavaScript; no Base64.
+name: CutLoopz - Clean Studio & Readability Complete Replacements
+'on':
+  push:
+    branches:
+    - cutloopz-production-test
+    paths:
+    - .github/workflows/cutloopz-ui-olive-sage-readability.yml
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Check out production-test branch
+      uses: actions/checkout@v4
+      with:
+        ref: cutloopz-production-test
+        persist-credentials: true
+    - name: Safeguard latest Studio files before replacing
+      shell: bash
+      run: |-
+        python3 - <<'PYCHECK'
+        from pathlib import Path
+        import hashlib
+        checks = {'public/customer.html': ('f5376dbec2f4b8c963fe21aa84072080ca149be1fab1e7abcb0bdc9e6c1770ac', 'ce5fafa892f9e4c80766a10cd39f6bdb534aff1d37514907d7ef7a2cb7315ea8'), 'public/my-studio.html': ('e64b634b4c4e259b7ed51285442217d9f5168a7d2674e08cfda375c4d0a242f9', 'c809ec5d31753b5566af745743f106eb3b03063651ed706f521eb3b0a5d3d402'), 'public/my-studio.css': ('1cc7d048f7b03bae6b80f2db66dc9bf1d07b644022ac377bf59b3ed6cb432d00', 'cba614b2b680ef68424721a924d87936c0d4ca3934f84ce3bbe8c8759f7ef0c7'), 'public/my-studio.js': ('6076484dc10d730963ded07346c7c4e29fe319496d63f999d178bcc20e77c8d7', '102b6b73dba86b8a23f7b90f45833c6d653ed1f13ba9295f7b408678b0510fc8')}
+        for p, (expected, updated) in checks.items():
+            path = Path(p)
+            if not path.exists():
+                raise SystemExit(f'ABORT: expected file missing: {p}')
+            current = hashlib.sha256(path.read_bytes()).hexdigest()
+            if current not in (expected, updated):
+                raise SystemExit(f'ABORT: {p} has newer edits. No files were overwritten. Rebase the update before retrying.')
+        print('Source verification passed. Safe to apply the complete replacement files.')
+        PYCHECK
+    - name: Install complete readable HTML, CSS and JavaScript
+      shell: bash
+      run: |-
+        cat > public/customer.html <<'CUTLOOPZ_UI_COMPLETE_0_END'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="utf-8"/>
+        <meta content="width=device-width,initial-scale=1" name="viewport"/>
+        <meta content="#ffffff" name="theme-color"/>
+        <title>CutLoopz Media | SUNO &amp; Udio Music Video Director — No Credits, Just Video</title>
+        <meta name="description" content="Create a cinematic music-video plan with CutLoopz. Bring a SUNO, Udio, YouTube or Spotify song link, or upload MP3/WAV audio. Free Song Analyzer, Listening Director and editable storyboard; video production is in preview."/>
+        <meta name="keywords" content="SUNO music video, SUNO to video, AI music video generator, Udio song video, YouTube music video, music video maker, song to video, CutLoopz Media"/>
+        <meta property="og:type" content="website"/>
+        <meta property="og:title" content="CutLoopz Media — A Director That Listens. A Video That Performs."/>
+        <meta property="og:description" content="From SUNO links to MP3 uploads: plan cinematic scenes with our Listening Director. No credits. Just video."/>
+        <meta property="og:image" content="/cutloopz-showcase-poster.jpg"/>
+        <meta name="twitter:card" content="summary_large_image"/>
+        <link href="https://fonts.googleapis.com" rel="preconnect"/>
+        <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+        <link href="/zala-themes.css" rel="stylesheet"/>
+        <script defer="" src="/zala-themes.js"></script>
+        <link href="/customer-theme-fix.css" rel="stylesheet"/>
+        <style>
+        :root{--blue:#2469cc;--blue-dark:#1556b4;--navy:#17263c;--muted:#3f5067;--line:#d8e3f0;--soft:#f4f8fe;--gold:#b1842e;--gold-light:#e4bd69;--photo:url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=85')}
+        *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:165px}body{margin:0;background:#fff;color:var(--navy);font:16px/1.6 'DM Sans',Arial,sans-serif}button,input,select,textarea{font:inherit}a{text-decoration:none}[hidden]{display:none!important}
+        .page,.floating-inner{max-width:940px;margin:auto}.page{padding:0 16px 40px}.main-header{padding:17px 0}.header-top,.floating-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.brand,.floating-brand{display:flex;align-items:center;gap:10px;min-width:0}.logo{width:76px;height:58px;background:#101010;border-radius:10px;padding:9px;flex:none;overflow:hidden}.logo img{display:block;width:100%;height:100%;object-fit:contain}.brand-name{font:700 17px 'DM Sans',sans-serif;letter-spacing:.4px;color:#b58b41}.brand-sub,.mini-brand-sub{font-size:11px;color:var(--muted);font-weight:600}.brand-tagline{color:#b1883f;font-style:italic;font-size:12px}.account-actions{display:flex;gap:7px;align-items:center;flex-shrink:0}.account-actions a,.account-options a{border:2px solid var(--blue);background:white;color:var(--blue);border-radius:10px;padding:7px 10px;font-size:12px;font-weight:700;white-space:nowrap}.customer-profile{position:relative;flex-shrink:0}.profile-trigger{width:42px;height:42px;border:3px solid var(--blue);border-radius:50%;background:#eaf2ff;color:var(--blue-dark);font-weight:800;cursor:pointer}.profile-menu{position:absolute;right:0;top:calc(100% + 9px);z-index:1200;min-width:205px;border:1px solid var(--line);background:white;box-shadow:0 12px 24px #183a5e20;border-radius:12px;padding:10px}.profile-menu-name{font-weight:800;font-size:13px;overflow-wrap:anywhere;border-bottom:1px solid var(--line);padding:6px}.profile-menu a,.profile-menu button{display:block;width:100%;text-align:left;background:white;color:var(--navy);border:0;border-radius:8px;padding:10px;font-size:14px;font-weight:700}.profile-error{color:#b42318;font-size:12px}
+        .tabs{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;white-space:nowrap;padding:2px 0}.tabs::-webkit-scrollbar{display:none}.tabs a{flex:none;padding:10px 14px;background:var(--soft);color:var(--navy);border-radius:10px;font-size:13px;font-weight:700}.tabs a.selected{background:var(--blue);color:white}.main-tabs{margin-top:15px}.hero{border:1px solid var(--line);border-radius:18px;overflow:hidden}.hero-photo{height:280px;background-image:linear-gradient(0deg,#08112d55,transparent 70%),var(--photo);background-position:center;background-size:cover;background-color:#142a56}.hero-content{padding:24px}h1{font-size:clamp(23px,3.1vw,29px);font-weight:600;margin:0 0 10px}h2{font-size:21px;margin:0 0 12px}h3{font-size:16px;margin:0 0 8px}.hero-sub{font-size:16px;color:var(--blue-dark);font-weight:600}.hero-description,.note,.card p,.panel p{font-size:14px;color:var(--muted);line-height:1.65}.hero-description{max-width:690px}.button,button.primary{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:10px;background:var(--blue);color:white;padding:11px 15px;font-weight:700;cursor:pointer}.button:hover,button.primary:hover{background:var(--blue-dark)}.tagline{font-size:13px;color:var(--muted);font-weight:600}.content{padding-top:28px}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card,.panel{border:1px solid var(--line);border-radius:14px;padding:18px}.studio{padding:20px;background:var(--soft);border:1px solid var(--line);border-radius:17px}.field{margin:0 0 14px}.field label{display:block;font-weight:700;font-size:15px;margin:0 0 7px}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.studio input,.studio select,.studio textarea{display:block;width:100%;background:white;color:var(--navy);border:2px solid var(--blue);border-radius:11px;padding:11px 12px;font-size:16px;min-height:48px}.studio textarea{min-height:115px;resize:vertical}.studio input[type=file]{border-style:dashed}.studio input:focus-visible,.studio select:focus-visible,.studio textarea:focus-visible{outline:3px solid #2469cc33}.studio .primary{width:100%;margin-top:9px}.account-panel{background:#f7faff}.account-options{display:flex;flex-wrap:wrap;gap:10px}.floating-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fffffff9;border-bottom:1px solid var(--line);box-shadow:0 4px 16px #142d551f;transform:translateY(-110%);opacity:0;visibility:hidden;pointer-events:none;transition:transform .3s,opacity .3s,visibility .3s}.floating-header.show{transform:translateY(0);opacity:1;visibility:visible;pointer-events:auto}.floating-inner{padding:7px 14px 10px}.floating-top{margin-bottom:7px}.floating-brand .logo{width:58px;height:44px;padding:6px}.mini-brand-name{font-size:13px;font-weight:800}.mini-hero{display:flex;gap:10px;align-items:center;margin-bottom:7px}.mini-photo{width:62px;height:48px;flex:none;border-radius:8px;background:var(--photo) center/cover}.mini-headline{font-size:14px;font-weight:700}.mini-sub{font-size:11px;color:var(--blue-dark)}.floating-account a{font-size:11px}.floating-profile .profile-trigger{width:36px;height:36px}
+        .back-top{position:fixed;right:17px;bottom:19px;width:44px;height:44px;border:0;border-radius:50%;background:#1c579e;color:white;box-shadow:0 5px 18px #122a4450;font-weight:800;z-index:900;cursor:pointer}footer{text-align:center;padding:25px 0;font-size:13px;color:var(--muted)}
+        @media(max-width:600px){.hero-photo{height:195px}.hero-content{padding:18px}.cards,.field-row{grid-template-columns:1fr}.studio{padding:15px}.tabs{gap:6px}.tabs a{font-size:12px;padding:9px 10px}.brand .logo{width:64px;height:50px;padding:6px}.brand-name{font-size:14px}.brand-sub{font-size:9px}.brand-tagline{font-size:10px}.account-actions a{padding:6px 7px;font-size:11px}.floating-inner{padding:6px 12px}.mini-photo{display:none}}@media(max-width:360px){.tabs a{font-size:11px;padding:8px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.floating-header{transition:none}}
+        </style>
+
+        <style id="cutloopz-hero-video-styles">
+        /* The existing hero width, height and mobile treatment remain unchanged. */
+        .hero-photo.cutloopz-showcase { position:relative; isolation:isolate; overflow:hidden; background-image:none!important; background-color:#110f1b; }
+        .cutloopz-hero-video { display:block; width:100%; height:100%; object-fit:cover; background:#110f1b; }
+        .cutloopz-hero-tag { position:absolute; bottom:12px; left:13px; z-index:2; background:rgba(0,0,0,.65); color:#ffebbb; border:1px solid rgba(223,181,97,.55); border-radius:8px; font-size:11px; font-weight:700; letter-spacing:.015em; padding:7px 9px; max-width:calc(100% - 140px); }
+        .cutloopz-hero-pause { position:absolute; bottom:12px; right:12px; z-index:3; border:1px solid rgba(223,181,97,.76); border-radius:10px; color:#fff0cd; background:rgba(12,12,18,.82); padding:8px 10px; font-size:12px; font-weight:700; cursor:pointer; min-height:38px; }
+        .cutloopz-hero-pause:focus-visible{outline:3px solid #f1c76c;outline-offset:2px}
+        @media (max-width:600px){.cutloopz-hero-tag{font-size:9px;left:8px;bottom:8px;max-width:calc(100% - 115px);padding:6px}.cutloopz-hero-pause{bottom:8px;right:8px;font-size:11px;padding:7px;min-height:36px}}
+        </style>
+
+        <style id="cutloopz-studio-entry-compact">
+        /* Keep the horizontal sliding navigation; shorten buttons without reducing tap targets. */
+        .tabs{gap:6px}.tabs a{padding:8px 11px;min-height:39px;display:inline-flex;align-items:center;font-size:12px}
+        .content#how .card{padding:12px 14px;min-height:0}
+        .content#how .cards{gap:9px}
+        .content#how h3{font-size:14px;line-height:1.3;margin:0 0 4px}
+        .content#how p{font-size:15px;line-height:1.5;margin:0}
+        .studio-entry{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;gap:16px;justify-content:space-between;align-items:center}
+        .studio-entry h2{margin:0 0 7px}.studio-entry p{margin:0 0 7px;font-size:15px;line-height:1.55}
+        .studio-entry .entry-note{font-size:12px;color:var(--muted)}.studio-entry .button{flex:none}
+        @media(max-width:600px){.studio-entry{display:block}.studio-entry .button{margin-top:7px}.content#how .card{padding:11px 12px}}
+        </style>
+        <style id="cutloopz-song-links-promo">
+        .cutloopz-platform{font-weight:900;color:var(--navy)}.cutloopz-source-tags .cutloopz-suno{font-weight:900;letter-spacing:.04em;border-color:#bb913b;background:#fff3d7;color:#664713}.cutloopz-no-credits{border-left:4px solid #bb913b;padding:9px 12px;margin:15px 0 13px;background:#fbf8f0;border-radius:0 10px 10px 0}.cutloopz-no-credits strong{display:block;font-size:clamp(17px,3vw,21px);font-weight:900;letter-spacing:.035em;color:#1b2333;line-height:1.25}.cutloopz-no-credits p{margin:5px 0 0;color:var(--muted);font-size:13px;line-height:1.55}
+        .cutloopz-source-tags{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 15px}.cutloopz-source-tags span{padding:6px 11px;background:#fdf8ed;color:#78551f;border:1px solid #d7bb84;border-radius:999px;font-size:13px;font-weight:800}
+        .cutloopz-source-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.cutloopz-link-cta{display:inline-flex;align-items:center;justify-content:center;padding:10px 15px;border:2px solid #b48e48;border-radius:10px;color:#725019;font-weight:800;font-size:14px;min-height:42px}.cutloopz-source-terms{font-size:12px;color:var(--muted);line-height:1.5;margin:11px 0 0}
+        @media(max-width:500px){.cutloopz-source-tags{gap:5px}.cutloopz-source-tags span{font-size:12px;padding:5px 8px}}
+        </style>
+        <style id="cutloopz-olive-sage-readability">
+        /* Existing homepage structure stays unchanged: only source links & explanatory panel. */
+        .cutloopz-source-tags{gap:9px;margin:12px 0 20px}
+        .cutloopz-source-tags a,.cutloopz-source-tags a.cutloopz-suno{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 16px;background:#c8debe;border:1px solid #9ab395;border-radius:999px;color:#243a2a;font-size:15px;font-weight:800;text-decoration:none;line-height:1.25}
+        .cutloopz-source-tags a:hover{background:#d9ebd0;color:#1b3320}
+        .cutloopz-source-tags a:focus-visible{outline:3px solid #b1842e;outline-offset:3px}
+        .cutloopz-no-credits{background:#20251f;border:1px solid #70886b;border-left:4px solid #d7ae59;border-radius:12px;padding:16px 18px;margin:19px 0 16px}
+        .cutloopz-no-credits strong{font-size:clamp(18px,3vw,22px);color:#f0cb78;line-height:1.3;letter-spacing:.012em}
+        .cutloopz-no-credits p{color:#f2f0e8;font-size:clamp(16px,2.5vw,18px);line-height:1.65;margin:9px 0 0}
+        .hero-content .hero-description,.hero-content .hero-sub{line-height:1.7}
+        .cutloopz-source-terms{font-size:15px;line-height:1.65}
+        @media(max-width:600px){.cutloopz-source-tags a,.cutloopz-source-tags a.cutloopz-suno{font-size:14px;min-height:46px;padding:10px 13px}.cutloopz-no-credits{padding:15px}.hero-content{padding:22px 19px}}
+        @media(prefers-reduced-motion:reduce){.cutloopz-source-tags a{transition:none}}
+        </style>
+        </head>
+        <body>
+        <div aria-hidden="true" class="floating-header" id="floatingHeader" inert=""><div class="floating-inner"><div class="floating-top"><div class="floating-brand"><div class="logo"><img alt="CutLoopz Media logo" src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"/></div><div><div class="mini-brand-name">CutLoopz Media</div><div class="mini-brand-sub">Music Video Creation Studio</div></div></div><div class="account-actions floating-account" data-guest-actions=""><a href="/account.html">Sign In</a><a href="/account.html?mode=signup">Sign Up</a></div><div class="customer-profile floating-profile" data-profile="" hidden=""><button aria-expanded="false" aria-label="Open customer profile" class="profile-trigger" data-profile-trigger="" type="button"> <span data-profile-initial="">?</span></button><div class="profile-menu" data-profile-menu="" hidden=""><div class="profile-menu-name" data-profile-name=""></div><a href="/my-studio.html">My Studio</a><button data-sign-out="" type="button">Sign Out</button><div class="profile-error" data-profile-error="" hidden=""></div></div></div></div><div class="mini-hero"><div class="mini-photo"></div><div><div class="mini-headline">Your music deserves a video.</div><div class="mini-sub">You made the music. We'll bring it to life.</div></div></div><nav aria-label="Quick navigation" class="tabs"><a href="#home">Home</a><a class="selected" href="/my-studio.html">My Studio</a><a href="/my-studio.html?step=director">Director</a><a href="#pricing">Pricing</a><a href="#examples">Examples</a><a href="#how">How It Works</a></nav></div></div>
+        <div class="page">
+        <header class="main-header" id="home"><div class="header-top"><div class="brand"><div class="logo"><img alt="CutLoopz Media film-reel logo" src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png"/></div><div><div class="brand-name">CutLoopz Media</div><div class="brand-sub">Music Video Creation Studio</div><div class="brand-tagline">Your Music. Your Vision. Your Video.</div></div></div><div class="account-actions" data-guest-actions=""><a href="/account.html">Sign In</a><a href="/account.html?mode=signup">Sign Up</a></div><div class="customer-profile" data-profile="" hidden=""><button aria-expanded="false" aria-label="Open customer profile" class="profile-trigger" data-profile-trigger="" type="button"><span data-profile-initial="">?</span></button><div class="profile-menu" data-profile-menu="" hidden=""><div class="profile-menu-name" data-profile-name=""></div><a href="/my-studio.html">My Studio</a><button data-sign-out="" type="button">Sign Out</button><div class="profile-error" data-profile-error="" hidden=""></div></div></div></div><nav aria-label="Main navigation" class="tabs main-tabs"><a class="selected" href="#home">Home</a><a href="/my-studio.html">My Studio</a><a href="/my-studio.html?step=director">Director</a><a href="#pricing">Pricing</a><a href="#examples">Examples</a><a href="#how">How It Works</a></nav></header>
+        <main>
+        <section class="hero" id="hero"><div class="hero-photo cutloopz-showcase" aria-label="Cinematic visual styles concept reel">
+          <video id="cutloopzHeroVideo" class="cutloopz-hero-video" muted autoplay loop playsinline preload="metadata" poster="/cutloopz-showcase-poster.jpg" aria-label="25-second illustrative reel showing five different cinematic visual styles">
+            <source src="/cutloopz-showcase-loop.mp4" type="video/mp4"/>
+            Your browser does not support embedded video.
+          </video>
+          <span class="cutloopz-hero-tag">Five visual styles · 25-second loop</span>
+          <button id="cutloopzHeroPlayback" type="button" class="cutloopz-hero-pause" aria-label="Pause showcase video" aria-pressed="false">❚❚ Pause</button>
+        </div><div class="hero-content"><h1>Your music deserves a video.</h1><p class="hero-sub">You made the music. We'll bring it to life.</p><p class="hero-description">Made music with <strong class="cutloopz-platform">SUNO</strong> or <strong class="cutloopz-platform">Udio</strong>? Have a <strong class="cutloopz-platform">YouTube</strong> or <strong class="cutloopz-platform">Spotify</strong> song link, or your own MP3/WAV? Bring your music into CutLoopz to plan cinematic scenes with our free Listening Director.</p>
+        <div class="cutloopz-source-tags" aria-label="Choose your music source"><a href="/my-studio.html?source=suno" aria-label="Start with a SUNO song link" class="cutloopz-suno">SUNO Links</a><a href="/my-studio.html?source=udio" aria-label="Start with a Udio song link">Udio Links</a><a href="/my-studio.html?source=youtube" aria-label="Start with a YouTube song link">YouTube</a><a href="/my-studio.html?source=spotify" aria-label="Start with a Spotify song link">Spotify</a><a href="/my-studio.html?source=upload" aria-label="Start by uploading MP3 or WAV audio">MP3 / WAV</a></div>
+        <div class="cutloopz-source-actions"><a class="button" href="/my-studio.html">Enter My Studio</a><a class="cutloopz-link-cta" href="/my-studio.html?source=link">Paste a Song Link ↗</a></div>
+        <div class="cutloopz-no-credits"><strong>NO CREDITS. JUST VIDEO.</strong><p>Skip the credit packs. Artist and songwriter credits are optional; no tokens to purchase. Our planned model is one clear price per finished video, with included deliverables and revision terms displayed before checkout.</p></div>
+        <p class="cutloopz-source-terms">Link-based planning available; actual beat analysis requires an authorized audio file. Full video generation is not yet enabled in this preview.</p><p class="tagline">Your Music. Your Vision. Your Video.</p></div></section>
+        <section class="content" id="how"><h2>How It Works</h2><div class="cards"><div class="card"><h3>1. Bring Your Song</h3><p>Upload your music or enter lyrics to start a free creative plan.</p></div><div class="card"><h3>2. Guide Your Director</h3><p>Analyze the song, shape your vision, and edit numbered scenes.</p></div><div class="card"><h3>3. Create When Ready</h3><p>Save your storyboard now. Video ordering opens after our engine is verified.</p></div></div></section>
+        <section class="content" id="create"><div class="studio-entry"><div><h2>My Studio is where the magic happens.</h2><p>Your free Song Analyzer, Listening Director and editable Storyboard are together in one guided workspace. Your draft stays saved while you move through the pages.</p><p class="entry-note">Free planning is available now. Video generation and payments remain disabled during preview testing.</p></div><a class="button" href="/my-studio.html">Open My Studio</a></div></section>
+        <section class="content" id="pricing"><h2>Pricing</h2><div class="panel"><h3>NO CREDITS. JUST VIDEO.</h3><p>No credit packs or token counting. Our planned model is a clear price for each finished cinematic music video. Final prices, what is included, and revision terms will be presented before checkout. Orders and payments are not yet enabled in this preview.</p></div></section>
+        <section class="content" id="examples"><h2>Video Examples</h2><div class="panel"><p>Finished cinematic music-video examples will appear here.</p></div></section>
+        <section class="content" id="account"><h2>Your Account</h2><div class="panel account-panel"><h3>Welcome to CutLoopz Media</h3><p>Create your customer account or sign in to your personal music-video studio.</p><p>Account registration and sign-in are available. Video orders, order tracking, and completed video history will be added as customer ordering becomes available.</p><div class="account-options"><a href="/account.html">Sign In</a><a href="/account.html?mode=signup">Sign Up</a></div></div></section>
+        </main><footer>CutLoopz Media — Your Music. Your Vision. Your Video.</footer></div><button aria-label="Back to top" class="back-top" hidden="" id="backTop" type="button">↑</button>
+        <script>
+        'use strict';
+        const $=id=>document.getElementById(id);
+        const floatingHeader=$('floatingHeader'),hero=$('hero'),backTop=$('backTop');
+        let headerVisible=false;
+        function closeProfileMenus(){document.querySelectorAll('[data-profile]').forEach(p=>{p.querySelector('[data-profile-menu]').hidden=true;p.querySelector('[data-profile-trigger]').setAttribute('aria-expanded','false')})}
+        function updateHeader(){const y=hero.getBoundingClientRect().bottom;const shouldShow=headerVisible?y<145:y<105;if(shouldShow!==headerVisible){headerVisible=shouldShow;floatingHeader.classList.toggle('show',shouldShow);floatingHeader.setAttribute('aria-hidden',String(!shouldShow));floatingHeader.inert=!shouldShow;if(!shouldShow)closeProfileMenus()}backTop.hidden=window.scrollY<350}
+        window.addEventListener('scroll',updateHeader,{passive:true});window.addEventListener('resize',updateHeader);updateHeader();backTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}));
+        function showGuest(){closeProfileMenus();document.querySelectorAll('[data-guest-actions]').forEach(x=>x.hidden=false);document.querySelectorAll('[data-profile]').forEach(x=>x.hidden=true)}
+        function showCustomer(user){const name=String(user.name||user.firstName||user.email||'Customer').trim(),initial=Array.from(name)[0]?.toUpperCase()||'C';document.querySelectorAll('[data-guest-actions]').forEach(x=>x.hidden=true);document.querySelectorAll('[data-profile]').forEach(p=>{p.hidden=false;p.querySelector('[data-profile-initial]').textContent=initial;p.querySelector('[data-profile-name]').textContent=name})}
+        async function loadCustomer(){try{const r=await fetch('/api/customer-auth/me',{credentials:'same-origin',cache:'no-store'});if(!r.ok){showGuest();return}const data=await r.json(),customer=data.customer||data.user;if(data.ok&&customer)showCustomer(customer);else showGuest()}catch{showGuest()}}
+        document.querySelectorAll('[data-profile]').forEach(p=>{const trigger=p.querySelector('[data-profile-trigger]'),menu=p.querySelector('[data-profile-menu]'),signOut=p.querySelector('[data-sign-out]'),err=p.querySelector('[data-profile-error]');trigger.addEventListener('click',event=>{event.stopPropagation();const opening=menu.hidden;closeProfileMenus();menu.hidden=!opening;trigger.setAttribute('aria-expanded',String(opening));err.hidden=true});menu.addEventListener('click',event=>event.stopPropagation());signOut.addEventListener('click',async()=>{signOut.disabled=true;err.hidden=true;try{const r=await fetch('/api/customer-auth/logout',{method:'POST',credentials:'same-origin',cache:'no-store'});const d=await r.json();if(!r.ok||!d.ok)throw Error('Sign out failed');showGuest()}catch{err.textContent='Could not sign out. Please try again.';err.hidden=false}finally{signOut.disabled=false}})});document.addEventListener('click',event=>{if(!event.target.closest('[data-profile]'))closeProfileMenus()});document.addEventListener('keydown',event=>{if(event.key==='Escape')closeProfileMenus()});window.addEventListener('pageshow',loadCustomer);loadCustomer();
+        </script>
+        <script defer="" src="/cutloopz-home-upgrade.js"></script>
+
+        <script id="cutloopz-hero-video-controls">
+        (()=>{
+        'use strict';
+        const video=document.getElementById('cutloopzHeroVideo');
+        const button=document.getElementById('cutloopzHeroPlayback');
+        if(!video||!button)return;
+        const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+        function sync(){
+         const paused=video.paused;
+         button.textContent=paused?'▶ Play':'❚❚ Pause';
+         button.setAttribute('aria-label',paused?'Play showcase video':'Pause showcase video');
+         button.setAttribute('aria-pressed',String(!paused));
+        }
+        button.addEventListener('click',()=>{if(video.paused)video.play().catch(sync);else video.pause();sync()});
+        video.addEventListener('pause',sync);video.addEventListener('play',sync);
+        video.addEventListener('error',()=>{video.style.display='none';button.hidden=true;video.parentNode.style.backgroundImage='url(/cutloopz-showcase-poster.jpg)';video.parentNode.style.backgroundPosition='center';video.parentNode.style.backgroundSize='cover'});
+        if(reduced.matches){video.removeAttribute('autoplay');video.pause()}
+        else video.play().catch(()=>{video.pause();sync()});
+        sync();
+        })();
+        </script>
+        </body>
+        </html>
+        CUTLOOPZ_UI_COMPLETE_0_END
+        cat > public/my-studio.html <<'CUTLOOPZ_UI_COMPLETE_1_END'
+        <!doctype html>
+        <html lang="en">
+        <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#101014">
+        <title>My Studio | CutLoopz Media</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/my-studio.css">
+        <link rel="stylesheet" href="/cutloopz-welcome.css">
+        <script src="/cutloopz-welcome.js" defer></script>
+        <script src="/cutloopz-song-link.js" defer></script>
+        <script src="/my-studio.js" defer></script>
+        </head>
+        <body>
+        <a class="skip-link" href="#studioWorkspace">Skip to Studio</a>
+        <header class="site-header">
+         <a class="brand" href="/customer.html" aria-label="CutLoopz Media home"><img src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png" alt=""><span><strong>CutLoopz Media</strong><small>A Director That Listens. A Video That Performs.</small></span></a>
+         <nav class="topnav" aria-label="Studio navigation"><a class="active" href="/my-studio.html">My Studio</a><a href="/account.html?view=studio">My Videos & Account</a><a href="/glamour.html">Glamour Membership</a><a href="/customer.html">Home</a></nav>
+        </header>
+        <main class="shell" id="studioWorkspace">
+         <div class="intro"><div><span class="eyebrow">YOUR MUSIC · YOUR VISION · YOUR VIDEO</span><h1>My Studio</h1><p>One step at a time. Your creative work stays with your project.</p></div><div class="status-wrap"><span id="signInStatus" class="status-chip">Checking account…</span><span id="saveStatus" class="save-message" role="status">Loading draft…</span></div></div>
+         <div class="studio-frame">
+          <div class="step-header"><div><span class="eyebrow" id="stepTag">PAGE 01 / 05</span><h2 id="stepTitle">Your Song &amp; Artist</h2><p id="stepSubtitle">Bring your music into the Studio.</p></div><button type="button" id="newProject" class="subtle">New Project</button></div>
+          <div class="progress" role="progressbar" aria-label="Project progress" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1" id="stepProgress"><span id="progressFill"></span></div>
+          <div class="workspace-content">
+           <section class="wizard-step" data-step="0" aria-labelledby="songHeading">
+            <h3 id="songHeading">01 · Song details</h3>
+            <div class="fields"><div class="field"><label for="title">Song title</label><input id="title" maxlength="120" placeholder="Enter your song title" autocomplete="off"></div><div class="field"><label for="duration">Video duration</label><select id="duration"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="180">3 minutes</option><option value="240">4 minutes</option><option value="300">5 minutes</option><option value="360">6 minutes</option><option value="custom">Custom (15 sec–6 min)</option></select><div id="customTimeField" hidden><label for="customTime">Exact duration (M:SS)</label><input id="customTime" inputmode="numeric" maxlength="4" placeholder="3:46"><p class="hint">For example 3:46 or 4:01. Maximum 6:00.</p></div></div></div>
+            <div class="field source-mode-field">
+              <label id="musicSourceLabel">Choose your music source</label>
+              <div class="source-mode" role="group" aria-labelledby="musicSourceLabel">
+                <button type="button" class="source-mode-btn selected" id="sourceUploadBtn" aria-pressed="true">Upload MP3 / WAV</button>
+                <button type="button" class="source-mode-btn" id="sourceLinkBtn" aria-pressed="false">Paste Song Link</button>
+              </div>
+              <p class="hint source-choice-hint" id="sourceChoiceHint">Choose one method. You can switch later without losing your lyrics or creative direction.</p>
+            </div>
+            <div class="song-link-panel" id="songLinkPanel" aria-labelledby="songLinkHeading" hidden>
+              <div class="song-link-heading"><span class="song-link-glyph" aria-hidden="true">↗</span><div><label id="songLinkHeading" for="songLink">Paste Song Link</label><p class="hint"><strong class="studio-platform studio-suno">SUNO</strong> · <strong class="studio-platform">Udio</strong> · <strong class="studio-platform">YouTube</strong> · <strong class="studio-platform">Spotify</strong> · <strong class="studio-platform">SoundCloud</strong></p></div></div>
+              <div class="song-link-input-row"><input id="songLink" type="url" maxlength="2048" inputmode="url" placeholder="https://suno.com/song/…" autocomplete="off" spellcheck="false"><button type="button" class="gold" id="useSongLink">Use Link</button></div>
+              <p id="songLinkStatus" class="operation-status" role="status">Paste a public song link to attach its source to your project.</p>
+              <a id="openSongLink" href="#" rel="noopener noreferrer" target="_blank" hidden>Open original song ↗</a>
+              <p class="hint">A song link takes you directly to the Listening Director when no audio file is selected. Add lyrics below for emotional direction. To analyze beats or generate with the actual audio, switch to MP3/WAV upload instead. CutLoopz does not rip or download audio or lyrics from streaming platforms.</p>
+            </div>
+            <div class="field" id="audioSourcePanel"><label for="songAudio">Upload MP3 or WAV <span class="optional">(optional for planning)</span></label><input id="songAudio" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav"><p class="hint" id="audioLabel" role="status">Choose an MP3 or WAV (max 25 MB). Your browser will retain the selection privately for analysis on Page 2.</p></div>
+            <div class="photo-upload-panel"><div class="photo-panel-heading"><span class="photo-panel-icon" aria-hidden="true">▧</span><div><label for="artistPhoto">Artist Photo <span class="optional">(optional for planning)</span></label><p class="hint">Add the artist's main reference photo here. Glamour Shots and additional looks remain separate membership features.</p></div></div><input id="artistPhoto" type="file" accept="image/jpeg,image/png,image/webp"><p class="hint" id="photoLabel" role="status">JPG, PNG or WebP · Max 12 MB · Saved privately in this browser for your current project.</p><div class="photo-preview" id="photoPreviewWrap" hidden><img id="photoPreview" alt="Preview of the selected artist reference photo"></div></div>
+            <div class="field"><label for="lyrics">Lyrics <span class="optional">(recommended for emotional direction)</span></label><textarea id="lyrics" rows="9" maxlength="12000" placeholder="Paste the lyrics here. Add [00:15] timestamps if you have them."></textarea></div>
+            <p class="helper">Your song and photo stay in this browser's private storage until you start a New Project or clear this site's data. They are not synced to other devices. You can also create a free Director storyboard using lyrics alone.</p>
+           </section>
+           <section class="wizard-step" data-step="1" aria-labelledby="analyzeHeading" hidden>
+            <h3 id="analyzeHeading">02 · Free Song Analyzer</h3><p class="helper">Analyze musical rhythm and energy; no administrator password, payment, or GPU needed.</p>
+            <div class="analysis-box"><p id="analysisIntro" role="status">Your selected song from Page 1 will be used automatically. You do not need to upload it again.</p><button type="button" id="analyzeBtn" class="gold" aria-label="Evaluate song rhythm and energy">Evaluate Song</button><p id="analyzeStatus" role="status" class="operation-status"></p>
+             <div id="analysisResult" hidden><div class="metric-grid"><div><small>Estimated tempo</small><strong id="bpmValue">—</strong></div><div><small>Audio length</small><strong id="audioDurationValue">—</strong></div><div><small>Energy segments</small><strong id="energyValue">—</strong></div></div><p class="hint" id="analysisCaveat"></p></div>
+            </div><p class="helper" id="analysisHelp">Audio analysis is optional. If you are working from a song link or lyrics only, continue to the Listening Director.</p>
+           </section>
+           <section class="wizard-step" data-step="2" aria-labelledby="directorHeading" hidden>
+            <h3 id="directorHeading">03 · Listening Director</h3><p id="directorSourceNotice" class="studio-link-note" role="status" hidden></p><p class="helper">Your Director interprets the lyrics, overall mood, style, and any analyzed audio. You can edit everything before generating a storyboard.</p>
+            <div class="fields"><div class="field"><label for="visualStyle">Cinematic style</label><select id="visualStyle"><option>Cinematic Realism</option><option>Romantic Drama</option><option>Urban Music Video</option><option>Hollywood Action</option><option>Science Fiction</option><option>Fantasy</option><option>3D Animation</option><option>Anime</option><option>Music Performance</option></select></div><div class="field"><label for="format">Video format</label><select id="format"><option value="vertical">9:16 Vertical</option><option value="landscape">16:9 Widescreen</option></select></div></div>
+            <div class="fields"><div class="field"><label for="sceneSeconds">Length per scene</label><select id="sceneSeconds"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option></select></div></div><p class="hint">Your artist reference photo is selected on Page 1. Tap Back to change it.</p>
+            <div class="field"><label for="direction">Your creative direction</label><textarea id="direction" maxlength="4000" rows="11" placeholder="Describe the mood, location, action, performance, wardrobe, movement, and story. For example: confident performance in a city at night with smooth, natural movements."></textarea></div>
+            <div class="field"><label for="characterNotes">Artist appearance and continuity</label><textarea id="characterNotes" maxlength="1000" rows="2" placeholder="Optional: hairstyle, distinctive outfits, expression, visual continuity..."></textarea></div>
+            <button type="button" id="directorBtn" class="gold">Get Director Input · Create Storyboard</button><p id="directorStatus" class="operation-status" role="status"></p>
+           </section>
+           <section class="wizard-step" data-step="3" aria-labelledby="storyHeading" hidden>
+            <h3 id="storyHeading">04 · Your Storyboard</h3><p class="helper">Each scene is numbered. Edit instructions or move between scene pairs without losing your changes.</p>
+            <div id="storyEmpty" class="empty-state">No storyboard yet. Return to Page 3 and select <strong>Get Director Input · Create Storyboard</strong>.</div>
+            <div id="storyContent" hidden><div class="story-head"><div><strong id="scenePairLabel">Scenes 1–2</strong><span id="storyEmotion"></span></div><div class="scene-nav"><button type="button" id="scenePrev" class="subtle">← Scenes</button><button type="button" id="sceneNext" class="subtle">Next scenes →</button></div></div><div id="sceneCards" class="scene-grid"></div><p class="helper">Changing scenes updates your draft only; it does not start video generation.</p></div>
+           </section>
+           <section class="wizard-step" data-step="4" aria-labelledby="reviewHeading" hidden>
+            <h3 id="reviewHeading">05 · Review Your Vision</h3><p class="helper">Make sure the creative choices are right before your future video-production order.</p><div class="studio-no-credits"><strong>NO CREDITS. JUST VIDEO.</strong><p>When ordering opens, the price, included deliverables, and revision terms will be clear before checkout. No credit packs or token counting.</p></div>
+            <div id="reviewSummary" class="review-grid"></div><div class="review-actions"><button type="button" id="editSong" class="subtle">Edit Song</button><button type="button" id="editDirector" class="subtle">Edit Director</button><button type="button" id="editStoryboard" class="subtle">Edit Scenes</button></div>
+            <div class="blocked"><strong>Video generation is not available in this preview.</strong><p>Free analysis, Director planning, editing, and drafts are active. No video will be submitted or charged. We will enable production only after the independent GPU pipeline is proven.</p><button type="button" disabled aria-disabled="true">Generate Video — Not Enabled</button></div>
+           </section>
+          </div>
+          <footer class="step-footer"><button type="button" id="backBtn" class="subtle" disabled>← Back</button><span id="stepCounter">Page 1 of 5</span><button type="button" id="nextBtn" class="gold">Next →</button></footer>
+         </div>
+         <section class="below-studio" aria-label="Other Studio tools"><a class="tool-card" href="/account.html?view=studio"><span aria-hidden="true">▣</span><strong>My Videos & Account</strong><small>Track saved orders and loyalty rewards.</small></a><a class="tool-card" href="/glamour.html"><span aria-hidden="true">✦</span><strong>Glamour Membership</strong><small>Optional subscriber-only wardrobe and photo features.</small></a></section>
+         <p class="legal">Draft text saves on this device, and signed-in text drafts can sync to your account. Uploaded song and artist photo are kept privately in this browser (not on your account); changing devices may require reselecting them. Clear this project with New Project.</p>
+        </main>
+        <button id="backToTop" class="back-to-top" type="button" aria-label="Back to top" title="Back to top" hidden><span aria-hidden="true">↑</span></button>
+        </body>
+        </html>
+        CUTLOOPZ_UI_COMPLETE_1_END
+        cat > public/my-studio.css <<'CUTLOOPZ_UI_COMPLETE_2_END'
+        :root{--bg:#101015;--surface:#1b1a21;--panel:#222029;--line:#625134;--gold:#d7ae59;--gold-strong:#f0c774;--text:#f7f3ea;--muted:#d1c9bb;--dim:#a69d90;--error:#ffafaa}
+        *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at top,#2a221a 0%,#101015 56%);color:var(--text);font:16px/1.55 'DM Sans',sans-serif}button,input,textarea,select{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}button:disabled{opacity:.52;cursor:not-allowed}a{color:var(--gold-strong);text-decoration:none}a:hover{text-decoration:underline}[hidden]{display:none!important}:focus-visible{outline:3px solid var(--gold-strong);outline-offset:2px}.skip-link{position:absolute;top:-100px;left:10px;background:#fff;color:#111;padding:8px;z-index:5}.skip-link:focus{top:10px}
+        .site-header{max-width:1050px;margin:auto;padding:14px 18px 0}.brand{display:flex;align-items:center;gap:12px;color:var(--text)}.brand img{width:48px;height:48px;object-fit:contain;background:#090909;border-radius:10px;padding:5px}.brand strong{font-size:19px;display:block;color:var(--gold-strong);line-height:1.2}.brand small{font-size:13px;color:var(--muted);display:block;margin-top:3px}.topnav{display:flex;gap:8px;overflow:auto;scrollbar-width:none;white-space:nowrap;max-width:100%;margin-top:14px;padding-bottom:10px}.topnav::-webkit-scrollbar{display:none}.topnav a{font-size:14px;font-weight:700;border:1px solid #605037;color:var(--muted);background:#221f22;padding:8px 13px;border-radius:12px}.topnav a.active{background:var(--gold);border-color:var(--gold);color:#1b1309}
+        .shell{max-width:1000px;margin:0 auto;padding:10px 18px 70px}.intro{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:15px}.eyebrow{color:var(--gold);font-weight:800;font-size:13px;letter-spacing:.12em}.intro h1{margin:3px 0;font-size:clamp(26px,5vw,34px);line-height:1.2}.intro p{margin:2px 0 0;color:var(--muted);font-size:15px}.status-wrap{text-align:right;max-width:240px}.status-chip{display:inline-block;border:1px solid #675532;border-radius:99px;color:var(--gold);font-size:13px;padding:4px 9px;white-space:normal}.save-message{display:block;margin-top:5px;color:var(--dim);font-size:13px}
+        .studio-frame{border:1px solid #796038;background:linear-gradient(135deg,#242029,#17171d 63%);border-radius:19px;box-shadow:0 14px 50px #0005;overflow:hidden;min-height:500px}.step-header{padding:20px 22px 12px;display:flex;align-items:start;justify-content:space-between;gap:8px}.step-header h2{font-size:clamp(19px,3vw,23px);margin:2px 0 1px}.step-header p{font-size:15px;margin:0;color:var(--muted)}.step-header .subtle{font-size:14px;min-height:36px;padding:6px 11px}.progress{height:5px;background:#473d31;margin:0 22px;border-radius:99px;overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,#ad7f2d,#f0cb77);width:20%;transition:width .22s ease}.workspace-content{padding:18px 22px 22px;min-height:310px}.wizard-step h3{font-size:18px;margin:0 0 10px;color:var(--gold-strong)}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{margin-bottom:15px;min-width:0}.field label{display:block;font-size:16px;font-weight:700;margin-bottom:6px}.optional{font-size:14px;color:var(--dim);font-weight:500}input,textarea,select{display:block;width:100%;color:var(--text);background:#101015;border:1px solid #72603e;border-radius:11px;padding:11px 12px;font-size:16px;min-height:45px}textarea{resize:vertical;min-height:90px}input[type=file]{padding:8px 10px;font-size:15px;max-width:100%}input::file-selector-button{border:0;background:#5e4927;color:#fff0d0;padding:6px 8px;margin-right:9px;border-radius:6px}.hint,.helper{font-size:15px;color:var(--muted);margin:7px 0 12px}.helper{line-height:1.58}.operation-status{min-height:1.5em;color:var(--gold);font-size:15px;font-weight:600}.analysis-box,.empty-state,.blocked{border:1px solid #605039;border-radius:13px;padding:15px;background:#15151b}.analysis-box p{margin:0 0 12px}.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.metric-grid>div{border:1px solid #55462f;background:#24202a;padding:12px;border-radius:12px}.metric-grid small{color:var(--dim);font-size:14px;display:block}.metric-grid strong{font-size:21px;color:var(--gold);display:block;margin-top:3px}.gold,.subtle{border-radius:10px;min-height:44px;padding:10px 15px;font-weight:800;border:1px solid #9a773b}.gold{background:linear-gradient(110deg,#f0ca78,#bb8d40);color:#1f1608}.gold:hover:not(:disabled){filter:brightness(1.1)}.subtle{color:var(--gold-strong);background:#19171b;border-color:#635033}.subtle:hover:not(:disabled){background:#2d2530}.step-footer{border-top:1px solid #51462f;padding:12px 22px;display:flex;gap:8px;align-items:center;justify-content:space-between}.step-footer span{font-size:15px;color:var(--muted)}.step-footer button{min-width:100px}
+        .story-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:9px 0 12px}.story-head strong{display:block;color:var(--gold)}.story-head span{display:block;color:var(--muted);font-size:14px}.scene-nav{display:flex;gap:7px}.scene-nav button{padding:8px 11px;min-height:39px;font-size:14px}.scene-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.scene-card{border:1px solid #695438;border-radius:12px;padding:14px;background:#17161d;min-width:0}.scene-card h4{margin:0 0 4px;color:var(--gold);font-size:17px}.scene-card .scene-meta{font-size:14px;color:var(--muted);margin-bottom:9px}.scene-card label{font-size:15px;display:block;color:var(--muted);margin-top:8px}.scene-card input,.scene-card textarea{font-size:16px;min-height:36px;padding:8px;border-color:#63543d}.scene-card textarea{min-height:130px}.review-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.review-grid>div{border:1px solid #5d4b30;border-radius:11px;background:#18171e;padding:12px;overflow-wrap:anywhere}.review-grid small{display:block;color:var(--muted)}.review-grid strong{display:block;margin-top:3px}.review-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.review-actions button{min-height:40px;font-size:14px}.blocked{margin-top:18px}.blocked strong{color:var(--gold)}.blocked p{color:var(--muted);font-size:15px}.blocked button{background:#3f3841;color:#e0d4c4;border:1px solid #635336;border-radius:9px;padding:10px}.below-studio{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.tool-card{border:1px solid #604c2e;background:#1d1b22;border-radius:12px;padding:15px;display:flex;align-items:start;gap:7px;flex-direction:column}.tool-card span{font-size:20px;color:var(--gold)}.tool-card strong{font-size:15px;color:var(--text)}.tool-card small{font-size:14px;color:var(--muted)}.legal{font-size:14px;color:var(--dim);margin:16px 3px 0}
+        @media(max-width:620px){.site-header{padding:13px 12px 0}.shell{padding:10px 12px 50px}.intro{align-items:start}.intro p{font-size:14px}.status-wrap{max-width:125px}.status-chip{font-size:12px}.step-header{padding:15px 15px 10px}.progress{margin:0 15px}.workspace-content{padding:15px}.fields{grid-template-columns:1fr;gap:0}.step-footer{padding:12px 15px}.step-footer button{min-width:83px}.scene-grid{grid-template-columns:1fr}.story-head{flex-wrap:wrap}.scene-nav{width:100%;justify-content:space-between}.review-grid{grid-template-columns:1fr}.below-studio{grid-template-columns:1fr}.metric-grid{gap:6px}.metric-grid>div{padding:9px}.metric-grid strong{font-size:17px}}
+        @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.progress span{transition:none}}
+
+        /* Artist photo on Page 1. Text sizes remain accessible without expanding empty sections. */
+        .photo-upload-panel{border:1px solid #695439;border-radius:13px;background:#17161d;padding:14px;margin:1px 0 15px}
+        .photo-panel-heading{display:flex;align-items:flex-start;gap:12px}
+        .photo-panel-icon{display:grid;place-items:center;flex:none;width:38px;height:38px;font-size:24px;color:var(--gold);border:1px solid #806438;border-radius:9px}
+        .photo-upload-panel label{display:block;font-size:17px;font-weight:800;margin:2px 0 2px}
+        .photo-upload-panel .hint{margin:3px 0 9px}
+        .photo-upload-panel input{margin-top:6px}
+        .photo-preview{margin-top:10px;max-width:160px}
+        .photo-preview img{display:block;width:100%;max-height:180px;object-fit:contain;border-radius:10px;border:1px solid #7d653e;background:#0c0b10}
+        @media(max-width:620px){.photo-upload-panel{padding:12px}.photo-panel-heading{gap:10px}.photo-upload-panel label{font-size:16px}.intro p{line-height:1.45}.step-header .subtle{font-size:13px}}
+
+        /* Floating, keyboard-accessible Back to Top control — retained across Studio pages. */
+        .back-to-top{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));z-index:30;width:50px;height:50px;border-radius:50%;border:1px solid #edc777;background:linear-gradient(135deg,#f1cb79,#c18e39);color:#21180c;box-shadow:0 6px 24px #0009;display:grid;place-items:center;font-size:27px;font-weight:800;line-height:1;cursor:pointer;touch-action:manipulation}
+        .back-to-top:hover{filter:brightness(1.06)}
+        .back-to-top:focus-visible{outline:3px solid #fff2cc;outline-offset:3px}
+        @media(max-width:620px){.back-to-top{right:max(12px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));width:48px;height:48px}}
+
+        /* V5: link-aware song intake, accessible and compact on mobile. */
+        .song-link-panel{border:1px solid #735936;border-radius:14px;background:#16151b;padding:14px;margin:4px 0 14px}
+        .song-link-heading{display:flex;align-items:center;gap:10px}.song-link-heading label{display:block;font-size:17px;font-weight:800;color:var(--gold-strong)}.song-link-heading .hint{margin:2px 0 9px}
+        .song-link-glyph{display:grid;place-items:center;flex:none;width:37px;height:37px;color:#1f1609;background:var(--gold);border-radius:10px;font-size:23px;font-weight:800}
+        .song-link-input-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:stretch}
+        .song-link-input-row input{margin:0;min-width:0}.song-link-input-row button{min-width:96px}
+        .song-link-panel .operation-status{margin:10px 0 4px}.song-link-panel .hint{line-height:1.5}.song-link-panel a{display:inline-block;margin:1px 0 7px;font-size:15px;font-weight:700;text-decoration:underline}
+        .source-tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.source-tags span{border:1px solid #b59a62;background:#32291d;color:#f5deb0;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:800}
+        @media(max-width:440px){.song-link-input-row{grid-template-columns:1fr}.song-link-input-row button{width:100%}}
+
+        /* V5B: uppercase, heavy SUNO branding and transparent per-video value promise. */
+        .studio-platform{font-weight:800;color:var(--text)}.studio-suno{font-weight:900;color:var(--gold-strong);letter-spacing:.045em}
+        .studio-no-credits{border-left:3px solid var(--gold-strong);background:#24211d;border-radius:0 10px 10px 0;padding:11px 14px;margin:0 0 16px}
+        .studio-no-credits strong{display:block;font-size:18px;line-height:1.3;font-weight:900;color:var(--gold-strong);letter-spacing:.02em}
+        .studio-no-credits p{margin:4px 0 0;font-size:14px;color:var(--muted);line-height:1.55}
+
+        /* V5C link-only planning: informative, not a fake audio-analysis result. */
+        .studio-link-note{border:1px solid rgba(226,181,87,.42);background:rgba(204,163,74,.09);border-radius:12px;padding:12px 14px;color:var(--text,#f6eee5);font-size:clamp(.92rem,2.5vw,1rem);line-height:1.55;margin:0 0 15px;}
+
+        /* V5D: mobile Back/Next must land at the new step heading, clear of edges. */
+        .wizard-step > h3:first-child{scroll-margin-top:20px;}
+
+        /* CutLoopz readability & source-choice update: intentionally restrained. */
+        :root{--sage:#c8debe;--sage-text:#243a2a;--olive:#20251f;--olive-line:#70886b}
+        body{font-size:17px;line-height:1.65}
+        .workspace-content{padding-top:22px;padding-bottom:26px}
+        .wizard-step h3{font-size:clamp(19px,3vw,22px);margin-bottom:14px}
+        .field label{font-size:17px}
+        .hint,.helper{font-size:16px;line-height:1.65}
+        .optional{font-size:14px}
+        input,select,textarea{font-size:17px;line-height:1.55}
+        textarea{padding:15px 14px;vertical-align:top;overflow:auto}
+        #lyrics{min-height:220px;line-height:1.65}
+        #direction{min-height:290px;line-height:1.65;resize:vertical}
+        #characterNotes{min-height:110px}
+        .source-mode-field{margin:18px 0 15px}
+        .source-mode{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+        .source-mode-btn{min-height:52px;border-radius:12px;padding:12px 14px;border:1px solid var(--olive-line);font-weight:800;font-size:16px;background:var(--olive);color:#ecf0e9;line-height:1.3}
+        .source-mode-btn.selected{background:var(--sage);color:var(--sage-text);border-color:#c8debe}
+        .source-mode-btn:hover:not(.selected){background:#343c32}
+        .source-choice-hint{margin:10px 0 2px;color:#ddd9ce}
+        .song-link-panel,.photo-upload-panel,.studio-no-credits{background:#20251f;border-color:#70886b}
+        .source-tags span{background:#293429;border-color:#829b79;color:#e5efd9}
+        #analyzeBtn,#directorBtn{min-height:54px;padding-inline:20px;font-size:17px}
+        /* Only pulse the next action until used. Focus and hover remain stable. */
+        @keyframes cutloopz-next-action{0%,100%{filter:brightness(.88);box-shadow:0 0 0 rgba(231,193,108,0)}50%{filter:brightness(1.19);box-shadow:0 0 18px rgba(231,193,108,.31)}}
+        .action-needs-attention:not(:disabled):not(:hover):not(:focus-visible){animation:cutloopz-next-action 2.6s ease-in-out infinite}
+        @media(max-width:620px){.source-mode{gap:8px}.source-mode-btn{min-height:54px;font-size:15px;padding:10px 7px}.workspace-content{padding:17px 16px 23px}#lyrics{min-height:225px}#direction{min-height:245px}.hint,.helper{font-size:16px}.intro p{font-size:15px}}
+        @media(prefers-reduced-motion:reduce){.action-needs-attention{animation:none!important}}
+        CUTLOOPZ_UI_COMPLETE_2_END
+        cat > public/my-studio.js <<'CUTLOOPZ_UI_COMPLETE_3_END'
+        'use strict';
+        (() => {
+         const $=id=>document.getElementById(id);
+         const fieldNames=['songLink','title','duration','lyrics','visualStyle','format','sceneSeconds','direction','characterNotes'];
+         const pageTitles=['Your Song & Artist','Song Analyzer','Listening Director','Your Storyboard','Review Your Vision'];
+         const pageDescriptions=['Bring your music into the Studio.','Learn its rhythm and energy.','Shape the story and visual performance.','Fine-tune each numbered scene.','Check every creative choice before production.'];
+         const storagePrefix='cutloopz:artist-studio:v1:';
+         const MEDIA_DB_NAME='cutloopz-studio-media-v1';
+         // Audio and photos are kept in browser-owned IndexedDB, never in localStorage or
+         // the account text-draft API. A browser may refuse storage; in that case the file
+         // remains usable for the current page session and we clearly explain the limit.
+         let mediaDbPromise=null;
+         function mediaDb(){
+           if(mediaDbPromise)return mediaDbPromise;
+           mediaDbPromise=new Promise((resolve,reject)=>{
+             if(!('indexedDB' in window)){reject(Error('Browser file storage unavailable'));return;}
+             const request=indexedDB.open(MEDIA_DB_NAME,1);
+             request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('files'))request.result.createObjectStore('files');};
+             request.onsuccess=()=>resolve(request.result);
+             request.onerror=()=>reject(request.error||Error('Unable to open file storage'));
+             request.onblocked=()=>reject(Error('File storage blocked'));
+           }).catch(error=>{mediaDbPromise=null;throw error});
+           return mediaDbPromise;
+         }
+         async function mediaWrite(kind,file){
+           const db=await mediaDb();
+           return new Promise((resolve,reject)=>{
+             const tx=db.transaction('files','readwrite');
+             const key=storageKey+':'+kind;
+             if(file)tx.objectStore('files').put({name:file.name,type:file.type,modified:file.lastModified,blob:file},key);
+             else tx.objectStore('files').delete(key);
+             tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error||Error('Unable to save file'));
+             tx.onabort=()=>reject(tx.error||Error('File storage aborted'));
+           });
+         }
+         async function mediaRead(kind){
+           const db=await mediaDb();
+           return new Promise((resolve,reject)=>{
+             const tx=db.transaction('files','readonly');
+             const request=tx.objectStore('files').get(storageKey+':'+kind);
+             request.onsuccess=()=>{
+               const entry=request.result;
+               if(!entry||!(entry.blob instanceof Blob)||!entry.name){resolve(null);return;}
+               resolve(new File([entry.blob],entry.name,{type:entry.type||'',lastModified:entry.modified||Date.now()}));
+             };
+             request.onerror=()=>reject(request.error||Error('Cannot read retained file'));
+           });
+         }
+         function refreshAnalysisIntro(){
+           const label=$('analysisIntro');if(!label)return;
+           if(lastSongFile){label.textContent=`Ready to analyze: ${lastSongFile.name}. This is the song you selected on Page 1; no second upload needed.`;return;}
+           const name=$('songAudio').dataset.previousName;
+           const link=window.CutLoopzSongLink?.inspect($('songLink').value);
+           if(link?.ok){label.textContent=`${link.name} link is saved. Beat analysis requires an authorized MP3/WAV on Page 1. You can continue to the Listening Director with your lyrics now.`;return;}
+           label.textContent=name?`Your draft remembers “${name}”, but the actual audio file is unavailable in this browser. Go Back to Page 1 and choose the MP3 or WAV again.`:'No music selected yet. Choose a song on Page 1, or skip analysis and go directly to the Listening Director.';
+         }
+
+         const durationOptions=[15,30,60,120,180,240,300,360];
+         function selectedDuration(){
+          if($('duration').value!=='custom')return Number($('duration').value);
+          const raw=$('customTime').value.trim(),match=/^(\d{1,2}):([0-5]\d)$/.exec(raw);
+          const seconds=match?(Number(match[1])*60+Number(match[2])):NaN;
+          return Number.isFinite(seconds)&&seconds>=15&&seconds<=360?seconds:NaN;
+         }
+         function syncCustomTime(){ $('customTimeField').hidden=$('duration').value!=='custom'; }
+         let storageKey=storagePrefix+'guest', account=null, saveTimer=null, serverTimer=null;
+         let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false, photoPreviewUrl=null;
+         let analysisSourceKey='', storyboardSourceKey='', pendingRestore=null, sourceVersion=0;
+         let selectedSource='upload'; // Exactly one active music input method; stored with each draft.
+         const notify=(id,text,bad=false)=>{const node=$(id);if(node){node.textContent=text;node.style.color=bad?'#ffafaa':'';}};
+         const safeText=value=>String(value==null?'':value);
+         // Source signatures are provenance checks, not security hashes. Never attach an old
+         // analysis or storyboard to a different song, including after draft restoration.
+         // Compact double fingerprint avoids storing duplicate copies of lyrics in drafts.
+         // It is not used for authentication, signatures, or security decisions.
+         function fingerprint(parts){
+           const text=JSON.stringify(parts);let a=2166136261,b=2246822519;
+           for(let i=0;i<text.length;i++){const c=text.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b+c,0x9e3779b1);}
+           return `${text.length}:${(a>>>0).toString(16)}:${(b>>>0).toString(16)}`;
+         }
+         const fileIdentity=file=>file?[file.name,file.size,file.lastModified]:null;
+         const musicKey=()=>fingerprint([$('title').value.trim(),selectedSource,$('songLink').value.trim(),fileIdentity(lastSongFile)]);
+         const storyKey=()=>fingerprint([musicKey(),$('lyrics').value,$('direction').value,$('characterNotes').value,
+           selectedDuration(),Number($('sceneSeconds').value),$('visualStyle').value,$('format').value,fileIdentity(lastPhotoFile),analysisSourceKey]);
+         function invalidateSongOutputs({music=false}={}){
+           sourceVersion++;
+           const hadStory=scenes.length>0;
+           scenes=[];scenePage=0;storyboardSourceKey='';
+           $('storyEmotion').textContent='';
+           if(music){musicResult=null;analysisSourceKey='';renderAnalysis();}
+           if(hadStory){notify('directorStatus','Song or direction changed. Previous storyboard cleared; generate a new one for this song.');
+             if(page===3)renderScenes();}
+           scheduleSave();
+         }
+
+         const serializable=()=>({source:selectedSource,songLink:selectedSource==='link'?(window.CutLoopzSongLink?.inspect($('songLink').value)?.url||''):'',title:$('title').value,lyrics:$('lyrics').value,songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),style:$('visualStyle').value,format:$('format').value,direction:$('direction').value,
+          characterNotes:$('characterNotes').value,songName:lastSongFile?.name||$('songAudio').dataset.previousName||'',photoName:lastPhotoFile?.name||$('artistPhoto').dataset.previousName||'',page,scenePage,scenes,musicResult,analysisSourceKey,storyboardSourceKey});
+         function saveLocal(){
+           try{localStorage.setItem(storageKey,JSON.stringify({at:Date.now(),draft:serializable()}));return true;}
+           catch{notify('saveStatus','Storage is full. Draft not saved.',true);return false;}
+         }
+         async function saveServer(){
+           if(!account)return;
+           try{
+            const response=await fetch('/api/customer-auth/studio/draft',{method:'PUT',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({draft:serializable()})});
+            if(!response.ok)throw Error('Cloud draft unavailable');
+            notify('saveStatus','Saved to account and device');
+           }catch{notify('saveStatus','Saved on this device · account sync unavailable');}
+         }
+         function scheduleSave(){
+           if(restoring)return;
+           clearTimeout(saveTimer);clearTimeout(serverTimer);
+           notify('saveStatus','Saving changes…');
+           saveTimer=setTimeout(()=>{
+             const ok=saveLocal();
+             if(ok)notify('saveStatus',account?'Saved on device · syncing…':'Saved on this device');
+           },220);
+           if(account)serverTimer=setTimeout(saveServer,1600);
+         }
+         function hydrate(draft){
+           if(!draft || typeof draft!=='object')return;
+           restoring=true;
+           selectedSource=draft.source==='link'||(!draft.source && draft.songLink && !draft.songName)?'link':'upload';
+           $('songLink').value=selectedSource==='link'?safeText(draft.songLink).slice(0,2048):'';
+           syncSourceDisplay();
+           renderLinkStatus(false);
+           $('title').value=safeText(draft.title).slice(0,120);
+           $('lyrics').value=safeText(draft.lyrics).slice(0,12000);
+           const seconds=Number(draft.songSeconds);
+           $('duration').value=durationOptions.includes(seconds)?String(seconds):(seconds>=15&&seconds<=360?'custom':'30');
+           if($('duration').value==='custom')$('customTime').value=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+           syncCustomTime();
+           $('sceneSeconds').value=String([10,15,20,30].includes(Number(draft.sceneSeconds))?draft.sceneSeconds:15);
+           $('visualStyle').value=[...$('visualStyle').options].some(o=>o.value===draft.style)?draft.style:'Cinematic Realism';
+           $('format').value=draft.format==='landscape'?'landscape':'vertical';
+           $('direction').value=safeText(draft.direction).slice(0,4000);
+           $('characterNotes').value=safeText(draft.characterNotes).slice(0,1000);
+           $('songAudio').dataset.previousName=selectedSource==='upload'?safeText(draft.songName).slice(0,180):'';
+           $('artistPhoto').dataset.previousName=safeText(draft.photoName).slice(0,180);
+           if(selectedSource==='upload'&&draft.songName)$('audioLabel').textContent=`Previously selected: ${draft.songName}. Reselect this file to analyze it again.`;
+           if(draft.photoName)$('photoLabel').textContent=`Previously selected: ${draft.photoName}. Reselect this photo before production.`;
+           // Defer old output restoration until the original song file has actually
+           // been restored and the recorded input signatures still match. Legacy
+           // drafts with no signatures are not allowed to carry creative output.
+           pendingRestore={musicResult:draft.musicResult,analysisSourceKey:safeText(draft.analysisSourceKey),
+             storyboardSourceKey:safeText(draft.storyboardSourceKey),scenePage:Number(draft.scenePage)||0,
+             scenes:Array.isArray(draft.scenes)?draft.scenes.slice(0,40).map(s=>({number:Number(s.number)||1,startSeconds:Number(s.startSeconds)||0,endSeconds:Number(s.endSeconds)||0,emotion:safeText(s.emotion).slice(0,55),location:safeText(s.location).slice(0,500),action:safeText(s.action).slice(0,800),prompt:safeText(s.prompt).slice(0,4000)})):[]};
+           musicResult=null;analysisSourceKey='';scenes=[];storyboardSourceKey='';$('storyEmotion').textContent='';
+           scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,Number(draft.scenePage)||0));
+           page=Math.max(0,Math.min(4,Number(draft.page)||0));
+           updateUploadLabels();refreshAnalysisIntro();renderAnalysis();showPage(page,{reposition:false});restoring=false;
+         }
+         async function initialize(){
+           let localDraft=null,localUpdatedAt=0,serverUpdatedAt=0;
+           try{
+            const res=await fetch('/api/customer-auth/me',{credentials:'same-origin',cache:'no-store'});
+            if(res.ok){const d=await res.json();account=d.user||d.customer||null;}
+           }catch{}
+           storageKey=storagePrefix+(account?.id?'account:'+account.id:'guest');
+           $('signInStatus').textContent=account?`Signed in: ${account.name||account.email||'Artist'}`:'Guest Studio · Free tools';
+           try{const saved=JSON.parse(localStorage.getItem(storageKey)||'null');localDraft=saved?.draft||null;localUpdatedAt=Number(saved?.at)||0;}catch{}
+           let serverDraft=null;
+           if(account){try{const r=await fetch('/api/customer-auth/studio/draft',{credentials:'same-origin',cache:'no-store'});if(r.ok){const response=await r.json();serverDraft=response.draft;serverUpdatedAt=Date.parse(response.updatedAt)||0;}}catch{}}
+           // Use the most recent draft when account sync and local edits differ.
+           hydrate(localDraft && (localUpdatedAt>=serverUpdatedAt || !serverDraft)?localDraft:serverDraft);
+           const restoredName=$('songAudio').dataset.previousName;
+           const restoredPhotoName=$('artistPhoto').dataset.previousName;
+           try{
+             const [audio,photo]=await Promise.all([mediaRead('audio'),mediaRead('photo')]);
+             if(selectedSource==='upload'&&audio&&audio.name===restoredName&&audio.size<=25*1024*1024&&/\.(mp3|wav)$/i.test(audio.name))lastSongFile=audio;
+             if(selectedSource==='link'&&audio)mediaWrite('audio',null).catch(()=>{});
+             if(photo&&photo.name===restoredPhotoName&&photo.size<=12*1024*1024&&['image/jpeg','image/png','image/webp'].includes(photo.type)){
+               lastPhotoFile=photo;updatePhotoPreview(photo);
+             }
+           }catch{ /* A retained file is optional; the artist can select it again. */ }
+           if(pendingRestore){
+             const restored=pendingRestore;pendingRestore=null;
+             if(lastSongFile && restored.analysisSourceKey && restored.analysisSourceKey===musicKey()
+               && restored.musicResult && typeof restored.musicResult==='object'){
+               musicResult=restored.musicResult;analysisSourceKey=restored.analysisSourceKey;
+             }
+             if(restored.storyboardSourceKey && restored.storyboardSourceKey===storyKey()){
+               scenes=restored.scenes;
+             }
+             storyboardSourceKey=scenes.length?restored.storyboardSourceKey:'';
+             scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,restored.scenePage));
+           }
+           renderAnalysis();if(page===3)renderScenes();
+           const sourceParam=new URLSearchParams(location.search).get('source');
+           if(sourceParam==='link'||['suno','udio','youtube','spotify','soundcloud'].includes(sourceParam)){
+             if(!lastSongFile&&!$('songAudio').dataset.previousName)selectedSource='link';
+           }else if(sourceParam==='upload' && !$('songLink').value.trim()){selectedSource='upload';}
+           syncSourceDisplay();updateUploadLabels();refreshAnalysisIntro();scheduleSave();
+           if(selectedSource==='link'&&sourceParam)$('songLink').focus({preventScroll:true});
+           // Deep links override the saved page, but do not reset any project fields.
+           const urlPage=new URLSearchParams(location.search).get('step');
+           const destination={song:0,analyze:1,director:2,storyboard:3,review:4}[urlPage];
+           if(Number.isInteger(destination))showPage(destination,{reposition:false});
+           notify('saveStatus',account?'Account draft ready':'Draft saved on this device');
+         }
+         // A saved song URL is not an analyzed audio file. Link-only projects bypass
+         // the audio-only page; users can still supply lyrics and a photo on Page 1.
+         function validSongLink(){return selectedSource==='link'&&window.CutLoopzSongLink?.inspect($('songLink').value)?.ok===true;}
+         function linkOnlyProject(){return selectedSource==='link'&&validSongLink();}
+         function pageAfter(action){
+           return window.CutLoopzSongLink.navigation(page,action,{
+             hasAudio: Boolean(lastSongFile),linkAccepted:validSongLink()
+           });
+         }
+         function updateStepNavigation(){
+           $('nextBtn').textContent=page===4?'Back to Start':page===0 && linkOnlyProject()?'Next: Listening Director →':'Next →';
+           $('backBtn').textContent=page===2 && linkOnlyProject()?'← Song & Artist':'← Back';
+           const note=$('directorSourceNotice');
+           const link=selectedSource==='link'?window.CutLoopzSongLink?.inspect($('songLink').value):null;
+           if(page===2 && link?.ok && !lastSongFile){
+             note.textContent=`${link.name} link saved. The audio has not been analyzed and lyrics have not been imported automatically. Use your lyrics and creative direction, or go Back to Page 1 to add them.`;
+             note.hidden=false;
+           }else{note.hidden=true;note.textContent='';}
+         }
+         // Keep mobile navigation anchored to the newly opened page, not the former
+         // footer or artist-photo scroll position. Hydration must not jump the page.
+         function showPage(index,{reposition=true}={}){
+           page=Math.max(0,Math.min(4,index));
+           document.querySelectorAll('.wizard-step').forEach(section=>{section.hidden=Number(section.dataset.step)!==page});
+           $('stepTitle').textContent=pageTitles[page];$('stepSubtitle').textContent=pageDescriptions[page];
+           $('stepTag').textContent=`PAGE ${String(page+1).padStart(2,'0')} / 05`;
+           $('stepCounter').textContent=`Page ${page+1} of 5`;
+           $('stepProgress').setAttribute('aria-valuenow',String(page+1));
+           $('progressFill').style.width=`${20*(page+1)}%`;
+           $('backBtn').disabled=page===0;updateStepNavigation();
+           if(page===1)refreshAnalysisIntro();
+           updateActionAttention();
+           if(page===3)renderScenes();if(page===4)renderReview();
+           scheduleSave();
+           if(reposition){
+             const visibleHeading=page===0?$('songHeading'):document.querySelector(`.wizard-step[data-step="${page}"] h3`);
+             // Explicit instant alignment prevents the previous step's scroll offset
+             // lingering after Back/Next and avoids triggering the on-screen keyboard.
+             visibleHeading?.scrollIntoView({block:'start',behavior:'instant'});
+           }
+         }
+         function clearOrphanedStoryboard(){
+           if(!scenes.length)return;
+           const count=Math.ceil(selectedDuration()/Number($('sceneSeconds').value));
+           if(count!==scenes.length)invalidateSongOutputs();
+         }
+         function updatePhotoPreview(file){
+           if(photoPreviewUrl){URL.revokeObjectURL(photoPreviewUrl);photoPreviewUrl=null;}
+           const wrap=$('photoPreviewWrap'),img=$('photoPreview');
+           if(!file){wrap.hidden=true;img.removeAttribute('src');return;}
+           photoPreviewUrl=URL.createObjectURL(file);
+           img.src=photoPreviewUrl;wrap.hidden=false;
+         }
+         function updateUploadLabels(){
+          if(lastSongFile)$('audioLabel').textContent=`Ready: ${lastSongFile.name}. Saved privately on this device. Page 2 uses this selection automatically.`;
+          if(lastPhotoFile)$('photoLabel').textContent=`Ready: ${lastPhotoFile.name}. Saved privately on this device.`;
+         }
+         function renderLinkStatus(announce=true){
+           const parsed=window.CutLoopzSongLink?.inspect($('songLink').value);
+           const status=$('songLinkStatus'),open=$('openSongLink');
+           if(!parsed?.ok){
+             status.textContent=parsed?.error||'Paste a public song share link.';
+             status.style.color=announce?'#ffafaa':'';
+             open.hidden=true;open.removeAttribute('href');
+             updateStepNavigation();
+             return false;
+           }
+           status.style.color='';
+           status.textContent=`${parsed.name} link saved. Next opens the Listening Director; lyrics and audio are not imported automatically.`;
+           open.href=parsed.url;open.hidden=false;
+           if(announce){scheduleSave();refreshAnalysisIntro();}
+           updateStepNavigation();
+           return true;
+         }
+         function syncSourceDisplay(){
+           $('audioSourcePanel').hidden=selectedSource!=='upload';
+           $('songLinkPanel').hidden=selectedSource!=='link';
+           for(const [mode,id] of [['upload','sourceUploadBtn'],['link','sourceLinkBtn']]){
+             const button=$(id),active=selectedSource===mode;
+             button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active));
+           }
+         }
+         function changeSongSource(mode){
+           if(mode===selectedSource)return;
+           const currentHasSong=selectedSource==='upload'
+             ?Boolean(lastSongFile||$('songAudio').dataset.previousName)
+             :Boolean($('songLink').value.trim());
+           if(currentHasSong&&!window.confirm('Change song source? This clears the current music selection, analysis and storyboard. Your lyrics, photo and director notes will remain.'))return;
+           selectedSource=mode;
+           if(mode==='link'){
+             lastSongFile=null;$('songAudio').value='';$('songAudio').dataset.previousName='';
+             $('audioLabel').textContent='Choose an MP3 or WAV (max 25 MB).';
+             mediaWrite('audio',null).catch(()=>notify('saveStatus','The old audio file may still be in browser storage; you can clear it with New Project.',true));
+           }else{
+             $('songLink').value='';$('songLinkStatus').textContent='Paste a public song link to attach its source to your project.';
+             $('openSongLink').hidden=true;$('openSongLink').removeAttribute('href');
+           }
+           invalidateSongOutputs({music:true});syncSourceDisplay();refreshAnalysisIntro();updateStepNavigation();scheduleSave();
+           (mode==='link'?$('songLink'):$('songAudio')).focus({preventScroll:true});
+         }
+         function updateActionAttention(){
+           $('analyzeBtn').classList.toggle('action-needs-attention',!musicResult&&$('analyzeBtn').dataset.engaged!=='true');
+           $('directorBtn').classList.toggle('action-needs-attention',!scenes.length&&$('directorBtn').dataset.engaged!=='true');
+         }
+         function markActionEngaged(id){$(id).dataset.engaged='true';$(id).classList.remove('action-needs-attention');}
+         function renderAnalysis(){
+           if(!musicResult){$('analysisResult').hidden=true;return;}
+           $('analysisResult').hidden=false;
+           const summary=musicResult.summary||{};
+           $('bpmValue').textContent=Number.isFinite(Number(summary.bpmEstimate))&&Number(summary.bpmEstimate)>0?`${Math.round(summary.bpmEstimate)} BPM`:'Uncertain';
+           $('audioDurationValue').textContent=Number.isFinite(Number(summary.durationSeconds))?`${Math.round(summary.durationSeconds)} sec`:'—';
+           $('energyValue').textContent=String(musicResult.plan?.scenes?.length||0);
+           $('analysisCaveat').textContent=musicResult.note||'Tempo and energy are estimates; analysis does not transcribe vocals.';
+         }
+         async function analyze(){
+           if(!lastSongFile){notify('analyzeStatus','The actual MP3/WAV file is missing. Tap Back, select it on Page 1, then return here. Or skip analysis and use the Director.',true);return;}
+           if(lastSongFile.size>25*1024*1024){notify('analyzeStatus','The song must be smaller than 25 MB.',true);return;}
+           const form=new FormData();form.append('audio',lastSongFile);
+           const btn=$('analyzeBtn');btn.disabled=true;notify('analyzeStatus','Analyzing rhythm and intensity…');
+           const expectedKey=musicKey(),version=sourceVersion;
+           try{
+            const response=await fetch('/api/creative-preview/music-analysis',{method:'POST',body:form});const payload=await response.json();
+            if(!response.ok||!payload.ok)throw Error(payload.error||'Unable to analyze audio');
+            if(version!==sourceVersion || expectedKey!==musicKey()){
+              notify('analyzeStatus','Song changed during analysis. Old result discarded; analyze the current file again.',true);return;
+            }
+            musicResult=payload;analysisSourceKey=expectedKey;scenes=[];storyboardSourceKey='';scenePage=0;
+            renderAnalysis();updateActionAttention();scheduleSave();notify('analyzeStatus','Song analysis complete for this selected file. Continue to the Director.');
+           }catch(error){notify('analyzeStatus',error.message,true)}finally{btn.disabled=false;}
+         }
+         async function makeStoryboard(){
+           const btn=$('directorBtn');btn.disabled=true;notify('directorStatus','Creating your numbered storyboard…');
+           try{
+            if(musicResult && analysisSourceKey!==musicKey()){
+              musicResult=null;analysisSourceKey='';renderAnalysis();
+            }
+            const expectedKey=storyKey(),version=sourceVersion;
+            const input={title:$('title').value||'Untitled Song',lyrics:$('lyrics').value,prompt:[ $('direction').value,$('characterNotes').value&&`Artist identity: ${$('characterNotes').value}`].filter(Boolean).join('\n').slice(0,4000),songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),visualStyle:$('visualStyle').value,format:$('format').value,musicPlan:musicResult?.plan||null};
+            const res=await fetch('/api/creative-preview/storyboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});
+            const data=await res.json();if(!res.ok||!data.ok)throw Error(data.error||'Cannot create storyboard');
+            if(version!==sourceVersion || expectedKey!==storyKey()){
+              notify('directorStatus','Inputs changed while creating the storyboard. Old result discarded.',true);return;
+            }
+            if(scenes.length&&!window.confirm('Replace the existing storyboard, including any manual edits?')){notify('directorStatus','Existing storyboard preserved.');return;}
+            scenes=(data.plan.scenes||[]).map(s=>({number:s.number,startSeconds:s.startSeconds,endSeconds:s.endSeconds,emotion:s.emotion,location:s.location,action:s.action,prompt:s.prompt}));
+            scenePage=0;storyboardSourceKey=expectedKey;updateActionAttention();
+            $('storyEmotion').textContent=`Emotional direction: ${data.plan.storyEmotion||'unclassified'}`;
+            notify('directorStatus',`Storyboard ready · ${scenes.length} editable scenes. No video created.`);
+            showPage(3);
+           }catch(error){notify('directorStatus',error.message,true)}finally{btn.disabled=false}
+         }
+         const lineField=(title,value,change,textarea=false)=>{
+           const wrap=document.createElement('label');wrap.textContent=title;
+           const input=document.createElement(textarea?'textarea':'input');if(textarea)input.rows=5;
+           input.value=value||'';input.setAttribute('aria-label',title);input.maxLength=textarea?4000:800;
+           input.addEventListener('input',()=>{change(input.value);scheduleSave()});
+           wrap.appendChild(input);return wrap;
+         };
+         function renderScenes(){
+           const empty=$('storyEmpty'),content=$('storyContent');empty.hidden=scenes.length>0;content.hidden=!scenes.length;
+           if(!scenes.length)return;
+           const batchSize=window.matchMedia('(max-width:620px)').matches?1:2;
+           const count=Math.ceil(scenes.length/batchSize);scenePage=Math.max(0,Math.min(count-1,scenePage));
+           const first=scenePage*batchSize;const batch=scenes.slice(first,first+batchSize);
+           $('scenePairLabel').textContent=`Scene ${first+1}${batch.length>1?'–'+(first+2):''} of ${scenes.length}`;
+           $('scenePrev').disabled=scenePage===0;$('sceneNext').disabled=scenePage===count-1;
+           const host=$('sceneCards');host.replaceChildren();
+           for(const scene of batch){
+            const card=document.createElement('article');card.className='scene-card';
+            const heading=document.createElement('h4');heading.textContent=`Scene ${scene.number}`;card.appendChild(heading);
+            const meta=document.createElement('div');meta.className='scene-meta';meta.textContent=`${scene.startSeconds}s – ${scene.endSeconds}s · ${scene.emotion||'Director preview'}`;card.appendChild(meta);
+            card.appendChild(lineField('Location',scene.location,val=>{scene.location=val}));
+            card.appendChild(lineField('Action',scene.action,val=>{scene.action=val},true));
+            card.appendChild(lineField('Director Prompt',scene.prompt,val=>{scene.prompt=val},true));
+            host.appendChild(card);
+           }
+         }
+         function addReview(label,value){const box=document.createElement('div'),small=document.createElement('small'),strong=document.createElement('strong');small.textContent=label;strong.textContent=value||'Not provided';box.append(small,strong);$('reviewSummary').appendChild(box)}
+         function renderReview(){
+          $('reviewSummary').replaceChildren();
+          const linked=selectedSource==='link'?window.CutLoopzSongLink?.inspect($('songLink').value):null;
+          addReview('Music source',lastSongFile?'Uploaded MP3/WAV':linked?.ok?`${linked.name} link (audio upload required)`:'Not attached');if(linked?.ok)addReview('Song share link',linked.url);
+          addReview('Song',$('title').value||'Untitled');addReview('Duration',`${selectedDuration()} seconds`);
+          addReview('Style',$('visualStyle').value);addReview('Format',$('format').value==='landscape'?'16:9 Landscape':'9:16 Vertical');
+          addReview('Director direction',$('direction').value.slice(0,350));addReview('Scenes',`${scenes.length} editable scenes`);
+          addReview('Audio analysis',musicResult?'Completed':'Not run');addReview('Artist reference',lastPhotoFile?.name||$('artistPhoto').dataset.previousName||'Not selected');
+         }
+         function newProject(){
+           if(!window.confirm('Start a new project? Your current saved draft will be cleared.'))return;
+           const oldKey=storageKey;localStorage.removeItem(oldKey);
+           Promise.all([mediaWrite('audio',null),mediaWrite('photo',null)]).catch(()=>notify('saveStatus','Project reset; stored files could not be cleared. Clear site data in browser settings.',true));
+           if(account)fetch('/api/customer-auth/studio/draft',{method:'DELETE',credentials:'same-origin'}).catch(()=>{});
+           for(const id of fieldNames){const element=$(id);element.value=element.tagName==='SELECT'?element.options[0].value:'';}
+           selectedSource='upload';syncSourceDisplay();
+           $('songLinkStatus').textContent='Paste a public song link to attach its source to your project.';$('songLinkStatus').style.color='';$('openSongLink').hidden=true;$('openSongLink').removeAttribute('href');
+           $('duration').value='30';$('customTime').value='';syncCustomTime();$('sceneSeconds').value='15';$('format').value='vertical';$('songAudio').value='';$('artistPhoto').value='';
+           $('songAudio').dataset.previousName='';$('artistPhoto').dataset.previousName='';lastSongFile=null;lastPhotoFile=null;
+           $('audioLabel').textContent='Choose an audio file for beat-informed analysis. Maximum 25 MB.';
+           $('photoLabel').textContent='JPG, PNG or WebP · Max 12 MB · One reference photo in the standard Studio.';
+           updatePhotoPreview(null);
+           sourceVersion++;scenes=[];musicResult=null;analysisSourceKey='';storyboardSourceKey='';pendingRestore=null;$('storyEmotion').textContent='';
+           scenePage=0;$('analyzeBtn').dataset.engaged='';$('directorBtn').dataset.engaged='';updateActionAttention();renderAnalysis();notify('directorStatus','');notify('analyzeStatus','');showPage(0);
+         }
+         for(const id of fieldNames){
+           const input=$(id);
+           input.addEventListener('input',()=>{
+             if(['title','songLink','lyrics','direction','characterNotes','visualStyle','format','duration','sceneSeconds'].includes(id))
+               invalidateSongOutputs({music:['title','songLink'].includes(id)});
+             else scheduleSave();
+           });
+           input.addEventListener('change',()=>scheduleSave());
+         }
+         $('sourceUploadBtn').addEventListener('click',()=>changeSongSource('upload'));
+         $('sourceLinkBtn').addEventListener('click',()=>changeSongSource('link'));
+         $('useSongLink').addEventListener('click',()=>{renderLinkStatus(true)});
+         $('songLink').addEventListener('input',()=>{const a=$('openSongLink');a.hidden=true;a.removeAttribute('href');$('songLinkStatus').textContent='Tap Use Link to confirm this source.';updateStepNavigation();});
+         $('songLink').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();renderLinkStatus(true);}});
+         $('duration').addEventListener('change',()=>{syncCustomTime();invalidateSongOutputs()});
+         $('customTime').addEventListener('input',()=>invalidateSongOutputs());
+         window.addEventListener('resize',()=>{if(page===3)renderScenes()});
+         $('songAudio').addEventListener('change',()=>{
+           if(selectedSource!=='upload')return;
+           $('songLink').value='';
+           const f=$('songAudio').files?.[0]||null;
+           if(f && (!/\.(mp3|wav)$/i.test(f.name)||f.size>25*1024*1024)){alert('Select an MP3 or WAV under 25 MB.');$('songAudio').value='';lastSongFile=null;invalidateSongOutputs({music:true});return;}
+           lastSongFile=f;invalidateSongOutputs({music:true});updateActionAttention();
+           $('songAudio').dataset.previousName=f?.name||'';
+           updateUploadLabels();refreshAnalysisIntro();updateStepNavigation();scheduleSave();
+           mediaWrite('audio',f).catch(()=>notify('audioLabel',`Selected: ${f?.name||'none'}. Browser could not retain this file after refresh; keep this page open until analysis.`,true));
+         });
+         $('artistPhoto').addEventListener('change',()=>{
+           const f=$('artistPhoto').files?.[0]||null;
+           if(f&&(!/\.(png|jpe?g|webp)$/i.test(f.name)||!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>12*1024*1024)){
+             alert('Choose a JPG, PNG or WebP under 12 MB.');$('artistPhoto').value='';lastPhotoFile=null;invalidateSongOutputs();updatePhotoPreview(null);return;
+           }
+           lastPhotoFile=f;invalidateSongOutputs();
+           $('artistPhoto').dataset.previousName=f?.name||'';
+           updatePhotoPreview(f);updateUploadLabels();scheduleSave();
+           mediaWrite('photo',f).catch(()=>notify('photoLabel',`Selected: ${f?.name||'none'}. Browser could not retain this photo after refresh.`,true));
+         });
+         $('nextBtn').addEventListener('click',()=>{
+           if(page===0){
+             if(!Number.isFinite(selectedDuration())){alert('Enter a valid custom duration between 0:15 and 6:00.');return;}
+             // Do not quietly discard a malformed URL or lead the user into an MP3-only screen.
+             if($('songLink').value.trim()&&!renderLinkStatus(true)&&!lastSongFile){$('songLink').focus();return;}
+           }
+           showPage(pageAfter('next'));
+         });
+         $('backBtn').addEventListener('click',()=>showPage(pageAfter('back')));
+         $('analyzeBtn').addEventListener('click',()=>{markActionEngaged('analyzeBtn');analyze()});
+         $('directorBtn').addEventListener('click',()=>{markActionEngaged('directorBtn');makeStoryboard()});
+         $('scenePrev').addEventListener('click',()=>{scenePage=Math.max(0,scenePage-1);renderScenes();scheduleSave()});
+         $('sceneNext').addEventListener('click',()=>{scenePage=Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,scenePage+1);renderScenes();scheduleSave()});
+         $('editSong').addEventListener('click',()=>showPage(0));$('editDirector').addEventListener('click',()=>showPage(2));$('editStoryboard').addEventListener('click',()=>showPage(3));$('newProject').addEventListener('click',newProject);
+         const lyricsField=$('lyrics');
+         lyricsField.addEventListener('paste',()=>requestAnimationFrame(()=>{lyricsField.scrollTop=0;}));
+         lyricsField.addEventListener('blur',()=>{lyricsField.scrollTop=0;});
+         syncSourceDisplay();updateActionAttention();
+         const backToTop=$('backToTop');
+         function updateBackToTop(){backToTop.hidden=window.scrollY<180;}
+         backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}));
+         window.addEventListener('scroll',updateBackToTop,{passive:true});
+         window.addEventListener('resize',updateBackToTop);
+         updateBackToTop();
+         // Show the one-time new-customer welcome after account registration redirected here.
+         window.CutLoopzWelcome?.consume();
+         window.addEventListener('pagehide',()=>{saveLocal();if(photoPreviewUrl)URL.revokeObjectURL(photoPreviewUrl);});initialize();
+        })();
+        CUTLOOPZ_UI_COMPLETE_3_END
+        cat > test-cutloopz-ui-source-choice.mjs <<'CUTLOOPZ_UI_COMPLETE_4_END'
+        import test from 'node:test';
+        import assert from 'node:assert/strict';
+        import fs from 'node:fs';
+        import vm from 'node:vm';
+        import path from 'node:path';
+        import {fileURLToPath} from 'node:url';
+        const dirname=path.dirname(fileURLToPath(import.meta.url));
+        const root=path.join(dirname,'public');
+        class FakeClassList{
+         constructor(el){this.el=el;this.tags=new Set()}
+         add(...names){for(const n of names)this.tags.add(n)}
+         remove(...names){for(const n of names)this.tags.delete(n)}
+         contains(n){return this.tags.has(n)}
+         toggle(n,force){const on=force??!this.tags.has(n);on?this.tags.add(n):this.tags.delete(n);return on}
+        }
+        class FakeElement{
+         constructor(tagName='DIV'){this.tagName=tagName;this.events={};this.value='';this.textContent='';this.dataset={};this.style={};this.hidden=false;this.disabled=false;this.files=[];this.options=[{value:''}];this.attributes={};this.classList=new FakeClassList(this);this.children=[];this.scrollTop=0;this.parentNode=null}
+         addEventListener(type,fn){(this.events[type]??=[]).push(fn)}
+         dispatch(type,extra={}){for(const fn of this.events[type]??[])fn({preventDefault(){},...extra})}
+         click(){this.dispatch('click')}
+         setAttribute(name,value){this.attributes[name]=value}
+         removeAttribute(name){delete this.attributes[name]}
+         getAttribute(name){return this.attributes[name]}
+         appendChild(child){this.children.push(child);return child}
+         replaceChildren(...children){this.children=children}
+         scrollIntoView(){}
+         focus(){}
+        }
+        const idRegex=/<(input|select|textarea|button|div|section|span|p|a|img)[^>]*\bid="([^"]+)"/g;
+        function boot(){
+         const html=fs.readFileSync(path.join(root,'my-studio.html'),'utf8');
+         const code=fs.readFileSync(path.join(root,'my-studio.js'),'utf8');
+         const els={};for(const m of html.matchAll(idRegex))els[m[2]]=new FakeElement(m[1].toUpperCase());
+         const keys=['title','songLink','songAudio','lyrics','artistPhoto','direction','characterNotes','duration','sceneSeconds','format','visualStyle','customTime'];
+         for(const id of keys)assert.ok(els[id],`Missing ${id}`);
+         Object.assign(els.duration,{value:'30',options:[{value:'15'}]});
+         Object.assign(els.sceneSeconds,{value:'15',options:[{value:'10'}]});
+         Object.assign(els.format,{value:'vertical',options:[{value:'vertical'}]});
+         Object.assign(els.visualStyle,{value:'Cinematic Realism',options:[{value:'Cinematic Realism'}]});
+         const sections=Array.from({length:5},(_,i)=>Object.assign(new FakeElement('SECTION'),{dataset:{step:String(i)}}));
+         const items=new Map();let confirmDecision=true;
+         const document={getElementById:id=>els[id]||null,
+           querySelectorAll:selector=>selector==='.wizard-step'?sections:[],
+           querySelector:()=>new FakeElement('H3'),
+           createElement:tag=>new FakeElement(tag.toUpperCase())};
+         const localStorage={getItem:k=>items.get(k)||null,setItem:(k,v)=>items.set(k,v),removeItem:k=>items.delete(k)};
+         const window={addEventListener(){},matchMedia:()=>({matches:true}),confirm:()=>confirmDecision,scrollY:0,scrollTo(){},CutLoopzWelcome:{consume(){}},CutLoopzSongLink:{
+           inspect(value){try{if(!value)return {ok:false,error:'Missing URL'};const u=new URL(value);return {ok:/suno\.com|spotify\.com/.test(u.hostname),name:'SUNO',url:u.toString(),error:'Invalid'};}catch{return {ok:false,error:'Invalid URL'}}},
+           navigation(page,action,{hasAudio,linkAccepted}){if(action==='next'){if(page===0&&linkAccepted&&!hasAudio)return 2;return Math.min(4,page+1)}if(action==='back'){if(page===2&&linkAccepted&&!hasAudio)return 0;return Math.max(0,page-1)}return page}
+         }};
+         const fetch=async url=>({ok:false,status:401,async json(){return {ok:false}}});
+         const sandbox={document,window,localStorage,fetch,URL,URLSearchParams,Blob,File,FormData,setTimeout,clearTimeout,requestAnimationFrame:fn=>fn(),location:{search:''},alert(){},console};
+         vm.createContext(sandbox);vm.runInContext(code,sandbox);
+         return {els,sections,localStorage,changeConfirm:v=>confirmDecision=v};
+        }
+        const flush=()=>new Promise(r=>setTimeout(r,10));
+        test('Changing song source clears inactive source and protects existing input without deleting lyrics',async()=>{
+         const {els,changeConfirm}=boot();await flush();
+         assert.equal(els.audioSourcePanel.hidden,false);
+         assert.equal(els.songLinkPanel.hidden,true);
+         els.lyrics.value='I am a baddie\nSecond verse';
+         els.sourceLinkBtn.click();
+         assert.equal(els.audioSourcePanel.hidden,true);
+         assert.equal(els.songLinkPanel.hidden,false);
+         els.songLink.value='https://suno.com/song/xyz';els.songLink.dispatch('input');
+         changeConfirm(false);els.sourceUploadBtn.click();
+         assert.equal(els.songLinkPanel.hidden,false,'Canceled switch preserves current link');
+         assert.equal(els.songLink.value,'https://suno.com/song/xyz');
+         changeConfirm(true);els.sourceUploadBtn.click();
+         assert.equal(els.audioSourcePanel.hidden,false);
+         assert.equal(els.songLinkPanel.hidden,true);
+         assert.equal(els.songLink.value,'');
+         assert.equal(els.lyrics.value,'I am a baddie\nSecond verse');
+         assert.equal(els.sourceUploadBtn.getAttribute('aria-pressed'),'true');
+        });
+        test('Upload clears link and action pulse stops on touch',async()=>{
+         const {els}=boot();await flush();
+         assert.equal(els.analyzeBtn.classList.contains('action-needs-attention'),true);
+         assert.equal(els.directorBtn.classList.contains('action-needs-attention'),true);
+         const fake=new File(['ID3','audio'],'song.mp3',{type:'audio/mpeg'});
+         els.songAudio.files=[fake];els.songAudio.dispatch('change');
+         assert.equal(els.songLink.value,'');
+         els.analyzeBtn.click();
+         assert.equal(els.analyzeBtn.classList.contains('action-needs-attention'),false);
+         els.directorBtn.click();
+         assert.equal(els.directorBtn.classList.contains('action-needs-attention'),false);
+        });
+        test('Homepage source options are working Studio links; typography and motion are accessible',()=>{
+         const home=fs.readFileSync(path.join(root,'customer.html'),'utf8');
+         const html=fs.readFileSync(path.join(root,'my-studio.html'),'utf8');
+         const css=fs.readFileSync(path.join(root,'my-studio.css'),'utf8');
+         for(const source of ['suno','udio','youtube','spotify','upload'])assert.match(home,new RegExp(`my-studio\\.html\\?source=${source}`));
+         assert.match(home,/\.cutloopz-source-tags a:focus-visible/);
+         assert.match(home,/NO CREDITS\. JUST VIDEO\./);
+         assert.match(html,/id="direction"[^>]+rows="11"/);
+         assert.match(html,/id="lyrics"[^>]+rows="9"/);
+         assert.match(css,/@media\(prefers-reduced-motion:reduce\).*action-needs-attention/);
+        });
+        CUTLOOPZ_UI_COMPLETE_4_END
+    - name: Verify all five files and run safety tests
+      shell: bash
+      run: |-
+        set -euo pipefail
+        node --check public/my-studio.js
+        node --test test-cutloopz-ui-source-choice.mjs test-my-studio-photo-layout.mjs test-studio-back-to-top.mjs test-studio-navigation-and-media.mjs test-v5d-spotify-back-scroll.mjs test-v5b-no-credits-suno.mjs
+        python3 - <<'PYVERIFY'
+        from pathlib import Path
+        from hashlib import sha256
+        expected = {'public/customer.html': 'ce5fafa892f9e4c80766a10cd39f6bdb534aff1d37514907d7ef7a2cb7315ea8', 'public/my-studio.html': 'c809ec5d31753b5566af745743f106eb3b03063651ed706f521eb3b0a5d3d402', 'public/my-studio.css': 'cba614b2b680ef68424721a924d87936c0d4ca3934f84ce3bbe8c8759f7ef0c7', 'public/my-studio.js': '102b6b73dba86b8a23f7b90f45833c6d653ed1f13ba9295f7b408678b0510fc8', 'test-cutloopz-ui-source-choice.mjs': '847ee8f9ae127e01076859e5159092cf2bf02adacf3d0a657085924c9dc95f3a'}
+        for p, digest in expected.items():
+            assert sha256(Path(p).read_bytes()).hexdigest() == digest, f'Checksum mismatch: {p}'
+        print('Five complete replacement files verified.')
+        PYVERIFY
+    - name: Commit only the tested Studio interface updates
+      shell: bash
+      run: |-
+        set -euo pipefail
+        git config user.name 'CutLoopz Verification Bot'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        git add public/customer.html public/my-studio.html public/my-studio.css public/my-studio.js test-cutloopz-ui-source-choice.mjs
+        if git diff --cached --quiet; then echo 'All replacement files already installed'; exit 0; fi
+        git commit -m 'CutLoopz: readable olive/sage Studio, exclusive song source and accessible actions'
+        git push origin HEAD:cutloopz-production-test
