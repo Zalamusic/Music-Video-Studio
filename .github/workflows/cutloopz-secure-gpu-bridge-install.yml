@@ -1,0 +1,142 @@
+# CutLoopz Media — safe source-only installer for the production-test branch.
+# The installer never starts a GPU, opens a tunnel, calls a paid provider,
+# changes Render environment variables, or enables video generation.
+name: CutLoopz Secure GPU Bridge - Verify and Install
+
+on:
+  push:
+    branches: [cutloopz-production-test]
+    paths:
+      - 'CutLoopz_Secure_GPU_Bridge_PATCH_2026-11-12.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cutloopz-secure-gpu-bridge-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-and-install:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      CI: 'true'
+      NODE_ENV: test
+      ENABLE_PAID_GENERATION: 'false'
+      CUTLOOPZ_FULL_PRODUCTION_ENABLED: 'false'
+      CUTLOOPZ_UNIFIED_30S_ENABLED: 'false'
+      CUTLOOPZ_LOCAL_GENERATION_ENABLED: 'false'
+      CUTLOOPZ_LOCAL_AUTORUN_ENABLED: 'false'
+      CUTLOOPZ_LOCAL_AUTO_RUN_ENABLED: 'false'
+      ZALA_GPU_GENERATION_ENABLED: 'false'
+      CUTLOOPZ_MODEL_ENABLED: 'false'
+      CUTLOOPZ_S2V_INFERENCE_ENABLED: 'false'
+
+    steps:
+      - name: Check out the test branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify archive and exact source baseline before writing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYVERIFY'
+          import hashlib, json, stat
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+
+          archive = Path('CutLoopz_Secure_GPU_Bridge_PATCH_2026-11-12.zip')
+          zip_sha = 'ca1e5938a8eb9f37ee03c958f8797e4847900e3794dac02f792d3edb2703d21a'
+          expected_existing = {
+            'cutloopz-local-generator-adapter.mjs': '30b7c803829a04c5e34a4d860f85eaf77bb689b6702271729bca31c8364edd4a',
+            'cutloopz-local-model-service.mjs': '90370cdf4c4c26a032f90acc59afa342f6ad270c78a61194ed60b0fbf85dcb8d',
+            'cutloopz-production-router.mjs': '685672735f032fd6adc8823b3feb23ca45990492fd947be46ca7880ca629b0b4',
+            'public/admin-unified-production.html': '149c2fa0d9231f72b73e6f22d56f35d2ed11140745fde173bd4dee543a821a98',
+          }
+          allowed = set(expected_existing) | {
+            'test-cutloopz-secure-gpu-bridge.mjs',
+            'test-cutloopz-local-status-diagnostics.mjs',
+            'CUTLOOPZ_SECURE_GPU_BRIDGE_2026-11-12.md',
+            'CUTLOOPZ_GPU_BRIDGE_PATCH_ID.json',
+          }
+          def sha(data): return hashlib.sha256(data).hexdigest()
+          if not archive.is_file() or sha(archive.read_bytes()) != zip_sha:
+            raise SystemExit('Release ZIP missing or SHA-256 mismatch. No source modified.')
+          with ZipFile(archive) as z:
+            entries = [item for item in z.infolist() if not item.is_dir()]
+            names = [item.filename for item in entries]
+            if len(entries) != 8 or set(names) != allowed or len(names) != len(set(names)):
+              raise SystemExit('Unexpected ZIP contents. No source modified.')
+            if sum(item.file_size for item in entries) > 200000:
+              raise SystemExit('Archive exceeds approved unpacked size.')
+            for info in entries:
+              n = PurePosixPath(info.filename)
+              if n.is_absolute() or '..' in n.parts or '\\' in info.filename or stat.S_IFMT(info.external_attr >> 16) == stat.S_IFLNK:
+                raise SystemExit('Unsafe archive entry.')
+            patch = json.loads(z.read('CUTLOOPZ_GPU_BRIDGE_PATCH_ID.json'))
+            if patch.get('patch_id') != 'CUTLOOPZ_SECURE_GPU_BRIDGE_2026_11_12_OFFLINE' or patch.get('generation_enabled') is not False:
+              raise SystemExit('Invalid or unsafe release marker.')
+            for name in names:
+              data = z.read(name)
+              if name in patch.get('files_sha256', {}) and sha(data) != patch['files_sha256'][name]:
+                raise SystemExit('Patched file checksum mismatch: '+name)
+              target = Path(name)
+              if target.exists():
+                current = sha(target.read_bytes())
+                old = expected_existing.get(name)
+                if current not in ([old, sha(data)] if old else [sha(data)]):
+                  raise SystemExit('Source branch contains changes not in this reviewed baseline: '+name+'. No source modified.')
+            # This is deliberately AFTER all checksum, source and path checks.
+            for name in names:
+              target = Path(name)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(z.read(name))
+          print('Exact source baseline and secured bridge contents verified. Files staged for tests.')
+          PYVERIFY
+
+      - name: Syntax and no-cost integration checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check server.js
+          node --check cutloopz-local-generator-adapter.mjs
+          node --check cutloopz-local-model-service.mjs
+          node --check cutloopz-production-router.mjs
+          node --test test-*.mjs | tee "$RUNNER_TEMP/cutloopz-secure-bridge-tests.tap"
+          grep -Fx '# tests 69' "$RUNNER_TEMP/cutloopz-secure-bridge-tests.tap"
+          grep -Fx '# pass 69' "$RUNNER_TEMP/cutloopz-secure-bridge-tests.tap"
+          grep -Fx '# fail 0' "$RUNNER_TEMP/cutloopz-secure-bridge-tests.tap"
+          echo 'Verified 69 dependency-free offline tests. No GPU and no paid service used.'
+
+      - name: Commit safe changes to production-test only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'CutLoopz Release Automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- \
+            cutloopz-local-generator-adapter.mjs \
+            cutloopz-local-model-service.mjs \
+            cutloopz-production-router.mjs \
+            public/admin-unified-production.html \
+            test-cutloopz-secure-gpu-bridge.mjs \
+            test-cutloopz-local-status-diagnostics.mjs \
+            CUTLOOPZ_SECURE_GPU_BRIDGE_2026-11-12.md \
+            CUTLOOPZ_GPU_BRIDGE_PATCH_ID.json
+          git rm -f -- CutLoopz_Secure_GPU_Bridge_PATCH_2026-11-12.zip
+          if git diff --cached --quiet; then
+            echo 'Secure bridge already present; nothing to publish.'
+          else
+            git commit -m 'Verify and install CutLoopz authenticated GPU transport (generation off)'
+            git push origin HEAD:cutloopz-production-test
+          fi
