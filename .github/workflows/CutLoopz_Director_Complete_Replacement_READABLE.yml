@@ -1,0 +1,2526 @@
+# CutLoopz Media - human-readable, full-file Music Director replacements.
+# Contains COMPLETE JS/HTML source files, not compressed or Base64 strings.
+# Upload ONLY to .github/workflows on the cutloopz-production-test branch.
+# Never starts a GPU, calls paid services, or enables customer generation.
+name: CutLoopz Director - Complete Readable Replacements
+on:
+  push:
+    branches: [cutloopz-production-test]
+    paths:
+      - .github/workflows/CutLoopz_Director_Complete_Replacement_READABLE.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: cutloopz-director-readable-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify-and-replace:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      NODE_ENV: 'test'
+      ENABLE_PAID_GENERATION: 'false'
+      CUTLOOPZ_FULL_PRODUCTION_ENABLED: 'false'
+      ZALA_GPU_GENERATION_ENABLED: 'false'
+      CUTLOOPZ_WORKER_PROXY_ENABLED: 'false'
+    steps:
+      - name: Check out the production-test branch
+        uses: actions/checkout@v4
+        with:
+          ref: cutloopz-production-test
+          persist-credentials: true
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact original files - fail safely if sources changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking files before any replacement..."
+          echo 'Checking public/my-studio.js'
+          actual=$(sha256sum 'public/my-studio.js' | cut -d' ' -f1)
+          if [[ "$actual" != '406418d65e6b82ee2ecb7a8a15e8ab6cd883d975a124c847bd49c11667bd04c0' && "$actual" != '6076484dc10d730963ded07346c7c4e29fe319496d63f999d178bcc20e77c8d7' ]]; then
+            echo 'STOP: public/my-studio.js has changed since the approved baseline. Not overwriting.' >&2
+            exit 1
+          fi
+          echo 'Checking cutloopz-story-intelligence.js'
+          actual=$(sha256sum 'cutloopz-story-intelligence.js' | cut -d' ' -f1)
+          if [[ "$actual" != 'b47795a7f2a1567634e863964acc46ae227cf473e608583f359808d185cf5298' && "$actual" != '22203a9ed0d22adad79b4f28f96f9e21ef6c2dc847db6bda550555080f03da19' ]]; then
+            echo 'STOP: cutloopz-story-intelligence.js has changed since the approved baseline. Not overwriting.' >&2
+            exit 1
+          fi
+          echo 'Checking customer-auth.js'
+          actual=$(sha256sum 'customer-auth.js' | cut -d' ' -f1)
+          if [[ "$actual" != '8b96438ebdc6efa0000e9b1f553801e41974305eb23bcfc1749513266c546e70' && "$actual" != 'f9600c0401498b432c6b384dfad6335a0d21afcb5293b96de94f7c329de961ee' ]]; then
+            echo 'STOP: customer-auth.js has changed since the approved baseline. Not overwriting.' >&2
+            exit 1
+          fi
+          echo 'Checking public/director-preview.html'
+          actual=$(sha256sum 'public/director-preview.html' | cut -d' ' -f1)
+          if [[ "$actual" != '405e2e7ec44ccb35321d6d417c842c16241c86e98e1d9d33b633977703f33fd5' && "$actual" != 'e70b89fec55d8388ba6e8c14d2b17c8c179567930aebf341b0c3255e73894973' ]]; then
+            echo 'STOP: public/director-preview.html has changed since the approved baseline. Not overwriting.' >&2
+            exit 1
+          fi
+          echo 'Checking test-director-song-isolation.mjs'
+          if [[ -e 'test-director-song-isolation.mjs' ]]; then
+            actual=$(sha256sum 'test-director-song-isolation.mjs' | cut -d' ' -f1)
+            if [[ "$actual" != 'dadf572d2c28d0ab11f0b2b8f33b86bf125af5f8f2e901d64c259ff4cc9f7c22' ]]; then echo 'STOP: test file already exists with different contents.' >&2; exit 1; fi
+          fi
+      - name: Write complete readable JavaScript and HTML replacement files
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Complete replacement: public/my-studio.js
+          cat > 'public/my-studio.js' <<'CUTLOOPZ_END_64e738dc8115023b0625'
+          'use strict';
+          (() => {
+           const $=id=>document.getElementById(id);
+           const fieldNames=['songLink','title','duration','lyrics','visualStyle','format','sceneSeconds','direction','characterNotes'];
+           const pageTitles=['Your Song & Artist','Song Analyzer','Listening Director','Your Storyboard','Review Your Vision'];
+           const pageDescriptions=['Bring your music into the Studio.','Learn its rhythm and energy.','Shape the story and visual performance.','Fine-tune each numbered scene.','Check every creative choice before production.'];
+           const storagePrefix='cutloopz:artist-studio:v1:';
+           const MEDIA_DB_NAME='cutloopz-studio-media-v1';
+           // Audio and photos are kept in browser-owned IndexedDB, never in localStorage or
+           // the account text-draft API. A browser may refuse storage; in that case the file
+           // remains usable for the current page session and we clearly explain the limit.
+           let mediaDbPromise=null;
+           function mediaDb(){
+             if(mediaDbPromise)return mediaDbPromise;
+             mediaDbPromise=new Promise((resolve,reject)=>{
+               if(!('indexedDB' in window)){reject(Error('Browser file storage unavailable'));return;}
+               const request=indexedDB.open(MEDIA_DB_NAME,1);
+               request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('files'))request.result.createObjectStore('files');};
+               request.onsuccess=()=>resolve(request.result);
+               request.onerror=()=>reject(request.error||Error('Unable to open file storage'));
+               request.onblocked=()=>reject(Error('File storage blocked'));
+             }).catch(error=>{mediaDbPromise=null;throw error});
+             return mediaDbPromise;
+           }
+           async function mediaWrite(kind,file){
+             const db=await mediaDb();
+             return new Promise((resolve,reject)=>{
+               const tx=db.transaction('files','readwrite');
+               const key=storageKey+':'+kind;
+               if(file)tx.objectStore('files').put({name:file.name,type:file.type,modified:file.lastModified,blob:file},key);
+               else tx.objectStore('files').delete(key);
+               tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error||Error('Unable to save file'));
+               tx.onabort=()=>reject(tx.error||Error('File storage aborted'));
+             });
+           }
+           async function mediaRead(kind){
+             const db=await mediaDb();
+             return new Promise((resolve,reject)=>{
+               const tx=db.transaction('files','readonly');
+               const request=tx.objectStore('files').get(storageKey+':'+kind);
+               request.onsuccess=()=>{
+                 const entry=request.result;
+                 if(!entry||!(entry.blob instanceof Blob)||!entry.name){resolve(null);return;}
+                 resolve(new File([entry.blob],entry.name,{type:entry.type||'',lastModified:entry.modified||Date.now()}));
+               };
+               request.onerror=()=>reject(request.error||Error('Cannot read retained file'));
+             });
+           }
+           function refreshAnalysisIntro(){
+             const label=$('analysisIntro');if(!label)return;
+             if(lastSongFile){label.textContent=`Ready to analyze: ${lastSongFile.name}. This is the song you selected on Page 1; no second upload needed.`;return;}
+             const name=$('songAudio').dataset.previousName;
+             const link=window.CutLoopzSongLink?.inspect($('songLink').value);
+             if(link?.ok){label.textContent=`${link.name} link is saved. Beat analysis requires an authorized MP3/WAV on Page 1. You can continue to the Listening Director with your lyrics now.`;return;}
+             label.textContent=name?`Your draft remembers “${name}”, but the actual audio file is unavailable in this browser. Go Back to Page 1 and choose the MP3 or WAV again.`:'No music selected yet. Choose a song on Page 1, or skip analysis and go directly to the Listening Director.';
+           }
+          
+           const durationOptions=[15,30,60,120,180,240,300,360];
+           function selectedDuration(){
+            if($('duration').value!=='custom')return Number($('duration').value);
+            const raw=$('customTime').value.trim(),match=/^(\d{1,2}):([0-5]\d)$/.exec(raw);
+            const seconds=match?(Number(match[1])*60+Number(match[2])):NaN;
+            return Number.isFinite(seconds)&&seconds>=15&&seconds<=360?seconds:NaN;
+           }
+           function syncCustomTime(){ $('customTimeField').hidden=$('duration').value!=='custom'; }
+           let storageKey=storagePrefix+'guest', account=null, saveTimer=null, serverTimer=null;
+           let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false, photoPreviewUrl=null;
+           let analysisSourceKey='', storyboardSourceKey='', pendingRestore=null, sourceVersion=0;
+           const notify=(id,text,bad=false)=>{const node=$(id);if(node){node.textContent=text;node.style.color=bad?'#ffafaa':'';}};
+           const safeText=value=>String(value==null?'':value);
+           // Source signatures are provenance checks, not security hashes. Never attach an old
+           // analysis or storyboard to a different song, including after draft restoration.
+           // Compact double fingerprint avoids storing duplicate copies of lyrics in drafts.
+           // It is not used for authentication, signatures, or security decisions.
+           function fingerprint(parts){
+             const text=JSON.stringify(parts);let a=2166136261,b=2246822519;
+             for(let i=0;i<text.length;i++){const c=text.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b+c,0x9e3779b1);}
+             return `${text.length}:${(a>>>0).toString(16)}:${(b>>>0).toString(16)}`;
+           }
+           const fileIdentity=file=>file?[file.name,file.size,file.lastModified]:null;
+           const musicKey=()=>fingerprint([$('title').value.trim(),$('songLink').value.trim(),fileIdentity(lastSongFile)]);
+           const storyKey=()=>fingerprint([musicKey(),$('lyrics').value,$('direction').value,$('characterNotes').value,
+             selectedDuration(),Number($('sceneSeconds').value),$('visualStyle').value,$('format').value,fileIdentity(lastPhotoFile),analysisSourceKey]);
+           function invalidateSongOutputs({music=false}={}){
+             sourceVersion++;
+             const hadStory=scenes.length>0;
+             scenes=[];scenePage=0;storyboardSourceKey='';
+             $('storyEmotion').textContent='';
+             if(music){musicResult=null;analysisSourceKey='';renderAnalysis();}
+             if(hadStory){notify('directorStatus','Song or direction changed. Previous storyboard cleared; generate a new one for this song.');
+               if(page===3)renderScenes();}
+             scheduleSave();
+           }
+          
+           const serializable=()=>({songLink:(window.CutLoopzSongLink?.inspect($('songLink').value)?.url)||'',title:$('title').value,lyrics:$('lyrics').value,songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),style:$('visualStyle').value,format:$('format').value,direction:$('direction').value,
+            characterNotes:$('characterNotes').value,songName:lastSongFile?.name||$('songAudio').dataset.previousName||'',photoName:lastPhotoFile?.name||$('artistPhoto').dataset.previousName||'',page,scenePage,scenes,musicResult,analysisSourceKey,storyboardSourceKey});
+           function saveLocal(){
+             try{localStorage.setItem(storageKey,JSON.stringify({at:Date.now(),draft:serializable()}));return true;}
+             catch{notify('saveStatus','Storage is full. Draft not saved.',true);return false;}
+           }
+           async function saveServer(){
+             if(!account)return;
+             try{
+              const response=await fetch('/api/customer-auth/studio/draft',{method:'PUT',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({draft:serializable()})});
+              if(!response.ok)throw Error('Cloud draft unavailable');
+              notify('saveStatus','Saved to account and device');
+             }catch{notify('saveStatus','Saved on this device · account sync unavailable');}
+           }
+           function scheduleSave(){
+             if(restoring)return;
+             clearTimeout(saveTimer);clearTimeout(serverTimer);
+             notify('saveStatus','Saving changes…');
+             saveTimer=setTimeout(()=>{
+               const ok=saveLocal();
+               if(ok)notify('saveStatus',account?'Saved on device · syncing…':'Saved on this device');
+             },220);
+             if(account)serverTimer=setTimeout(saveServer,1600);
+           }
+           function hydrate(draft){
+             if(!draft || typeof draft!=='object')return;
+             restoring=true;
+             $('songLink').value=safeText(draft.songLink).slice(0,2048);
+             renderLinkStatus(false);
+             $('title').value=safeText(draft.title).slice(0,120);
+             $('lyrics').value=safeText(draft.lyrics).slice(0,12000);
+             const seconds=Number(draft.songSeconds);
+             $('duration').value=durationOptions.includes(seconds)?String(seconds):(seconds>=15&&seconds<=360?'custom':'30');
+             if($('duration').value==='custom')$('customTime').value=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+             syncCustomTime();
+             $('sceneSeconds').value=String([10,15,20,30].includes(Number(draft.sceneSeconds))?draft.sceneSeconds:15);
+             $('visualStyle').value=[...$('visualStyle').options].some(o=>o.value===draft.style)?draft.style:'Cinematic Realism';
+             $('format').value=draft.format==='landscape'?'landscape':'vertical';
+             $('direction').value=safeText(draft.direction).slice(0,4000);
+             $('characterNotes').value=safeText(draft.characterNotes).slice(0,1000);
+             $('songAudio').dataset.previousName=safeText(draft.songName).slice(0,180);
+             $('artistPhoto').dataset.previousName=safeText(draft.photoName).slice(0,180);
+             if(draft.songName)$('audioLabel').textContent=`Previously selected: ${draft.songName}. Reselect this file to analyze it again.`;
+             if(draft.photoName)$('photoLabel').textContent=`Previously selected: ${draft.photoName}. Reselect this photo before production.`;
+             // Defer old output restoration until the original song file has actually
+             // been restored and the recorded input signatures still match. Legacy
+             // drafts with no signatures are not allowed to carry creative output.
+             pendingRestore={musicResult:draft.musicResult,analysisSourceKey:safeText(draft.analysisSourceKey),
+               storyboardSourceKey:safeText(draft.storyboardSourceKey),scenePage:Number(draft.scenePage)||0,
+               scenes:Array.isArray(draft.scenes)?draft.scenes.slice(0,40).map(s=>({number:Number(s.number)||1,startSeconds:Number(s.startSeconds)||0,endSeconds:Number(s.endSeconds)||0,emotion:safeText(s.emotion).slice(0,55),location:safeText(s.location).slice(0,500),action:safeText(s.action).slice(0,800),prompt:safeText(s.prompt).slice(0,4000)})):[]};
+             musicResult=null;analysisSourceKey='';scenes=[];storyboardSourceKey='';$('storyEmotion').textContent='';
+             scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,Number(draft.scenePage)||0));
+             page=Math.max(0,Math.min(4,Number(draft.page)||0));
+             updateUploadLabels();refreshAnalysisIntro();renderAnalysis();showPage(page,{reposition:false});restoring=false;
+           }
+           async function initialize(){
+             let localDraft=null,localUpdatedAt=0,serverUpdatedAt=0;
+             try{
+              const res=await fetch('/api/customer-auth/me',{credentials:'same-origin',cache:'no-store'});
+              if(res.ok){const d=await res.json();account=d.user||d.customer||null;}
+             }catch{}
+             storageKey=storagePrefix+(account?.id?'account:'+account.id:'guest');
+             $('signInStatus').textContent=account?`Signed in: ${account.name||account.email||'Artist'}`:'Guest Studio · Free tools';
+             try{const saved=JSON.parse(localStorage.getItem(storageKey)||'null');localDraft=saved?.draft||null;localUpdatedAt=Number(saved?.at)||0;}catch{}
+             let serverDraft=null;
+             if(account){try{const r=await fetch('/api/customer-auth/studio/draft',{credentials:'same-origin',cache:'no-store'});if(r.ok){const response=await r.json();serverDraft=response.draft;serverUpdatedAt=Date.parse(response.updatedAt)||0;}}catch{}}
+             // Use the most recent draft when account sync and local edits differ.
+             hydrate(localDraft && (localUpdatedAt>=serverUpdatedAt || !serverDraft)?localDraft:serverDraft);
+             const restoredName=$('songAudio').dataset.previousName;
+             const restoredPhotoName=$('artistPhoto').dataset.previousName;
+             try{
+               const [audio,photo]=await Promise.all([mediaRead('audio'),mediaRead('photo')]);
+               if(audio&&audio.name===restoredName&&audio.size<=25*1024*1024&&/\.(mp3|wav)$/i.test(audio.name))lastSongFile=audio;
+               if(photo&&photo.name===restoredPhotoName&&photo.size<=12*1024*1024&&['image/jpeg','image/png','image/webp'].includes(photo.type)){
+                 lastPhotoFile=photo;updatePhotoPreview(photo);
+               }
+             }catch{ /* A retained file is optional; the artist can select it again. */ }
+             if(pendingRestore){
+               const restored=pendingRestore;pendingRestore=null;
+               if(lastSongFile && restored.analysisSourceKey && restored.analysisSourceKey===musicKey()
+                 && restored.musicResult && typeof restored.musicResult==='object'){
+                 musicResult=restored.musicResult;analysisSourceKey=restored.analysisSourceKey;
+               }
+               if(restored.storyboardSourceKey && restored.storyboardSourceKey===storyKey()){
+                 scenes=restored.scenes;
+               }
+               storyboardSourceKey=scenes.length?restored.storyboardSourceKey:'';
+               scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,restored.scenePage));
+             }
+             renderAnalysis();if(page===3)renderScenes();
+             updateUploadLabels();refreshAnalysisIntro();scheduleSave();
+             if(new URLSearchParams(location.search).get('source')==='link')$('songLink').focus({preventScroll:true});
+             // Deep links override the saved page, but do not reset any project fields.
+             const urlPage=new URLSearchParams(location.search).get('step');
+             const destination={song:0,analyze:1,director:2,storyboard:3,review:4}[urlPage];
+             if(Number.isInteger(destination))showPage(destination,{reposition:false});
+             notify('saveStatus',account?'Account draft ready':'Draft saved on this device');
+           }
+           // A saved song URL is not an analyzed audio file. Link-only projects bypass
+           // the audio-only page; users can still supply lyrics and a photo on Page 1.
+           function validSongLink(){return window.CutLoopzSongLink?.inspect($('songLink').value)?.ok===true;}
+           function linkOnlyProject(){return !lastSongFile && validSongLink();}
+           function pageAfter(action){
+             return window.CutLoopzSongLink.navigation(page,action,{
+               hasAudio: Boolean(lastSongFile),linkAccepted:validSongLink()
+             });
+           }
+           function updateStepNavigation(){
+             $('nextBtn').textContent=page===4?'Back to Start':page===0 && linkOnlyProject()?'Next: Listening Director →':'Next →';
+             $('backBtn').textContent=page===2 && linkOnlyProject()?'← Song & Artist':'← Back';
+             const note=$('directorSourceNotice');
+             const link=window.CutLoopzSongLink?.inspect($('songLink').value);
+             if(page===2 && link?.ok && !lastSongFile){
+               note.textContent=`${link.name} link saved. The audio has not been analyzed and lyrics have not been imported automatically. Use your lyrics and creative direction, or go Back to Page 1 to add them.`;
+               note.hidden=false;
+             }else{note.hidden=true;note.textContent='';}
+           }
+           // Keep mobile navigation anchored to the newly opened page, not the former
+           // footer or artist-photo scroll position. Hydration must not jump the page.
+           function showPage(index,{reposition=true}={}){
+             page=Math.max(0,Math.min(4,index));
+             document.querySelectorAll('.wizard-step').forEach(section=>{section.hidden=Number(section.dataset.step)!==page});
+             $('stepTitle').textContent=pageTitles[page];$('stepSubtitle').textContent=pageDescriptions[page];
+             $('stepTag').textContent=`PAGE ${String(page+1).padStart(2,'0')} / 05`;
+             $('stepCounter').textContent=`Page ${page+1} of 5`;
+             $('stepProgress').setAttribute('aria-valuenow',String(page+1));
+             $('progressFill').style.width=`${20*(page+1)}%`;
+             $('backBtn').disabled=page===0;updateStepNavigation();
+             if(page===1)refreshAnalysisIntro();
+             if(page===3)renderScenes();if(page===4)renderReview();
+             scheduleSave();
+             if(reposition){
+               const visibleHeading=page===0?$('songHeading'):document.querySelector(`.wizard-step[data-step="${page}"] h3`);
+               // Explicit instant alignment prevents the previous step's scroll offset
+               // lingering after Back/Next and avoids triggering the on-screen keyboard.
+               visibleHeading?.scrollIntoView({block:'start',behavior:'instant'});
+             }
+           }
+           function clearOrphanedStoryboard(){
+             if(!scenes.length)return;
+             const count=Math.ceil(selectedDuration()/Number($('sceneSeconds').value));
+             if(count!==scenes.length)invalidateSongOutputs();
+           }
+           function updatePhotoPreview(file){
+             if(photoPreviewUrl){URL.revokeObjectURL(photoPreviewUrl);photoPreviewUrl=null;}
+             const wrap=$('photoPreviewWrap'),img=$('photoPreview');
+             if(!file){wrap.hidden=true;img.removeAttribute('src');return;}
+             photoPreviewUrl=URL.createObjectURL(file);
+             img.src=photoPreviewUrl;wrap.hidden=false;
+           }
+           function updateUploadLabels(){
+            if(lastSongFile)$('audioLabel').textContent=`Ready: ${lastSongFile.name}. Saved privately on this device. Page 2 uses this selection automatically.`;
+            if(lastPhotoFile)$('photoLabel').textContent=`Ready: ${lastPhotoFile.name}. Saved privately on this device.`;
+           }
+           function renderLinkStatus(announce=true){
+             const parsed=window.CutLoopzSongLink?.inspect($('songLink').value);
+             const status=$('songLinkStatus'),open=$('openSongLink');
+             if(!parsed?.ok){
+               status.textContent=parsed?.error||'Paste a public song share link.';
+               status.style.color=announce?'#ffafaa':'';
+               open.hidden=true;open.removeAttribute('href');
+               updateStepNavigation();
+               return false;
+             }
+             status.style.color='';
+             status.textContent=lastSongFile?`${parsed.name} link saved. Your selected MP3/WAV can be analyzed on Page 2.`:`${parsed.name} link saved. Next opens the Listening Director, skipping MP3-only analysis. Audio and lyrics are not imported automatically.`;
+             open.href=parsed.url;open.hidden=false;
+             if(announce){scheduleSave();refreshAnalysisIntro();}
+             updateStepNavigation();
+             return true;
+           }
+           function renderAnalysis(){
+             if(!musicResult){$('analysisResult').hidden=true;return;}
+             $('analysisResult').hidden=false;
+             const summary=musicResult.summary||{};
+             $('bpmValue').textContent=Number.isFinite(Number(summary.bpmEstimate))&&Number(summary.bpmEstimate)>0?`${Math.round(summary.bpmEstimate)} BPM`:'Uncertain';
+             $('audioDurationValue').textContent=Number.isFinite(Number(summary.durationSeconds))?`${Math.round(summary.durationSeconds)} sec`:'—';
+             $('energyValue').textContent=String(musicResult.plan?.scenes?.length||0);
+             $('analysisCaveat').textContent=musicResult.note||'Tempo and energy are estimates; analysis does not transcribe vocals.';
+           }
+           async function analyze(){
+             if(!lastSongFile){notify('analyzeStatus','The actual MP3/WAV file is missing. Tap Back, select it on Page 1, then return here. Or skip analysis and use the Director.',true);return;}
+             if(lastSongFile.size>25*1024*1024){notify('analyzeStatus','The song must be smaller than 25 MB.',true);return;}
+             const form=new FormData();form.append('audio',lastSongFile);
+             const btn=$('analyzeBtn');btn.disabled=true;notify('analyzeStatus','Analyzing rhythm and intensity…');
+             const expectedKey=musicKey(),version=sourceVersion;
+             try{
+              const response=await fetch('/api/creative-preview/music-analysis',{method:'POST',body:form});const payload=await response.json();
+              if(!response.ok||!payload.ok)throw Error(payload.error||'Unable to analyze audio');
+              if(version!==sourceVersion || expectedKey!==musicKey()){
+                notify('analyzeStatus','Song changed during analysis. Old result discarded; analyze the current file again.',true);return;
+              }
+              musicResult=payload;analysisSourceKey=expectedKey;scenes=[];storyboardSourceKey='';scenePage=0;
+              renderAnalysis();scheduleSave();notify('analyzeStatus','Song analysis complete for this selected file. Continue to the Director.');
+             }catch(error){notify('analyzeStatus',error.message,true)}finally{btn.disabled=false;}
+           }
+           async function makeStoryboard(){
+             const btn=$('directorBtn');btn.disabled=true;notify('directorStatus','Creating your numbered storyboard…');
+             try{
+              if(musicResult && analysisSourceKey!==musicKey()){
+                musicResult=null;analysisSourceKey='';renderAnalysis();
+              }
+              const expectedKey=storyKey(),version=sourceVersion;
+              const input={title:$('title').value||'Untitled Song',lyrics:$('lyrics').value,prompt:[ $('direction').value,$('characterNotes').value&&`Artist identity: ${$('characterNotes').value}`].filter(Boolean).join('\n').slice(0,4000),songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),visualStyle:$('visualStyle').value,format:$('format').value,musicPlan:musicResult?.plan||null};
+              const res=await fetch('/api/creative-preview/storyboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});
+              const data=await res.json();if(!res.ok||!data.ok)throw Error(data.error||'Cannot create storyboard');
+              if(version!==sourceVersion || expectedKey!==storyKey()){
+                notify('directorStatus','Inputs changed while creating the storyboard. Old result discarded.',true);return;
+              }
+              if(scenes.length&&!window.confirm('Replace the existing storyboard, including any manual edits?')){notify('directorStatus','Existing storyboard preserved.');return;}
+              scenes=(data.plan.scenes||[]).map(s=>({number:s.number,startSeconds:s.startSeconds,endSeconds:s.endSeconds,emotion:s.emotion,location:s.location,action:s.action,prompt:s.prompt}));
+              scenePage=0;storyboardSourceKey=expectedKey;
+              $('storyEmotion').textContent=`Emotional direction: ${data.plan.storyEmotion||'unclassified'}`;
+              notify('directorStatus',`Storyboard ready · ${scenes.length} editable scenes. No video created.`);
+              showPage(3);
+             }catch(error){notify('directorStatus',error.message,true)}finally{btn.disabled=false}
+           }
+           const lineField=(title,value,change,textarea=false)=>{
+             const wrap=document.createElement('label');wrap.textContent=title;
+             const input=document.createElement(textarea?'textarea':'input');if(textarea)input.rows=5;
+             input.value=value||'';input.setAttribute('aria-label',title);input.maxLength=textarea?4000:800;
+             input.addEventListener('input',()=>{change(input.value);scheduleSave()});
+             wrap.appendChild(input);return wrap;
+           };
+           function renderScenes(){
+             const empty=$('storyEmpty'),content=$('storyContent');empty.hidden=scenes.length>0;content.hidden=!scenes.length;
+             if(!scenes.length)return;
+             const batchSize=window.matchMedia('(max-width:620px)').matches?1:2;
+             const count=Math.ceil(scenes.length/batchSize);scenePage=Math.max(0,Math.min(count-1,scenePage));
+             const first=scenePage*batchSize;const batch=scenes.slice(first,first+batchSize);
+             $('scenePairLabel').textContent=`Scene ${first+1}${batch.length>1?'–'+(first+2):''} of ${scenes.length}`;
+             $('scenePrev').disabled=scenePage===0;$('sceneNext').disabled=scenePage===count-1;
+             const host=$('sceneCards');host.replaceChildren();
+             for(const scene of batch){
+              const card=document.createElement('article');card.className='scene-card';
+              const heading=document.createElement('h4');heading.textContent=`Scene ${scene.number}`;card.appendChild(heading);
+              const meta=document.createElement('div');meta.className='scene-meta';meta.textContent=`${scene.startSeconds}s – ${scene.endSeconds}s · ${scene.emotion||'Director preview'}`;card.appendChild(meta);
+              card.appendChild(lineField('Location',scene.location,val=>{scene.location=val}));
+              card.appendChild(lineField('Action',scene.action,val=>{scene.action=val},true));
+              card.appendChild(lineField('Director Prompt',scene.prompt,val=>{scene.prompt=val},true));
+              host.appendChild(card);
+             }
+           }
+           function addReview(label,value){const box=document.createElement('div'),small=document.createElement('small'),strong=document.createElement('strong');small.textContent=label;strong.textContent=value||'Not provided';box.append(small,strong);$('reviewSummary').appendChild(box)}
+           function renderReview(){
+            $('reviewSummary').replaceChildren();
+            const linked=window.CutLoopzSongLink?.inspect($('songLink').value);
+            addReview('Music source',lastSongFile?'Uploaded MP3/WAV':linked?.ok?`${linked.name} link (audio upload required)`:'Not attached');if(linked?.ok)addReview('Song share link',linked.url);
+            addReview('Song',$('title').value||'Untitled');addReview('Duration',`${selectedDuration()} seconds`);
+            addReview('Style',$('visualStyle').value);addReview('Format',$('format').value==='landscape'?'16:9 Landscape':'9:16 Vertical');
+            addReview('Director direction',$('direction').value.slice(0,350));addReview('Scenes',`${scenes.length} editable scenes`);
+            addReview('Audio analysis',musicResult?'Completed':'Not run');addReview('Artist reference',lastPhotoFile?.name||$('artistPhoto').dataset.previousName||'Not selected');
+           }
+           function newProject(){
+             if(!window.confirm('Start a new project? Your current saved draft will be cleared.'))return;
+             const oldKey=storageKey;localStorage.removeItem(oldKey);
+             Promise.all([mediaWrite('audio',null),mediaWrite('photo',null)]).catch(()=>notify('saveStatus','Project reset; stored files could not be cleared. Clear site data in browser settings.',true));
+             if(account)fetch('/api/customer-auth/studio/draft',{method:'DELETE',credentials:'same-origin'}).catch(()=>{});
+             for(const id of fieldNames){const element=$(id);element.value=element.tagName==='SELECT'?element.options[0].value:'';}
+             $('songLinkStatus').textContent='Paste a public song link to attach its source to your project.';$('songLinkStatus').style.color='';$('openSongLink').hidden=true;$('openSongLink').removeAttribute('href');
+             $('duration').value='30';$('customTime').value='';syncCustomTime();$('sceneSeconds').value='15';$('format').value='vertical';$('songAudio').value='';$('artistPhoto').value='';
+             $('songAudio').dataset.previousName='';$('artistPhoto').dataset.previousName='';lastSongFile=null;lastPhotoFile=null;
+             $('audioLabel').textContent='Choose an audio file for beat-informed analysis. Maximum 25 MB.';
+             $('photoLabel').textContent='JPG, PNG or WebP · Max 12 MB · One reference photo in the standard Studio.';
+             updatePhotoPreview(null);
+             sourceVersion++;scenes=[];musicResult=null;analysisSourceKey='';storyboardSourceKey='';pendingRestore=null;$('storyEmotion').textContent='';
+             scenePage=0;renderAnalysis();notify('directorStatus','');notify('analyzeStatus','');showPage(0);
+           }
+           for(const id of fieldNames){
+             const input=$(id);
+             input.addEventListener('input',()=>{
+               if(['title','songLink','lyrics','direction','characterNotes','visualStyle','format','duration','sceneSeconds'].includes(id))
+                 invalidateSongOutputs({music:['title','songLink'].includes(id)});
+               else scheduleSave();
+             });
+             input.addEventListener('change',()=>scheduleSave());
+           }
+           $('useSongLink').addEventListener('click',()=>{renderLinkStatus(true)});
+           $('songLink').addEventListener('input',()=>{const a=$('openSongLink');a.hidden=true;a.removeAttribute('href');$('songLinkStatus').textContent='Tap Use Link to confirm this source.';updateStepNavigation();});
+           $('songLink').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();renderLinkStatus(true);}});
+           $('duration').addEventListener('change',()=>{syncCustomTime();invalidateSongOutputs()});
+           $('customTime').addEventListener('input',()=>invalidateSongOutputs());
+           window.addEventListener('resize',()=>{if(page===3)renderScenes()});
+           $('songAudio').addEventListener('change',()=>{
+             const f=$('songAudio').files?.[0]||null;
+             if(f && (!/\.(mp3|wav)$/i.test(f.name)||f.size>25*1024*1024)){alert('Select an MP3 or WAV under 25 MB.');$('songAudio').value='';lastSongFile=null;invalidateSongOutputs({music:true});return;}
+             lastSongFile=f;invalidateSongOutputs({music:true});
+             $('songAudio').dataset.previousName=f?.name||'';
+             updateUploadLabels();refreshAnalysisIntro();updateStepNavigation();scheduleSave();
+             mediaWrite('audio',f).catch(()=>notify('audioLabel',`Selected: ${f?.name||'none'}. Browser could not retain this file after refresh; keep this page open until analysis.`,true));
+           });
+           $('artistPhoto').addEventListener('change',()=>{
+             const f=$('artistPhoto').files?.[0]||null;
+             if(f&&(!/\.(png|jpe?g|webp)$/i.test(f.name)||!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>12*1024*1024)){
+               alert('Choose a JPG, PNG or WebP under 12 MB.');$('artistPhoto').value='';lastPhotoFile=null;invalidateSongOutputs();updatePhotoPreview(null);return;
+             }
+             lastPhotoFile=f;invalidateSongOutputs();
+             $('artistPhoto').dataset.previousName=f?.name||'';
+             updatePhotoPreview(f);updateUploadLabels();scheduleSave();
+             mediaWrite('photo',f).catch(()=>notify('photoLabel',`Selected: ${f?.name||'none'}. Browser could not retain this photo after refresh.`,true));
+           });
+           $('nextBtn').addEventListener('click',()=>{
+             if(page===0){
+               if(!Number.isFinite(selectedDuration())){alert('Enter a valid custom duration between 0:15 and 6:00.');return;}
+               // Do not quietly discard a malformed URL or lead the user into an MP3-only screen.
+               if($('songLink').value.trim()&&!renderLinkStatus(true)&&!lastSongFile){$('songLink').focus();return;}
+             }
+             showPage(pageAfter('next'));
+           });
+           $('backBtn').addEventListener('click',()=>showPage(pageAfter('back')));
+           $('analyzeBtn').addEventListener('click',analyze);$('directorBtn').addEventListener('click',makeStoryboard);
+           $('scenePrev').addEventListener('click',()=>{scenePage=Math.max(0,scenePage-1);renderScenes();scheduleSave()});
+           $('sceneNext').addEventListener('click',()=>{scenePage=Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,scenePage+1);renderScenes();scheduleSave()});
+           $('editSong').addEventListener('click',()=>showPage(0));$('editDirector').addEventListener('click',()=>showPage(2));$('editStoryboard').addEventListener('click',()=>showPage(3));$('newProject').addEventListener('click',newProject);
+           const backToTop=$('backToTop');
+           function updateBackToTop(){backToTop.hidden=window.scrollY<180;}
+           backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}));
+           window.addEventListener('scroll',updateBackToTop,{passive:true});
+           window.addEventListener('resize',updateBackToTop);
+           updateBackToTop();
+           // Show the one-time new-customer welcome after account registration redirected here.
+           window.CutLoopzWelcome?.consume();
+           window.addEventListener('pagehide',()=>{saveLocal();if(photoPreviewUrl)URL.revokeObjectURL(photoPreviewUrl);});initialize();
+          })();
+          CUTLOOPZ_END_64e738dc8115023b0625
+          
+          # Complete replacement: cutloopz-story-intelligence.js
+          cat > 'cutloopz-story-intelligence.js' <<'CUTLOOPZ_END_537c9db3659fdd09e108'
+          /**
+           * CutLoopz Media — Story Intelligence v5.2: Emotional Director
+           *
+           * Drop-in replacement for cutloopz-story-intelligence.js.
+           * Existing server API: createStoryIntelligencePlan({
+           * title, lyrics, songSeconds, musicPlan, prompt, format,
+           * sceneSeconds, visualStyle
+           * })
+           *
+           * No external APIs, no paid video generation, no file writes.
+           * Intent: combine lyric meaning, audio-derived energy and customer
+           * direction into coherent, editable music-video storyboards.
+           * This is interpretable, rule-based analysis; it is NOT an LLM or
+           * automatic speech/lyric transcription system.
+           */
+          const MAX_SECONDS = 360;
+          const MAX_LYRICS = 12000;
+          const MAX_SCENES = 100;
+          const round = n => Math.round(n * 100) / 100;
+          const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+          const clean = (v, limit = 1000) => String(v ?? '').trim().slice(0, limit);
+          const normalize = s => clean(s, 35000).toLowerCase()
+           .replace(/[’‘]/g, "'")
+           .replace(/[^\p{L}\p{N}\s']/gu, ' ')
+           .replace(/\s+/g, ' ').trim();
+          const contains = (text, term) => (` ${normalize(text)} `).includes(` ${normalize(term)} `);
+          // Phrases are deliberately more specific than individual sentiment words.
+          // Wider labels remain distinguishable (love ≠ happiness, pain ≠ aggression).
+          const EMOTIONS = {
+           reassurance: [
+           ['reassurance', 5], ['reassure', 5], ['safe', 7], ['feel safe', 5],
+           ['safety', 4], ['security', 4], ['comfort', 4], ['comforting', 4],
+           ['support', 4], ['supportive', 4], ['protected', 4],
+           ['you can count on me', 7], ['here for you', 6],
+           ['stand by you', 6], ['trust me', 5], ['stay together', 4],
+           ['always there', 4], ['not alone', 6],
+           ['still here', 4], ['rely on me', 5],
+           ['shelter', 3], ['peace of mind', 5], ['depend on me', 5]
+           ],
+           vulnerability: [
+           ['vulnerability', 6], ['vulnerable', 6], ['fragile', 4],
+           ['exposed', 3], ['insecure', 4], ['afraid', 4], ['scared', 4],
+           ['fear', 3], ['cry', 3], ['tears', 4], ['hurt', 4],
+           ['broken', 4], ['pain', 4], ['uncertain', 3],
+           ['anxious', 4], ['weak', 3], ['hide my feelings', 5],
+           ['struggling', 4], ['falling apart', 6]
+           ],
+           heartbreak: [
+           ['heartbreak', 7], ['broken heart', 7], ['goodbye', 4],
+           ['breakup', 7], ['separation', 5], ['rejected', 5],
+           ['lost love', 6], ['unrequited', 6], ['betrayed', 6],
+           ['cheated on', 7], ['love is over', 6], ['ended our love', 7]
+           ],
+           romance: [
+           ['romance', 6], ['romantic', 5], ['in love', 5],
+           ['fall in love', 6], ['falling in love', 6], ['love you', 4],
+           ['affection', 5], ['lover', 4], ['sweetheart', 4],
+           ['kiss', 4], ['adore', 5], ['passion', 4],
+           ['devotion', 4], ['tenderness', 4], ['intimate', 3]
+           ],
+           grief: [
+           ['grief', 7], ['mourning', 7], ['bereavement', 7],
+           ['passed away', 7], ['funeral', 7], ['death', 5],
+           ['memorial', 5], ['remembrance', 5], ['in loving memory', 6]
+           ],
+           longing: [ ['longing', 6], ['yearning', 6], ['homesick', 6],
+           ['homesickness', 6], ['miss you', 5], ['missing you', 5],
+           ['distance', 3], ['far away', 3], ['separated', 4],
+           ['waiting for you', 4], ['wish you were here', 5]
+           ],
+           hope: [
+           ['hope', 5], ['hopeful', 5], ['optimism', 5],
+           ['healing', 5], ['new beginning', 6], ['new start', 5],
+           ['brighter future', 5], ['better days', 5],
+           ['rise again', 5], ['recover', 4], ['renewal', 5],
+           ['possibility', 4], ['persevere', 4], ['forgive', 4]
+           ],
+           reflection: [
+           ['remember', 4], ['memories', 4], ['looking back', 5],
+           ['regret', 5], ['reminisce', 5], ['the past', 3],
+           ['yesterday', 3], ['nostalgia', 5], ['reflection', 5],
+           ['questioning myself', 5]
+           ],
+           confidence: [
+           ['confidence', 6], ['confident', 6], ['self respect', 6],
+           ['self assured', 5], ['proud', 5], ['pride', 4],
+           ['independent', 5], ['independence', 5], ['self worth', 5],
+           ['ambitious', 4], ['empowered', 5], ['unstoppable', 5],
+           ['bragging', 5], ['swagger', 5], ['boast', 5],
+           ['accomplished', 4], ['self esteem', 5], ['baddie', 7], ['boss energy', 6], ['boss', 4],
+           ['run the show', 6], ['call my own shots', 7], ['my own rules', 6]
+           ],
+           luxury: [
+           ['luxury', 6], ['designer', 5], ['diamonds', 5],
+           ['jewelry', 4], ['wealthy', 6], ['rich', 3],
+           ['money', 3], ['mansion', 5], ['penthouse', 5],
+           ['expensive', 4], ['vip', 4], ['fashion', 3],
+           ['shopping', 3], ['private jet', 7], ['sports car', 5],
+           ['lavish', 5], ['opulent', 5]
+           ],
+           celebration: [
+           ['party', 5], ['celebrate', 6], ['celebration', 6],
+           ['dancing', 4], ['dance', 3], ['joyful', 4],
+           ['club', 3], ['winning', 5], ['festival', 5],
+           ['have fun', 4], ['excited', 4], ['victory', 5],
+           ['cheering', 4], ['festive', 4]
+           ],
+           conflict: [
+           ['conflict', 5], ['revenge', 7], ['betrayal', 5],
+           ['fight', 4], ['enemy', 5], ['argument', 5],
+           ['furious', 6], ['war', 4], ['angry', 5],
+           ['cheating', 4], ['injustice', 5], ['resentment', 5],
+           ['confrontation', 5]
+           ]
+          };
+          // A second layer interprets more specific human feelings. These are
+          // weighted cues, not psychological diagnoses or universal emotion rules.
+          // The artist's instructions and lyric context always outrank these hints.
+          // Each fine-grained feeling contributes to a cinematic theme that the
+          // existing Director already knows how to stage.
+          const NUANCE_LEXICON = {
+           joy: {theme:'celebration', cues:['joy','happy','happiness','delight','bliss','euphoria','elated','pleasure','ecstasy']},
+           serenity: {theme:'reassurance', cues:['peace','serenity','calm','contentment','satisfied','tranquil','equanimity','at ease']},
+           gratitude: {theme:'hope', cues:['grateful','gratitude','thankful','appreciate you','blessed','thank you for']},
+           tenderness: {theme:'romance', cues:['tender','tenderness','affection','adoration','fondness','warmth','gentle touch']},
+           compassion: {theme:'reassurance', cues:['compassion','empathy','sympathy','mercy','kindness','care about you','concern for']},
+           trust: {theme:'reassurance', cues:['trust','faith in you','loyalty','believe in you','rely on you','i feel safe']},
+           belonging: {theme:'reassurance', cues:['belong','belonging','connection','connected to you','you are my home','you are not alone','by my side']},
+           relief: {theme:'reassurance', cues:['relief','relieved','breathing again','burden lifted','safe again','finally at ease']},
+           optimism: {theme:'hope', cues:['optimism','optimistic','hopeful','healing','brighter tomorrow','new beginning','better days']},
+           pride: {theme:'confidence', cues:['pride','proud','self respect','dignity','made it','earned this','head held high']},
+           arrogance: {theme:'confidence', cues:['arrogant','arrogance','vanity','cocky','better than you','show off','boastful','self important']},
+           amusement: {theme:'celebration', cues:['laughing','laughter','playful','silly','joking','teasing','amused']},
+           excitement: {theme:'celebration', cues:['excited','excitement','thrill','enthusiasm','hyped','eager','pumped']}, triumph: {theme:'celebration', cues:['triumph','victory','won','champion','accomplishment','achievement','overcame']},
+           curiosity: {theme:'reflection', cues:['curious','curiosity','intrigued','fascinated','i wonder why','discover','question everything']},
+           determination: {theme:'confidence', cues:['determined','resolve','grit','never give up','keep going','unstoppable','brave','courage']},
+           forgiveness: {theme:'hope', cues:['forgive','forgiveness','forgiven','acceptance','let it go','make peace','reconcile']},
+           desire: {theme:'romance', cues:['desire','craving','passion','lust','infatuation','want you','long for your touch']},
+           awe: {theme:'reflection', cues:['awe','wonder','amazed','astonished','sublime','beautiful beyond words','transcendence','reverence']},
+           nostalgia: {theme:'reflection', cues:['nostalgia','nostalgic','wistful','remember when','the old days','memories','used to be','homesick']},
+           sadness: {theme:'vulnerability', cues:['sad','sadness','sorrow','melancholy','gloom','dejected','despondent','downhearted','crying']},
+           grief: {theme:'grief', cues:['grief','mourning','bereavement','funeral','passed away','rest in peace','loss of you']},
+           despair: {theme:'heartbreak', cues:['despair','hopeless','hopelessness','emptiness','nothing left','helpless','defeated','worthless']},
+           loneliness: {theme:'longing', cues:['lonely','loneliness','isolation','abandoned','alone again','left behind','disconnected','alienated']},
+           rejection: {theme:'heartbreak', cues:['rejected','rejection','excluded','unwanted','you left me','you shut me out']},
+           shame: {theme:'vulnerability', cues:['ashamed','shame','embarrassed','humiliated','inadequate','inferior','self conscious','disgrace']},
+           guilt: {theme:'reflection', cues:['guilt','guilty','regret','remorse','repentance','i was wrong','i am sorry','my fault']},
+           fear: {theme:'vulnerability', cues:['fear','afraid','anxiety','anxious','dread','panic','nervous','terrified','apprehension','worried']},
+           insecurity: {theme:'vulnerability', cues:['insecurity','insecure','uncertain','doubt','fragile','fragility','exposed','vulnerable']},
+           anger: {theme:'conflict', cues:['anger','angry','rage','furious','fury','irritated','frustrated','indignant','outraged','resentment']},
+           bitterness: {theme:'conflict', cues:['bitterness','bitter','hostile','hatred','loathing','contempt','scorn','disdain','spite']},
+           betrayal: {theme:'heartbreak', cues:['betrayed','betrayal','cheated on','lied to me','broken trust','deceived','distrust','suspicious']},
+           jealousy: {theme:'conflict', cues:['jealous','jealousy','envy','envious','rivalry','i envy','covet']},
+           disgust: {theme:'conflict', cues:['disgust','revulsion','repulsed','revolted','distaste','makes me sick','disapproval']},
+           stress: {theme:'vulnerability', cues:['stressed','stress','overwhelmed','burnout','exhausted','exhaustion','drained','restless']},
+           confusion: {theme:'reflection', cues:['confused','confusion','uncertain','ambivalence','mixed feelings','torn between','not sure why']},
+           boredom: {theme:'reflection', cues:['bored','boredom','apathy','indifferent','indifference','ennui','numb']},
+           longing: {theme:'longing', cues:['yearning','longing','miss you','miss home','wish you were here','come back','saudade']},
+           surprise: {theme:'reflection', cues:['surprise','surprised','astonished','shocked','did not expect','never imagined']},
+           moralOutrage: {theme:'conflict', cues:['injustice','unfair','moral outrage','wrongdoing','indignation','disrespect']},
+           selfCompassion: {theme:'hope', cues:['self compassion','i accept myself','love myself','worthy of love','healing myself']}
+          };
+          const BLENDED_CUES = [
+           {name:'bittersweetness', cues:['bittersweet','happy and sad','smile through the tears'], themes:['hope','vulnerability']},
+           {name:'nervous excitement', cues:['nervous excitement','excited but scared','scared and excited'], themes:['celebration','vulnerability']},
+           {name:'relieved sadness', cues:['relieved but sad','sad but relieved','relieved sadness'], themes:['reassurance','vulnerability']},
+           {name:'angry hurt', cues:['angry and hurt','hurt and angry','angry hurt'], themes:['conflict','vulnerability']},
+           {name:'jealous admiration', cues:['jealous admiration','admire and envy'], themes:['confidence','conflict']},
+           {name:'guilty pleasure', cues:['guilty pleasure','feel guilty but love'], themes:['reflection','romance']},
+           {name:'loving frustration', cues:['loving frustration','love and frustration','love you but i am frustrated','love you but you frustrate me'], themes:['romance','conflict']},
+           {name:'hopeful anxiety', cues:['hopeful anxiety','hopeful but afraid','hope and fear','hopeful but anxious'], themes:['hope','vulnerability']},
+           {name:'nostalgic joy', cues:['nostalgic joy','happy memories','joyful memories'], themes:['reflection','celebration']},
+           {name:'compassionate anger', cues:['compassionate anger','angry on your behalf'], themes:['reassurance','conflict']}
+          ];
+          function nuanceScores(text, concept = '', conceptWeight = 0.35) {
+           const scores = {};
+           for (const [feeling, descriptor] of Object.entries(NUANCE_LEXICON)) {
+           let score = 0;
+           for (const phrase of descriptor.cues) {
+           if (contains(text, phrase)) score += phrase.includes(' ') ? 3 : 2;
+           if (concept && contains(concept, phrase)) score += (phrase.includes(' ') ? 3 : 2) * conceptWeight;
+           }
+           if (score > 0) scores[feeling] = round(score);
+           }
+           return scores;
+          }
+          function nuanceRanking(scores) {
+           return Object.entries(scores).sort((a,b) => b[1] - a[1]);
+          }
+          function blendedEmotion(text, nuance = {}) {
+           for (const entry of BLENDED_CUES) {
+           if (entry.cues.some(cue => contains(text, cue))) return entry.name;
+           }
+           const ranked = nuanceRanking(nuance).filter(([,value]) => value >= 3.5);
+           if (ranked.length < 2) return null;
+           const [first,second] = ranked;
+           const a = NUANCE_LEXICON[first[0]]?.theme;
+           const b = NUANCE_LEXICON[second[0]]?.theme;
+           if (a === b || second[1] < first[1] * 0.65) return null;
+           return `${first[0]} + ${second[0]}`;
+          } const INTIMATE = new Set([
+           'reassurance', 'vulnerability', 'heartbreak', 'romance',
+           'grief', 'longing', 'hope', 'reflection'
+          ]);
+          const EXPRESSIVE = new Set(['confidence', 'luxury', 'celebration', 'conflict']);
+          const LOCATION_CUES = [
+           ['private jet', 'private jet cabin'], ['runway', 'airport runway'],
+           ['penthouse', 'luxury penthouse'], ['mansion', 'mansion residence'],
+           ['boutique', 'upscale boutique'], ['shopping district', 'shopping district'],
+           ['nightclub', 'nightclub'], ['vip club', 'exclusive lounge'],
+           ['rooftop', 'rooftop'], ['sports car', 'luxury car exterior'],
+           ['hotel', 'hotel interior'], ['restaurant', 'restaurant'],
+           ['beach', 'beach'], ['ocean', 'oceanfront'],
+           ['airport', 'airport'], ['recording studio', 'recording studio'],
+           ['studio', 'studio'], ['bedroom', 'bedroom'], ['kitchen', 'kitchen'],
+           ['living room', 'living room'], ['hallway', 'hallway'],
+           ['city street', 'city street'], ['street', 'city street'],
+           ['park', 'park'], ['forest', 'forest'], ['desert', 'desert'],
+           ['space station', 'space station'], ['planet', 'otherworldly planet landscape'],
+           ['home', 'home interior']
+          ];
+          function scoreEmotions(text, concept = '', conceptWeight = 0.35) {
+           const scores = {};
+           for (const [emotion, entries] of Object.entries(EMOTIONS)) {
+           let total = 0;
+           for (const [phrase, weight] of entries) {
+           if (contains(text, phrase)) total += weight;
+           if (concept && contains(concept, phrase)) total += weight * conceptWeight;
+           }
+           scores[emotion] = round(total);
+           }
+           // Broader feelings enrich the existing director categories without
+           // requiring new shot/action implementations or additional API calls.
+           for (const [feeling, value] of Object.entries(nuanceScores(text, concept, conceptWeight))) {
+           const theme = NUANCE_LEXICON[feeling].theme;
+           scores[theme] = round((scores[theme] || 0) + value * 0.65);
+           }
+           return scores;
+          }
+          function ranking(scores) {
+           return Object.entries(scores).sort((a, b) => b[1] - a[1]);
+          }
+          function topEmotion(scores, fallback = 'undetermined') {
+           const ranked = ranking(scores);
+           return ranked[0] && ranked[0][1] > 0 ? ranked[0][0] : fallback;
+          }
+          function emotionalFamily(emotion) {
+           return INTIMATE.has(emotion) ? 'intimate'
+           : EXPRESSIVE.has(emotion) ? 'expressive' : 'neutral';
+          }
+          function findLocations(text) {
+           const places = [];
+           for (const [cue, place] of LOCATION_CUES) {
+           if (contains(text, cue) && !places.includes(place)) places.push(place);
+           }
+           return places;
+          }
+          function oneLocation(text) {
+           return /\b(single location|one location|same location|never leave|entirely inside|one room)\b/i.test(text);
+          }
+          function timestamp(text) {
+           const m = String(text).match(/^\s*(?:(\d+):)?(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\s*$/);
+           if (!m) return null;
+           const h = Number(m[1] || 0), minutes = Number(m[2]), seconds = Number(m[3]);
+           if ((m[1] && minutes > 59) || seconds > 59) return null; return h * 3600 + minutes * 60 + seconds + Number(`0.${m[4] || '0'}`);
+          }
+          function parseLyrics(raw) {
+           let section = 'unlabeled';
+           const lines = [];
+           for (const item of clean(raw, MAX_LYRICS).split(/\r?\n/)) {
+           const line = item.trim();
+           if (!line) continue;
+           const tag = line.match(/^\[(intro|verse|pre-chorus|chorus|hook|bridge|outro|refrain|instrumental)(?:\s*\d+)?\]$/i);
+           if (tag) { section = tag[1].toLowerCase(); continue; }
+           const lrc = line.match(/^\[([\d:.]+)\]\s*(.*)$/);
+           const time = lrc ? timestamp(lrc[1]) : null;
+           const text = time !== null ? lrc[2].trim() : line;
+           if (text) lines.push({ text, section, time });
+           }
+           return lines;
+          }
+          function lyricTimeline(lines, duration) {
+           if (!lines.length) return [];
+           if (lines.every(line => Number.isFinite(line.time))) {
+           const ordered = [...lines].sort((a, b) => a.time - b.time);
+           return ordered.map((line, index) => ({
+           ...line,
+           startSeconds: clamp(line.time, 0, duration),
+           endSeconds: clamp(index + 1 < ordered.length ? ordered[index + 1].time : duration, 0, duration),
+           timingSource: 'provided'
+           })).filter(line => line.endSeconds > line.startSeconds);
+           }
+           return lines.map((line, index) => ({
+           ...line,
+           startSeconds: round(index * duration / lines.length),
+           endSeconds: round((index + 1) * duration / lines.length),
+           timingSource: 'estimated'
+           }));
+          }
+          // Produce continuous segments at the requested clip length. Audio scenes
+          // contribute energy labels but can never create gaps or overlapping shots.
+          function segmentMusic(plan, duration, clip) {
+           const source = (Array.isArray(plan?.scenes) ? plan.scenes : [])
+           .map(item => ({
+           startSeconds: Number(item.startSeconds),
+           endSeconds: Number(item.endSeconds),
+           intensity: ['low','medium','high'].includes(item.intensity) ? item.intensity : 'medium',
+           energyChange: clean(item.energyChange, 35) || 'steady'
+           }))
+           .filter(item => Number.isFinite(item.startSeconds) && Number.isFinite(item.endSeconds)
+           && item.endSeconds > item.startSeconds && item.endSeconds > 0)
+           .sort((a, b) => a.startSeconds - b.startSeconds);
+           const segments = [];
+           for (let start = 0; start < duration && segments.length < MAX_SCENES; start += clip) {
+           const end = Math.min(duration, start + clip);
+           const midpoint = (start + end) / 2;
+           const audio = source.find(item => item.startSeconds <= midpoint && item.endSeconds > midpoint)
+           || source.find(item => item.startSeconds < end && item.endSeconds > start);
+           segments.push({
+           startSeconds: round(start),
+           endSeconds: round(end),
+           intensity: audio ? audio.intensity : 'medium',
+           energyChange: audio ? audio.energyChange : 'steady',
+           audioMatched: !!audio
+           });
+           }
+           return segments;
+          }
+          const LOCATION_SETS = {
+           intimate: [
+           'quiet apartment living room beside a window', 'softly lit apartment hallway',
+           'peaceful tree-lined path at dawn'
+           ],
+           luxury: [
+           'elegant penthouse overlooking the skyline',
+           'high-fashion designer boutique',
+           'upscale rooftop overlooking the city',
+           'premium arrivals entrance'
+           ],
+           expressive: [
+           'cinematic city rooftop',
+           'polished performance studio',
+           'striking downtown exterior',
+           'dramatic night skyline'
+           ],
+           neutral: [
+           'cinematic indoor performance space',
+           'quiet outdoor walkway',
+           'naturally lit interior'
+           ]
+          };
+          const ACTIONS = {
+           reassurance: [
+           'The performer meets the camera with a steady, reassuring gaze; an uncertain expression becomes calm.',
+           'The performer takes a breath, gently reaches a hand toward the edge of frame, then lets the moment settle.',
+           'The performer shifts from guarded stillness to an open, welcoming posture, without forced romance.',
+           'The performer listens attentively toward the edge of the frame, then responds with a subtle reassuring nod.',
+           'The performer remains present and grounded, holding a quiet expression of compassion.'
+           ],
+           vulnerability: [
+           'The performer hesitates beside a window, revealing a vulnerable expression without exaggerated tears.',
+           'The performer lowers their gaze and takes a measured breath, communicating emotional uncertainty.',
+           'A fleeting expression of sadness crosses the performer’s face before they regain composure.',
+           'The performer rests one hand against a doorframe, pausing in a private reflective moment.',
+           'The performer looks briefly away from the camera and returns with unguarded honesty.'
+           ],
+           heartbreak: [
+           'The performer sits alone with a quiet sense of distance, avoiding melodramatic gestures.',
+           'The performer notices an empty space nearby and allows an understated expression of loss.',
+           'The performer walks slowly away from a familiar place, carrying unresolved emotion.',
+           'The performer stops mid-step, as though reconsidering a painful memory.'
+           ],
+           romance: [
+           'The performer offers a gentle, warm camera-facing smile with natural romantic chemistry.',
+           'The performer responds to a fond thought with a soft expression and relaxed movement.',
+           'The performer turns toward warm light, allowing a tender, intimate moment to unfold.'
+           ],
+           grief: [
+           'The performer remains still in a respectful private moment, expression weighted by loss.',
+           'The performer lowers their gaze in remembrance, holding back an understated emotional response.',
+           'A long, quiet pause gives the performer space to process grief.'
+           ],
+           longing: [
+           'The performer watches the distant horizon as though hoping for someone to return.',
+           'The performer moves slowly toward a window with a thoughtful, longing expression.',
+           'The performer pauses and glances back, suggesting emotional distance.'
+           ],
+           hope: [
+           'The performer takes a small, deliberate step into warmer light, suggesting new possibility.',
+           'A guarded expression softens into a subtle sense of relief and possibility.',
+           'The performer looks ahead and moves forward calmly, signaling emotional progress.'
+           ],
+           reflection: [
+           'The performer pauses over a familiar object and then quietly sets it aside.',
+           'The performer looks toward a familiar space as a memory returns, keeping the moment grounded.',
+           'The performer sits quietly in thought while the camera observes without interruption.'
+           ], confidence: [
+           'The performer makes a self-assured entrance and confidently holds the lens.',
+           'The performer delivers a playful, commanding performance with deliberate body language.',
+           'The performer walks through the setting with poised, runway-inspired energy.',
+           'The performer stops for a striking editorial pose and moves naturally into the next beat.'
+           ],
+           luxury: [
+           'The performer confidently moves through elegant surroundings, revealing fine details of the setting.',
+           'The performer adjusts a stylish accessory and holds an effortless editorial pose.',
+           'The performer arrives at a premium location with a self-assured, polished presence.'
+           ],
+           celebration: [
+           'The performer celebrates through naturally energetic movement synchronized to the track.',
+           'The performer gives an upbeat camera-facing performance with unmistakable joy.',
+           'The performer moves confidently through a lively environment without confusing jump cuts.'
+           ],
+           conflict: [
+           'The performer conveys tension with controlled expression and body language, without invented violence.',
+           'A measured confrontation is suggested through framing and reaction, not graphic action.',
+           'The performer takes a decisive step away from an emotionally tense situation.'
+           ],
+           undetermined: [
+           'The performer delivers an emotionally neutral, lyric-led performance without invented plot details.',
+           'The performer moves naturally within the chosen location, allowing the lyrics to guide expression.'
+           ]
+          };
+          // Generic semantic cues only; never embed example-song lyrics in production rules.
+          // When an action is not justified by the lyric's meaning, fall back to an
+          // emotion-appropriate performance. These rules are advisory, not transcription.
+          function lyricSpecificAction(text, emotion) {
+           if (!text) return null;
+           if (['reassurance', 'romance', 'longing'].includes(emotion)
+           && /\b(hand|hands|touch|embrace|hug)\b/i.test(text))
+           return 'The performer uses a natural, gentle gesture toward the camera, suggesting human connection without inventing another performer.';
+           if (['vulnerability', 'heartbreak', 'grief'].includes(emotion)
+           && /\b(tear|tears|cry|crying|sorrow|sadness)\b/i.test(text))
+           return 'A quiet change in the performer’s eyes suggests emotion without forcing theatrical crying.';
+           if (['reflection', 'longing', 'hope'].includes(emotion)
+           && /\b(memory|memories|remember|past|yesterday)\b/i.test(text))
+           return 'The performer glances toward a familiar part of the environment, briefly remembering, then returns to the present.';
+           if (['confidence', 'luxury'].includes(emotion)
+           && /\b(style|fashion|clothes|outfit|designer|dress|shoes)\b/i.test(text))
+           return 'The performer delivers an assured editorial fashion moment with graceful, realistic body movement.';
+           if (emotion === 'celebration' && /\b(dance|dancing|celebrate|party|victory)\b/i.test(text))
+           return 'The performer celebrates with rhythmically natural movement appropriate to the measured musical intensity.';
+           return null;
+          }
+          function roleForIndex(index, total) {
+           const position = total <= 1 ? 1 : index / (total - 1);
+           if (position < 0.25) return 'emotional setup';
+           if (position < 0.72) return 'development and deepening';
+           if (position < 0.9) return 'emotional turning point';
+           return 'resolution or lingering final image';
+          }
+          function chooseVisualEnergy(audioEnergy, emotion, overall, change) {
+           const family = emotionalFamily(emotion);
+           const overarchingIntimate = emotionalFamily(overall) === 'intimate';
+           if (family === 'intimate' || (family === 'neutral' && overarchingIntimate)) {
+           if (audioEnergy === 'high' || /rising|build/i.test(change)) return 'emotional crescendo';
+           return 'restrained';
+           }
+           if (family === 'expressive') return audioEnergy === 'high' ? 'energetic' : audioEnergy === 'low' ? 'measured' : 'dynamic';
+           return audioEnergy === 'high' ? 'dynamic' : 'measured';
+          }
+          function filmDirection(emotion, visualEnergy, index, total) { const stage = roleForIndex(index, total);
+           if (visualEnergy === 'restrained' || visualEnergy === 'emotional crescendo') {
+           const intimateShots = ['intimate close-up', 'patient medium shot', 'over-the-shoulder-style profile',
+           'quiet wide establishing shot', 'natural eye-level close-up'];
+           const intimateMoves = ['almost imperceptible dolly-in', 'restrained locked-off frame',
+           'slow lateral slider', 'gentle measured pull-back', 'subtle handheld drift'];
+           const shots = visualEnergy === 'emotional crescendo'
+           ? ['expressive medium close-up', 'intimate tracking close-up', 'composed wide emotional reveal']
+           : intimateShots;
+           const moves = visualEnergy === 'emotional crescendo'
+           ? ['controlled gradual push-in', 'slow rising camera reveal', 'gentle tracking move']
+           : intimateMoves;
+           return {
+           shot: shots[index % shots.length],
+           cameraMovement: moves[Math.floor(index / 2) % moves.length],
+           pacing: visualEnergy === 'emotional crescendo'
+           ? 'emotionally intense but physically restrained, no fast montage'
+           : 'slow, natural, unhurried',
+           framingPurpose: stage
+           };
+           }
+           const shots = ['editorial medium shot', 'dynamic wide shot', 'confident low-angle shot',
+           'expressive tracking medium shot', 'full-body performance frame', 'cinematic wide establishing shot'];
+           const moves = visualEnergy === 'energetic'
+           ? ['energetic but controlled tracking shot', 'smooth crane reveal', 'deliberate orbital movement']
+           : ['smooth side tracking', 'controlled forward dolly', 'wide floating camera move'];
+           return {
+           shot: shots[index % shots.length],
+           cameraMovement: moves[index % moves.length],
+           pacing: visualEnergy === 'energetic' ? 'lively and rhythmic, still physically believable' : 'measured and rhythmic',
+           framingPurpose: stage
+           };
+          }
+          function lightingFor(emotion, stage) {
+           const map = {
+           reassurance: 'warm practical light with gentle natural fill',
+           vulnerability: 'soft window light with delicate shadows',
+           heartbreak: 'subdued atmospheric natural light',
+           romance: 'warm intimate cinematic light',
+           grief: 'soft muted respectful lighting',
+           longing: 'wistful dusk light with a natural horizon',
+           hope: 'gradually brightening natural light',
+           reflection: 'muted nostalgic indirect light',
+           confidence: 'crisp fashion editorial lighting',
+           luxury: 'polished high-end cinematic lighting',
+           celebration: 'vivid festive performance lighting',
+           conflict: 'controlled high-contrast dramatic light',
+           undetermined: 'natural motivated cinematic light'
+           };
+           const base = map[emotion] || map.undetermined;
+           return stage.includes('resolution') && emotionalFamily(emotion) === 'intimate'
+           ? 'softly brightening natural light suggesting acceptance' : base;
+          }
+          function sceneLocation(index, total, overall, chosen, fixed, segmentLyrics) {
+           if (chosen.length) {
+           if (fixed) return chosen[0];
+           // Keep each requested location for a coherent block of shots.
+           return chosen[Math.min(chosen.length - 1, Math.floor(index * chosen.length / total))];
+           }
+           const family = emotionalFamily(overall);
+           const pool = overall === 'luxury' ? LOCATION_SETS.luxury
+           : (LOCATION_SETS[family] || LOCATION_SETS.neutral);
+           const lyricalPlaces = findLocations(segmentLyrics);
+           if (lyricalPlaces.length && contains(segmentLyrics, 'at ' + lyricalPlaces[0]))
+           return lyricalPlaces[0];
+           // Avoid location hopping: intimate videos hold environments over several shots.
+           const count = family === 'intimate' ? Math.min(3, Math.ceil(total / 4)) : Math.min(pool.length, Math.max(2, Math.ceil(total / 3)));
+           const group = Math.min(count - 1, Math.floor(index * count / total));
+           return pool[group];
+          }
+          function confidenceLabel(scores, emotion, timing) {
+           const ranked = ranking(scores);
+           const leader = scores[emotion] || 0;
+           const next = ranked.filter(([key]) => key !== emotion)[0]?.[1] || 0;
+           if (leader >= 8 && leader - next >= 3 && timing === 'provided') return 'high';
+           if (leader >= 4 && leader - next >= 1) return 'medium';
+           return 'low';
+          }
+          export function createStoryIntelligencePlan({
+           title = 'Untitled Song', lyrics = '', songSeconds, musicPlan = null,
+           prompt = '', format = 'vertical', sceneSeconds = 15,
+           visualStyle = 'photorealistic'
+          } = {}) {
+           const duration = Number(songSeconds);
+           const clip = Number(sceneSeconds);
+           if (!Number.isFinite(duration) || duration <= 0 || duration > MAX_SECONDS)
+           throw new Error('Song duration must be above 0 and at most 360 seconds.');
+           if (!Number.isFinite(clip) || clip < 3 || clip > 30)
+           throw new Error('Scene duration must be between 3 and 30 seconds.');
+           if (typeof lyrics !== 'string' || lyrics.length > MAX_LYRICS)
+           throw new Error('Lyrics must be text under 12,000 characters.');
+           const concept = clean(prompt, 4000);
+           const lines = parseLyrics(lyrics);
+           const timed = lyricTimeline(lines, duration);
+           const segments = segmentMusic(musicPlan, duration, clip);
+           const wholeLyrics = lines.map(line => line.text).join(' ');
+           const totals = scoreEmotions(wholeLyrics, concept, 0.55);
+           // Song title provides a small clue, never enough to erase contradictory lyrics.
+           const titleScores = scoreEmotions(clean(title, 120));
+           for (const emotion of Object.keys(totals)) {
+           totals[emotion] = round(totals[emotion] + titleScores[emotion] * 0.5);
+           }
+           const overall = topEmotion(totals);
+           const wholeNuances = nuanceScores(wholeLyrics, concept, 0.5);
+           const songBlend = blendedEmotion(`${wholeLyrics} ${concept}`, wholeNuances);
+           const ranked = ranking(totals).filter(([, score]) => score > 0).slice(0, 4);
+           const locations = findLocations(concept);
+           const fixed = oneLocation(concept);
+           const usedActions = new Set();
+           const storyArc = [];
+           const scenes = segments.map((segment, index) => {
+           const matches = timed.filter(line => line.startSeconds < segment.endSeconds && line.endSeconds > segment.startSeconds);
+           const excerpt = clean(matches.map(line => line.text).join(' '), 600);
+           const localScores = scoreEmotions(excerpt, concept, 0.25);
+           const localNuances = nuanceRanking(nuanceScores(excerpt, concept, 0.15))
+           .filter(([,value]) => value >= 2).slice(0, 3).map(([name]) => name);
+           const localBlend = blendedEmotion(excerpt, nuanceScores(excerpt));
+           const local = topEmotion(localScores);
+           // A single weak word should not override a strong song-wide theme.
+           const localValue = local === 'undetermined' ? 0 : localScores[local];
+           let emotion = localValue >= 3 ? local : overall;
+           if (emotion === 'undetermined' && concept) emotion = topEmotion(scoreEmotions('', concept, 1));
+           if (emotion === 'undetermined') emotion = 'undetermined';
+           const narrativeBeat = roleForIndex(index, segments.length);
+           const visualEnergy = chooseVisualEnergy(segment.intensity, emotion, overall, segment.energyChange);
+           const camera = filmDirection(emotion, visualEnergy, index, segments.length);
+           const location = sceneLocation(index, segments.length, overall, locations, fixed, excerpt);
+           const lighting = lightingFor(emotion, narrativeBeat);
+           const candidates = ACTIONS[emotion] || ACTIONS.undetermined; const specific = lyricSpecificAction(excerpt, emotion);
+           let action = specific || candidates[index % candidates.length];
+           const key = normalize(action);
+           // Avoid repeated instructions, including repeated chorus lyric cues.
+           if (usedActions.has(key)) {
+           action = candidates.find(candidate => !usedActions.has(normalize(candidate)))
+           || `${candidates[index % candidates.length]} Allow the ${narrativeBeat} to develop naturally.`;
+           }
+           usedActions.add(normalize(action));
+           if (narrativeBeat.includes('resolution') && overall === 'reassurance') {
+           action = `${action} End on an earned, understated feeling of emotional safety; avoid forced celebration.`;
+           }
+           // The current Listening Director renders production prompts from intensity,
+           // not from scene.prompt. Send *visual performance* energy in that legacy
+           // field, retaining measured musical intensity separately.
+           const performanceIntensity = visualEnergy === 'restrained' ? 'low'
+           : visualEnergy === 'emotional crescendo' ? 'medium' : segment.intensity;
+           const originalEnergy = segment.audioMatched ? segment.intensity : 'unverified';
+           const promptText = [
+           `CutLoopz cinematic music video for "${clean(title, 120)}".`,
+           `Scene ${index + 1} of ${segments.length}; ${segment.startSeconds}–${segment.endSeconds} seconds.`,
+           `Customer direction (priority): ${concept || 'let the lyrics guide the creative direction'}.`,
+           `Story continuity: ${narrativeBeat}. Maintain the same central performer and consistent visual world.`,
+           `Emotion: ${emotion}. Song-wide emotional theme: ${overall}.`,
+           localNuances.length ? `Emotional subtext: ${localNuances.join(', ')}.` : '',
+           (localBlend || songBlend) ? `Blended emotional tone: ${localBlend || songBlend}. Express this naturally, not as exaggerated acting.` : '',
+           `Lyric inspiration: ${excerpt || 'lyrics not provided for this moment'}.`,
+           `Location: ${location}.`,
+           `On-screen action: ${action}`, 
+           `Camera framing: ${camera.shot}. Movement: ${camera.cameraMovement}.`,
+           `Lighting: ${lighting}. Performance pace: ${camera.pacing}.`,
+           `Audio energy: ${originalEnergy}; energy movement: ${segment.energyChange}. Visually interpreted as: ${visualEnergy}.`,
+           `Style: ${clean(visualStyle, 150)}; ${format === 'landscape' ? '16:9' : '9:16'}.`,
+           'Preserve the supplied performer reference identity, hairstyle, wardrobe and body proportions across all shots when a reference image is provided.',
+           'Natural human anatomy, facial expression, realistic movement, grounded gravity and lighting; a single continuous shot.',
+           'No unrelated subplots, forced new characters, excessive scene changes, morphing, slideshow, subtitles, logos or watermarks.'
+           ].join(' ');
+           storyArc.push({scene: index + 1, emotion, narrativeBeat, visualEnergy});
+           return {
+           number: index + 1,
+           startSeconds: segment.startSeconds,
+           endSeconds: segment.endSeconds,
+           durationSeconds: round(segment.endSeconds - segment.startSeconds),
+           section: matches[0]?.section || 'unlabeled',
+           lyricExcerpt: excerpt,
+           lyricTiming: matches[0]?.timingSource || (timed.length ? 'estimated' : 'unavailable'),
+           emotion,
+           emotionalSubtones: localNuances,
+           blendedEmotion: localBlend || songBlend,
+           emotionConfidence: confidenceLabel(localScores, emotion, matches[0]?.timingSource),
+           intensity: performanceIntensity, // The UI uses this for performance pace.
+           audioIntensity: originalEnergy, // Preserve the original audio measurement.
+           energyChange: segment.energyChange,
+           visualEnergy,
+           location,
+           shot: camera.shot,
+           action: `Story phase: ${narrativeBeat}. ${action}`,
+           prompt: promptText,
+           narrativeBeat,
+           lighting,
+           cameraMovement: camera.cameraMovement
+           };
+           });
+           const warnings = [];
+           if (!lines.length) warnings.push('No lyrics supplied. Emotion is based on the customer concept only.');
+           if (lines.length && timed[0]?.timingSource === 'estimated') warnings.push('Lyrics have no timestamps, so scene-to-lyric alignment is estimated.');
+           if (!musicPlan || !segments.some(segment => segment.audioMatched))
+           warnings.push('No usable audio-derived intensity plan. Camera pace is conservatively estimated.');
+           if (overall === 'undetermined') warnings.push('Insufficient lyrical evidence to classify the song confidently.');
+           if (locations.length && !fixed && locations.length > segments.length)
+           warnings.push('More locations requested than available scenes; some locations may be omitted.');
+           return {
+           version: '5.2',
+           engine: 'CutLoopz Emotional Director',
+           status: 'preview',
+           title: clean(title, 120),
+           songSeconds: duration,
+           totalScenes: scenes.length,
+           lyricSource: lines.length ? 'customer-provided' : 'none',
+           lyricTiming: lines.length ? timed[0]?.timingSource : 'unavailable',
+           storyEmotion: overall,
+           customerConcept: concept,
+           emotionalProfile: {
+           primary: overall,
+           secondary: ranked.filter(([emotion]) => emotion !== overall).slice(0, 3).map(([emotion]) => emotion),
+           nuancedFeelings: nuanceRanking(wholeNuances).slice(0, 8).map(([name]) => name),
+           blendedEmotion: songBlend,
+           approach: emotionalFamily(overall),
+           audioBpmEstimate: Number.isFinite(Number(musicPlan?.bpmEstimate))
+           && Number(musicPlan?.bpmEstimate) > 0 ? Number(musicPlan.bpmEstimate) : null,
+           note: 'BPM is context only. Lyric emotion and section intensity guide visual pace.'
+           },
+           storyArc,
+           scenes,
+           qualityChecks: {
+           uniqueLocations: new Set(scenes.map(scene => scene.location)).size,
+           requestedLocations: locations.length,
+           restrainedOrCrescendoShots: scenes.filter(scene =>
+           ['restrained','emotional crescendo'].includes(scene.visualEnergy)).length,
+           warnings
+           },
+           limitations: [
+           'Rule-based emotional interpretation, not open-ended semantic understanding; figurative language, sarcasm, negation and cultural meaning can be misread.',
+           'No automatic lyric transcription; supply the lyrics separately.',
+           'Untimed lyrics are assigned approximate positions, not exact vocal alignment.',
+           'Audio-derived intensity and BPM are approximations and can be wrong.',
+           'Storyboard preview only; does not trigger paid video generation.'
+           ]
+           };
+          }
+          CUTLOOPZ_END_537c9db3659fdd09e108
+          
+          # Complete replacement: customer-auth.js
+          cat > 'customer-auth.js' <<'CUTLOOPZ_END_d0a97cc046b26425b7b4'
+          
+          import express from 'express';
+          import nodemailer from 'nodemailer';
+          import { promises as fs } from 'node:fs';
+          import path from 'node:path';
+          import {
+            randomUUID,
+            randomBytes,
+            scrypt as scryptCallback,
+            timingSafeEqual,
+            createHash
+          } from 'node:crypto';
+          import { promisify } from 'node:util';
+          
+          const scrypt = promisify(scryptCallback);
+          
+          const SESSION_DAYS = 7;
+          const MAX_SESSIONS_PER_USER = 5;
+          const MAX_ATTEMPTS = 10;
+          const ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
+          const RESET_MINUTES = 30;
+          
+          const APP_URL =
+            'https://zala-music-video-studio.onrender.com';
+          
+          const attempts = new Map();
+          
+          function validEmail(email) {
+            return typeof email === 'string' &&
+              email.length <= 254 &&
+              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+          }
+          
+          function validPassword(password) {
+            return typeof password === 'string' &&
+              password.length >= 12 &&
+              password.length <= 128;
+          }
+          
+          function sessionHash(token) {
+            return createHash('sha256')
+              .update(token)
+              .digest('hex');
+          }
+          
+          async function hashPassword(password) {
+            const salt = randomBytes(16).toString('hex');
+          
+            const hash = await scrypt(password, salt, 64, {
+              N: 16384,
+              r: 8,
+              p: 1
+            });
+          
+            return `${salt}:${hash.toString('hex')}`;
+          }
+          
+          async function verifyPassword(password, stored) {
+            const [salt, hex] = String(stored || '').split(':');
+          
+            if (
+              !salt ||
+              !/^[0-9a-f]{32}$/i.test(salt) ||
+              !/^[0-9a-f]{128}$/i.test(hex || '')
+            ) {
+              return false;
+            }
+          
+            const expected = Buffer.from(hex, 'hex');
+          
+            const actual = await scrypt(password, salt, 64, {
+              N: 16384,
+              r: 8,
+              p: 1
+            });
+          
+            return timingSafeEqual(expected, actual);
+          }
+          
+          function getCookie(req, name) {
+            const cookies = String(req.headers.cookie || '')
+              .split(';');
+          
+            for (const item of cookies) {
+              const index = item.indexOf('=');
+          
+              if (index < 0) continue;
+          
+              if (item.slice(0, index).trim() === name) {
+                return item.slice(index + 1).trim();
+              }
+            }
+          
+            return null;
+          }
+          
+          function cookieOptions(req) {
+            return {
+              httpOnly: true,
+              secure: req.secure,
+              sameSite: 'lax',
+              path: '/'
+            };
+          }
+          
+          function publicUser(user) {
+            return {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              createdAt: user.createdAt
+            };
+          }
+          
+          function rateLimited(key) {
+            const now = Date.now();
+            const record = attempts.get(key);
+          
+            if (!record || now - record.started > ATTEMPT_WINDOW_MS) {
+              attempts.set(key, {
+                count: 1,
+                started: now
+              });
+          
+              return false;
+            }
+          
+            record.count += 1;
+            return record.count > MAX_ATTEMPTS;
+          }
+          
+          function mailTransport() {
+            const user = process.env.SMTP_USER;
+            const pass = process.env.SMTP_PASS;
+          
+            if (!user || !pass) {
+              throw new Error(
+                'Gmail SMTP credentials are not configured.'
+              );
+            }
+          
+            return nodemailer.createTransport({
+              host: 'smtp.gmail.com',
+              port: 465,
+              secure: true,
+              auth: {
+                user,
+                pass
+              }
+            });
+          }
+          
+          async function sendResetEmail(email, name, token) {
+            const link =
+              APP_URL +
+              '/reset-password.html?token=' +
+              encodeURIComponent(token);
+          
+            const transporter = mailTransport();
+          
+            await transporter.sendMail({
+              from: {
+                name: 'Cut Loopz Media',
+                address: process.env.SMTP_USER
+              },
+              to: email,
+              subject: 'Reset Your Cut Loopz Media Password',
+              text:
+                `Hello ${name},\n\n` +
+                'We received a request to reset your ' +
+                'Cut Loopz Media password.\n\n' +
+                'Open this secure link:\n' +
+                link + '\n\n' +
+                'This link expires in 30 minutes ' +
+                'and can only be used once.\n\n' +
+                'If you did not request this change, ' +
+                'you can ignore this email.\n\n' +
+                'Cut Loopz Media',
+              html:
+                '<div style="font-family:Arial,sans-serif;' +
+                'max-width:540px;margin:auto;' +
+                'padding:24px;color:#222">' +
+                '<h2 style="color:#b48b36">' +
+                'Cut Loopz Media</h2>' +
+                '<p>We received a request to reset ' +
+                'your account password.</p>' +
+                '<p><a href="' + link + '" ' +
+                'style="display:inline-block;' +
+                'padding:14px 22px;' +
+                'background:#171717;color:#fff;' +
+                'text-decoration:none;border-radius:8px">' +
+                'Reset My Password</a></p>' +
+                '<p>This link expires in 30 minutes ' +
+                'and can only be used once.</p>' +
+                '<p>If you did not request this change, ' +
+                'you can ignore this email.</p>' +
+                '<p>Cut Loopz Media</p></div>'
+            });
+          }
+          
+          export function createCustomerAuthRouter({
+            storageDirectory = '/app/outputs'
+          } = {}) {
+            const router = express.Router();
+          
+            const directory = path.join(
+              storageDirectory,
+              'customer-accounts'
+            );
+          
+            const usersFile = path.join(directory, 'users.json');
+            const sessionsFile = path.join(directory, 'sessions.json');
+            const draftsFile = path.join(directory, 'studio-drafts.json');
+          
+            let users = [];
+            let sessions = [];
+            let drafts = [];
+            const draftAttempts = new Map();
+            let initialized = false;
+            let initializationPromise = null;
+            let writeQueue = Promise.resolve();
+          
+            async function readJson(file) {
+              try {
+                return JSON.parse(
+                  await fs.readFile(file, 'utf8')
+                );
+              } catch (error) {
+                if (error.code === 'ENOENT') return [];
+                throw error;
+              }
+            }
+          
+            async function initialize() {
+              if (initialized) return;
+          
+              if (!initializationPromise) {
+                initializationPromise = (async () => {
+                  await fs.mkdir(directory, {
+                    recursive: true,
+                    mode: 0o700
+                  });
+          
+                  const loadedUsers = await readJson(usersFile);
+                  const loadedSessions = await readJson(sessionsFile);
+                  const loadedDrafts = await readJson(draftsFile);
+          
+                  if (
+                    !Array.isArray(loadedUsers) ||
+                    !Array.isArray(loadedSessions) ||
+                    !Array.isArray(loadedDrafts)
+                  ) {
+                    throw new Error(
+                      'Invalid customer account storage.'
+                    );
+                  }
+          
+                  users = loadedUsers;
+                  sessions = loadedSessions;
+                  drafts = loadedDrafts;
+                  initialized = true;
+                })().catch(error => {
+                  initializationPromise = null;
+                  throw error;
+                });
+              }
+          
+              await initializationPromise;
+            }
+          
+            function save() {
+              const operation = writeQueue.then(async () => {
+                await fs.mkdir(directory, {
+                  recursive: true,
+                  mode: 0o700
+                });
+          
+                const writeAtomic = async (file, data) => {
+                  const temp =
+                    file + '.' + randomUUID() + '.tmp';
+          
+                  await fs.writeFile(
+                    temp,
+                    JSON.stringify(data, null, 2),
+                    { mode: 0o600 }
+                  );
+          
+                  await fs.rename(temp, file);
+                };
+          
+                await writeAtomic(usersFile, users);
+                await writeAtomic(sessionsFile, sessions);
+                await writeAtomic(draftsFile, drafts);
+              });
+          
+              writeQueue = operation.catch(() => {});
+              return operation;
+            }
+          
+            function findSession(req) {
+              const token = getCookie(req, 'zala_session');
+          
+              if (!token || !/^[0-9a-f]{64}$/i.test(token)) {
+                return null;
+              }
+          
+              const hashed = sessionHash(token);
+          
+              const session = sessions.find(
+                item =>
+                  item.tokenHash === hashed &&
+                  Date.parse(item.expiresAt) > Date.now()
+              );
+          
+              if (!session) return null;
+          
+              const user = users.find(
+                item => item.id === session.userId
+              );
+          
+              return user ? { user, session } : null;
+            }
+          
+            async function createSession(req, res, user) {
+              const token = randomBytes(32).toString('hex');
+          
+              const expiresAt = new Date(
+                Date.now() + SESSION_DAYS * 86400000
+              ).toISOString();
+          
+              sessions = sessions.filter(
+                item =>
+                  Date.parse(item.expiresAt) > Date.now() &&
+                  item.userId !== user.id
+              ).concat(
+                sessions.filter(
+                  item =>
+                    item.userId === user.id &&
+                    Date.parse(item.expiresAt) > Date.now()
+                ).slice(-(MAX_SESSIONS_PER_USER - 1))
+              );
+          
+              sessions.push({
+                id: randomUUID(),
+                userId: user.id,
+                tokenHash: sessionHash(token),
+                expiresAt
+              });
+          
+              await save();
+          
+              res.cookie('zala_session', token, {
+                ...cookieOptions(req),
+                maxAge: SESSION_DAYS * 86400000
+              });
+            }
+          
+            router.use(async (req, res, next) => {
+              try {
+                await initialize();
+                res.set('Cache-Control', 'no-store');
+                next();
+              } catch (error) {
+                console.error(
+                  'Customer account storage error:',
+                  error
+                );
+          
+                res.status(503).json({
+                  ok: false,
+                  error:
+                    'Customer accounts are temporarily unavailable.'
+                });
+              }
+            });
+          
+            router.post('/register', async (req, res) => {
+              try {
+                const name = String(req.body?.name || '').trim();
+          
+                const email = String(req.body?.email || '')
+                  .trim()
+                  .toLowerCase();
+          
+                const password = req.body?.password;
+          
+                if (rateLimited('register:' + req.ip)) {
+                  return res.status(429).json({
+                    ok: false,
+                    error:
+                      'Too many attempts. Please try later.'
+                  });
+                }
+          
+                if (
+                  name.length < 2 ||
+                  name.length > 80 ||
+                  !validEmail(email) ||
+                  !validPassword(password)
+                ) {
+                  return res.status(400).json({
+                    ok: false,
+                    error:
+                      'Enter a name, valid email, and password of 12–128 characters.'
+                  });
+                }
+          
+                if (users.some(user => user.email === email)) {
+                  return res.status(409).json({
+                    ok: false,
+                    error:
+                      'An account already exists for this email.'
+                  });
+                }
+          
+                const user = {
+                  id: randomUUID(),
+                  name,
+                  email,
+                  passwordHash: await hashPassword(password),
+                  createdAt: new Date().toISOString()
+                };
+          
+                users.push(user);
+                await save();
+                await createSession(req, res, user);
+          
+                res.status(201).json({
+                  ok: true,
+                  user: publicUser(user)
+                });
+              } catch (error) {
+                console.error(
+                  'Customer registration error:',
+                  error
+                );
+          
+                res.status(500).json({
+                  ok: false,
+                  error: 'Could not create your account.'
+                });
+              }
+            });
+          
+            router.post('/login', async (req, res) => {
+              try {
+                const email = String(req.body?.email || '')
+                  .trim()
+                  .toLowerCase();
+          
+                const password = req.body?.password;
+          
+                if (rateLimited('login:' + req.ip)) {
+                  return res.status(429).json({
+                    ok: false,
+                    error:
+                      'Too many attempts. Please try later.'
+                  });
+                }
+          
+                if (
+                  !validEmail(email) ||
+                  typeof password !== 'string'
+                ) {
+                  return res.status(401).json({
+                    ok: false,
+                    error: 'Invalid email or password.'
+                  });
+                }
+          
+                const user = users.find(
+                  item => item.email === email
+                );
+          
+                if (
+                  !user ||
+                  !(await verifyPassword(
+                    password,
+                    user.passwordHash
+                  ))
+                ) {
+                  return res.status(401).json({
+                    ok: false,
+                    error: 'Invalid email or password.'
+                  });
+                }
+          
+                await createSession(req, res, user);
+          
+                res.json({
+                  ok: true,
+                  user: publicUser(user)
+                });
+              } catch (error) {
+                console.error(
+                  'Customer login error:',
+                  error
+                );
+          
+                res.status(500).json({
+                  ok: false,
+                  error: 'Could not sign in.'
+                });
+              }
+            });
+          
+            router.post('/forgot-password', async (req, res) => {
+              try {
+                const email = String(req.body?.email || '')
+                  .trim()
+                  .toLowerCase();
+          
+                const genericMessage =
+                  'If an account exists for this email, ' +
+                  'a password reset link will be sent.';
+          
+                if (!validEmail(email)) {
+                  return res.status(400).json({
+                    ok: false,
+                    error: 'Enter a valid email address.'
+                  });
+                }
+          
+                if (
+                  rateLimited('reset-ip:' + req.ip) ||
+                  rateLimited('reset-email:' + email)
+                ) {
+                  return res.status(429).json({
+                    ok: false,
+                    error:
+                      'Too many requests. Please try again later.'
+                  });
+                }
+          
+                const user = users.find(
+                  item => item.email === email
+                );
+          
+                if (!user) {
+                  return res.json({
+                    ok: true,
+                    message: genericMessage
+                  });
+                }
+          
+                const token = randomBytes(32).toString('hex');
+          
+                user.passwordReset = {
+                  tokenHash: sessionHash(token),
+                  expiresAt: new Date(
+                    Date.now() + RESET_MINUTES * 60000
+                  ).toISOString()
+                };
+          
+                await save();
+          
+                try {
+                  await sendResetEmail(
+                    user.email,
+                    user.name,
+                    token
+                  );
+                } catch (mailError) {
+                  console.error(
+                    'Password recovery email delivery failed:',
+                    mailError.message
+                  );
+          
+                  if (
+                    user.passwordReset?.tokenHash ===
+                    sessionHash(token)
+                  ) {
+                    delete user.passwordReset;
+                    await save();
+                  }
+          
+                  return res.status(503).json({
+                    ok: false,
+                    error:
+                      'Password recovery email is temporarily unavailable. Please try later.'
+                  });
+                }
+          
+                res.json({
+                  ok: true,
+                  message: genericMessage
+                });
+              } catch (error) {
+                console.error(
+                  'Forgot password error:',
+                  error
+                );
+          
+                res.status(500).json({
+                  ok: false,
+                  error:
+                    'Unable to process password recovery.'
+                });
+              }
+            });
+          
+            router.post('/reset-password', async (req, res) => {
+              try {
+                const token = req.body?.token;
+                const password = req.body?.password;
+          
+                if (rateLimited('reset-submit:' + req.ip)) {
+                  return res.status(429).json({
+                    ok: false,
+                    error:
+                      'Too many attempts. Please try later.'
+                  });
+                }
+          
+                if (
+                  typeof token !== 'string' ||
+                  !/^[0-9a-f]{64}$/i.test(token)
+                ) {
+                  return res.status(400).json({
+                    ok: false,
+                    error:
+                      'Invalid or expired password reset link.'
+                  });
+                }
+          
+                if (!validPassword(password)) {
+                  return res.status(400).json({
+                    ok: false,
+                    error:
+                      'Your new password must contain 12–128 characters.'
+                  });
+                }
+          
+                const hashedToken = sessionHash(token);
+          
+                const user = users.find(item =>
+                  item.passwordReset?.tokenHash === hashedToken &&
+                  Date.parse(
+                    item.passwordReset.expiresAt
+                  ) > Date.now()
+                );
+          
+                if (!user) {
+                  return res.status(400).json({
+                    ok: false,
+                    error:
+                      'Invalid or expired password reset link.'
+                  });
+                }
+          
+                const newHash = await hashPassword(password);
+          
+                user.passwordHash = newHash;
+                delete user.passwordReset;
+          
+                sessions = sessions.filter(
+                  item => item.userId !== user.id
+                );
+          
+                await save();
+          
+                res.clearCookie(
+                  'zala_session',
+                  cookieOptions(req)
+                );
+          
+                res.json({
+                  ok: true,
+                  message:
+                    'Your password has been changed. Please sign in.'
+                });
+              } catch (error) {
+                console.error(
+                  'Password reset error:',
+                  error
+                );
+          
+                res.status(500).json({
+                  ok: false,
+                  error:
+                    'Unable to reset your password.'
+                });
+              }
+            });
+          
+            // Account-owned drafts: never use the administrator key for free creative work.
+            // Do not store actual audio/photo bytes here. They must be selected again after refresh.
+            function sameOrigin(req) {
+              const origin = req.get('origin');
+              if (!origin) return true; // Native clients may omit Origin; cookies still required.
+              try { return new URL(origin).host === req.get('host') &&
+                ['https:', 'http:'].includes(new URL(origin).protocol); }
+              catch { return false; }
+            }
+            router.get('/studio/draft', (req, res) => {
+              const session = findSession(req);
+              if (!session) return res.status(401).json({ok:false,error:'Sign in to sync your draft.'});
+              const entry = drafts.find(item => item.userId === session.user.id);
+              res.json({ok:true,draft:entry?.draft || null,updatedAt:entry?.updatedAt || null});
+            });
+            router.put('/studio/draft', async (req, res) => {
+              const session = findSession(req);
+              if (!session) return res.status(401).json({ok:false,error:'Sign in to save your draft.'});
+              if (!sameOrigin(req)) return res.status(403).json({ok:false,error:'Invalid request origin.'});
+              const now = Date.now();
+              const previous = draftAttempts.get(session.user.id);
+              const item = !previous || now - previous.started > 900000 ? {started:now,count:1} : {started:previous.started,count:previous.count+1};
+              draftAttempts.set(session.user.id,item);
+              if(item.count>120)return res.status(429).json({ok:false,error:'Draft save limit reached. Try again later.'});
+              const source = req.body?.draft;
+              if (!source || typeof source!=='object' || Array.isArray(source))
+                return res.status(400).json({ok:false,error:'Invalid project draft.'});
+              const serialized = JSON.stringify(source);
+              if (!serialized || Buffer.byteLength(serialized,'utf8')>100000)
+                return res.status(413).json({ok:false,error:'Project draft exceeds 100 KB.'});
+              // Strip unrecognized keys; never store client-supplied account identifiers.
+              const allowed=['title','lyrics','songSeconds','sceneSeconds','style','format','direction',
+                'songLink','songName','photoName','characterNotes','scenePage','page','scenes','musicResult',
+                'analysisSourceKey','storyboardSourceKey'];
+              const draft = Object.fromEntries(allowed.filter(key => Object.hasOwn(source,key)).map(key=>[key,source[key]]));
+              try {
+                drafts = drafts.filter(item=>item.userId!==session.user.id);
+                const updatedAt = new Date().toISOString();
+                drafts.push({userId:session.user.id,draft,updatedAt});
+                await save();
+                res.json({ok:true,updatedAt});
+              } catch(error) {res.status(503).json({ok:false,error:'Draft storage unavailable.'});}
+            });
+            router.delete('/studio/draft', async(req,res)=>{
+              const session=findSession(req);
+              if(!session)return res.status(401).json({ok:false,error:'Sign in first.'});
+              if(!sameOrigin(req))return res.status(403).json({ok:false,error:'Invalid request origin.'});
+              try{drafts=drafts.filter(item=>item.userId!==session.user.id);await save();res.json({ok:true});}
+              catch{res.status(503).json({ok:false,error:'Draft storage unavailable.'})}
+            });
+          
+            router.get('/me', (req, res) => {
+              const result = findSession(req);
+          
+              if (!result) {
+                return res.status(401).json({
+                  ok: false,
+                  error: 'Not signed in.'
+                });
+              }
+          
+              res.json({
+                ok: true,
+                user: publicUser(result.user)
+              });
+            });
+          
+            router.post('/logout', async (req, res) => {
+              try {
+                const token = getCookie(
+                  req,
+                  'zala_session'
+                );
+          
+                if (token) {
+                  const hashed = sessionHash(token);
+          
+                  sessions = sessions.filter(
+                    item => item.tokenHash !== hashed
+                  );
+          
+                  await save();
+                }
+          
+                res.clearCookie(
+                  'zala_session',
+                  cookieOptions(req)
+                );
+          
+                res.json({
+                  ok: true,
+                  message: 'Signed out.'
+                });
+              } catch (error) {
+                console.error(
+                  'Customer logout error:',
+                  error
+                );
+          
+                res.status(500).json({
+                  ok: false,
+                  error: 'Could not sign out.'
+                });
+              }
+            });
+          
+            return router;
+          }
+          CUTLOOPZ_END_d0a97cc046b26425b7b4
+          
+          # Complete replacement: public/director-preview.html
+          cat > 'public/director-preview.html' <<'CUTLOOPZ_END_438a4d51b8b972ac6abe'
+          
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta name="theme-color" content="#101827">
+          <title>Director's Preview | CutLoopz</title>
+          <style>
+          * { box-sizing: border-box; }
+          :root {
+            color-scheme: dark;
+            --bg: #090d17;
+            --panel: #151d2e;
+            --border: #33435d;
+            --text: #f5f7ff;
+            --muted: #b8c5db;
+            --accent: #58b8ff;
+          }
+          body {
+            margin: 0;
+            padding: 20px 14px 60px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(145deg,#090d17,#18243b);
+            color: var(--text);
+            min-height: 100vh;
+          }
+          main {
+            max-width: 850px;
+            margin: auto;
+          }
+          header {
+            text-align: center;
+            padding: 22px 8px;
+          }
+          h1 {
+            font-size: clamp(28px,6vw,42px);
+            margin: 10px 0;
+          }
+          h2 { font-size: 21px; }
+          p { line-height: 1.6; }
+          .muted { color: var(--muted); }
+          .brand {
+            color: var(--accent);
+            font-weight: 900;
+            letter-spacing: 2px;
+          }
+          .panel, .scene {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            margin: 16px 0;
+          }
+          label {
+            display: block;
+            font-weight: bold;
+            margin: 17px 0 7px;
+          }
+          input, textarea, select {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            border-radius: 10px;
+            border: 1px solid #53627b;
+            background: #0c1321;
+            color: white;
+            font: inherit;
+          }
+          textarea {
+            min-height: 130px;
+            resize: vertical;
+          }
+          button, .link {
+            display: inline-block;
+            border: 0;
+            border-radius: 11px;
+            padding: 14px 20px;
+            font: inherit;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+          }
+          button {
+            background: var(--accent);
+            color: #071321;
+            width: 100%;
+            margin-top: 20px;
+          }
+          button:disabled {
+            opacity: .55;
+            cursor: wait;
+          }
+          .link {
+            background: #26354e;
+            color: white;
+            margin-top: 10px;
+          }
+          .scene {
+            border-left: 4px solid var(--accent);
+          }
+          .scene h3 { margin-top: 0; }
+          .scene p { margin: 8px 0; }
+          .scene details {
+            margin-top: 12px;
+            overflow-wrap: anywhere;
+          }
+          pre {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            background: #080e19;
+            padding: 14px;
+            border-radius: 10px;
+          }
+          #status {
+            margin-top: 15px;
+            overflow-wrap: anywhere;
+          }
+          #results[hidden] { display: none; }
+          .small { font-size: 13px; }
+          </style>
+          </head>
+          <body>
+          <main>
+          <header>
+            <div class="brand">CUTLOOPZ MEDIA</div>
+            <h1>Director's Preview</h1>
+            <p class="muted">
+              Your Music. Your Vision. Your Video.
+            </p>
+            <p>
+              Transform lyrics and creative direction into a
+              cinematic storyboard before generating footage.
+            </p>
+            <a class="link" href="/customer.html">
+              Back to CutLoopz
+            </a>
+          </header>
+          
+          <section class="panel">
+            <h2>Story Intelligence Studio</h2>
+            <p class="muted">
+              Administrator testing version.
+              Storyboard generation does not create or
+              purchase video footage.
+            </p>
+          
+            <form id="previewForm">
+              <label for="title">Song title</label>
+              <input id="title" maxlength="120"
+                placeholder="Enter the current song title" required>
+          
+              <label for="seconds">Song duration (seconds)</label>
+              <input id="seconds" type="number"
+                min="1" max="360" step="0.001"
+                placeholder="219.192" required>
+          
+              <label for="lyrics">Song lyrics</label>
+              <textarea id="lyrics" maxlength="12000"
+                placeholder="Paste your song lyrics here..."></textarea>
+          
+              <label for="concept">Creative direction</label>
+              <textarea id="concept" maxlength="4000"
+                placeholder="Describe the emotional story, characters, settings, and cinematic vision..."
+                required></textarea>
+          
+              <label for="style">Visual style</label>
+              <select id="style">
+                <option value="photorealistic">
+                  Photorealistic Cinema
+                </option>
+                <option value="Hollywood cinematic">
+                  Hollywood Cinematic
+                </option>
+                <option value="romantic cinematic">
+                  Romantic Cinema
+                </option>
+                <option value="dramatic R&B music video">
+                  Dramatic R&B
+                </option>
+                <option value="3D animation">
+                  3D Animation
+                </option>
+                <option value="anime">
+                  Anime
+                </option>
+                <option value="science fiction cinema">
+                  Science Fiction
+                </option>
+                <option value="fantasy cinema">
+                  Fantasy
+                </option>
+              </select>
+          
+              <label for="format">Video format</label>
+              <select id="format">
+                <option value="vertical">Vertical 9:16</option>
+                <option value="landscape">Landscape 16:9</option>
+              </select>
+          
+              <label for="sceneSeconds">Scene length</label>
+              <select id="sceneSeconds">
+                <option value="15">15 seconds</option>
+                <option value="10">10 seconds</option>
+                <option value="6">6 seconds</option>
+              </select>
+          
+              <label for="adminKey">
+                Administrator password
+              </label>
+              <input id="adminKey" type="password"
+                autocomplete="off" required>
+          
+              <button id="createButton" type="submit">
+                Create Director's Preview
+              </button>
+            </form>
+          
+            <p id="status" role="status" aria-live="polite"></p>
+          </section>
+          
+          <section id="results" hidden>
+            <div class="panel">
+              <h2>Your Cinematic Storyboard</h2>
+              <div id="summary"></div>
+              <button id="downloadButton" type="button">
+                Download Storyboard JSON
+              </button>
+            </div>
+            <div id="scenes"></div>
+          </section>
+          </main>
+          
+          <script>
+          const form = document.getElementById('previewForm');
+          const statusBox = document.getElementById('status');
+          const results = document.getElementById('results');
+          const summary = document.getElementById('summary');
+          const scenesBox = document.getElementById('scenes');
+          const createButton = document.getElementById('createButton');
+          const downloadButton = document.getElementById('downloadButton');
+          
+          let latestPlan = null;
+          
+          function element(tag, text, parent) {
+            const node = document.createElement(tag);
+            node.textContent = String(text ?? '');
+            if (parent) parent.appendChild(node);
+            return node;
+          }
+          
+          function detail(parent, label, value) {
+            const p = document.createElement('p');
+            const strong = document.createElement('strong');
+            strong.textContent = label + ': ';
+            p.appendChild(strong);
+            p.appendChild(
+              document.createTextNode(String(value ?? ''))
+            );
+            parent.appendChild(p);
+          }
+          
+          function renderPlan(plan) {
+            latestPlan = plan;
+            summary.replaceChildren();
+            scenesBox.replaceChildren();
+          
+            detail(summary, 'Song', plan.title);
+            detail(summary, 'Story emotion', plan.storyEmotion);
+            detail(summary, 'Scenes', plan.totalScenes);
+            detail(summary, 'Engine version', plan.version);
+            detail(summary, 'Lyric timing', plan.lyricTiming);
+          
+            for (const scene of plan.scenes || []) {
+              const card = document.createElement('article');
+              card.className = 'scene';
+          
+              element(
+                'h3',
+                'Scene ' + scene.number +
+                ' — ' + scene.startSeconds +
+                's to ' + scene.endSeconds + 's',
+                card
+              );
+          
+              detail(card, 'Story beat',
+                scene.narrativeBeat || 'Not assigned');
+              detail(card, 'Emotion', scene.emotion);
+              detail(card, 'Location', scene.location);
+              detail(card, 'Lighting', scene.lighting);
+              detail(card, 'Camera', scene.shot);
+              detail(card, 'Camera movement',
+                scene.cameraMovement);
+              detail(card, 'Musical intensity',
+                scene.intensity);
+              detail(card, 'Lyrics', scene.lyricExcerpt);
+              detail(card, 'Action', scene.action);
+          
+              const expanded = document.createElement('details');
+              const heading = document.createElement('summary');
+              heading.textContent = 'View generation prompt';
+              expanded.appendChild(heading);
+          
+              element('pre', scene.prompt, expanded);
+              card.appendChild(expanded);
+          
+              scenesBox.appendChild(card);
+            }
+          
+            results.hidden = false;
+            results.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+          
+          form.addEventListener('submit', async event => {
+            event.preventDefault();
+          
+            results.hidden = true;
+            latestPlan = null;
+            createButton.disabled = true;
+            statusBox.textContent =
+              'Preparing your cinematic storyboard...';
+          
+            const adminKey =
+              document.getElementById('adminKey').value;
+          
+            const payload = {
+              title: document.getElementById('title').value,
+              songSeconds: Number(
+                document.getElementById('seconds').value
+              ),
+              lyrics: document.getElementById('lyrics').value,
+              prompt: document.getElementById('concept').value,
+              visualStyle: document.getElementById('style').value,
+              format: document.getElementById('format').value,
+              sceneSeconds: Number(
+                document.getElementById('sceneSeconds').value
+              )
+            };
+          
+            try {
+              const response = await fetch(
+                '/api/director/story-preview',
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-Video-Admin-Key': adminKey
+                  },
+                  body: JSON.stringify(payload)
+                }
+              );
+          
+              const raw = await response.text();
+              let data;
+          
+              try {
+                data = JSON.parse(raw);
+              } catch {
+                throw new Error(
+                  'The server did not return a valid storyboard response.'
+                );
+              }
+          
+              if (!response.ok || !data.ok || !data.plan) {
+                throw new Error(
+                  data.error || 'Storyboard creation failed.'
+                );
+              }
+          
+              renderPlan(data.plan);
+              statusBox.textContent =
+                'Director storyboard preview created successfully.';
+            } catch (error) {
+              statusBox.textContent =
+                'Unable to create preview: ' + error.message;
+            } finally {
+              createButton.disabled = false;
+            }
+          });
+          
+          downloadButton.addEventListener('click', () => {
+            if (!latestPlan) return;
+          
+            const blob = new Blob(
+              [JSON.stringify(latestPlan, null, 2)],
+              { type: 'application/json' }
+            );
+          
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'cutloopz-director-preview.json';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+          });
+          </script>
+          </body>
+          </html>
+          CUTLOOPZ_END_438a4d51b8b972ac6abe
+          
+          # Complete replacement: test-director-song-isolation.mjs
+          cat > 'test-director-song-isolation.mjs' <<'CUTLOOPZ_END_e816eef0cce9755573c1'
+          import test from 'node:test';
+          import assert from 'node:assert/strict';
+          import {readFile} from 'node:fs/promises';
+          import vm from 'node:vm';
+          import {createStoryIntelligencePlan} from './cutloopz-story-intelligence.js';
+          
+          // Real story engine checks, rather than only checking literal source text.
+          test('A breakup song cannot inherit a reassuring opening or safety resolution',()=>{
+           const plan=createStoryIntelligencePlan({title:'No More',lyrics:"Don't tell me to stay\nYour promises were fake\nI'm leaving today\nNever again",prompt:'angry breakup',songSeconds:30});
+           assert.equal(plan.storyEmotion,'heartbreak');
+           assert.ok(plan.scenes.every(scene=>scene.emotion!=='reassurance'));
+           assert.ok(plan.scenes.every(scene=>!/emotional safety|renewed trust/i.test(scene.action)));
+          });
+          test('A baddie performance is treated as confidence, not a generic romance or safety story',()=>{
+           const plan=createStoryIntelligencePlan({title:'Baddie',lyrics:'I am a baddie\nI run the show\nI call my own shots',songSeconds:30});
+           assert.equal(plan.storyEmotion,'confidence');
+           assert.ok(plan.scenes.every(scene=>scene.emotion==='confidence'));
+           assert.ok(plan.scenes.every(scene=>!/romantic chemistry|reassuring gaze|emotional safety/i.test(scene.action)));
+          });
+          
+          function fakeElement(name=''){
+           const events=new Map();
+           return {
+            name,events,value:'',textContent:'',hidden:false,disabled:false,style:{},dataset:{},
+            files:[],options:[{value:'Cinematic Realism'}],className:'',
+            addEventListener(type,handler){events.set(type,handler)},
+            trigger(type){return events.get(type)?.({target:this})},
+            setAttribute(){},removeAttribute(){},appendChild(child){return child},append(){},
+            replaceChildren(){},scrollIntoView(){},focus(){},get tagName(){return 'INPUT'},
+           };
+          }
+          async function loadStudio(savedDraft){
+           const elements=new Map();
+           const id=name=>{if(!elements.has(name))elements.set(name,fakeElement(name));return elements.get(name)};
+           id('duration').value='30';id('sceneSeconds').value='15';id('format').value='vertical';
+           id('visualStyle').value='Cinematic Realism';
+           id('customTimeField').hidden=true;
+           id('artistPhoto').files=[];id('songAudio').files=[];
+           id('backToTop').hidden=true;
+           const stored=new Map();
+           if(savedDraft)stored.set('cutloopz:artist-studio:v1:guest',JSON.stringify({at:100,draft:savedDraft}));
+           const document={getElementById:id,querySelectorAll:()=>Array.from({length:5},(_,i)=>({dataset:{step:String(i)},hidden:false})),
+            querySelector:()=>fakeElement('heading'),createElement:(name)=>fakeElement(name)};
+           const window={
+            matchMedia:()=>({matches:false}),addEventListener(){},scrollY:0,scrollTo(){},confirm:()=>true,
+            CutLoopzSongLink:{inspect:()=>({ok:false}),navigation:(page,action)=>action==='next'?page+1:page-1},
+            CutLoopzWelcome:{consume(){}},
+           };
+           const localStorage={getItem:key=>stored.get(key)||null,setItem:(key,v)=>stored.set(key,v),removeItem:key=>stored.delete(key)};
+           const fetch=async(url,options)=>{
+            if(url==='/api/customer-auth/me')return {ok:false};
+            if(url==='/api/creative-preview/storyboard'){
+              const payload=JSON.parse(options.body);
+              return {ok:true,json:async()=>({ok:true,plan:createStoryIntelligencePlan(payload)})};
+            }
+            throw Error('Unexpected fetch '+url);
+           };
+           const context={document,window,location:{search:''},URLSearchParams,localStorage,fetch,
+            setTimeout:()=>1,clearTimeout(){},console,Blob,File:class{},
+            URL:{createObjectURL:()=>'',revokeObjectURL(){}},
+            alert(){},FormData:class{append(){}},Math,Date};
+           const source=await readFile(new URL('./public/my-studio.js',import.meta.url),'utf8');
+           vm.runInNewContext(source,context);
+           // initialize() fetches the guest state, then tries IndexedDB (not available).
+           for(let i=0;i<5;i++)await new Promise(resolve=>setImmediate(resolve));
+           return {id,stored};
+          }
+          test('Legacy saved drafts cannot restore another song’s music analysis or storyboard',async()=>{
+           const {id}=await loadStudio({
+            title:'New Track',lyrics:'This is a completely different song',songSeconds:30,sceneSeconds:15,
+            style:'Cinematic Realism',format:'vertical',page:3,
+            songName:'safe-with-me.mp3',musicResult:{summary:{bpmEstimate:68},plan:{scenes:[{intensity:'low'}]}},
+            scenes:[{number:1,startSeconds:0,endSeconds:15,emotion:'reassurance',location:'quiet apartment',action:'Comfort me',prompt:'Safe With Me'}]
+           });
+           assert.equal(id('analysisResult').hidden,true,'old analysis hidden');
+           assert.equal(id('storyEmpty').hidden,false,'placeholder displayed when no scenes');
+          });
+          test('Changing the song after generating a storyboard clears the old story',async()=>{
+           const {id}=await loadStudio();
+           id('title').value='Safe With Me';id('lyrics').value='Stay by my side and keep me safe';
+           await id('directorBtn').trigger('click');
+           assert.match(id('storyEmotion').textContent,/reassurance/);
+           id('title').value='Baddie';id('title').trigger('input');
+           assert.equal(id('storyEmotion').textContent,'');
+           assert.match(id('directorStatus').textContent,/Previous storyboard cleared/);
+           id('lyrics').value='I am a baddie, I call my own shots';id('lyrics').trigger('input');
+           await id('directorBtn').trigger('click');
+           assert.match(id('storyEmotion').textContent,/confidence/);
+           assert.doesNotMatch(id('storyEmotion').textContent,/reassurance/);
+          });
+          test('Server persists draft provenance keys for account sessions',async()=>{
+           const auth=await readFile(new URL('./customer-auth.js',import.meta.url),'utf8');
+           assert.match(auth,/'analysisSourceKey','storyboardSourceKey'/);
+          });
+          CUTLOOPZ_END_e816eef0cce9755573c1
+      - name: Verify full-file checksums and run no-cost Director regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '6076484dc10d730963ded07346c7c4e29fe319496d63f999d178bcc20e77c8d7  public/my-studio.js' | sha256sum -c -
+          echo '22203a9ed0d22adad79b4f28f96f9e21ef6c2dc847db6bda550555080f03da19  cutloopz-story-intelligence.js' | sha256sum -c -
+          echo 'f9600c0401498b432c6b384dfad6335a0d21afcb5293b96de94f7c329de961ee  customer-auth.js' | sha256sum -c -
+          echo 'e70b89fec55d8388ba6e8c14d2b17c8c179567930aebf341b0c3255e73894973  public/director-preview.html' | sha256sum -c -
+          echo 'dadf572d2c28d0ab11f0b2b8f33b86bf125af5f8f2e901d64c259ff4cc9f7c22  test-director-song-isolation.mjs' | sha256sum -c -
+          node --check public/my-studio.js
+          node --check cutloopz-story-intelligence.js
+          node --check customer-auth.js
+          node --check test-director-song-isolation.mjs
+          node --test test-director-song-isolation.mjs test-creative-preview.mjs test-v5d-spotify-back-scroll.mjs test-song-link-intake.mjs test-v5b-no-credits-suno.mjs
+      - name: Commit only the five reviewed Director files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add public/my-studio.js cutloopz-story-intelligence.js customer-auth.js public/director-preview.html test-director-song-isolation.mjs
+          if git diff --cached --quiet; then echo "Already installed. No changes needed."; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Fix Music Director carryover with complete verified replacements'
+          git push origin HEAD:cutloopz-production-test
