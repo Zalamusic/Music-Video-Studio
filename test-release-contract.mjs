@@ -8,7 +8,7 @@ const adapter=read('./cutloopz-pilot-http-adapter.mjs');
 const pilot=read('./cutloopz-performance-pilot.js');
 const checks=[
  ['production API mounted',server.includes("app.use('/api/cutloopz-production'")],
- ['admin authentication on all production routes',router.includes('router.use((req,res,next)=>authorize(req)')],
+ ['owner or admin authentication on all production routes',router.includes('if(await authorize(req))return next();')],
  ['server paid flag gate',server.includes("process.env.ENABLE_PAID_GENERATION === 'true'")],
  ['server full production flag gate',server.includes("process.env.CUTLOOPZ_FULL_PRODUCTION_ENABLED === 'true'")],
  ['UI uploads song and photo',ui.includes("b.append('song'")&&ui.includes("b.append('photo'")],

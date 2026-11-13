@@ -22,7 +22,7 @@ function fakeElement(name=''){
  const events=new Map();
  return {
   name,events,value:'',textContent:'',hidden:false,disabled:false,style:{},dataset:{},
-  files:[],options:[{value:'Cinematic Realism'}],className:'',
+  files:[],options:[{value:'Cinematic Realism'}],className:'',classList:{toggle(){},remove(){},add(){}},
   addEventListener(type,handler){events.set(type,handler)},
   trigger(type){return events.get(type)?.({target:this})},
   setAttribute(){},removeAttribute(){},appendChild(child){return child},append(){},

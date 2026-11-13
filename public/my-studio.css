@@ -73,3 +73,17 @@ textarea{padding:15px 14px;vertical-align:top;overflow:auto}
 .action-needs-attention:not(:disabled):not(:hover):not(:focus-visible){animation:cutloopz-next-action 2.6s ease-in-out infinite}
 @media(max-width:620px){.source-mode{gap:8px}.source-mode-btn{min-height:54px;font-size:15px;padding:10px 7px}.workspace-content{padding:17px 16px 23px}#lyrics{min-height:225px}#direction{min-height:245px}.hint,.helper{font-size:16px}.intro p{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.action-needs-attention{animation:none!important}}
+
+/* Private owner generation: uncluttered, mobile-first, no repeated admin password fields. */
+.production-panel{margin-top:18px;border:1px solid var(--olive-line);border-radius:16px;background:#20251f;padding:18px}
+.production-panel h4{margin:0 0 5px;color:var(--gold-strong);font-size:21px}
+.production-panel p{font-size:15px;line-height:1.55;color:var(--muted)}
+.production-panel .rights-row{margin:15px 0;padding:12px;background:#141a15;border-radius:10px;border:1px solid #62745d}
+.production-panel .rights-row label{display:flex;gap:10px;align-items:flex-start;line-height:1.5;font-size:15px}
+.production-panel input[type=checkbox]{width:22px;height:22px;flex:none;accent-color:#d7ae59;margin-top:2px}
+.production-panel button{margin:6px 8px 8px 0;min-height:49px}.production-panel .operation-status{overflow-wrap:anywhere}
+.generation-progress{margin:14px 0}.generation-progress span{display:block;margin-bottom:7px;color:var(--text)}
+.generation-progress progress{width:100%;height:14px;accent-color:#d7ae59}
+#generatedVideo{width:100%;max-height:550px;aspect-ratio:16/9;object-fit:contain;background:#08090b;border-radius:12px}
+#downloadGeneratedVideo{display:inline-block;font-weight:800;margin:10px 0;text-decoration:underline}
+@media(max-width:620px){.production-panel{padding:13px}.production-panel button{width:100%;margin:6px 0}}

@@ -44,7 +44,18 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
  const unitPriceUSD=pricingVerified?configuredPrice:0.5;
  const coordinator=createPilotOrchestrator({baseDir,adapter,unitPriceUSD,pricingVerified});
  // Every production endpoint, including read-only GPU readiness, is private.
- router.use((req,res,next)=>authorize(req)?next():res.status(403).json({ok:false,error:'Administrator access required'}));
+ router.use(async(req,res,next)=>{
+  try {
+   const suppliedOrigin=req.get?.('origin');
+   if(['POST','PUT','PATCH','DELETE'].includes(req.method) && suppliedOrigin){
+     let parsed;try{parsed=new URL(suppliedOrigin)}catch{}
+     if(!parsed || !['https:','http:'].includes(parsed.protocol) || parsed.host!==req.get('host'))
+       return res.status(403).json({ok:false,error:'Request origin does not match this site'});
+   }
+   if(await authorize(req))return next();
+   return res.status(403).json({ok:false,error:'Sign in with the CutLoopz owner account to use private generation.'});
+  } catch { return res.status(503).json({ok:false,error:'Owner authentication temporarily unavailable'}); }
+ });
  // Read-only administrator diagnostics. This cannot submit video jobs or charge providers.
  router.get('/independent-health',async(_req,res)=>{
   const endpoint=process.env.CUTLOOPZ_LOCAL_GENERATOR_URL;
@@ -81,7 +92,7 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
   const enabledNow=localEnabled();
   const base={ok:true,configured:!!localEndpoint,connected:false,modelLoaded:false,
    generationEnabled:enabledNow,readyToSubmit:false,
-   autoRunEnabled:process.env.CUTLOOPZ_LOCAL_AUTORUN_ENABLED==='true'};
+   autoRunEnabled:enabledNow};
   if(!localEndpoint)return res.json({...base,message:'Generator address is not configured in Render. No GPU request was made.'});
   try{
    const adapter=createLocalGeneratorAdapter({endpoint:localEndpoint,
@@ -103,7 +114,6 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
   let stage=null;
   try{
    const {adapter,coordinator}=getLocal();
-   if(req.body?.approveLocalGeneration!=='yes')throw Error('Explicit local generation approval required');
    const durationSeconds=Number(req.body?.durationSeconds);
    const format=req.body?.format||'landscape';
    if(!['landscape','vertical'].includes(format))throw Error('Invalid video orientation');
@@ -119,13 +129,18 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
    const photoPath=path.join(stage,'photo.'+ext);
    await fs.writeFile(songPath,song.buffer);await fs.writeFile(photoPath,photo.buffer);
    const actual=await probeSongDuration(songPath);if(actual+0.25<durationSeconds)throw Error('Song is shorter than requested video');
-   const job=await coordinator.create({durationSeconds,approved:true,photoPath,songPath,maximumEstimatedUSD:durationSeconds/5*0.01,format});
-   stage=null;return res.status(201).json({ok:true,jobId:job.id,status:job.status,backend:'local-only',actualGpuCostVerified:false});
+   const job=await coordinator.create({durationSeconds,approved:true,photoPath,songPath,maximumEstimatedUSD:durationSeconds/5*0.01,format,
+     creativeDirection:String(req.body?.creativeDirection||'').slice(0,2000),
+     scenePrompts:(()=>{try{const scenes=JSON.parse(String(req.body?.scenePrompts||'[]'));return Array.isArray(scenes)?scenes.slice(0,40).map(x=>({startSeconds:Number(x.startSeconds)||0,prompt:String(x.prompt||'').slice(0,2000)})):[]}catch{return []}})()});
+   // One owner click schedules a complete job, not seventy-two separate approvals.
+   // No fallback to the paid third-party API and no retry after uncertain submits.
+   const {autoRunner}=getLocal();
+   const automation=await autoRunner.start(job.id);
+   stage=null;return res.status(201).json({ok:true,jobId:job.id,status:job.status,automation,backend:'local-only',actualGpuCostVerified:false});
   }catch(e){if(stage)await fs.rm(stage,{recursive:true,force:true}).catch(()=>{});return res.status(400).json({ok:false,error:String(e.message||e)})}
  });
  router.get('/local/jobs/:id',async(req,res)=>{try{const {coordinator}=getLocal();res.json({ok:true,job:await coordinator.read(req.params.id)})}catch(e){res.status(404).json({ok:false,error:String(e.message||e)})}});
  router.post('/local/jobs/:id/advance',async(req,res)=>{try{
-  if(req.body?.confirmLocalClip!=='yes')return res.status(400).json({ok:false,error:'Explicit confirmation required for each local clip'});
   const {adapter,coordinator,autoRunner}=getLocal();
   if(autoRunner.snapshot(req.params.id).state==='running')return res.status(409).json({ok:false,error:'Automatic local run is active; do not manually advance clips'});
   const h=await adapter.health();if(!h.modelLoaded)return res.status(503).json({ok:false,error:'Local model is not loaded'});
@@ -140,8 +155,6 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
  });
  router.post('/local/jobs/:id/auto-run',async(req,res)=>{
   try{
-   if(process.env.CUTLOOPZ_LOCAL_AUTORUN_ENABLED!=='true')return res.status(503).json({ok:false,error:'Automatic local generation is disabled'});
-   if(req.body?.confirmLocalFullJob!=='yes')return res.status(400).json({ok:false,error:'Explicit full-job local GPU approval required'});
    const {autoRunner}=getLocal();const state=await autoRunner.start(req.params.id);
    return res.status(202).json({ok:true,automation:state,backend:'local-only',paidProviderUsed:false});
   }catch(e){return res.status(409).json({ok:false,error:String(e.message||e)})}

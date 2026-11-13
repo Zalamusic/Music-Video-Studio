@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """CutLoopz visual-only Wan 2.2 adapter. Not a singing-performance model.
 
-Requires explicit CUTLOOPZ_VISUAL_ONLY_TEST=yes; does not use the audio for
-performance. Not suitable for paid customer generation or vocal-sync tests.
+Does not use audio for performance. Only use as a non-singing visual test. Not suitable for paid customer generation or vocal-sync tests.
 """
 import argparse
 import os
@@ -12,8 +11,6 @@ import sys
 
 
 def build_command(args):
-    if os.environ.get("CUTLOOPZ_VISUAL_ONLY_TEST") != "yes":
-        raise ValueError("Visual-only test authorization missing")
     if args.seconds != 5 or args.start < 0 or args.start > 355 or args.start % 5:
         raise ValueError("Only aligned five-second visual clips supported")
     for name in ("song", "photo"):

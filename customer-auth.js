@@ -789,5 +789,11 @@ export function createCustomerAuthRouter({
     }
   });
 
+  // Private preview: allow a signed-in, explicitly configured owner to use the
+  // local engine. Never infer ownership from the first registrant or a URL flag.
+  router.authenticatedUser = async req => {
+    await initialize();
+    return findSession(req)?.user || null;
+  };
   return router;
 }

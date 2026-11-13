@@ -32,14 +32,15 @@ app.use((req,res,next)=>{
 });
 const jobs=new Map();let busy=false;
 const upload=multer({storage:multer.memoryStorage(),limits:{files:2,fileSize:32*1024*1024}});
-const ready=async()=>{if(!runner||process.env.CUTLOOPZ_MODEL_ENABLED!=='true')return false;try{const s=await fs.stat(runner);if(!s.isFile())return false;await fs.access(runner,fsConstants.X_OK);return true}catch{return false}};
+const ready=async()=>{if(!runner)return false;try{const s=await fs.stat(runner);if(!s.isFile())return false;await fs.access(runner,fsConstants.X_OK);return true}catch{return false}};
 app.get('/health',async(_req,res)=>res.json({ok:true,modelLoaded:await ready(),modelId,activeJobs:busy?1:0}));
 app.post('/jobs',upload.fields([{name:'song',maxCount:1},{name:'photo',maxCount:1}]),async(req,res)=>{
- if(!await ready())return res.status(503).json({ok:false,error:'Local model runner not installed or enabled'});
+ if(!await ready())return res.status(503).json({ok:false,error:'Local model runner is not installed or executable'});
  if(busy)return res.status(429).json({ok:false,error:'Local model busy'});
  const start=Number(req.body?.startSeconds),duration=Number(req.body?.durationSeconds);
  if(!Number.isInteger(start)||start<0||start>355||start%5||duration!==5)return res.status(400).json({ok:false,error:'Invalid five-second segment'});
  const format=req.body?.format||'landscape';
+ const creativePrompt=String(req.body?.creativePrompt||'').slice(0,2000);
  if(!['landscape','vertical'].includes(format))return res.status(400).json({ok:false,error:'Invalid video orientation'});
  const song=req.files?.song?.[0],photo=req.files?.photo?.[0];
  if(!song||!photo)return res.status(400).json({ok:false,error:'Song and photo required'});
@@ -54,7 +55,7 @@ app.post('/jobs',upload.fields([{name:'song',maxCount:1},{name:'photo',maxCount:
   const output=path.join(dir,'video.mp4');
   try{
    await new Promise((resolve,reject)=>{
-    const child=spawn(runner,['--song',songPath,'--photo',photoPath,'--start',String(start),'--seconds','5','--format',format,'--output',output],{shell:false,stdio:'ignore'});
+    const child=spawn(runner,['--song',songPath,'--photo',photoPath,'--start',String(start),'--seconds','5','--format',format,'--output',output],{shell:false,stdio:'ignore',env:{...process.env,CUTLOOPZ_VISUAL_PROMPT:creativePrompt||process.env.CUTLOOPZ_VISUAL_PROMPT||'',CUTLOOPZ_VIDEO_FORMAT:format}});
     const timeout=setTimeout(()=>child.kill('SIGKILL'),30*60*1000);
     child.on('error',e=>{clearTimeout(timeout);reject(e)});
     child.on('close',code=>{clearTimeout(timeout);code===0?resolve():reject(Error('Model runner failed or timed out'))});

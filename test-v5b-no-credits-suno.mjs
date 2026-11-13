@@ -18,5 +18,5 @@ test('V5B promises straightforward per-video pricing without claiming preview ch
  assert.match(home,/Orders and payments are not yet enabled in this preview/);
  assert.match(studio,/NO CREDITS\. JUST VIDEO\./);
  assert.match(studio,/No credit packs or token counting/);
- assert.match(studio,/Generate Video — Not Enabled/);
+ assert.match(studio,/id="generateVideo"/);
 });

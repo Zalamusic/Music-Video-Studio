@@ -42,7 +42,7 @@ test('V5 Studio uses link intake, account sync, truthful audio controls and exis
  for(const id of ['songLink','useSongLink','songLinkStatus','openSongLink','songAudio','artistPhoto','analyzeBtn','directorBtn'])assert.ok(html.includes(`id="${id}"`));
  assert.ok(html.indexOf('id="songLink"')<html.indexOf('id="songAudio"'));
  assert.match(html,/actual audio, upload your authorized MP3\/WAV/);
- assert.match(js,/songLink:\(window\.CutLoopzSongLink\?\.inspect/);
+ assert.match(js,/songLink:selectedSource==='link'/);
  assert.match(js,/draft\.songLink/);
  assert.match(js,/lastSongFile/);
  assert.match(js,/mediaWrite\('audio',f\)/);
@@ -54,9 +54,9 @@ test('V5 Studio uses link intake, account sync, truthful audio controls and exis
 test('V5 marketing does not claim third-party audio extraction, payments or GPU completion',async()=>{
  const [html,home,js]=await Promise.all([read('./public/my-studio.html'),read('./public/customer.html'),read('./public/my-studio.js')]);
  assert.match(html,/does not rip or download audio/);
- assert.match(home,/video generation is not yet enabled/i);
+ assert.match(home,/Private owner production tests are available/i);
  assert.match(js,/if\(!lastSongFile\)/);
- assert.match(html,/Generate Video — Not Enabled/);
+ assert.match(html,/id="generateVideo"/);
  assert.match(home,/Your music deserves a video/);
 });
 

@@ -55,7 +55,7 @@
    label.textContent=name?`Your draft remembers “${name}”, but the actual audio file is unavailable in this browser. Go Back to Page 1 and choose the MP3 or WAV again.`:'No music selected yet. Choose a song on Page 1, or skip analysis and go directly to the Listening Director.';
  }
 
- const durationOptions=[15,30,60,120,180,240,300,360];
+ const durationOptions=Array.from({length:70},(_,i)=>15+i*5);
  function selectedDuration(){
   if($('duration').value!=='custom')return Number($('duration').value);
   const raw=$('customTime').value.trim(),match=/^(\d{1,2}):([0-5]\d)$/.exec(raw);
@@ -67,6 +67,92 @@
  let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false, photoPreviewUrl=null;
  let analysisSourceKey='', storyboardSourceKey='', pendingRestore=null, sourceVersion=0;
  let selectedSource='upload'; // Exactly one active music input method; stored with each draft.
+ let productionJobId=null,productionPollTimer=null,engineReady=false;
+ const productionBase='/api/cutloopz-production';
+ const productionStorageKey=()=>storageKey+':lastLocalJob';
+ function recoverGeneration(){
+  let saved='';try{saved=localStorage.getItem(productionStorageKey())||''}catch{}
+  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(saved))return;
+  productionJobId=saved;$('generationResults').hidden=false;$('resumeGeneration').hidden=false;
+  $('generationJobId').textContent='Production ID: '+productionJobId;
+  $('generationStatus').textContent='Saved production found. Restoring progress…';
+  pollGeneration();
+ }
+
+ const parseServer=async response=>{let result;try{result=await response.json()}catch{throw Error('Server returned an invalid response')}
+   if(!response.ok||!result.ok)throw Error(result.error||`Request failed (${response.status})`);return result;};
+ async function checkEngine(){
+   $('engineStatus').textContent='Checking your local GPU connection…';
+   try{const status=await parseServer(await fetch(productionBase+'/local/status',{credentials:'same-origin',cache:'no-store'}));
+     engineReady=Boolean(status.readyToSubmit);$('engineStatus').textContent=engineReady
+       ?`Local engine ready: ${status.modelId||'model loaded'}.`
+       :status.message||'GPU model is not ready yet.';
+   }catch(error){engineReady=false;$('engineStatus').textContent=error.message==='Sign in with the CutLoopz owner account to use private generation.'
+     ?'Owner sign-in required for private video generation.':'Cannot check engine: '+error.message;}
+   return engineReady;
+ }
+ async function pollGeneration(){
+   if(!productionJobId)return;
+   try{
+    const [status,automation]=await Promise.all([
+     parseServer(await fetch(productionBase+'/local/jobs/'+productionJobId,{credentials:'same-origin',cache:'no-store'})),
+     parseServer(await fetch(productionBase+'/local/jobs/'+productionJobId+'/automation',{credentials:'same-origin',cache:'no-store'}))]);
+    const job=status.job,ready=job.clips?.filter(c=>c.status==='ready').length||0,total=job.clips?.length||0;
+    const percent=total?Math.round(100*ready/total):0;
+    $('generationProgress').value=percent;
+    $('generationProgressText').textContent=`${ready} of ${total} clips ready · ${automation.automation?.phase||job.status}`;
+    if(automation.automation?.state==='not-running' && job.status!=='ready'){
+     $('generationStatus').textContent='Production is paused, possibly after a server restart. Select Resume Video Tracking to continue safely.';
+     $('generateVideo').disabled=false;return;
+    }
+    if(automation.automation?.state==='complete'){
+     if(productionPollTimer){clearTimeout(productionPollTimer);productionPollTimer=null;}
+     const url=productionBase+'/local/jobs/'+productionJobId+'/video';
+     $('generatedVideo').src=url;$('generatedVideo').hidden=false;
+     $('downloadGeneratedVideo').href=url;$('downloadGeneratedVideo').hidden=false;
+     $('generationProgress').value=100;$('generationStatus').textContent='Video assembled! Play or download your CutLoopz video.';
+     $('generateVideo').disabled=false;return;
+    }
+    if(['stopped'].includes(automation.automation?.state)||['failed','needs-review'].includes(job.status)){
+     $('generationStatus').textContent='Production needs attention: '+(automation.automation?.error||job.status)+'. No automatic paid retry occurred.';
+     $('generateVideo').disabled=false;return;
+    }
+    $('generationStatus').textContent='Your video is being created on the connected CutLoopz engine.';
+    productionPollTimer=setTimeout(pollGeneration,4000);
+   }catch(error){$('generationStatus').textContent='Status temporarily unavailable: '+error.message+'. Use Check GPU Connection and retry tracking.';
+      $('generateVideo').disabled=false;}
+ }
+ async function resumeProduction(){
+   if(!productionJobId)return;
+   if(productionPollTimer){clearTimeout(productionPollTimer);productionPollTimer=null;}
+   $('generationStatus').textContent='Checking saved production…';
+   try{
+     const status=await parseServer(await fetch(productionBase+'/local/jobs/'+productionJobId,{credentials:'same-origin',cache:'no-store'}));
+     if(!['ready','failed','needs-review'].includes(status.job.status)){
+       await parseServer(await fetch(productionBase+'/local/jobs/'+productionJobId+'/auto-run',{method:'POST',credentials:'same-origin'}));
+     }
+     await pollGeneration();
+   }catch(error){notify('generationStatus','Unable to resume: '+error.message+'. No clips were automatically retried.',true);}
+ }
+ async function generateVideo(){
+   const btn=$('generateVideo');
+   if(!$('audioRights').checked){notify('generationStatus','Confirm your right to use the audio and artist image first.',true);return;}
+   if(!lastSongFile||!lastPhotoFile){notify('generationStatus','Upload both the actual MP3/WAV and artist photo on Page 1 before generating.',true);return;}
+   const duration=selectedDuration();
+   if(!Number.isInteger(duration)||duration<15||duration>360||duration%5){notify('generationStatus','Choose a duration in 5-second increments, from 15 seconds to 6 minutes.',true);return;}
+   if(!await checkEngine()){notify('generationStatus','GPU engine not ready; check the connection above. No video was submitted.',true);return;}
+   const form=new FormData();form.append('song',lastSongFile);form.append('photo',lastPhotoFile);form.append('durationSeconds',String(duration));
+   form.append('format',$('format').value);form.append('creativeDirection',[$('visualStyle').value,$('direction').value,$('characterNotes').value].filter(Boolean).join('. ').slice(0,2000));
+   form.append('scenePrompts',JSON.stringify(scenes.map(s=>({startSeconds:s.startSeconds,prompt:s.prompt})).slice(0,40)));
+   btn.disabled=true;$('generationResults').hidden=true;$('generationStatus').textContent='Submitting your video to the local CutLoopz engine…';
+   try{const result=await parseServer(await fetch(productionBase+'/local/jobs',{method:'POST',credentials:'same-origin',body:form}));
+    productionJobId=result.jobId;try{localStorage.setItem(productionStorageKey(),productionJobId)}catch{}
+    $('generationResults').hidden=false;$('resumeGeneration').hidden=false;$('generationJobId').textContent='Production ID: '+productionJobId;
+    if(productionPollTimer)clearTimeout(productionPollTimer);
+    await pollGeneration();
+   }catch(error){notify('generationStatus',error.message,true);btn.disabled=false;}
+ }
+
  const notify=(id,text,bad=false)=>{const node=$(id);if(node){node.textContent=text;node.style.color=bad?'#ffafaa':'';}};
  const safeText=value=>String(value==null?'':value);
  // Source signatures are provenance checks, not security hashes. Never attach an old
@@ -197,6 +283,7 @@
    const destination={song:0,analyze:1,director:2,storyboard:3,review:4}[urlPage];
    if(Number.isInteger(destination))showPage(destination,{reposition:false});
    notify('saveStatus',account?'Account draft ready':'Draft saved on this device');
+   recoverGeneration();
  }
  // A saved song URL is not an analyzed audio file. Link-only projects bypass
  // the audio-only page; users can still supply lyrics and a photo on Page 1.
@@ -230,7 +317,7 @@
    $('backBtn').disabled=page===0;updateStepNavigation();
    if(page===1)refreshAnalysisIntro();
    updateActionAttention();
-   if(page===3)renderScenes();if(page===4)renderReview();
+   if(page===3)renderScenes();if(page===4){renderReview();checkEngine();}
    scheduleSave();
    if(reposition){
      const visibleHeading=page===0?$('songHeading'):document.querySelector(`.wizard-step[data-step="${page}"] h3`);
@@ -447,10 +534,12 @@
    showPage(pageAfter('next'));
  });
  $('backBtn').addEventListener('click',()=>showPage(pageAfter('back')));
- $('analyzeBtn').addEventListener('click',()=>{markActionEngaged('analyzeBtn');analyze()});
- $('directorBtn').addEventListener('click',()=>{markActionEngaged('directorBtn');makeStoryboard()});
+ $('analyzeBtn').addEventListener('click',()=>{markActionEngaged('analyzeBtn');return analyze()});
+ $('directorBtn').addEventListener('click',()=>{markActionEngaged('directorBtn');return makeStoryboard()});
  $('scenePrev').addEventListener('click',()=>{scenePage=Math.max(0,scenePage-1);renderScenes();scheduleSave()});
  $('sceneNext').addEventListener('click',()=>{scenePage=Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,scenePage+1);renderScenes();scheduleSave()});
+ $('checkEngine').addEventListener('click',checkEngine);$('generateVideo').addEventListener('click',generateVideo);
+ $('resumeGeneration').addEventListener('click',resumeProduction);
  $('editSong').addEventListener('click',()=>showPage(0));$('editDirector').addEventListener('click',()=>showPage(2));$('editStoryboard').addEventListener('click',()=>showPage(3));$('newProject').addEventListener('click',newProject);
  const lyricsField=$('lyrics');
  lyricsField.addEventListener('paste',()=>requestAnimationFrame(()=>{lyricsField.scrollTop=0;}));

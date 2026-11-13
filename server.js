@@ -127,11 +127,15 @@ app.use(express.json({
 }));
 // Public no-charge creative previews; no administrator key, GPU or billing.
 app.use('/api/creative-preview',createCreativePreviewRouter({express,multer}));
-app.use(
- '/api/customer-auth',
- createCustomerAuthRouter({
- storageDirectory: OUT
- }) );
+const customerAuthRouter = createCustomerAuthRouter({storageDirectory: OUT});
+app.use('/api/customer-auth', customerAuthRouter);
+const configuredOwnerEmail = String(process.env.CUTLOOPZ_OWNER_EMAIL||'').trim().toLowerCase();
+async function isOwnerOrAdmin(req){
+  if (isVideoAdmin(req)) return true; // Existing admin tooling remains compatible.
+  if (!configuredOwnerEmail || process.env.CUTLOOPZ_PUBLIC_LAUNCH === 'true') return false;
+  const user = await customerAuthRouter.authenticatedUser(req);
+  return user?.email?.toLowerCase() === configuredOwnerEmail;
+}
 // Read-only order history and loyalty progress.
 app.use(
  '/api/customer-order-history',
@@ -157,7 +161,7 @@ app.use('/api/performance-pilot', createPerformancePilotRouter({
 app.use('/api/cutloopz-production', createProductionRouter({
   express, multer,
   baseDir: path.join(OUT, 'cutloopz-production'),
-  authorize: isVideoAdmin,
+  authorize: isOwnerOrAdmin,
   origin: `http://127.0.0.1:${PORT}`,
   adminKey: VIDEO_ADMIN_KEY || 'not-configured',
   enabled: () => fullProductionStorageReady && process.env.CUTLOOPZ_FULL_PRODUCTION_ENABLED === 'true' &&

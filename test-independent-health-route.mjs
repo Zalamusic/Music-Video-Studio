@@ -34,9 +34,9 @@ test('local model readiness is admin protected and does not allow public GPU pro
  try{
   createProductionRouter({express,multer,baseDir:dir,authorize:req=>req.authorized===true,origin:'http://127.0.0.1:9999',adminKey:'test'});
   let nextCalled=false;
-  const unauthorized=response();gate({method:'GET',path:'/local/status',authorized:false},unauthorized,()=>{nextCalled=true});
+  const unauthorized=response();await gate({method:'GET',path:'/local/status',authorized:false},unauthorized,()=>{nextCalled=true});
   assert.equal(unauthorized.statusCode,403);assert.equal(nextCalled,false);
-  gate({method:'GET',path:'/local/status',authorized:true},response(),()=>{nextCalled=true});
+  await gate({method:'GET',path:'/local/status',authorized:true},response(),()=>{nextCalled=true});
   assert.equal(nextCalled,true);
  }finally{await rm(dir,{recursive:true,force:true})}
 });
