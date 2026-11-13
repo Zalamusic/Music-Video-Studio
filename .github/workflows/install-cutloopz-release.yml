@@ -1,1 +1,71 @@
 
+name: Install CutLoopz Release
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - .github/workflows/install-cutloopz-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract website
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+
+          archive = Path("CutLoopz_GitHub_Ready_Nov13.zip")
+          prefix = "Music-Video-Studio-cutloopz-production-test/"
+
+          if not archive.is_file():
+              raise SystemExit("Release ZIP not found")
+
+          with ZipFile(archive) as z:
+              names = set(z.namelist())
+              for name in ("server.js", "package.json", "public/index.html"):
+                  if prefix + name not in names:
+                      raise SystemExit("Missing " + name)
+
+              for item in z.infolist():
+                  if item.is_dir():
+                      continue
+                  if not item.filename.startswith(prefix):
+                      raise SystemExit("Unexpected ZIP structure")
+                  rel = PurePosixPath(item.filename[len(prefix):])
+                  if not rel.parts or rel.is_absolute() or ".." in rel.parts:
+                      raise SystemExit("Unsafe ZIP path")
+                  if rel.parts[0] in (".github", ".git", "tmp"):
+                      continue
+                  target = Path(*rel.parts)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(item))
+
+          archive.unlink()
+          print("Release extracted successfully")
+          PY
+
+      - name: Validate server
+        run: node --check server.js
+
+      - name: Commit website files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Install CutLoopz release [skip ci]"
+            git push origin HEAD:cutloopz-production-test
+          fi
+
