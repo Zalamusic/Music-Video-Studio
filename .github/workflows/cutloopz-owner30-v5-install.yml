@@ -1,0 +1,208 @@
+# Single-file, self-contained GitHub Actions installer for the private CutLoopz V5 owner pilot.
+# No RunPod action, no spending, no secret values, no customer generation.
+name: CutLoopz V5 30-Second Owner Bridge - Safe Installer
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - '.github/workflows/cutloopz-owner30-v5-install.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cutloopz-owner30-v5-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  install:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      NODE_ENV: test
+      CUTLOOPZ_OWNER_30_ENABLED: 'false'
+      ENABLE_PAID_GENERATION: 'false'
+      CUTLOOPZ_FULL_PRODUCTION_ENABLED: 'false'
+      ZALA_GPU_GENERATION_ENABLED: 'false'
+    steps:
+      - name: Checkout production-test branch
+        uses: actions/checkout@v4
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify and install owner-only source (no API requests)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/owner30.b64" <<'SOURCE_B64'
+          UEsDBBQAAAAIAOh8bV0GZjgwOAsAACQcAAAbAAAAY3V0bG9vcHotb3duZXIzMC1icmlkZ2UubWpzlRlrc9NI8nt+xaRqy5JAll+8
+          TjmRComB7ELiI4Hd21w2NbbG9oAeRiPlge3/ft09I1k2DoQqimh6uqef049x69Ejdljk79J09o2lN4nImmkS3bFPT1mv3VRilCYh
+          m8kozdkwk+FEeOwkZaNMhCLJJY8UkwnspDdKZN4Oe8SOpOLDSIRseMdCMeZFlO+xRFyLjCmRhIq9GXxkn9OhYjcyn6ZFDuAMd8cR
+          n7CDkyMtBQPGY5nFPJdpQgefT6VicRoWkWDwlWc8UbM0yxkHCXliyEhUlyUgL0dsEbGvBY9kfsd4nguVVwe2dmRM9HOpjgdLNs7S
+          mFkJkPiJyK29avuD4CGq5LJz5DlOs3gNW+WZ4HGNYCZnIpKJ2ILVmgFEKqEAHTRUOfv48fgoaP1z0W7+izfHl/MXy6a971fLJ8um
+          M+8tq3Wnu/ytJUvi9wd/XZ2dnrwJet1HnXb3Cf3nEnjw9vT8NOh8B/90fNQH+LP2aqM87ezgdf/q/PSP/gkKdND8mze/Ad+r5uW8
+          13WfEuu9nXGRjNCGbMxlZMdCKT4RzjyfQhCwfpalWQVc7ohbMklFA46WYynCU3TWm1lxiF6e2PMii9xpqnL3i7hbBvOlM99hcmzv
+          Anyx2MUd+AN7TibyIktYUkTR3g6LRM6yNM3hM8/u5vgZJOKGffzwzgZSZzni+Wg6rxEtd5hWls/AFdciDOgADxZ5OkqjIAisaZ7P
+          lG+xRsPsgQoIr0F4Pk14LBDaIvAuwQuIZYSvIDOu1E2ahSuIEjwbTVfrKVfTHYZrVBNO1FD4Lk9aA3gyGUVFKJRteZZDx2D82mtI
+          jj4QvKhd6DUvH//W8jD+NxDpgJb9z+J/nmNH6YhHZGz6WsgkR30iZzutZrKKGo2DXgJ/GJuXZt4n56x87GsPfh8hkFp4Lqr4iCTk
+          GZuSwcSdjwW48zieRQF91SNFozgUlNaB4UrJBnYSoQ+HvIGZQeMWkMQsFFUHRCZUWmQjEdiqGI/lrRO8LENJA1xN5qEidbKvAVd3
+          yajEkonMQS43l7GA9BZ0nrbbbTgM5DQkU0goIlMUqW/1t41UntnAw0skCJcc9CkgVWbyGyUvy7VeQQxBsrMeG5GMzUujV2ayS6VK
+          ndy553nIyzXnu2AEmYF5fEvg3bVcJSfgcv9gCG45o2/PqGKbv84SmS0rE3xWafJDG6xpnwX8hksyXB29wkU90KGZl34x7kQvwiX6
+          AiprDcGzb8/PB2CAzMOUXmibaQbDkoGHgtnlgcN9OHA3CPKsENvOhWKSKMFuOJa0aygZOjhKmw6NymaJ+pDK6Kgon9rOfJ078bb0
+          JhxUkqVffBTApdL0LgUfhP7Qq60CLaFGOA79/G4m0jEzOMe4b0EtkcnE2q+AdJvcrIBAz/q3YlTkWLAGoBTcHjj/np2Sl8rTDPL1
+          ARVIEmgDUiKCirlMirRQvfbpLD9O+gkVe6C4b8uQLpduZTFVDGOZ23Ow0MSdTSHxulhUeU6XWXv/woJSkUvIQhDuEZR4NeIzYV2u
+          0p8mcYwrj7XLmIZqz9FByARqB7FZLHDlKflN/LvTra1eloV0sSDEFcpq+bKqqoble6kUuIGlGYNckyFOyGK4TtywN4WmCGUaEKsh
+          hLvIanvxrBfQvpenZ+RU2+JqJKXltt2eg74+PupZi4VNWBftSwB1nz5tNAygc9nodp8gIv6pnXzDr+8/mQisD8evX1uNxj1YL9xO
+          l9D+PPjUt2onyzjQRvlOm1kyCWTsgXt5lvE7u+2+cDyB7ZeyXxGyhw2RfdHpPXdftN3nL9znHbfTczttt/sM/r906ip8nuFxNZ1h
+          0aFF51ldUzGcIduf6bkNZaVk/9XAqmIG3NJo7IIJjafPwHksLvB2C/Z+0EOXg1lqUQaqAwVIjHQgkCEcoKEqysHJG5f9Pui/IXox
+          HKzFCUYulYTX8HHEc64zF8F1FcAYslxEeRWlQ/uCPHfpzjFF+CDtvkWQFnxavvmOZ2JiLR2XtikI9S59gp7WJhPybZ2LjEsWoOS+
+          JWPICy34tHxUtATgNxyrF58NUyLgcI0VNEIrCgMxJGYFtvtOlrDIqOKd0RiiIBP02oBUs0gO1Kvd9U2TCkxuqe+Y2eKwlrKA+g66
+          8rpD1jM5jiyWO48FVOLQtwanZ+eWO0zDO58GAvdZG8t8FRDY1ut+aOjJcLGwLAey0IX1tRAFtB2uBQ3KSFACqSe1YVnONtIacGd8
+          9CVJbyClTkQMydvIullYJCZjGbr6HL88EEsXq+dggtoydObr4hpht/A/PgKW95mmZT2Gs/Z06t6mpGtBYxfewV88GXYfqLXe2VJB
+          v9fRpQ6mWuK9Nrz2qdRPBBRBXs0uIvTYMcyQ0PyY4TFKJ8qz/CKBwRXmt7BetK5lKFKwDjRMalWmHmy3VVjV+5+V6R5bLeIAIbaE
+          pLQeTNgKQfRkHsZbrXeBdmkGA3SR8GuAYbld4xSJZJJPg5MiHorMzsr20puYO5BDFDU1kuVU3DS6J9VrbMuErRGcRkN/vKyGSCPI
+          JxSbiduREDDdh2DJCBoZFkmo8bUMaTLvPVJgfsEbAhaELP0uvRHZIVfCdmrjDtkHEtqTyspog6ohLBIYJcCX8EmYTJ9JAuCcOLwD
+          PwXtmn0mBc9CSrnVYG/P8+pzNC2SL65IRmkIkrthmsCYS6c8DmjP0xbZI9jKLvuIaetJeMM62COUlnF8wqPOjY5zlsvySpu2/5CP
+          pqKJaSpLI7pO8hqGI3zeaGKHJuhaGOS/CBGNeQ6KN6EHg0DHrJikKpHjscFFq9gWWZGY6WAsnyzs8rGDKjXUKNsEnUvGouCnTELN
+          8A+nt177A8QnBN4ckIBOuXERwdrlZpgR7g/GOUMDUa+pFgvTCFfUu3i9DV/LqT8/WMSf9dowOaMELBQzAXc6GUmhWKzbtvrkR1iB
+          YekZsVf7xQwjOtCCQNuqe2Nfr71YxGl2d6aBtuOSe5U/H0OGUX7Xxb9nIK9f9pjazfroUZFl2IjbMCL94G3EN4nUE8m1d/jx/N3p
+          6eDvqw/996fn/Su4BVcwpdJs/VPEt1C3cAD/KeLB4Pjqj/5/67LSLE6ibh/StS5ggtWcTuTavvg4YsNA+hWDCPqLWxwLK2/ihrOP
+          UNvxKaZ1gXrS7jl6jsPEP4ZWUpg0b7zM66MxJtVC4ly/dGqcKdW0TCVx9aRqBDGj6b1XrnbTqgFTD91Bpa8pilRDyqlnq3lP/zzp
+          f7jqta/6Jwev3vWPsEJhLbPKmdc8YphSVzPD0y1mWL1iGAA4ZTRF9mZdF8il6nuentHsZRDMO51vQQsF59BryTXPJFIoxgESr2ac
+          cijWSQqf28xrhqlnOjwgY5cD8V5NDS2653nTuthUx1dS0/IHQte3Go1pfWrG5T1DLm5tjLMIum9edVFf+Pcf/Wr8yVxKbTHQfYlh
+          UH9VfLiXNtT9VSdtvGUVSXUUuodevOEu4LM8yEdXAIWt38AZZAi4CLqV1VnNA+WiUNkXc3zS882MEfPbw7RIcr+zdM2GmQtqO5fO
+          1qsEcfyg4N8tg39LuP/01q9+m6g1daH56cGEKAgCklH52vdMy28qE/Kmdv+XWPdvZ5EcyXzLLxT1xFNd5jI/PPA+Gy61u7jm7VWP
+          t3kDh5s3sP7A4qMNqBbte7je92Ci1q8u9S0C6D09L/kr22kANGfVk8xy7XIbnbrtrtFp6FS3xIae6VfUF56J96WzEbw6iVPD7EMa
+          +j726BeAjZSzaRjNHlWb8YzHCiYlZ+NXgod5yfyKZcaTDfcs75e77PK3Sr8hrR451oQlbCMvTQYgrGmoz4DIebjwukfeKrexA4mP
+          Td7/AVBLAwQUAAAACADofG1d/KbSNhQFAABYDQAAHAAAAHRlc3QtY3V0bG9vcHotb3duZXIzMC12NS5tanO9Vm1v2zYQ/t5fwW+U
+          Zpp+S5tUhbelS9F6aOtgSV+AoihoibKZSKRKUk1dw/99R1J2bMeJWwyYDMgSdffc23NHirJS2qKF5cYuUa5VibBUGU/cAn72SITv
+          zBgOfxvfw0rHWC3SDcHFN65FLng2vpFcv6zqv5TMxZSkmjPL14uF4HJtj3bS2hZKVT/aygkMuu2JFtmU0/LKAHSqpLHo5Xh8NlzU
+          ukjwzNrKJJ2OVkXBs3ahUla0TcmKoj3lklOr52mh6iwvmOY0VWUHk5kyNsE/rYHJNZ8n+COmmlfgenR0Ei9Xrrx7Nzob4l5ztftw
+          tY8Gg0H75OjoqP1441p7n+bT4f7URC6weCVX8kyw4cIoOU0WRvzgSa/bJZM6z7lOnvs/6rIW4dHZALcwXTv49DiOl6SaKavu1QQb
+          KYh+2gT61Bsck5MuOT4hxz3SG5Bel/SfwP1zTBo5SJNKo6f9+HO8hCQ4akTYlwqFQiElizliacoraxD/zlKgTG1nUGQBBnmGXl1e
+          nl8gVwSDSRQPf188akhF1XUE2YEMoFzpKKRBWF4ilaNPjxBaUEpdjoirvXug8NDCE5bhJdn97rkB1MAtL+kM3iNktqVaODk5fvK4
+          gx8Qr7iGwvy5pfWgwrbkH1Zdczn8uqMRmKkgW3oPD7dlPSnNDDpt34eHXOn1j2kXfr3g8Oe4yT7/WrMiuoeargwxkXVRQHmW8ar0
+          M84KO0MsywyacPBUBwIAIAC1jcg4YjJDksMrVBXoc2OQBmprnjoCMDOXacOCgkN3qFraYRco0HTLcN+8cDQhi5zbdDYqqyIJKBAl
+          EVLYgBagWi2AQlsRghidaZ6TWwaFMHB8R9bBUfiaQb3plEPEp0BmpcUPZoWSOCb4eQi7KTBk/x6UVdAEc62VDsY0t7WW6B9uKgiX
+          0ytgVbRQ14nVNScljNfitQLrWZKzwjQroyzBH5jERNcSsvLiO4epySYFP9fcQHaCsrFKsyk/ta5SAOAXIalWyFrVZtAdV3YkX0in
+          2MC7uqKlv4fsz4bshgmoAg0ZiuJnW4H5FJPezuqMbjhOPPIdiR3viPNuR+jvi/Fb6nYVORX5PJrFVMi0qDNuonWqV+gblAzTyNST
+          UhgDNQIuSmDn+8foNng06MIyvMOHGwEETh3LdemL6glr6qoCqmVhDP8vPD1E0is1MXgnR55ZJQdKZgSfjy8u7+PwRGXzQOCs1j7M
+          ixC/o/Cguxf3VsdYpu2GQvewmSajf20QzmnOuTlgC0Y/1MHJwshwm0Zx2JjbJHFMJSs58S+0rAYH7Pj9ca0E8QljaeVwDjemyBK3
+          80OPMVubBH+tec3dJrRoVvrd/p1mguasC7vuKM9QG7kZ7TlGQuDJbdjLn+q2AEtFRpxLD7eC5ldu7CIhv7FCNOT2fF+tBCfcMIcn
+          DnPb3ih9jcCdYmda/wrvvYqdaXWDXrjhF+G3DbCGILg77dRwkwpGDqsqDoM1ZC4kq4m38T5yaA/kz++fkDzSGW0F1flJwAdPXOEA
+          BOvrE5Y3Tv3zvhKSzpvzAVIafTh9/0seBFz3uHWUe3P68cv5q/Hl+Mv563cXUbzfP/Bury8K3hxM5l3Ja5n6ibcLumjo3+v/1uv2
+          j/yt1VvepZZn+5pWTE+E1UzPUcXcqQB45QsA/IA5C+VuVPh/oNJa757WXLUkQGVziPkgjbx8hCntrE4Bt8SBkYtGZ6Fsmz0XrZs4
+          aPvOi5s30thuWvFfUEsDBBQAAAAIAOh8bV1mg07cpgMAAKcHAAAaAAAAb3duZXIzMC1hZG1pbi1zZWN0aW9uLmh0bWyNVdtu4zYQ
+          fd+vGOgpBWwr66BbxLEFBNk2zQKbCLnYz7Q0ttilSC4vttUf63u/rENKstVs0BQwJNEczpyZOXM4t1g4riTwcpGovURzcZ5zoVwC
+          zHA2FmyNQmC5bo7bz9wJTMC6RuAiqdlhvOelq2a/XJ7rw1XNzJbL2XSqD8C8U1ealSWX29mUdpPsw7yaDmO1zrKHsIIHKRr4+y+4
+          UdJx6ZW3cHE+fsJCyRJu8xeIyOZpNSU/OssN3zGHsPwZVkxOJ1OwFIh+4x0vUYEO1uAqo/y2ojcGQBWS74KOlfDoZa5KIO+yLcIE
+          brx1qiYorCjQ2hFob4qKWaRPRiBCRjUjB2DQGY6W3jXjEkpu2ZrqNIFrsD4e3ngx8A2lImtJgLRRO+yhwnfPBHfNZJ5qSmrtnSNb
+          12gqbbtIhuX6HZlwVQKFYNYuEhtLw0yTZDcVFt9C5UI8jOWap62HUCyDQzePyMomAaNCB61jztskuydsRfASsrhFMmQtM+wxO/BS
+          UGaABy14Qa1rgOmYTwlk+YiyDLWTfW1DVgYp/kaZegjgN1oHMkR6Ae0ed56U3CZZeMLZ1/wClIHV9fKneRpNszmX2ruuQBseiDhw
+          Gw/H3mm3SCa1vhhN9mw3Yr7kKq01brtP+pPSx++eGyzfxJFXyqkkuzaOW+pZWMFZfn87gi85PVa4zv8nqNbTERWv2RZTLbej9uuP
+          gKr93ONavwMrFI65JFtGhm/i6gjDoqDmv65zMJ8rHXu5Y8ITxh2aMAQiyS5nHz/BslvO09bstbmgjtqCaRrUj59ml7Ci4LYwiPJ0
+          Im2D96D7mgywXEemUNCuUJFra3UYZAx3cUSV4X8iPNz/SjtMBA2wJw1waN0Enmmaw4rLwhsLlfKGyFgo6+xVHPVCcA01a2DDuAgs
+          6oL0A0frHbcE3U76+r0aP+vXNXf/5lf3Vz8P2ZNjxg1EqtWxZ4I4GL40tOnNbn5R67syyegFd5/hzDISBuJZrAwIEinzmmMDMO1h
+          0IIVWClBk7dIXl7uPoe5Kvmu1wguBZcnvd4IJME2TM/Cg5jxnuQ84sag/Q/NyY3akoU9ZvyuyyXH/Vv+VswVFURqn5yllMuPCvbU
+          itYPEgZxv5N+Em5YE0uhbSXJYidIsT7DERWsQZOcgh3B1UzQlDxXJILRdqzCHdW693QtRK7RBVScrixXceOanrJ7Zb4RoJKoV5Be
+          XgF3p6sAZaARFP2towx1kW6F7jZIu8s5+/APUEsDBBQAAAAIAOh8bV2qbznaQAUAAMYLAAAZAAAAb3duZXIzMC1hZG1pbi1zY3Jp
+          cHQuaHRtbI1WYW/bNhD97l/BAh0oobbstvuw2VWLrkmzdEUTpE03oOgASjpHtGVSIyk7qqP/viMpW3KSIgECRxKPx3f37t7xlU4V
+          L83rQRCE8evtgFYaiDaKp4bOBqkU2pCnMc/i15lMqxUIE12BOS7APv5Rn2YBz8IhK3lMx/g7TitTSFn+GMmNAPVyQmcFGKKAZXU8
+          Z4WG4ZpnIC9VEYuqKHZHsGzFRewg+A/L+GlAl1DTMFqzooIIIa2CcMbnwZNlaHIlN+RYKakCeiwMKFLLSnk3HOEzIxXB7YQZYnIg
+          RpZEzt1jya4gouFMgamUIMtmNmC6FimZVyI1XAqy0FIEJTP5cLsCk8sspifHX+gwkVndxNsm3A6IR6litmHckDmYNA8w/mf9bcMc
+          wwalp1v6z+irDXv01gIc/YVxTR3WIGyc22HK0hymVMiRRuhAhwoyriA1Uwo2TNqEswGxuVzMjKq3i/ZkFTm0YZMyhLA9SMylgOsS
+          XUBGNKg1JkmBLhE40LAZEJtKFcnlzc0Cf+PY83OQ20XkDrcWK9AaM3dzQy/gvwow+DnjBWRdJhezQdPSqXO5iYO1pRNpbEvhs2Gm
+          0kiogWvzTiJrwsSmLgGJWePx1JaduKJv1tMPn88+Rf6Vz+tgPbS1MnwRIledvz+BFSZHfyzLjtfo7CMyD7gU0LTg6ZIOHa++rvsl
+          OOthqpIVN+gj45olGE5sVNU3uLDbbmGm73JIl4iNlEoan+CT88soirBliGXHZyFvOXIM0bFu43/A+63Y813sMx9BHrn/X6SHjnm7
+          hfhuSE/cjhlS7ookgHD7QIAYDRGy7dspoc9gxz96sZXY7X8v1epeDrTH4Ukg4EiAqFRgzY5gzqrCtA3tjgnbMrK1E9AT64S5duSa
+          7EIh2NW2hy2+lcygsIt7oLarfVl38N6WyBEqCEJMLWuQHZ5zZs1sN8+5Wu3PU1ji2H1Z53HDRSY3UWsY0LcVdrjiP4CcfTomAjbk
+          5WSkAdcz4hSOXHUR4J9FrSohbNUg+jfkS47nrFhNuEgri0AbTRjuTpmwESVAWGWkxZSyoqgRE9aEg9RGgMgeLGQfpF809mwpgLgt
+          pOSFNBE5ki6ByIvWxGx4Cj7oroznyHBsI7RUHzHDkDX7LdJgkGaJLTvsAbHvYTRHbdDfJt/7pmUujezbnrsP9xvbJ2b61u/9l3Yg
+          9G1bVs7akTOkNdg+8/AXh124kImmO4We0vOzz62yT62/pt+dH2Rymu3OixcRz3w+F2HXSkqF216StbZ8V4KtURwtD655lNq1T9jM
+          ubB0bh9uWN9pPggcwL3h6AH9BGh/Uo7//TYZ/c5G8+/b35pR8Ga6f/21GYXbl83+/fmL5umYowpoE/j83jdkbRXDNUsxmzIhp0ed
+          +Ls9B/J8AXOsqUfqs602l8Y7XI3pM54FYdhOOCtezhC6lB4K0lcOm8cOha7I707yg+PxzXU1Vs7jhvpj5vluAB9m2vk80DXXjx5m
+          sh/7SSGTluUkslM0QiEpqgx0QD3U8OYmiTRK1Kvnk8kk/NnVwKtVdzOwLnd3tPDy4iPOm7VcwlmyQHt87xZn+6ucNUsRq+mZJR1q
+          ZxfvL5Desr1D7tF6b1ZhjZKF9vrlv5UFq/WpKLiA/mdt6gKiDc9MHlOM8Rd6sLBi13/fs6bSeIe71+vneAQorBsFeFoK73JeZAqE
+          jzac9abFSAqUY++NXMAa641oO61RXlmKYs7S2in5Sq5diKjlqC1A0gprYYVthHdsL7K3appaFAlLl3cUpCt2JwpNiNQPXo13l/f/
+          AVBLAQIUAxQAAAAIAOh8bV0GZjgwOAsAACQcAAAbAAAAAAAAAAAAAACAAQAAAABjdXRsb29wei1vd25lcjMwLWJyaWRnZS5tanNQ
+          SwECFAMUAAAACADofG1d/KbSNhQFAABYDQAAHAAAAAAAAAAAAAAAgAFxCwAAdGVzdC1jdXRsb29wei1vd25lcjMwLXY1Lm1qc1BL
+          AQIUAxQAAAAIAOh8bV1mg07cpgMAAKcHAAAaAAAAAAAAAAAAAACAAb8QAABvd25lcjMwLWFkbWluLXNlY3Rpb24uaHRtbFBLAQIU
+          AxQAAAAIAOh8bV2qbznaQAUAAMYLAAAZAAAAAAAAAAAAAACAAZ0UAABvd25lcjMwLWFkbWluLXNjcmlwdC5odG1sUEsFBgAAAAAE
+          AAQAIgEAABQaAAAAAA==
+          SOURCE_B64
+          base64 -d "$RUNNER_TEMP/owner30.b64" > /tmp/cutloopz-owner30-v5.zip
+          python3 - <<'PY_APPLY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import hashlib, io, stat
+          bundle = Path('/tmp/cutloopz-owner30-v5.zip')
+          expected = '2d60f35de0ab3d9510a2eebaa997b522d76ec1e781d1ab21c2aeeaba41983a9b'
+          data = bundle.read_bytes()
+          if hashlib.sha256(data).hexdigest() != expected:
+              raise SystemExit('Embedded source checksum mismatch; branch unchanged')
+          with ZipFile(io.BytesIO(data)) as z:
+              files = z.infolist()
+              expected_names = {'cutloopz-owner30-bridge.mjs', 'test-cutloopz-owner30-v5.mjs', 'owner30-admin-section.html', 'owner30-admin-script.html'}
+              if len(files) != 4 or {x.filename for x in files} != expected_names or sum(x.file_size for x in files)>150_000:
+                  raise SystemExit('Source bundle contents invalid')
+              for x in files:
+                  if x.is_dir() or (x.external_attr >> 16 & 0o170000) == stat.S_IFLNK:
+                      raise SystemExit('Unexpected archive metadata')
+              payload = {x.filename:z.read(x.filename) for x in files}
+          
+          server=Path('server.js'); html=Path('public/admin-unified-production.html')
+          if not server.is_file() or not html.is_file():raise SystemExit('Website baseline is missing')
+          s=server.read_text(); h=html.read_text()
+          old_import="import {createProductionRouter} from './cutloopz-production-router.mjs';"
+          new_import="import {createOwner30Router} from './cutloopz-owner30-bridge.mjs';"
+          mount="// Owner-only V5 RunPod bridge. Disabled for generation until explicit environment approval.\napp.use('/api/cutloopz-owner30', createOwner30Router({express,multer,authorize:isVideoAdmin}));\n\n"
+          anchor="app.get('/api/gpu/status', (req, res) => {"
+          section=payload['owner30-admin-section.html'].decode('utf-8')
+          script=payload['owner30-admin-script.html'].decode('utf-8')
+          if new_import not in s:
+              if s.count(old_import)!=1 or s.count(anchor)!=1 or 'createOwner30Router' in s:
+                  raise SystemExit('Server source changed. Owner-only patch refused; inspect current branch')
+              s=s.replace(old_import,old_import+'\n'+new_import).replace(anchor,mount+anchor)
+          if 'id="owner30Pilot"' not in h:
+              if h.count('<section id="fullProduction"')!=1 or h.count('</body>')!=1 or 'cutloopz-owner30' in h:
+                  raise SystemExit('Admin page changed. Owner-only patch refused; inspect current branch')
+              h=h.replace('<section id="fullProduction"',section+'<section id="fullProduction"').replace('</body>',script+'</body>')
+          for name in ('cutloopz-owner30-bridge.mjs','test-cutloopz-owner30-v5.mjs'):
+              dest=Path(name)
+              if dest.exists() and dest.read_bytes()!=payload[name]:
+                  raise SystemExit(name+' already changed; refusing overwrite')
+          # All source preconditions are checked before writing any file.
+          server.write_text(s); html.write_text(h)
+          for name in ('cutloopz-owner30-bridge.mjs','test-cutloopz-owner30-v5.mjs'):
+              Path(name).write_bytes(payload[name])
+          print('Owner-only V5 HTTPS bridge staged. All generation switches remain disabled.')
+          PY_APPLY
+
+      - name: Verify source and run no-cost tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check server.js
+          node --check cutloopz-owner30-bridge.mjs
+          node --check test-cutloopz-owner30-v5.mjs
+          node --test test-*.mjs | tee "$RUNNER_TEMP/cutloopz-owner30-tests.tap"
+          grep -Fx '# fail 0' "$RUNNER_TEMP/cutloopz-owner30-tests.tap"
+      - name: Commit owner-only bridge to test branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'CutLoopz Release Automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- server.js public/admin-unified-production.html cutloopz-owner30-bridge.mjs test-cutloopz-owner30-v5.mjs
+          if git diff --cached --quiet; then
+            echo 'Matching owner-only bridge already deployed; no changes required.'
+          else
+            git commit -m 'Install authenticated owner-only V5 continuous 30-second GPU bridge (disabled)'
+            git push origin HEAD:cutloopz-production-test
+          fi
