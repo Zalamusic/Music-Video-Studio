@@ -110,6 +110,7 @@
      const url=productionBase+'/local/jobs/'+productionJobId+'/video';
      $('generatedVideo').src=url;$('generatedVideo').hidden=false;
      $('downloadGeneratedVideo').href=url;$('downloadGeneratedVideo').hidden=false;
+     $('reviewInCinema').href='/cinema.html?job='+encodeURIComponent(productionJobId);$('reviewInCinema').hidden=false;
      $('generationProgress').value=100;$('generationStatus').textContent='Video assembled! Play or download your CutLoopz video.';
      $('generateVideo').disabled=false;return;
     }
@@ -172,6 +173,7 @@
    sourceVersion++;
    const hadStory=scenes.length>0;
    scenes=[];scenePage=0;storyboardSourceKey='';
+   updateProjectActions();
    $('storyEmotion').textContent='';
    if(music){musicResult=null;analysisSourceKey='';renderAnalysis();}
    if(hadStory){notify('directorStatus','Song or direction changed. Previous storyboard cleared; generate a new one for this song.');
@@ -190,8 +192,8 @@
    try{
     const response=await fetch('/api/customer-auth/studio/draft',{method:'PUT',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({draft:serializable()})});
     if(!response.ok)throw Error('Cloud draft unavailable');
-    notify('saveStatus','Saved to account and device');
-   }catch{notify('saveStatus','Saved on this device · account sync unavailable');}
+    notify('saveStatus','Saved to account and device');return true;
+   }catch{notify('saveStatus','Saved on this device · account sync unavailable');return false;}
  }
  function scheduleSave(){
    if(restoring)return;
@@ -202,6 +204,77 @@
      if(ok)notify('saveStatus',account?'Saved on device · syncing…':'Saved on this device');
    },220);
    if(account)serverTimer=setTimeout(saveServer,1600);
+ }
+ // Explicit project controls supplement autosave. Backups contain only a
+ // portable creative draft: audio/photo and account credentials NEVER leave
+ // this browser through a backup download.
+ const projectBackup=window.CutLoopzProjectBackup;
+ function updateProjectActions(){
+   $('downloadStoryboard').disabled=scenes.length===0;
+   $('downloadStoryboard').title=scenes.length?'Download all storyboard scenes':'Create your storyboard on Page 3 first';
+ }
+ function downloadText(filename,data,type){
+   const blob=new Blob([data],{type});
+   const address=URL.createObjectURL(blob);
+   const link=document.createElement('a');link.href=address;link.download=filename;
+   document.body.appendChild(link);link.click();link.remove();
+   // Android Chrome may complete a download after the click handler returns.
+   setTimeout(()=>URL.revokeObjectURL(address),15000);
+ }
+ async function saveNow(){
+   clearTimeout(saveTimer);clearTimeout(serverTimer);
+   if(!saveLocal())return;
+   notify('saveStatus','Saved on this device');
+   notify('projectTransferStatus','Your creative work was saved on this device.');
+   if(account){
+     const synced=await saveServer();
+     notify('projectTransferStatus',synced?'Saved to your CutLoopz account and this device.':'Saved on this device; account sync was unavailable. Download a backup for extra protection.',!synced);
+   }
+ }
+ function downloadStoryboard(){
+   if(!scenes.length){notify('projectTransferStatus','Create a storyboard on Page 3 before downloading it.',true);return;}
+   try{
+     const name=projectBackup.safeName($('title').value);
+     downloadText(`${name}-cutloopz-storyboard.txt`,projectBackup.storyboardText(serializable()),'text/plain;charset=utf-8');
+     notify('projectTransferStatus',`Storyboard downloaded (${scenes.length} scenes).`);
+   }catch(error){notify('projectTransferStatus','Could not download storyboard: '+error.message,true);}
+ }
+ function downloadProjectBackup(){
+   try{
+     const name=projectBackup.safeName($('title').value);
+     const json=JSON.stringify(projectBackup.createBackup(serializable()),null,2)+'\n';
+     downloadText(`${name}-cutloopz-backup.json`,json,'application/json;charset=utf-8');
+     notify('projectTransferStatus','Project backup downloaded. Keep your MP3 and artist photo separately.');
+   }catch(error){notify('projectTransferStatus','Could not download backup: '+error.message,true);}
+ }
+ async function restoreProjectBackup(){
+   const picker=$('projectBackupFile'),file=picker.files?.[0]||null;
+   picker.value='';
+   if(!file)return;
+   if(file.size>projectBackup.MAX_IMPORT_BYTES){notify('projectTransferStatus','Backup is too large (max 1 MB).',true);return;}
+   let draft;
+   try{draft=projectBackup.parseBackup(await file.text());}
+   catch(error){notify('projectTransferStatus',error.message,true);return;}
+   if(!window.confirm('Restore this CutLoopz project? This replaces the current draft and clears locally stored song/photo selections. Download a backup first if you want to keep them.'))return;
+   clearTimeout(saveTimer);clearTimeout(serverTimer);
+   lastSongFile=null;lastPhotoFile=null;
+   $('songAudio').value='';$('artistPhoto').value='';updatePhotoPreview(null);
+   const mediaClear=await Promise.allSettled([mediaWrite('audio',null),mediaWrite('photo',null)]);
+   hydrate(draft);
+   // Imported, portable creative work remains viewable even without its
+   // original media files. Changing source inputs invalidates old scenes as usual.
+   scenes=pendingRestore?.scenes||[];
+   scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/2)-1,Number(draft.scenePage)||0));
+   pendingRestore=null;
+   musicResult=null;analysisSourceKey='';storyboardSourceKey=scenes.length?storyKey():'';
+   $('storyEmotion').textContent='Imported creative storyboard';
+   renderAnalysis();updateProjectActions();
+   showPage(scenes.length?3:0,{reposition:false});
+   const locallySaved=saveLocal();
+   if(account&&locallySaved)await saveServer();
+   let message=`Project restored${scenes.length?` with ${scenes.length} editable scenes`:''}. Reattach your MP3/WAV and artist photo before generation.`;
+   if(mediaClear.some(r=>r.status==='rejected'))message+=' Browser file cleanup failed; clear this site’s storage if you need to remove old media.';
+   notify('projectTransferStatus',message,!locallySaved);
  }
  function hydrate(draft){
    if(!draft || typeof draft!=='object')return;
@@ -232,7 +305,7 @@
      storyboardSourceKey:safeText(draft.storyboardSourceKey),scenePage:Number(draft.scenePage)||0,
      scenes:Array.isArray(draft.scenes)?draft.scenes.slice(0,40).map(s=>({number:Number(s.number)||1,startSeconds:Number(s.startSeconds)||0,endSeconds:Number(s.endSeconds)||0,emotion:safeText(s.emotion).slice(0,55),location:safeText(s.location).slice(0,500),action:safeText(s.action).slice(0,800),prompt:safeText(s.prompt).slice(0,4000)})):[]};
    musicResult=null;analysisSourceKey='';scenes=[];storyboardSourceKey='';$('storyEmotion').textContent='';
-   scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,Number(draft.scenePage)||0));
+   scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/2)-1,Number(draft.scenePage)||0));
    page=Math.max(0,Math.min(4,Number(draft.page)||0));
    updateUploadLabels();refreshAnalysisIntro();renderAnalysis();showPage(page,{reposition:false});restoring=false;
  }
@@ -269,9 +342,9 @@
        scenes=restored.scenes;
      }
      storyboardSourceKey=scenes.length?restored.storyboardSourceKey:'';
-     scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,restored.scenePage));
+     scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/2)-1,restored.scenePage));
    }
-   renderAnalysis();if(page===3)renderScenes();
+   renderAnalysis();updateProjectActions();if(page===3)renderScenes();
    const sourceParam=new URLSearchParams(location.search).get('source');
    if(sourceParam==='link'||['suno','udio','youtube','spotify','soundcloud'].includes(sourceParam)){
      if(!lastSongFile&&!$('songAudio').dataset.previousName)selectedSource='link';
@@ -283,6 +356,7 @@
    const destination={song:0,analyze:1,director:2,storyboard:3,review:4}[urlPage];
    if(Number.isInteger(destination))showPage(destination,{reposition:false});
    notify('saveStatus',account?'Account draft ready':'Draft saved on this device');
+   $('saveNow').disabled=false;$('downloadProjectBackup').disabled=false;$('restoreProjectBackup').disabled=false;
    recoverGeneration();
  }
  // A saved song URL is not an analyzed audio file. Link-only projects bypass
@@ -315,6 +389,7 @@
    $('stepProgress').setAttribute('aria-valuenow',String(page+1));
    $('progressFill').style.width=`${20*(page+1)}%`;
    $('backBtn').disabled=page===0;updateStepNavigation();
+   if(page===0)window.CutLoopzLyricsBoard?.refresh();
    if(page===1)refreshAnalysisIntro();
    updateActionAttention();
    if(page===3)renderScenes();if(page===4){renderReview();checkEngine();}
@@ -430,7 +505,7 @@
     }
     if(scenes.length&&!window.confirm('Replace the existing storyboard, including any manual edits?')){notify('directorStatus','Existing storyboard preserved.');return;}
     scenes=(data.plan.scenes||[]).map(s=>({number:s.number,startSeconds:s.startSeconds,endSeconds:s.endSeconds,emotion:s.emotion,location:s.location,action:s.action,prompt:s.prompt}));
-    scenePage=0;storyboardSourceKey=expectedKey;updateActionAttention();
+    scenePage=0;storyboardSourceKey=expectedKey;updateActionAttention();updateProjectActions();
     $('storyEmotion').textContent=`Emotional direction: ${data.plan.storyEmotion||'unclassified'}`;
     notify('directorStatus',`Storyboard ready · ${scenes.length} editable scenes. No video created.`);
     showPage(3);
@@ -446,7 +521,7 @@
  function renderScenes(){
    const empty=$('storyEmpty'),content=$('storyContent');empty.hidden=scenes.length>0;content.hidden=!scenes.length;
    if(!scenes.length)return;
-   const batchSize=window.matchMedia('(max-width:620px)').matches?1:2;
+   const batchSize=2;
    const count=Math.ceil(scenes.length/batchSize);scenePage=Math.max(0,Math.min(count-1,scenePage));
    const first=scenePage*batchSize;const batch=scenes.slice(first,first+batchSize);
    $('scenePairLabel').textContent=`Scene ${first+1}${batch.length>1?'–'+(first+2):''} of ${scenes.length}`;
@@ -486,7 +561,7 @@
    $('photoLabel').textContent='JPG, PNG or WebP · Max 12 MB · One reference photo in the standard Studio.';
    updatePhotoPreview(null);
    sourceVersion++;scenes=[];musicResult=null;analysisSourceKey='';storyboardSourceKey='';pendingRestore=null;$('storyEmotion').textContent='';
-   scenePage=0;$('analyzeBtn').dataset.engaged='';$('directorBtn').dataset.engaged='';updateActionAttention();renderAnalysis();notify('directorStatus','');notify('analyzeStatus','');showPage(0);
+   scenePage=0;$('analyzeBtn').dataset.engaged='';$('directorBtn').dataset.engaged='';updateActionAttention();updateProjectActions();renderAnalysis();notify('directorStatus','');notify('analyzeStatus','');showPage(0);
  }
  for(const id of fieldNames){
    const input=$(id);
@@ -537,7 +612,12 @@
  $('analyzeBtn').addEventListener('click',()=>{markActionEngaged('analyzeBtn');return analyze()});
  $('directorBtn').addEventListener('click',()=>{markActionEngaged('directorBtn');return makeStoryboard()});
  $('scenePrev').addEventListener('click',()=>{scenePage=Math.max(0,scenePage-1);renderScenes();scheduleSave()});
- $('sceneNext').addEventListener('click',()=>{scenePage=Math.min(Math.ceil(scenes.length/(window.matchMedia('(max-width:620px)').matches?1:2))-1,scenePage+1);renderScenes();scheduleSave()});
+ $('sceneNext').addEventListener('click',()=>{scenePage=Math.min(Math.ceil(scenes.length/2)-1,scenePage+1);renderScenes();scheduleSave()});
+ $('saveNow').addEventListener('click',saveNow);
+ $('downloadStoryboard').addEventListener('click',downloadStoryboard);
+ $('downloadProjectBackup').addEventListener('click',downloadProjectBackup);
+ $('restoreProjectBackup').addEventListener('click',()=>$('projectBackupFile').click());
+ $('projectBackupFile').addEventListener('change',restoreProjectBackup);
  $('checkEngine').addEventListener('click',checkEngine);$('generateVideo').addEventListener('click',generateVideo);
  $('resumeGeneration').addEventListener('click',resumeProduction);
  $('editSong').addEventListener('click',()=>showPage(0));$('editDirector').addEventListener('click',()=>showPage(2));$('editStoryboard').addEventListener('click',()=>showPage(3));$('newProject').addEventListener('click',newProject);

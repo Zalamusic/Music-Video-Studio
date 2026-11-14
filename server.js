@@ -123,7 +123,7 @@ const customerUpload = multer({
 // Only an explicitly approved official launch may set CUTLOOPZ_PUBLIC_LAUNCH=true.
 app.use((req,res,next)=>{if(process.env.CUTLOOPZ_PUBLIC_LAUNCH!=='true')res.set('X-Robots-Tag','noindex, nofollow, noarchive');next();});
 app.use(express.json({
- limit: '128kb'
+ limit: '256kb'
 }));
 // Public no-charge creative previews; no administrator key, GPU or billing.
 app.use('/api/creative-preview',createCreativePreviewRouter({express,multer}));
@@ -168,6 +168,27 @@ app.use('/api/cutloopz-production', createProductionRouter({
     process.env.CUTLOOPZ_PERFORMANCE_PILOT_ENABLED === 'true' &&
     process.env.ENABLE_PAID_GENERATION === 'true'
 }));
+
+// Create a short-lived, bearer-token Cinema review for an assembled local video.
+// No new video copy is made; the token points to an existing output file.
+app.post('/api/cutloopz-production/local/jobs/:id/share', async(req,res)=>{
+  res.set('Cache-Control','no-store');
+  const id=req.params.id;
+  if(!validId(id))return res.status(400).json({ok:false,error:'Invalid job ID.'});
+  const origin=req.get('origin');
+  if(origin){try{if(new URL(origin).host!==req.get('host'))return res.status(403).json({ok:false,error:'Invalid request origin.'});}catch{return res.status(403).json({ok:false,error:'Invalid request origin.'});}}
+  try{if(!await isOwnerOrAdmin(req))return res.status(403).json({ok:false,error:'Owner sign-in required.'});}
+  catch{return res.status(503).json({ok:false,error:'Owner authorization unavailable.'});}
+  const video=path.join(OUT,'cutloopz-production','local',id,'final.mp4');
+  try{
+    const receipt=JSON.parse(await fs.readFile(path.join(OUT,'cutloopz-production','local',id,'assembly.json'),'utf8'));
+    if(receipt.jobId!==id||receipt.outputPath!==video)throw Error('Invalid assembly receipt');
+    const stat=await fs.stat(video);if(!stat.isFile()||stat.size<1000)throw Error('Incomplete video');
+    const token=randomUUID(),expiresAt=new Date(Date.now()+7*86400000).toISOString();
+    await fs.writeFile(path.join(LINKS,`${token}.json`),JSON.stringify({kind:'local',id,expiresAt}),{flag:'wx',mode:0o600});
+    res.json({ok:true,url:'/watch/'+token,expiresAt});
+  }catch{return res.status(404).json({ok:false,error:'Finished video unavailable for sharing.'});}
+});
 
 app.get('/api/gpu/status', (req, res) => {
  if (!isVideoAdmin(req)) {
@@ -1976,10 +1997,7 @@ app.get('/preview/:token', async (req, res) => {
  'Preview link expired.'
  );
  }
- const video = path.join(
- OUT,
- `${record.id}.mp4`
- );
+ const video = path.join(OUT, `${record.id}.mp4`);
  if (!(await exists(video))) {
  return res.status(404).send(
  'Video no longer available.'
@@ -1996,53 +2014,28 @@ app.get('/preview/:token', async (req, res) => {
  );
  }
 });
-app.get('/watch/:token', (req, res) => {
- res.set('Cache-Control', 'private, no-store');
- const token = req.params.token;
- if (!validId(token)) {
- return res.status(404).send(
- 'Invalid link.'
- );
- }
- const downloadUrl =
- '/download/' + token;
- res.type('html').send(`
- <!DOCTYPE html>
- <html lang="en">
- <head>
- <meta name="viewport"
- content="width=device-width,initial-scale=1">
- <title>CutLoopz Media | Your Video</title>
- <style>
- body {
- background: #10101b;
- color: white;
- font-family: Arial, sans-serif;
- text-align: center;
- padding: 30px 15px;
- }
- a {
- display: inline-block;
- background: #b45cff;
- color: white;
- padding: 16px 24px;
- border-radius: 10px;
- text-decoration: none;
- font-weight: bold;
- margin: 12px;
- }
- </style>
- </head>
- <body>
- <h1>CutLoopz Media</h1>
- <h2>Your Music Video Is Ready!</h2>
- <p>Your private link expires after 7 days.</p>
- <a href="${downloadUrl}">
- Download Your Video
- </a>
- </body>
- </html>
- `);
+// Token-bearing watch URLs open a distraction-free Cinema review page.
+// Access remains tied to the same expiring bearer token.
+app.get('/watch/:token', (req,res)=>{
+  res.set('Cache-Control','private, no-store');
+  if(!validId(req.params.token))return res.status(404).send('Invalid review link.');
+  res.redirect(302,'/cinema.html?share='+encodeURIComponent(req.params.token));
+});
+app.get('/stream/:token', async (req,res)=>{
+  res.set('Cache-Control','private, no-store');
+  res.set('X-Content-Type-Options','nosniff');
+  if(!validId(req.params.token))return res.status(404).send('Invalid link.');
+  try{
+    const record=JSON.parse(await fs.readFile(path.join(LINKS,`${req.params.token}.json`),'utf8'));
+    if(!validId(record.id))return res.status(404).send('Invalid video.');
+    if(!Number.isFinite(Date.parse(record.expiresAt))||Date.now()>=Date.parse(record.expiresAt))
+      return res.status(410).send('This review link has expired.');
+    const video=record.kind==='local'
+      ? path.join(OUT,'cutloopz-production','local',record.id,'final.mp4')
+      : path.join(OUT,`${record.id}.mp4`);
+    if(!(await exists(video)))return res.status(404).send('Video no longer available.');
+    res.type('mp4');return res.sendFile(video); // express handles HTTP Range playback.
+  }catch{return res.status(404).send('Review link not found.');}
 });
 app.get('/download/:token', async (req, res) => {
  res.set('Cache-Control', 'private, no-store');
@@ -2074,10 +2067,9 @@ app.get('/download/:token', async (req, res) => {
  'Invalid video.'
  );
  }
- const video = path.join(
- OUT,
- `${record.id}.mp4`
- );
+ const video = record.kind === 'local'
+ ? path.join(OUT, 'cutloopz-production', 'local', record.id, 'final.mp4')
+ : path.join(OUT, `${record.id}.mp4`);
  if (!(await exists(video))) {
  return res.status(404).send(
  'Video is no longer available.'

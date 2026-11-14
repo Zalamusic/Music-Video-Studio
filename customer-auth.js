@@ -711,10 +711,10 @@ export function createCustomerAuthRouter({
     if (!source || typeof source!=='object' || Array.isArray(source))
       return res.status(400).json({ok:false,error:'Invalid project draft.'});
     const serialized = JSON.stringify(source);
-    if (!serialized || Buffer.byteLength(serialized,'utf8')>100000)
-      return res.status(413).json({ok:false,error:'Project draft exceeds 100 KB.'});
+    if (!serialized || Buffer.byteLength(serialized,'utf8')>240000)
+      return res.status(413).json({ok:false,error:'Project draft exceeds 240 KB.'});
     // Strip unrecognized keys; never store client-supplied account identifiers.
-    const allowed=['title','lyrics','songSeconds','sceneSeconds','style','format','direction',
+    const allowed=['source','title','lyrics','songSeconds','sceneSeconds','style','format','direction',
       'songLink','songName','photoName','characterNotes','scenePage','page','scenes','musicResult',
       'analysisSourceKey','storyboardSourceKey'];
     const draft = Object.fromEntries(allowed.filter(key => Object.hasOwn(source,key)).map(key=>[key,source[key]]));
@@ -732,6 +732,87 @@ export function createCustomerAuthRouter({
     if(!sameOrigin(req))return res.status(403).json({ok:false,error:'Invalid request origin.'});
     try{drafts=drafts.filter(item=>item.userId!==session.user.id);await save();res.json({ok:true});}
     catch{res.status(503).json({ok:false,error:'Draft storage unavailable.'})}
+  });
+
+  // Artist-created public directory: metadata and OFF-SITE links only.
+  // Images/audio/video are not accepted or copied into CutLoopz storage.
+  const CREATOR_PLATFORMS = Object.freeze(['Suno','Udio','YouTube','Spotify','SoundCloud','Traditional Studio','Other']);
+  const creatorSaveAttempts = new Map();
+  const cleanText = (value, max) => typeof value === 'string' ? value.trim().slice(0,max) : '';
+  function cleanExternalUrl(value) {
+    if (typeof value !== 'string' || value.length > 2048) return null;
+    try {
+      const url = new URL(value.trim());
+      if (url.protocol !== 'https:' || !url.hostname || url.username || url.password) return null;
+      // No internal, loopback or single-label hosts. These links are rendered as
+      // anchors only; the service NEVER fetches content from external URLs.
+      const host = url.hostname.toLowerCase();
+      if (!host.includes('.') || host==='localhost' || /^(?:10|127|0|192\.168|169\.254)\./.test(host)) return null;
+      return url.toString();
+    } catch { return null; }
+  }
+  function publicCreator(user) {
+    const profile=user.creatorProfile;
+    if (!profile || profile.visibility !== 'public') return null;
+    return { id:user.id, artistName:profile.artistName, bio:profile.bio,
+      genre:profile.genre, platforms:profile.platforms, artistPageUrl:profile.artistPageUrl,
+      photoUrl:profile.photoUrl,
+      socialLinks:profile.socialLinks, videoLinks:profile.videoLinks,
+      updatedAt:profile.updatedAt };
+  }
+  router.get('/creator-profile', (req,res)=>{
+    const identity=findSession(req);
+    if (!identity) return res.status(401).json({ok:false,error:'Sign in to edit your artist profile.'});
+    res.json({ok:true,profile:identity.user.creatorProfile||null});
+  });
+  router.put('/creator-profile', async (req,res)=>{
+    const identity=findSession(req);
+    if (!identity) return res.status(401).json({ok:false,error:'Sign in to edit your artist profile.'});
+    if (!sameOrigin(req)) return res.status(403).json({ok:false,error:'Invalid request origin.'});
+    const raw=req.body?.profile;
+    if (!raw || typeof raw!=='object' || Array.isArray(raw)) return res.status(400).json({ok:false,error:'Invalid profile data.'});
+    const now=Date.now(),key=identity.user.id, attempt=creatorSaveAttempts.get(key);
+    const next=!attempt||now-attempt.start>900000?{start:now,count:1}:{start:attempt.start,count:attempt.count+1};
+    creatorSaveAttempts.set(key,next);
+    if(next.count>60)return res.status(429).json({ok:false,error:'Too many profile changes. Please try again later.'});
+    const artistName=cleanText(raw.artistName,80);
+    if(artistName.length<2)return res.status(400).json({ok:false,error:'Enter an artist name of at least 2 characters.'});
+    const visibility=['public','private','hidden'].includes(raw.visibility)?raw.visibility:'private';
+    if(!Array.isArray(raw.platforms) || raw.platforms.length>CREATOR_PLATFORMS.length)
+      return res.status(400).json({ok:false,error:'Invalid music platform selection.'});
+    const platforms=[...new Set(raw.platforms.filter(x=>CREATOR_PLATFORMS.includes(x)))];
+    const linkEntries=(items,max)=>{
+      if (!Array.isArray(items)||items.length>max) return null;
+      const parsed=[];
+      for(const value of items){const href=cleanExternalUrl(value);if(!href)return null;if(!parsed.includes(href))parsed.push(href);}
+      return parsed;
+    };
+    const videoLinks=linkEntries(raw.videoLinks||[],8);
+    const socialLinks=linkEntries(raw.socialLinks||[],6);
+    if(!videoLinks||!socialLinks)return res.status(400).json({ok:false,error:'Links must be valid https:// public website addresses (8 videos and 6 social links maximum).'});
+    const artistPageUrl=raw.artistPageUrl?cleanExternalUrl(raw.artistPageUrl):'';
+    const photoUrl=raw.photoUrl?cleanExternalUrl(raw.photoUrl):'';
+    if(raw.photoUrl&&!photoUrl)return res.status(400).json({ok:false,error:'Profile photo must be a valid https:// image link.'});
+    if(raw.artistPageUrl&&!artistPageUrl)return res.status(400).json({ok:false,error:'Artist page must be a valid https:// link.'});
+    const profile={artistName,bio:cleanText(raw.bio,1000),genre:cleanText(raw.genre,100),
+      platforms,visibility,artistPageUrl,photoUrl,socialLinks,videoLinks,
+      updatedAt:new Date().toISOString()};
+    identity.user.creatorProfile=profile;
+    try{await save();res.json({ok:true,profile});}
+    catch(error){console.error('Creator profile save failed:',error);res.status(503).json({ok:false,error:'Profile could not be saved.'});}
+  });
+  router.get('/creators', (_req,res)=>{
+    const creators=users.map(publicCreator).filter(Boolean)
+      .sort((a,b)=>String(a.artistName).localeCompare(String(b.artistName)))
+      .slice(0,100);
+    res.json({ok:true,creators});
+  });
+  router.get('/creators/:id', (req,res)=>{
+    if(!/^[0-9a-f-]{36}$/i.test(req.params.id))return res.status(404).json({ok:false,error:'Artist not found.'});
+    const user=users.find(u=>u.id===req.params.id);
+    const profile=user?publicCreator(user):null;
+    if(!profile)return res.status(404).json({ok:false,error:'Artist not found.'});
+    res.json({ok:true,creator:profile});
   });
 
   router.get('/me', (req, res) => {

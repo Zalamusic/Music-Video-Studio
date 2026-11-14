@@ -11,19 +11,34 @@
 <link rel="stylesheet" href="/cutloopz-welcome.css">
 <script src="/cutloopz-welcome.js" defer></script>
 <script src="/cutloopz-song-link.js" defer></script>
+<script src="/cutloopz-project-backup.js" defer></script>
+<script src="/cutloopz-lyrics-board.js" defer></script>
+<script src="/cutloopz-floating-home.js" defer></script>
 <script src="/my-studio.js" defer></script>
+<script src="/cutloopz-studio-helper.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#studioWorkspace">Skip to Studio</a>
 <header class="site-header">
  <a class="brand" href="/customer.html" aria-label="CutLoopz Media home"><img src="/a_sleek_cinematic_logo_on_a_black_background_a_g.png" alt=""><span><strong>CutLoopz Media</strong><small>A Director That Listens. A Video That Performs.</small></span></a>
- <nav class="topnav" aria-label="Studio navigation"><a class="active" href="/my-studio.html">My Studio</a><a href="/account.html?view=studio">My Videos & Account</a><a href="/glamour.html">Glamour Membership</a><a href="/customer.html">Home</a></nav>
+ <nav class="topnav" aria-label="Studio navigation"><a class="active" href="/my-studio.html">My Studio</a><a href="/account.html?view=studio">My Videos & Account</a><a href="/glamour.html">Glamour Membership</a><a href="/creator-profile.html">Artist Profile</a><a href="/customer.html">Home</a></nav>
 </header>
 <main class="shell" id="studioWorkspace">
  <div class="intro"><div><span class="eyebrow">YOUR MUSIC · YOUR VISION · YOUR VIDEO</span><h1>My Studio</h1><p>One step at a time. Your creative work stays with your project.</p></div><div class="status-wrap"><span id="signInStatus" class="status-chip">Checking account…</span><span id="saveStatus" class="save-message" role="status">Loading draft…</span></div></div>
  <div class="studio-frame">
   <div class="step-header"><div><span class="eyebrow" id="stepTag">PAGE 01 / 05</span><h2 id="stepTitle">Your Song &amp; Artist</h2><p id="stepSubtitle">Bring your music into the Studio.</p></div><button type="button" id="newProject" class="subtle">New Project</button></div>
   <div class="progress" role="progressbar" aria-label="Project progress" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1" id="stepProgress"><span id="progressFill"></span></div>
+  <section class="project-actions" aria-label="Save and download your creative project">
+   <div class="project-actions-grid">
+    <button type="button" id="saveNow" class="gold" disabled>Save Now</button>
+    <button type="button" id="downloadStoryboard" class="subtle" disabled>Download Storyboard</button>
+    <button type="button" id="downloadProjectBackup" class="subtle" disabled>Download Project Backup</button>
+    <button type="button" id="restoreProjectBackup" class="subtle" disabled>Restore Backup</button>
+   </div>
+   <input id="projectBackupFile" type="file" accept=".json,application/json" aria-label="Select a CutLoopz Studio backup" hidden>
+   <p class="project-backup-note">Backups include your lyrics, Director instructions and editable scenes — not your MP3, artist photo, password or video. Keep media files separately.</p>
+   <p id="projectTransferStatus" class="project-transfer-status" role="status" aria-live="polite"></p>
+  </section>
   <div class="workspace-content">
    <section class="wizard-step" data-step="0" aria-labelledby="songHeading">
     <h3 id="songHeading">01 · Song details</h3>
@@ -45,7 +60,7 @@
     </div>
     <div class="field" id="audioSourcePanel"><label for="songAudio">Upload MP3 or WAV <span class="optional">(optional for planning)</span></label><input id="songAudio" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav"><p class="hint" id="audioLabel" role="status">Choose an MP3 or WAV (max 25 MB). Your browser will retain the selection privately for analysis on Page 2.</p></div>
     <div class="photo-upload-panel"><div class="photo-panel-heading"><span class="photo-panel-icon" aria-hidden="true">▧</span><div><label for="artistPhoto">Artist Photo <span class="optional">(optional for planning)</span></label><p class="hint">Add the artist's main reference photo here. Glamour Shots and additional looks remain separate membership features.</p></div></div><input id="artistPhoto" type="file" accept="image/jpeg,image/png,image/webp"><p class="hint" id="photoLabel" role="status">JPG, PNG or WebP · Max 12 MB · Saved privately in this browser for your current project.</p><div class="photo-preview" id="photoPreviewWrap" hidden><img id="photoPreview" alt="Preview of the selected artist reference photo"></div></div>
-    <div class="field"><label for="lyrics">Lyrics <span class="optional">(recommended for emotional direction)</span></label><textarea id="lyrics" rows="9" maxlength="12000" placeholder="Paste the lyrics here. Add [00:15] timestamps if you have them."></textarea></div>
+    <div class="field"><label for="lyrics">Lyrics <span class="optional">(recommended for emotional direction)</span></label><textarea id="lyrics" rows="12" maxlength="12000" aria-describedby="lyricsBoardHelp" placeholder="Paste the lyrics here. Add [00:15] timestamps if you have them."></textarea><p class="hint" id="lyricsBoardHelp">The lyrics board grows to display the entire song. Scroll the page to read or edit every verse.</p></div>
     <p class="helper">Your song and photo stay in this browser's private storage until you start a New Project or clear this site's data. They are not synced to other devices. You can also create a free Director storyboard using lyrics alone.</p>
    </section>
    <section class="wizard-step" data-step="1" aria-labelledby="analyzeHeading" hidden>
@@ -70,13 +85,13 @@
    <section class="wizard-step" data-step="4" aria-labelledby="reviewHeading" hidden>
     <h3 id="reviewHeading">05 · Review Your Vision</h3><p class="helper">Review your choices, then generate with your private connected CutLoopz engine.</p><div class="studio-no-credits"><strong>NO CREDITS. JUST VIDEO.</strong><p>No credit packs or token counting. Public checkout will show the fixed price, included deliverables, and revision terms before payment. Private owner tests do not require checkout.</p></div>
     <div id="reviewSummary" class="review-grid"></div><div class="review-actions"><button type="button" id="editSong" class="subtle">Edit Song</button><button type="button" id="editDirector" class="subtle">Edit Director</button><button type="button" id="editStoryboard" class="subtle">Edit Scenes</button></div>
-    <div class="production-panel" id="productionPanel"><h4>Make Your Video</h4><p>Private owner production test · Connected local CutLoopz engine only. Your music and artist photo are required to render.</p><p id="engineStatus" class="operation-status" role="status">Checking local generation readiness…</p><button type="button" id="checkEngine" class="subtle">Check GPU Connection</button><button type="button" id="resumeGeneration" class="subtle" hidden>Resume Video Tracking</button><div class="rights-row"><label><input type="checkbox" id="audioRights"> I confirm I own or have permission to use this audio and artist image.</label></div><button type="button" id="generateVideo" class="gold">Generate My Video</button><p id="generationStatus" class="operation-status" role="status" aria-live="polite"></p><div id="generationResults" hidden><div class="generation-progress"><span id="generationProgressText">Preparing video…</span><progress id="generationProgress" max="100" value="0"></progress></div><video id="generatedVideo" controls playsinline preload="none" hidden></video><a id="downloadGeneratedVideo" hidden download="cutloopz-video.mp4">Download finished video</a><p id="generationJobId" class="hint"></p></div></div>
+    <div class="production-panel" id="productionPanel"><h4>Make Your Video</h4><p>Private owner production test · Connected local CutLoopz engine only. Your music and artist photo are required to render.</p><p id="engineStatus" class="operation-status" role="status">Checking local generation readiness…</p><button type="button" id="checkEngine" class="subtle">Check GPU Connection</button><button type="button" id="resumeGeneration" class="subtle" hidden>Resume Video Tracking</button><div class="rights-row"><label><input type="checkbox" id="audioRights"> I confirm I own or have permission to use this audio and artist image.</label></div><button type="button" id="generateVideo" class="gold">Generate My Video</button><p id="generationStatus" class="operation-status" role="status" aria-live="polite"></p><div id="generationResults" hidden><div class="generation-progress"><span id="generationProgressText">Preparing video…</span><progress id="generationProgress" max="100" value="0"></progress></div><video id="generatedVideo" controls playsinline preload="none" hidden></video><a id="downloadGeneratedVideo" hidden download="cutloopz-video.mp4">Download finished video</a><a id="reviewInCinema" href="/cinema.html" class="cinema-review-link" hidden>▶ Review in Artist Cinema</a><p id="generationJobId" class="hint"></p></div></div>
    </section>
   </div>
   <footer class="step-footer"><button type="button" id="backBtn" class="subtle" disabled>← Back</button><span id="stepCounter">Page 1 of 5</span><button type="button" id="nextBtn" class="gold">Next →</button></footer>
  </div>
  <section class="below-studio" aria-label="Other Studio tools"><a class="tool-card" href="/account.html?view=studio"><span aria-hidden="true">▣</span><strong>My Videos & Account</strong><small>Track saved orders and loyalty rewards.</small></a><a class="tool-card" href="/glamour.html"><span aria-hidden="true">✦</span><strong>Glamour Membership</strong><small>Optional subscriber-only wardrobe and photo features.</small></a></section>
- <p class="legal">Draft text saves on this device, and signed-in text drafts can sync to your account. Uploaded song and artist photo are kept privately in this browser (not on your account); changing devices may require reselecting them. Clear this project with New Project.</p>
+ <p><a class="cinema-review-link" href="/creator-profile.html">✦ Edit your Artist Profile</a> · <a class="cinema-review-link" href="/creator-directory.html">Explore Creator Directory</a></p><p class="legal">Draft text saves on this device, and signed-in text drafts can sync to your account. Uploaded song and artist photo are kept privately in this browser (not on your account); changing devices may require reselecting them. Clear this project with New Project.</p>
 </main>
 <button id="backToTop" class="back-to-top" type="button" aria-label="Back to top" title="Back to top" hidden><span aria-hidden="true">↑</span></button>
 </body>

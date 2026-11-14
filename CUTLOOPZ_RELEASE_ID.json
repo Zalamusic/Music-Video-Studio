@@ -1,6 +1,5 @@
 {
-  "release_id": "CUTLOOPZ_STUDIO_V5D_SPOTIFY_SCROLL_63TESTS",
-  "expected_test_count": 63,
+  "release_id": "CUTLOOPZ_CREATOR_CINEMA_HELPER_2026-11-13",
   "site_branch": "cutloopz-production-test",
   "features": [
     "My Studio five-step guided workflow",
@@ -23,19 +22,38 @@
     "Back from link-only Director returns to the Song & Artist page",
     "Explicit note distinguishes saved URL from audio analysis and automatic lyrics import",
     "Spotify shortened and localized track links recognized as reference-only (no music downloads)",
-    "Back/Next returns to top of the correct Studio step without losing scroll position on initial draft restore"
+    "Back/Next returns to top of the correct Studio step without losing scroll position on initial draft restore",
+    "Opt-in, editable, public/private/hidden Creator Directory with external links only",
+    "Jet-black Artist Cinema with owner-only video access and expiring share token",
+    "Contextual Studio Helper with no paid API",
+    "Smaller rectangular homepage music-source tabs",
+    "Externally hosted creator profile photo URLs only"
   ],
   "files_sha256": {
-    "server.js": "9abb5f2f04cdee8b68d4ab8f5168ad4ee53848dfec2dd8f92e9c0d7ecf5a9cfa",
-    "customer-auth.js": "8b96438ebdc6efa0000e9b1f553801e41974305eb23bcfc1749513266c546e70",
-    "public/customer.html": "f5376dbec2f4b8c963fe21aa84072080ca149be1fab1e7abcb0bdc9e6c1770ac",
-    "public/index.html": "b7ac4f0cb0bfbccc644e6062ce1ef8e9f771d74d3d1bd58d81f9fc37c5f865c6",
-    "public/my-studio.html": "e64b634b4c4e259b7ed51285442217d9f5168a7d2674e08cfda375c4d0a242f9",
-    "public/my-studio.js": "406418d65e6b82ee2ecb7a8a15e8ab6cd883d975a124c847bd49c11667bd04c0",
-    "public/my-studio.css": "1cc7d048f7b03bae6b80f2db66dc9bf1d07b644022ac377bf59b3ed6cb432d00",
+    "customer-auth.js": "c7d13ac7768704cb1b57348e857c490ac286b10ec425e5e93962be68244960df",
+    "public/cinema.html": "789efbc3fcff819f0052839cd7bfad5d9984233cf11cc8f641f6a319a96da995",
+    "public/creator-directory.html": "74ae22b7914e8c92837c7ed01fabc70de776b32afb03a9c0278a654a3caf1e74",
+    "public/creator-directory.js": "d469d412d0394f0fb77c8a44a689b2cdc1b87f5cb4222e6b3f0b548751946bdd",
+    "public/creator-profile.html": "7056a744df8146803126b3463ac603708b99d3452772da8c675aa3bff678337c",
+    "public/creator-profile.js": "a1a242a7c5890bde9bb5444c28b647c60309123090a6284bf921e03ea04b6b31",
+    "public/customer.html": "8469231df9f4fa22b21b7d757e45dd177f46d009fefb5d7b54402a29fe4f18f0",
+    "public/cutloopz-cinema.css": "946c62d69c3df9e73374ed57c65326a4279e5ef5e8b587b7b74ac3a8e4ada1b9",
+    "public/cutloopz-cinema.js": "8d029b17b8a15dbfc66b2323690e4d1842c48653337af5b7ff71f516f28af454",
+    "public/cutloopz-creator.css": "1fc2b627ed811801280dc9bc04ce4e9c1162b3a74de1b461de315da954af8a67",
+    "public/cutloopz-design-upgrades.css": "f17891178f3938d259bd96cf0606b408ee5ac640d0fe5d62cb93b76ac88ff69e",
     "public/cutloopz-song-link.js": "652066d26435cd6cec3a72a4a51589425dd72699bd6957b26b16be26a8eed551",
-    "test-song-link-intake.mjs": "8e7504f9c79e333d486493880d3a428b88f0ae62a499ebfb2df8ed9b93db62e1",
-    "test-v5b-no-credits-suno.mjs": "00659e78ca6be8914322b4505f33d3911d3b1d930a6280564e7d425400fa1a20",
+    "public/cutloopz-studio-helper.js": "ffbae5c2ac73c8ee655a732f1b349aa29b35a65546e942e2120a9c431561bfb2",
+    "public/index.html": "303bbd0e6281b38a721f42269fa6c2242ec69ee916c235ad7107f8470f1c5b38",
+    "public/my-studio.css": "27c5ca6dfa8c0f2051e2d64f9a78caaccd17d984d33ec44735565548268cbddc",
+    "public/my-studio.html": "e44710f684139a3fdbf17ae0a5abbfe79d58773e34693e2722b6f6d196db7305",
+    "public/my-studio.js": "8d7f27c80fc134834a020f1a8fad415527e5b1cf8f8dc2d0a212fbe371943f80",
+    "server.js": "d280c57d620b3318966054f8196188283aaa61999e75965970af6154f9c34231",
+    "test-creator-directory-and-cinema.mjs": "865201427844b32ee880b5092c57b803ba25be7fd2cf8a1e4e3ecea03b04a2f3",
+    "test-song-link-intake.mjs": "3016b6fcce64423d8c321edcd1cb25e8de69c1bad1a3cb2f9a906237c82f4d2b",
+    "test-v5b-no-credits-suno.mjs": "6e1b51bbfb0ca2a4660931699d1e9da177d2e386ae249977f001ef918728cf78",
     "test-v5d-spotify-back-scroll.mjs": "90913c0ecbecf653ee343f44e09a065fd96d231a44dc6c4d022a35f6f0a2b63e"
-  }
+  },
+  "previous_release_id": "CUTLOOPZ_STUDIO_V5D_SPOTIFY_SCROLL_63TESTS",
+  "previous_baseline_expected_test_count": 63,
+  "verified_selected_test_count": 24
 }

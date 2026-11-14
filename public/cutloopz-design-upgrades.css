@@ -1,0 +1,20 @@
+/* CutLoopz Nov 14: spacious type hierarchy without enlarging navigational tabs. */
+body{font-size:16px;line-height:1.64}
+main p,main li{line-height:1.65}
+input,select,textarea{font-size:max(16px,1em)}
+label{line-height:1.45}
+button,a{touch-action:manipulation}
+/* Compact, orderly rectangular source selectors — keep all original hrefs. */
+.cutloopz-source-tags{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px!important;max-width:700px;margin:14px 0 17px!important}
+.cutloopz-source-tags a,.cutloopz-source-tags a.cutloopz-suno{display:flex!important;width:100%;min-width:0;min-height:42px!important;padding:8px 6px!important;border-radius:7px!important;font-size:13px!important;text-align:center;font-weight:800!important;white-space:nowrap;line-height:1.1!important;letter-spacing:0}
+.cutloopz-source-tags a:focus-visible{outline:3px solid #d3a854;outline-offset:2px}
+/* Tiny labels remain readable; avoid making pages disproportionately tall. */
+.brand-sub,.mini-brand-sub,.brand-tagline,.studio-entry .entry-note{font-size:13px!important;line-height:1.5}
+@media(max-width:560px){.cutloopz-source-tags{grid-template-columns:repeat(3,minmax(0,1fr))}.cutloopz-source-tags a,.cutloopz-source-tags a.cutloopz-suno{min-height:43px!important;font-size:13px!important}.brand-sub,.mini-brand-sub,.brand-tagline{font-size:11px!important}}
+@media(max-width:360px){.cutloopz-source-tags{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Creator spotlight links fit alongside the headline on wide screens. */
+#creators .studio-entry{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px}
+#creators .studio-entry>div{grid-row:span 2}
+#creators .studio-entry>.button,#creators .studio-entry>.cutloopz-link-cta{align-self:center;text-align:center}
+@media(max-width:680px){#creators .studio-entry{display:flex;flex-direction:column;align-items:stretch;gap:8px}#creators .studio-entry .button,#creators .studio-entry .cutloopz-link-cta{align-self:stretch}}
