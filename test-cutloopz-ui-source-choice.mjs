@@ -93,6 +93,6 @@ test('Homepage source options are working Studio links; typography and motion ar
  assert.match(home,/\.cutloopz-source-tags a:focus-visible/);
  assert.match(home,/NO CREDITS\. JUST VIDEO\./);
  assert.match(html,/id="direction"[^>]+rows="11"/);
- assert.match(html,/id="lyrics"[^>]+rows="9"/);
+ assert.match(html,/id="lyrics"[^>]+rows="10"/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\).*action-needs-attention/);
 });

@@ -5,7 +5,7 @@ const read=async file=>readFile(new URL(file,import.meta.url),'utf8');
 test('V5B uses uppercase visually bold SUNO and prominent supported platform names',async()=>{
  const [home,studio,styles,links]=await Promise.all([read('./public/customer.html'),read('./public/my-studio.html'),read('./public/my-studio.css'),read('./public/cutloopz-song-link.js')]);
  assert.match(home,/<strong class="cutloopz-platform">SUNO<\/strong>/);
- assert.match(home,/class="cutloopz-suno">SUNO Links/);
+ assert.match(home,/class="cutloopz-suno">SUNO<\/a>/);
  assert.match(studio,/<strong class="studio-platform studio-suno">SUNO<\/strong>/);
  assert.match(styles,/\.studio-suno\{font-weight:900/);
  assert.match(links,/name:'SUNO'/);

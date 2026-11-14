@@ -1,36 +1,33 @@
-/* CutLoopz: the lyrics board expands to show the whole song.
- * Never truncates the text, changes its content, or forces the on-screen keyboard.
+/* CutLoopz: compact, scrollable lyrics editor.
+ * On paste/restore/show-page, show the first line of the song.
+ * During normal typing, allow the caret and scroll position to follow the artist.
+ * Never truncate, rewrite, or save the lyrics from this view helper.
  */
 (() => {
   'use strict';
   let lyrics;
-  const minHeight = 265;
-  function refresh() {
-    if (!lyrics || !lyrics.getClientRects().length) return;
-    // Calculate the full wrapped-text height, even after restoring a saved draft.
-    lyrics.style.height = 'auto';
-    lyrics.style.height = Math.max(minHeight, Math.ceil(lyrics.scrollHeight) + 5) + 'px';
+  function resetToTop() {
+    if (!lyrics) return;
     lyrics.scrollTop = 0;
   }
-  function scheduleRefresh() {
-    requestAnimationFrame(refresh);
+  function afterPaste() {
+    // On Android the browser may adjust the caret/scroll after the paste event.
+    // Reset after that default insertion without moving the caret itself.
+    requestAnimationFrame(resetToTop);
+    setTimeout(resetToTop, 70);
   }
   function install() {
     lyrics = document.getElementById('lyrics');
-    if (!lyrics || lyrics.dataset.cutloopzLyricsExpanded === 'true') return;
-    lyrics.dataset.cutloopzLyricsExpanded = 'true';
-    lyrics.style.maxHeight = 'none';
-    lyrics.style.overflowY = 'hidden';
-    lyrics.style.resize = 'vertical';
-    lyrics.addEventListener('input', scheduleRefresh);
-    lyrics.addEventListener('paste', () => requestAnimationFrame(scheduleRefresh));
-    window.addEventListener('resize', scheduleRefresh, {passive:true});
-    window.addEventListener('pageshow', scheduleRefresh);
-    scheduleRefresh();
+    if (!lyrics || lyrics.dataset.cutloopzLyricsCompact === 'true') return;
+    lyrics.dataset.cutloopzLyricsCompact = 'true';
+    lyrics.style.removeProperty('height');
+    lyrics.style.removeProperty('max-height');
+    lyrics.style.removeProperty('overflow-y');
+    lyrics.addEventListener('paste', afterPaste);
+    window.addEventListener('pageshow', resetToTop);
+    requestAnimationFrame(resetToTop);
   }
-  // The 5-page wizard can hide the lyrics while restoring a saved draft.
-  // Its showPage() calls refresh again only once Page 1 becomes visible.
-  window.CutLoopzLyricsBoard = {refresh: scheduleRefresh};
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
+  window.CutLoopzLyricsBoard = {refresh: () => requestAnimationFrame(resetToTop)};
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once: true});
   else install();
 })();

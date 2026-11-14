@@ -47,7 +47,7 @@ test('V5 Studio uses link intake, account sync, truthful audio controls and exis
  assert.match(js,/lastSongFile/);
  assert.match(js,/mediaWrite\('audio',f\)/);
  assert.match(auth,/'songLink','songName'/);
- assert.match(home,/SUNO Links/);assert.match(home,/href="\/my-studio\.html\?source=link"/);
+ assert.match(home,/class="cutloopz-suno">SUNO<\/a>/);assert.match(home,/href="\/my-studio\.html\?source=suno"/);
  assert.match(home,/name="description"/);assert.match(home,/property="og:title"/);
  assert.match(server,/CUTLOOPZ_PUBLIC_LAUNCH!=='true'/);
 });

@@ -1,4 +1,5 @@
 import {createCreativePreviewRouter} from './cutloopz-creative-preview.mjs';
+import {createCutLoopzReviewsRouter} from './cutloopz-reviews-router.mjs';
 import {createProductionRouter} from './cutloopz-production-router.mjs';
 import {verifyProductionStorage} from './cutloopz-storage-preflight.mjs';
 import { createCinemaManifest } from './cutloopz-cinema-engine.js';
@@ -136,6 +137,18 @@ async function isOwnerOrAdmin(req){
   const user = await customerAuthRouter.authenticatedUser(req);
   return user?.email?.toLowerCase() === configuredOwnerEmail;
 }
+// Private CutLoopz feedback: signed-in customers submit; only the configured owner can read it.
+// The review dashboard does NOT permit access with a customer account or a public profile.
+app.use('/api/cutloopz-reviews',createCutLoopzReviewsRouter({
+  express,
+  outputDirectory:OUT,
+  authenticatedUser:req=>customerAuthRouter.authenticatedUser(req),
+  isOwner:async req=>{
+    if (!configuredOwnerEmail) return false;
+    const reviewerOwner = await customerAuthRouter.authenticatedUser(req);
+    return reviewerOwner?.email?.trim().toLowerCase()===configuredOwnerEmail;
+  }
+}));
 // Read-only order history and loyalty progress.
 app.use(
  '/api/customer-order-history',

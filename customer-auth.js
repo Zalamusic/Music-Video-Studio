@@ -756,7 +756,6 @@ export function createCustomerAuthRouter({
     if (!profile || profile.visibility !== 'public') return null;
     return { id:user.id, artistName:profile.artistName, bio:profile.bio,
       genre:profile.genre, platforms:profile.platforms, artistPageUrl:profile.artistPageUrl,
-      photoUrl:profile.photoUrl,
       socialLinks:profile.socialLinks, videoLinks:profile.videoLinks,
       updatedAt:profile.updatedAt };
   }
@@ -791,11 +790,9 @@ export function createCustomerAuthRouter({
     const socialLinks=linkEntries(raw.socialLinks||[],6);
     if(!videoLinks||!socialLinks)return res.status(400).json({ok:false,error:'Links must be valid https:// public website addresses (8 videos and 6 social links maximum).'});
     const artistPageUrl=raw.artistPageUrl?cleanExternalUrl(raw.artistPageUrl):'';
-    const photoUrl=raw.photoUrl?cleanExternalUrl(raw.photoUrl):'';
-    if(raw.photoUrl&&!photoUrl)return res.status(400).json({ok:false,error:'Profile photo must be a valid https:// image link.'});
     if(raw.artistPageUrl&&!artistPageUrl)return res.status(400).json({ok:false,error:'Artist page must be a valid https:// link.'});
     const profile={artistName,bio:cleanText(raw.bio,1000),genre:cleanText(raw.genre,100),
-      platforms,visibility,artistPageUrl,photoUrl,socialLinks,videoLinks,
+      platforms,visibility,artistPageUrl,socialLinks,videoLinks,
       updatedAt:new Date().toISOString()};
     identity.user.creatorProfile=profile;
     try{await save();res.json({ok:true,profile});}

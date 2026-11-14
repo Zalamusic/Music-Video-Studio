@@ -3,7 +3,7 @@
  const lines=id=>$(id).value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
  function display(profile){
   $('artistName').value=profile?.artistName||'';$('genre').value=profile?.genre||'';$('bio').value=profile?.bio||'';
-  $('photoUrl').value=profile?.photoUrl||'';$('artistPageUrl').value=profile?.artistPageUrl||'';$('videoLinks').value=(profile?.videoLinks||[]).join('\n');
+  $('artistPageUrl').value=profile?.artistPageUrl||'';$('videoLinks').value=(profile?.videoLinks||[]).join('\n');
   $('socialLinks').value=(profile?.socialLinks||[]).join('\n');$('visibility').value=profile?.visibility||'private';
   document.querySelectorAll('#platformChoices input').forEach(el=>el.checked=(profile?.platforms||[]).includes(el.value));
   const view=$('viewPublicProfile'); view.hidden=profile?.visibility!=='public';
@@ -18,7 +18,7 @@
  form.addEventListener('submit',async event=>{
   event.preventDefault();const submit=$('saveProfile');submit.disabled=true;status.textContent='Saving your profile…';
   try{const profile={artistName:$('artistName').value,genre:$('genre').value,bio:$('bio').value,
-   artistPageUrl:$('artistPageUrl').value.trim(),photoUrl:$('photoUrl').value.trim(),platforms:[...document.querySelectorAll('#platformChoices input:checked')].map(e=>e.value),
+   artistPageUrl:$('artistPageUrl').value.trim(),platforms:[...document.querySelectorAll('#platformChoices input:checked')].map(e=>e.value),
    videoLinks:lines('videoLinks'),socialLinks:lines('socialLinks'),visibility:$('visibility').value};
    const r=await fetch('/api/customer-auth/creator-profile',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile})});
    const d=await r.json();if(!r.ok||!d.ok)throw Error(d.error||'Unable to save your profile.');

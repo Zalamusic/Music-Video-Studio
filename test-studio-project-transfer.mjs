@@ -13,11 +13,14 @@ const original={source:'upload',title:'I’m a Baddie',songSeconds:30,sceneSecon
  scenes:[{number:1,startSeconds:0,endSeconds:15,emotion:'Confident',location:'Mansion',action:'Exits luxury car',prompt:'Slow tracking shot'},
          {number:2,startSeconds:15,endSeconds:30,emotion:'Playful',location:'Rooftop',action:'Performs on a rooftop',prompt:'Close-up, smooth motion'}]};
 
-test('toolbar: four accessible actions on all five pages, no inert backup buttons',()=>{
+test('four save/export actions are on final review, with a small restore shortcut on Page 1',()=>{
  for (const id of ['saveNow','downloadStoryboard','downloadProjectBackup','restoreProjectBackup','projectBackupFile','projectTransferStatus'])
   assert.match(html,new RegExp(`id="${id}"`));
- assert.ok(html.indexOf('id="saveNow"')<html.indexOf('data-step="0"'));
- for (const id of ['saveNow','downloadStoryboard','downloadProjectBackup','restoreProjectBackup','projectBackupFile'])
+ assert.ok(html.indexOf('id="saveNow"')>html.indexOf('data-step="4"'));
+ assert.ok(html.indexOf('id="saveNow"')<html.indexOf('id="productionPanel"'));
+ assert.match(html,/id="restoreProjectQuick"/);
+ assert.match(code,/Nothing to back up yet/);
+ for (const id of ['saveNow','downloadStoryboard','downloadProjectBackup','restoreProjectBackup','restoreProjectQuick','projectBackupFile'])
   assert.match(code,new RegExp(`\\$\\('${id}'\\)\\.addEventListener`));
  assert.match(code,/downloadStoryboard'\)\.disabled=scenes\.length===0/);
 });

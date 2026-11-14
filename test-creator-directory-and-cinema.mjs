@@ -36,6 +36,12 @@ test('Creator Directory remains metadata-only, account-owned, and opt-in public'
   assert.equal(Object.hasOwn(directory.data.creators[0],'email'),false);
   assert.equal(Object.hasOwn(directory.data.creators[0],'passwordHash'),false);
   assert.equal(Object.hasOwn(directory.data.creators[0],'draft'),false);
+  assert.equal(Object.hasOwn(directory.data.creators[0],'photoUrl'),false,'Public directory has no profile-photo URL');
+  saved=await respond('PUT','/creator-profile',{cookie,body:{profile:{...profile,visibility:'public',photoUrl:'https://example.com/unneeded.jpg'}}});
+  assert.equal(saved.statusCode,200,'Old clients with optional photoUrl must remain compatible');
+  assert.equal(Object.hasOwn(saved.data.profile,'photoUrl'),false,'Photo URLs are no longer stored');
+  directory=await respond('GET','/creators');
+  assert.equal(Object.hasOwn(directory.data.creators[0],'photoUrl'),false,'Photo URLs are not publicly exposed');
   for(const unsafe of ['javascript:alert(1)','file:///etc/passwd','http://example.com','https://127.0.0.1/a','https://user:pass@videos.example/']){
    const bad=await respond('PUT','/creator-profile',{cookie,body:{profile:{...profile,visibility:'public',videoLinks:[unsafe]}}});
    assert.equal(bad.statusCode,400,unsafe);
@@ -98,4 +104,13 @@ test('Private owner-only Cinema sharing creates an expiring token without copyin
   // No new MP4 created in LINKS; only one tiny metadata file.
   assert.deepEqual(await fs.readdir(LINKS),[createdToken+'.json']);
  }finally{rmSync(tmp,{recursive:true,force:true});}
+});
+
+
+test('directory explains public opt-in search rather than querying external music catalogs',()=>{
+ const html=read('public/creator-directory.html'),js=read('public/creator-directory.js');
+ assert.match(html,/Searches <strong>public CutLoopz artist profiles only<\/strong>/);
+ assert.match(html,/Artists choose <strong>Public<\/strong>/);
+ assert.match(js,/No public CutLoopz artist profiles yet/);
+ assert.doesNotMatch(js,/fetch\(['"]https:\/\//);
 });

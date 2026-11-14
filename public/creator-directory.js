@@ -7,9 +7,8 @@
   link.href=parsed.toString();link.target='_blank';link.rel='noopener noreferrer nofollow';parent.append(link);
  }}
  function render(){const query=input.value.toLocaleLowerCase().trim();const matches=creators.filter(c=>[c.artistName,c.bio,c.genre,...(c.platforms||[])].join(' ').toLocaleLowerCase().includes(query));
-  list.replaceChildren();message.textContent=matches.length?`${matches.length} artist${matches.length===1?'':'s'} found.`:'No public artist profiles match this search yet.';
+  list.replaceChildren();message.textContent=matches.length?`${matches.length} artist${matches.length===1?'':'s'} found.`:creators.length===0?'No public CutLoopz artist profiles yet. Artists must publish their profiles before they appear here.':'No public artists match this search. Try a different artist name, genre, or platform.';
   for(const creator of matches){const card=el('article',undefined,'creator-card');
-    if(creator.photoUrl){try{const src=new URL(creator.photoUrl);if(src.protocol==='https:'){const photo=el('img',undefined,'creator-avatar');photo.src=src.toString();photo.alt=creator.artistName+' profile photo';photo.loading='lazy';photo.referrerPolicy='no-referrer';card.append(photo);}}catch{}}
     card.append(el('h2',creator.artistName));
     if(creator.genre)card.append(el('p',creator.genre,'small'));
     const chips=el('div',undefined,'chips');(creator.platforms||[]).forEach(p=>chips.append(el('span',p,'chip')));card.append(chips);

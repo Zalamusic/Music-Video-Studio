@@ -16,6 +16,9 @@
     // Save as a reference only: the short link destination is not resolved or streamed.
     {key:'spotify',name:'Spotify',hosts:['spotify.link','www.spotify.link'],parts:[/^\/[a-z0-9_-]{5,80}\/?$/i]},
     {key:'soundcloud',name:'SoundCloud',hosts:['soundcloud.com','www.soundcloud.com'],parts:[/^\/[a-z0-9_.-]+\/[a-z0-9_.-]+\/?$/i]},
+    // TikTok video links are references for free creative direction only; no audio is imported.
+    {key:'tiktok',name:'TikTok',hosts:['tiktok.com','www.tiktok.com','m.tiktok.com'],parts:[/^\/@[a-z0-9_.-]+\/video\/[0-9]{10,22}\/?$/i]},
+    {key:'tiktok',name:'TikTok',hosts:['vm.tiktok.com','vt.tiktok.com'],parts:[/^\/[a-z0-9_-]{5,45}\/?$/i]},
   ];
   function inspect(value){
     const raw=String(value||'').trim();
@@ -29,7 +32,7 @@
     if(!def){
       if(host==='open.spotify.com' || host==='spotify.link' || host==='www.spotify.link')
         return {ok:false,error:'For Spotify, use Copy Song Link from a track (or the official spotify.link short share URL). Artist, album, and playlist links are not individual songs.'};
-      return {ok:false,error:'Supported song links: SUNO, Udio, YouTube, Spotify, or SoundCloud. Use the official song share URL.'};
+      return {ok:false,error:'Supported reference links: SUNO, Udio, YouTube, Spotify, SoundCloud, or TikTok. Use an official public song or video share URL.'};
     }
     if(def.key==='youtube' && url.pathname.toLowerCase()==='/watch' && !/^[a-z0-9_-]{6,20}$/i.test(url.searchParams.get('v')||''))
       return {ok:false,error:'This YouTube link is missing its video ID.'};

@@ -111,3 +111,36 @@ textarea{padding:15px 14px;vertical-align:top;overflow:auto}
 .project-actions-grid button{font-size:clamp(14px,2.5vw,15px)}
 .project-backup-note,.legal{font-size:14px;line-height:1.6}
 @media(max-width:620px){.topnav{gap:8px}.topnav a{font-size:13px}.intro .eyebrow{font-size:12px}.step-footer #stepCounter{font-size:14px}}
+
+/* Nov 13 artist UX revision: compact scrollable lyrics board, no endless auto-growth. */
+#lyrics {height:260px;min-height:230px;max-height:min(65vh,450px);overflow-y:auto;overflow-x:hidden;resize:vertical;white-space:pre-wrap;overflow-wrap:anywhere;overscroll-behavior:contain;}
+@media (max-width:620px) {#lyrics{height:245px;min-height:220px;max-height:55vh;}}
+/* Final-stage actions live WITH review rather than before the first song input. */
+.wizard-step[data-step="4"] .project-actions {margin:22px 0 20px;padding:18px 0 16px;border:1px solid #6f5b39;border-radius:14px;background:#211d22;}
+.wizard-step[data-step="4"] .project-actions h4{font-size:20px;color:var(--gold-strong);margin:0 17px 6px;}
+.wizard-step[data-step="4"] .project-actions-intro{color:var(--muted);font-size:15px;line-height:1.55;margin:0 17px 16px;}
+.wizard-step[data-step="4"] .project-actions-grid{padding:0 16px;grid-template-columns:repeat(2,minmax(0,1fr));}
+.wizard-step[data-step="4"] .project-backup-note{margin:13px 17px 7px;color:var(--muted);font-size:14px;}
+.wizard-step[data-step="4"] .project-transfer-status{margin:7px 17px 0;}
+.project-restore-shortcut{color:var(--muted);font-size:14px;margin:14px 0 0;}
+.inline-action{background:transparent;border:0;border-bottom:1px solid #cfaa61;border-radius:0;padding:2px 0;color:var(--gold-strong);font:inherit;cursor:pointer;min-height:32px;}
+.inline-action:hover{text-decoration:underline}.inline-action:focus-visible{outline:3px solid #eac77c;outline-offset:3px;}
+@media(max-width:620px){.wizard-step[data-step="4"] .project-actions-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.wizard-step[data-step="4"] .project-actions-grid button{min-height:52px;padding:9px 5px;}}
+
+/* Nov 13 separation: free link evaluation and MP3/WAV production must never look like one upload option. */
+.studio-journey-title{font-size:22px;color:var(--gold-strong);margin:0 0 6px;line-height:1.35}
+.studio-journey-intro{margin:5px 0 16px}
+.studio-journey-intro strong{color:#f1d08a}
+.source-mode{grid-template-columns:minmax(0,1fr);gap:24px}
+.studio-journey-card{border:1px solid #646b5a;border-radius:14px;padding:18px;background:#20251f;display:grid;gap:10px;box-shadow:0 3px 12px #0004}
+.studio-journey-card p{font-size:15px;line-height:1.6;color:#dcd9d2;margin:0}
+.studio-journey-kicker{font-size:12px;font-weight:850;letter-spacing:.07em;color:#e6c684}
+.studio-journey-card .source-mode-btn{width:100%;max-width:100%;font-size:16px;min-height:52px;text-align:center;border-radius:9px}
+.studio-evaluation-choice{border-left:4px solid #d1b26e}
+.studio-production-choice{background:#161820;border-left:4px solid #84a4cc;border-color:#5c6a80}
+.studio-production-choice .studio-journey-kicker{color:#bdd8f9}
+.studio-journey-card .source-mode-btn.selected{box-shadow:0 0 0 2px #e9d19e}
+#songLinkPanel{margin-top:19px;border:1px solid #927749;background:#23231f}
+#audioSourcePanel{margin-top:21px;padding:20px;border:1px solid #6985a4;background:#181c25;border-radius:14px}
+#audioSourcePanel label{color:#f2d79c}
+@media(max-width:620px){.source-mode{gap:19px}.studio-journey-card{padding:14px}.studio-journey-card .source-mode-btn{font-size:15px;min-height:54px}#audioSourcePanel{padding:15px}}

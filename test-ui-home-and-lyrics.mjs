@@ -21,18 +21,17 @@ test('Home shortcut is accessible, fixed and included across all customer pages'
  assert.doesNotMatch(home,/fetch\(|\/api\/local\/jobs|\/api\/paypal/);
 });
 
-test('Lyrics board expands after paste, input, saved draft and mobile wizard navigation',()=>{
+test('Lyrics board stays compact, scrolls within the editor and resets to first verse after paste or restoration',()=>{
  const html=read('my-studio.html'),css=read('my-studio.css'),js=read('my-studio.js'),library=read('cutloopz-lyrics-board.js');
  assert.match(html,/src="\/cutloopz-lyrics-board\.js"/);
  assert.match(html,/id="lyrics"[^>]*maxlength="12000"[^>]*aria-describedby="lyricsBoardHelp"/);
- assert.match(html,/id="lyricsBoardHelp"/);
- assert.match(css,/#lyrics\{min-height:265px;max-height:none;overflow-y:hidden;/);
+ assert.match(html,/The box stays compact; scroll inside it/);
+ assert.match(css,/#lyrics \{height:260px;min-height:230px;max-height:min\(65vh,450px\);overflow-y:auto;/);
  assert.match(js,/if\(page===0\)window\.CutLoopzLyricsBoard\?\.refresh\(\)/);
- assert.match(library,/lyrics\.scrollHeight/);
- assert.match(library,/lyrics\.addEventListener\('input'/);
+ assert.match(library,/lyrics\.scrollTop = 0/);
  assert.match(library,/lyrics\.addEventListener\('paste'/);
- assert.match(library,/window\.addEventListener\('resize'/);
- assert.match(library,/window\.addEventListener\('pageshow'/);
+ assert.doesNotMatch(library,/scrollHeight/);
+ assert.doesNotMatch(library,/lyrics\.addEventListener\('input'/);
  assert.match(read('director-preview.html'),/src="\/cutloopz-lyrics-board\.js"/);
  assert.doesNotMatch(library,/\.value\s*=|fetch\(|\/api\//);
 });
