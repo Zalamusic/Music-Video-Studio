@@ -159,3 +159,15 @@ textarea{padding:15px 14px;vertical-align:top;overflow:auto}
 /* The customer never needs to choose between two workflows inside one form.
    The global navigation is the single authoritative entry point. */
 .source-mode-field{display:none!important}
+
+/* Optional free beat-analysis upload sits inside the evaluator, never the video Studio. */
+.free-beat-panel[hidden],.free-beat-results[hidden]{display:none!important}
+.free-beat-panel{background:#1b201e;border:1px solid #7a6948;border-left:4px solid #e2c17c;border-radius:13px;padding:17px;margin:13px 0 23px}
+.free-beat-panel label{display:block;color:#f3dba3;font-size:17px;font-weight:750;margin:0 0 10px}
+.free-beat-panel input{margin:8px 0 8px}
+.free-beat-panel .gold{margin:5px 0 2px}
+.free-beat-results{padding-top:11px}
+.free-beat-results .metric-grid{margin-bottom:8px}
+@media(max-width:620px){.free-beat-panel{padding:14px}.free-beat-panel label{font-size:16px}.free-beat-panel .metric-grid strong{font-size:17px}}
+
+.evaluation-mode #directorPhotoHint{display:none!important}

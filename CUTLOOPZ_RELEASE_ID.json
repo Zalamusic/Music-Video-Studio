@@ -1,5 +1,5 @@
 {
-  "release_id": "CUTLOOPZ_SEPARATE_FREE_EVALUATION_AND_VIDEO_2026-11-13",
+  "release_id": "CUTLOOPZ_FREE_OPTIONAL_BEAT_ANALYSIS_2026-11-14",
   "site_branch": "cutloopz-production-test",
   "features": [
     "My Studio five-step guided workflow",
@@ -36,7 +36,11 @@
     "Separate Free Song Evaluation platform link panel from MP3/WAV video creation on homepage",
     "Distinct link-based creative evaluation and production-audio choices in Studio page 1",
     "TikTok public video links accepted for reference-only free creative direction; no audio extraction",
-    "MP3/WAV remains required for actual video generation and beat analysis"
+    "Free Song Evaluator optional MP3/WAV upload directly under song links, labeled For Beat Analysis, Upload an MP3 File",
+    "Free analysis shows estimated BPM, audio duration and energy segments using the existing no-charge CPU endpoint, without GPU or video-generation calls",
+    "Link-only evaluation is reference-and-lyrics-based; no streaming audio is retrieved or presented as analyzed",
+    "Free evaluator and video-creation Studio drafts remain isolated, with browser-local audio retention and temporary server analysis files",
+    "Video creation still requires authorized MP3/WAV plus artist photo; separate from the optional free beat analysis"
   ],
   "files_sha256": {
     "customer-auth.js": "b7d301f04a86ae7dc97bce92368b4fee65b0d5546e4f1036d2e3cd6a1ac9e417",
@@ -53,16 +57,16 @@
     "public/cutloopz-song-link.js": "8fc22bf32bfe12cf3daee09d54addd58eec7b533f94d256cbff2ff6058dd96e5",
     "public/cutloopz-studio-helper.js": "c6f094f7bfb409c6dd9f7b6aff5ca278a5cfc4905abec5d46e8bed74c3395891",
     "public/index.html": "303bbd0e6281b38a721f42269fa6c2242ec69ee916c235ad7107f8470f1c5b38",
-    "public/my-studio.css": "cb877da1e3705485d6bb4ab5962d970f19fd90cd83f1c65b08f1a901dbbbd2c1",
-    "public/my-studio.html": "c5074b844a8dbcfddeec41e145be97ce49bd956291937a19738129f6c58a3866",
-    "public/my-studio.js": "4abdbda288551876ebe6b7fb5cc952e666c38bdc13ba018e586189a70f58ba3f",
+    "public/my-studio.css": "e7b49aa8e84571c2ae47fef36497f69ba3d58648de8a11fecf59743a0df2f19c",
+    "public/my-studio.html": "a4a331e069ba81b19943c5843f49ae20d238217a684770d14808185a77c6c79e",
+    "public/my-studio.js": "de59b7bdc0d0a32940a55810bb5dfca0f1018252f7c9f859c06e5200d3db329b",
     "server.js": "d280c57d620b3318966054f8196188283aaa61999e75965970af6154f9c34231",
     "test-creator-directory-and-cinema.mjs": "8c921525efae354dffa4479247fc9d727f71ede9197e104529b4ecf58fd50fe2",
     "test-song-link-intake.mjs": "551459b9d93219a8ab34837b3b44ee13c0c1da89a0a88c3d5c090b3f2a5cf27b",
     "test-v5b-no-credits-suno.mjs": "4bb9da4fcfeb96ae5a1c96d0b3c735389271fb5fa765367fd5805b5f2b4479a6",
     "test-v5d-spotify-back-scroll.mjs": "90913c0ecbecf653ee343f44e09a065fd96d231a44dc6c4d022a35f6f0a2b63e"
   },
-  "previous_release_id": "CUTLOOPZ_ARTIST_PROFILE_SIMPLIFIED_2026-11-13",
+  "previous_release_id": "CUTLOOPZ_SEPARATE_FREE_EVALUATION_AND_VIDEO_2026-11-13",
   "previous_baseline_expected_test_count": 63,
-  "verified_selected_test_count": 97
+  "verified_selected_test_count": 103
 }

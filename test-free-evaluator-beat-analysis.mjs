@@ -1,0 +1,41 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read = file => readFileSync(new URL(file, import.meta.url), 'utf8');
+const page = read('./public/my-studio.html');
+const css = read('./public/my-studio.css');
+const js = read('./public/my-studio.js');
+const router = read('./cutloopz-creative-preview.mjs');
+
+test('free evaluation offers optional beat-analysis MP3/WAV directly below song link', () => {
+  const link = page.indexOf('id="songLinkPanel"');
+  const beat = page.indexOf('id="freeBeatPanel"');
+  const title = page.indexOf('id="title"');
+  assert.ok(link >= 0 && beat > link && title > beat, 'beat input must appear between link and title');
+  assert.match(page, /For Beat Analysis, Upload an MP3 File/);
+  assert.match(page, /id="evaluationAudio"[^>]*accept="\.mp3,\.wav/);
+  assert.match(page, /id="evaluationAnalyzeBtn"/);
+  assert.match(page, /id="evaluationBeatResult"[^>]*hidden/);
+  assert.match(page, /No video generation or payment/);
+});
+test('the free evaluator and video Studio retain separate uploads and modes', () => {
+  assert.match(js, /storagePrefix=evaluatorMode\?'cutloopz:free-evaluator:v1:'/);
+  assert.match(js, /\$\('freeBeatPanel'\)\.hidden=false/);
+  assert.match(css, /\.free-beat-panel\[hidden\]/);
+  assert.match(css, /\.evaluation-mode #audioSourcePanel/);
+  assert.match(js, /if\(\(selectedSource==='upload'\|\|evaluatorMode\)\&\&audio/);
+  assert.match(js, /if\(selectedSource==='link'\&\&!evaluatorMode\&\&audio\)/);
+  assert.match(js, /if\(evaluatorMode\&\&!validSongLink\(\)\&\&!lastSongFile\)/);
+});
+test('the beat-analysis action uses existing bounded free endpoint and displays estimates', () => {
+  assert.match(js, /\$\('evaluationAnalyzeBtn'\)\.addEventListener\('click',\(\)=>analyze\(\)\)/);
+  assert.match(js, /fetch\('\/api\/creative-preview\/music-analysis'/);
+  assert.match(js, /\$\('evaluationBeatResult'\)\.hidden=false/);
+  assert.match(js, /\$\('evaluationBpm'\)\.textContent/);
+  assert.match(js, /\$\('evaluationDuration'\)\.textContent/);
+  assert.match(router, /limits:\{fileSize:25\*1024\*1024,files:1,fields:0\}/);
+  assert.match(router, /rateGate\(req,'audio',4\)/);
+  assert.match(router, /const plan=await analyzeMusic\(file/);
+  assert.match(router, /await fs\.rm\(base,\{recursive:true,force:true\}\)/);
+  assert.doesNotMatch(router, /generateVideo\(/);
+});
