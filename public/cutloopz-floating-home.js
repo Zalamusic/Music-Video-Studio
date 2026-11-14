@@ -39,16 +39,52 @@
           bottom: max(14px, env(safe-area-inset-bottom, 0px));
         }
       }
-      @media print { #cutloopzFloatingHome { display:none!important; } }
+      #cutloopzProfileReturn {
+        position: fixed;
+        z-index: 950;
+        left: max(12px, env(safe-area-inset-left, 0px));
+        bottom: max(81px, calc(env(safe-area-inset-bottom, 0px) + 70px));
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 36px;
+        padding: 6px 12px;
+        border: 1px solid #d6aa61;
+        border-radius: 999px;
+        background: #19151b;
+        color: #f3d69d;
+        font: 700 12px/1.2 Arial, sans-serif;
+        white-space: nowrap;
+        box-shadow: 0 5px 17px rgba(0,0,0,.36);
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+      #cutloopzProfileReturn:hover { background:#312517; }
+      #cutloopzProfileReturn:focus-visible { outline:3px solid #fff3d7;outline-offset:3px; }
+      @media print { #cutloopzFloatingHome, #cutloopzProfileReturn { display:none!important; } }
     `;
     document.head.appendChild(style);
     const link = document.createElement('a');
     link.id = 'cutloopzFloatingHome';
-    link.href = '/customer.html#home';
+    link.href = '/customer.html';
     link.setAttribute('aria-label', 'Go to CutLoopz Home');
     link.title = 'Home';
     link.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3 10 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/></svg>';
     document.body.appendChild(link);
+
+    // The account page IS My Profile. Every other customer page has one
+    // consistent, unobtrusive return shortcut beside the existing Home control.
+    // Signed-out visitors can use the same link to reach the sign-in screen.
+    if (!/^\/account\.html$/i.test(window.location.pathname)) {
+      const profile = document.createElement('a');
+      profile.id = 'cutloopzProfileReturn';
+      profile.href = '/account.html';
+      profile.textContent = 'My Profile';
+      profile.title = 'Return to My Profile';
+      profile.setAttribute('aria-label', 'Return to My Profile and Creative Home');
+      document.body.appendChild(profile);
+    }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
   else install();

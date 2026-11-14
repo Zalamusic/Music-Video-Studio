@@ -4,12 +4,29 @@
  const ownerPreview=new URLSearchParams(location.search).get('preview')==='mine';
  const validId=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
  const el=(tag,text,cls)=>{const node=document.createElement(tag);if(cls)node.className=cls;node.textContent=text;return node;};
+ function cutloopzPlatformName(hostname) {
+   const host = String(hostname || '').toLowerCase().replace(/^www\./,'');
+   const names = [
+     ['youtube.com','YouTube'], ['youtu.be','YouTube'],
+     ['spotify.com','Spotify'], ['open.spotify.com','Spotify'],
+     ['tiktok.com','TikTok'], ['instagram.com','Instagram'],
+     ['soundcloud.com','SoundCloud'], ['suno.com','Suno'],
+     ['udio.com','Udio'], ['vimeo.com','Vimeo'],
+     ['music.apple.com','Apple Music'], ['facebook.com','Facebook'],
+     ['x.com','X'], ['twitter.com','X']
+   ];
+   for (const [domain,name] of names) {
+     if (host === domain || host.endsWith('.' + domain)) return name;
+   }
+   return hostname.replace(/^www\./,'');
+ }
+ 
  function addLink(container,value,kind){
   try{
    const url=new URL(value);
    if(url.protocol!=='https:' || url.username || url.password)return;
    const link=el('a',undefined,'artist-external-link');link.href=url.toString();link.target='_blank';link.rel='noopener noreferrer nofollow';
-   link.append(el('span',kind+': '+url.hostname.replace(/^www\./,'')),el('span','↗','artist-external-arrow'));
+   link.append(el('span',cutloopzPlatformName(url.hostname)+' · '+kind),el('span','↗','artist-external-arrow'));
    container.append(link);
   }catch{}
  }

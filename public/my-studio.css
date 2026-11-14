@@ -187,3 +187,10 @@ textarea{padding:15px 14px;vertical-align:top;overflow:auto}
 .studio-artist-shortcuts .cinema-review-link{display:flex;min-width:0;width:100%;min-height:48px;margin:0;padding:12px 7px;align-items:center;justify-content:center;text-align:center;line-height:1.25;font-size:clamp(12px,3.4vw,15px);white-space:nowrap}
 .studio-artist-shortcuts .cinema-review-link:focus-visible{outline:3px solid #f4d99e;outline-offset:3px}
 @media(max-width:360px){.studio-artist-shortcuts{gap:6px}.studio-artist-shortcuts .cinema-review-link{padding:11px 3px;font-size:12px}}
+
+/* Predictable wizard transitions: no abrupt content anchoring or hidden headings. */
+.workspace-content { overflow-anchor: none; }
+.wizard-step h3 { scroll-margin-top: 18px; }
+@media(prefers-reduced-motion:reduce) {
+  .wizard-step, .progress span { transition: none !important; }
+}

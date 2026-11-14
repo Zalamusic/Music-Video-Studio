@@ -71,6 +71,7 @@
  function syncCustomTime(){ $('customTimeField').hidden=$('duration').value!=='custom'; }
  let storageKey=storagePrefix+'guest', account=null, saveTimer=null, serverTimer=null;
  let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false, photoPreviewUrl=null;
+ let stepScrollFrame=null;
  let analysisSourceKey='', storyboardSourceKey='', pendingRestore=null, sourceVersion=0;
  let selectedSource=evaluatorMode?'link':'upload'; // The free evaluator remembers its selected input independently.
  const activeSongFile=()=>evaluatorMode&&selectedSource!=='upload'?null:lastSongFile;
@@ -426,9 +427,15 @@
    scheduleSave();
    if(reposition){
      const visibleHeading=page===0?$('songHeading'):document.querySelector(`.wizard-step[data-step="${page}"] h3`);
-     // Explicit instant alignment prevents the previous step's scroll offset
-     // lingering after Back/Next and avoids triggering the on-screen keyboard.
-     visibleHeading?.scrollIntoView({block:'start',behavior:'instant'});
+     // Allow the new step to lay out before repositioning. A quick second tap
+     // cancels the old scroll request, avoiding a visible bounce on mobile.
+     if(stepScrollFrame!==null)cancelAnimationFrame(stepScrollFrame);
+     stepScrollFrame=requestAnimationFrame(()=>{
+       stepScrollFrame=null;
+       if(!visibleHeading?.isConnected)return;
+       const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+       visibleHeading.scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'});
+     });
    }
  }
  function clearOrphanedStoryboard(){

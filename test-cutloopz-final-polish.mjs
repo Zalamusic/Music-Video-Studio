@@ -33,8 +33,8 @@ test('Authenticated artist can preview private profile, public discovery remains
  }finally{rmSync(tmp,{recursive:true,force:true})}
 });
 test('Rewards, password recovery and private-profile links point to intended destinations',()=>{
- assert.match(read('public/creator-profile.html'),/href="\/hit-maker-rewards\.html"/);
- assert.match(read('public/creator-profile.html'),/id="viewMyProfile"[^>]+href="\/artist\.html\?preview=mine"/);
+ assert.match(read('public/account.html'),/href="\/hit-maker-rewards\.html"/);
+ assert.match(read('public/creator-profile.html'),/id="viewMyProfile"[^>]+href="\/account\.html"/);
  assert.match(read('public/artist.js'),/\/api\/customer-auth\/creator-preview/);
  assert.match(read('public/hit-maker-rewards.js'),/\/api\/customer-order-history/);
  assert.match(read('public/hit-maker-rewards.js'),/qualifyingVideos/);

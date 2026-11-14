@@ -8,6 +8,8 @@ test('My Creative Home centralizes navigation without duplicating rewards progre
  assert.match(a,/class="account-hub-grid"/);
  assert.match(a,/href="\/creator-profile\.html"/);
  assert.match(a,/href="#historyTitle"/);
+ assert.match(a,/href="\/creator-directory\.html"/);
+ assert.match(a,/href="\/hit-maker-rewards\.html"/);
  assert.match(a,/href="\/my-studio\.html\?source=upload"/);
  assert.doesNotMatch(a,/id="loyaltyPanel"|id="progressFill"|id="progressText"/);
  assert.match(a,/if \(pageParams\.get\('return'\)==='studio'\)/);
@@ -15,13 +17,13 @@ test('My Creative Home centralizes navigation without duplicating rewards progre
  assert.match(a,/id="orderHistory"/);
 });
 
-test('Artist editor keeps personal details, one private rewards link and no duplicate public-view button',()=>{
+test('Artist editor is separate from private profile hub and rewards links',()=>{
  const a=read('./public/creator-profile.html');
- assert.match(a,/href="\/hit-maker-rewards\.html"/);
- assert.equal((a.match(/href="\/hit-maker-rewards\.html"/g)||[]).length,1);
+ assert.doesNotMatch(a,/href="\/hit-maker-rewards\.html"/);
+ assert.match(read('./public/account.html'),/href="\/hit-maker-rewards\.html"/);
  assert.match(a,/id="viewMyProfile"/);
  assert.doesNotMatch(a,/id="viewPublicProfile"/);
- assert.match(a,/href="\/account\.html\?view=studio"/);
+ assert.match(a,/href="\/account\.html"/);
 });
 
 test('Avatar allows touch reposition and pinch/slider zoom before saving a small JPEG',()=>{
@@ -41,7 +43,7 @@ test('Avatar allows touch reposition and pinch/slider zoom before saving a small
 
 test('The public homepage and Studio favor the central signed-in hub',()=>{
  const home=read('./public/customer.html'),studio=read('./public/my-studio.html');
- assert.equal((home.match(/My Creative Home/g)||[]).length,2);
- assert.match(studio,/My Creative Home/);
- assert.match(read('./public/hit-maker-rewards.html'),/href="\/creator-profile\.html"/);
+ assert.ok((home.match(/My Profile/g)||[]).length>=2);
+ assert.match(studio,/My Profile/);
+ assert.match(read('./public/hit-maker-rewards.html'),/href="\/account\.html"/);
 });

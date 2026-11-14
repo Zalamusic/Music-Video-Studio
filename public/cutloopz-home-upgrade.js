@@ -215,10 +215,10 @@
  options.replaceChildren(...guestLinks);
  return;
  }
- if (heading) heading.textContent = 'Welcome Back to Cut Loopz Media';
+ if (heading) heading.textContent = 'Welcome Back to CutLoopz Media';
  if (intro) intro.textContent =
- 'Your personal studio is ready. Open My Studio to manage your account.';
- const studio = makeLink('My Studio', '/my-studio.html');
+ 'Your profile and creative tools are ready in one place.';
+ const studio = makeLink('My Profile', '/account.html');
  const signOut = document.createElement('button');
  signOut.type = 'button';
  signOut.className = 'cutloopz-account-signout';

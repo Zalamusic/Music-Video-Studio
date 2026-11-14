@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#100e12">
-<title>Your Account | CutLoopz Media</title>
+<title>My Profile | CutLoopz Media</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -463,6 +463,13 @@ body.zala-themed .zala-theme-control {
   .progress-fill {transition:none}
 }
 
+/* Hold a stable, branded place while account status is checked. Don't flash
+   the sign-in form before a returning artist's session has been verified. */
+.account-loading{min-height:205px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center}
+.account-loading-indicator{font-size:32px;color:#bf9250;line-height:1}
+.account-loading p{font-size:15px;margin:0}
+/* When an in-page hub link is used, keep its destination readable. */
+#historyTitle{scroll-margin-top:20px}
 /* One central signed-in hub. Rewards data appears only on its dedicated page. */
 .account-hub{margin-top:23px;padding:20px;border:1px solid #bba06a;border-radius:16px;background:linear-gradient(155deg,#21191b,#100f13);color:#f8e9c8}
 .account-hub h2{font-size:21px;margin:0;color:#f1cf84}
@@ -475,11 +482,34 @@ body.zala-themed .zala-theme-control {
 .account-hub .hub-tile:hover,.account-hub .hub-tile:focus-visible{border-color:#f0ce84;background:#3c3030}
 @media(max-width:570px){.account-hub{padding:15px}.account-hub-grid{grid-template-columns:1fr}.account-hub .hub-tile{display:grid;grid-template-columns:33px 1fr;column-gap:9px;row-gap:2px;align-items:center}.account-hub .hub-tile span{grid-row:span 2}.account-hub .hub-tile small{grid-column:2}}
 
+
+/* My Profile: saved artist details first, creative destinations second. */
+.artist-owner-panel{margin-top:19px;padding:20px;border:1px solid #98794a;border-radius:18px;background:linear-gradient(140deg,#21191c,#111014);color:#f7ead3}
+.artist-owner-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.artist-owner-head h2{font-size:22px;line-height:1.2;margin:0;color:#f4d38e}
+.artist-edit-link{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;min-height:44px;border:1px solid #eac278;border-radius:12px;color:#efd295!important;font-weight:800;text-decoration:none}
+.artist-edit-link:hover,.artist-edit-link:focus-visible{background:#352924}
+.artist-owner-status,.artist-owner-panel p{color:#d4c7b9}
+.artist-owner-identity{display:flex;align-items:center;gap:16px;margin-top:19px;min-width:0}
+.artist-owner-avatar{display:grid;place-items:center;width:92px;height:92px;flex-shrink:0;border-radius:50%;overflow:hidden;border:2px solid #c69c52;background:#332528;font-size:36px;color:#e6c178}
+.artist-owner-avatar img{width:100%;height:100%;display:block;object-fit:cover}
+.artist-owner-identity>div{min-width:0;overflow-wrap:anywhere}
+.artist-owner-identity h3{font-size:24px;line-height:1.2;color:#fff6e5;margin:0 0 5px}
+.artist-owner-identity p{font-size:14px;margin:0 0 8px}
+.artist-privacy-label{display:inline-block;padding:3px 9px;border:1px solid #846b47;border-radius:999px;color:#f0ce86;font-size:12px;font-weight:800}
+.artist-owner-bio{white-space:pre-wrap;overflow-wrap:anywhere;margin:17px 0 0;font-size:15px}
+.artist-owner-platforms{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 0}
+.artist-owner-platforms span{font-size:12px;background:#31282b;padding:5px 10px;border:1px solid #665036;border-radius:999px;color:#f3d597}
+.artist-owner-links{display:flex;flex-direction:column;gap:9px;margin-top:17px}
+.artist-owner-links a{display:block;overflow-wrap:anywhere;padding:9px 11px;border:1px solid #665036;border-radius:10px;color:#f0d28f;text-decoration:underline}
+.signed-in-caption{font-size:12px;overflow-wrap:anywhere;margin:20px 0;color:var(--muted)}
+.account-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:570px){.artist-owner-panel{padding:15px}.artist-owner-avatar{width:72px;height:72px}.account-hub-grid{grid-template-columns:1fr}}
+
 </style>
 <link rel="stylesheet" href="/cutloopz-auth-premiere.css">
 <script src="/cutloopz-floating-home.js" defer></script>
 <script src="/cutloopz-studio-helper.js" defer></script>
-<script src="/cutloopz-floating-home.js" defer></script>
 </head>
 
 <body class="cutloopz-auth">
@@ -495,12 +525,16 @@ body.zala-themed .zala-theme-control {
     <div class="brand">CutLoopz Media</div>
     <div class="sub">CINEMATIC MUSIC VIDEO STUDIO</div>
   </div>
-  <a href="/my-studio.html" class="studio-link">
-    ← Studio
+  <a href="/customer.html" class="studio-link">
+    ← Home
   </a>
 </header>
 
-<section class="panel" id="authPanel">
+<section class="panel account-loading" id="accountLoading" role="status" aria-live="polite">
+  <span class="account-loading-indicator" aria-hidden="true">✦</span>
+  <p>Opening your creative home…</p>
+</section>
+<section class="panel hidden" id="authPanel">
   <div class="auth-eyebrow">✦ YOUR CREATIVE HOME ✦</div><h1 id="heading">Welcome back, Hit Maker!</h1>
   <p id="description">
     Ready to make another hit? Sign in and let the creativity continue.
@@ -583,19 +617,41 @@ body.zala-themed .zala-theme-control {
 </section>
 
 <section class="panel hidden" id="profilePanel">
-  <h1 id="profileHeading">Welcome back to the studio!</h1>
-  <p id="profileGreeting">Your next masterpiece is waiting.</p>
-  <p id="welcome"></p>
+  <h1 id="profileHeading">My Profile</h1>
+  <p id="profileGreeting">Your artist identity and creative tools, together in one place.</p>
+
+  <section class="artist-owner-panel" aria-labelledby="artistCardHeading">
+    <div class="artist-owner-head">
+      <h2 id="artistCardHeading">My Artist Profile</h2>
+      <a href="/creator-profile.html" class="artist-edit-link" id="artistEditLink">Edit Profile</a>
+    </div>
+    <p class="artist-owner-status" id="artistSummaryStatus" role="status" aria-live="polite">Loading your artist profile…</p>
+    <div id="artistSummaryDetails" hidden>
+      <div class="artist-owner-identity">
+        <span class="artist-owner-avatar" id="artistSummaryAvatar" aria-label="Artist profile picture">♫</span>
+        <div>
+          <h3 id="artistSummaryName"></h3>
+          <p id="artistSummaryGenre"></p>
+          <span class="artist-privacy-label" id="artistSummaryVisibility"></span>
+        </div>
+      </div>
+      <p class="artist-owner-bio" id="artistSummaryBio" hidden></p>
+      <div class="artist-owner-platforms" id="artistSummaryPlatforms" hidden></div>
+      <div class="artist-owner-links" id="artistSummaryLinks" hidden></div>
+    </div>
+  </section>
 
   <section class="account-hub" aria-label="My creative home">
     <h2>My Creative Home</h2>
-    <p>Everything you need, without jumping between menus.</p>
+    <p>Four clear destinations. Everything in one place.</p>
     <div class="account-hub-grid">
-      <a class="hub-tile" href="/creator-profile.html"><span aria-hidden="true">♫</span><strong>My Artist Profile</strong><small>Edit your bio, photo and music links. Find My Hit Maker Rewards here.</small></a>
-      <a class="hub-tile" href="#historyTitle"><span aria-hidden="true">▣</span><strong>My Videos</strong><small>View your orders and production history below.</small></a>
-      <a class="hub-tile" href="/my-studio.html?source=upload"><span aria-hidden="true">▶</span><strong>Create Video</strong><small>Open the five-step Music Video Studio.</small></a>
+      <a class="hub-tile" href="/my-studio.html?source=upload"><span aria-hidden="true">▶</span><strong>Create Video</strong><small>Open the five-step video Studio.</small></a>
+      <a class="hub-tile" href="#historyTitle"><span aria-hidden="true">▣</span><strong>My Videos</strong><small>Review your orders and video history.</small></a>
+      <a class="hub-tile" href="/hit-maker-rewards.html"><span aria-hidden="true">🏆</span><strong>My Hit Maker Rewards</strong><small>Follow your milestones and benefits.</small></a>
+      <a class="hub-tile" href="/creator-directory.html"><span aria-hidden="true">♫</span><strong>Browse Other Creators</strong><small>Discover artists and their music links.</small></a>
     </div>
   </section>
+  <p id="welcome" class="signed-in-caption"></p>
 
   <section class="history" aria-labelledby="historyTitle">
     <div class="history-heading">
@@ -676,6 +732,23 @@ const messages = {
      'Welcome to CutLoopz Media.']
   ]
 };
+
+function cutloopzPlatformName(hostname) {
+  const host = String(hostname || '').toLowerCase().replace(/^www\./,'');
+  const names = [
+    ['youtube.com','YouTube'], ['youtu.be','YouTube'],
+    ['spotify.com','Spotify'], ['open.spotify.com','Spotify'],
+    ['tiktok.com','TikTok'], ['instagram.com','Instagram'],
+    ['soundcloud.com','SoundCloud'], ['suno.com','Suno'],
+    ['udio.com','Udio'], ['vimeo.com','Vimeo'],
+    ['music.apple.com','Apple Music'], ['facebook.com','Facebook'],
+    ['x.com','X'], ['twitter.com','X']
+  ];
+  for (const [domain,name] of names) {
+    if (host === domain || host.endsWith('.' + domain)) return name;
+  }
+  return hostname.replace(/^www\./,'');
+}
 
 const pageParams = new URLSearchParams(location.search);
 let mode = pageParams.get('mode') === 'signup'
@@ -913,24 +986,91 @@ async function loadOrderHistory() {
   }
 }
 
+// Only the signed-in owner can request this private artist profile.
+async function loadArtistSummary(generation) {
+  const status = $('artistSummaryStatus');
+  const details = $('artistSummaryDetails');
+  status.hidden = false;
+  status.textContent = 'Loading your artist profile…';
+  details.hidden = true;
+  try {
+    const response = await fetch('/api/customer-auth/creator-profile', {
+      credentials:'same-origin', cache:'no-store',
+      headers:{Accept:'application/json'}
+    });
+    const data = await response.json();
+    if (!response.ok || !data.ok) throw Error(data.error || 'Unable to load your profile.');
+    if (!signedIn || generation !== accountGeneration) return;
+    const profile = data.profile;
+    if (!profile || !profile.artistName) {
+      status.textContent = 'Your artist profile is ready to create. Tap Edit Profile to add your name, picture, and music links.';
+      return;
+    }
+    status.hidden = true;
+    $('artistSummaryName').textContent = profile.artistName;
+    $('artistSummaryGenre').textContent = profile.genre || 'Independent artist';
+    $('artistSummaryVisibility').textContent = profile.visibility === 'public'
+      ? 'Public profile' : 'Private — visible only to you';
+    const avatar = $('artistSummaryAvatar');
+    avatar.replaceChildren();
+    if (typeof profile.avatar === 'string' &&
+      /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(profile.avatar) &&
+      profile.avatar.length <= 76000) {
+      const picture = document.createElement('img');
+      picture.src = profile.avatar;
+      picture.alt = '';
+      avatar.append(picture);
+    } else avatar.textContent = '♫';
+    const bio = $('artistSummaryBio');
+    bio.textContent = profile.bio || '';
+    bio.hidden = !profile.bio;
+    const platforms = $('artistSummaryPlatforms');
+    platforms.replaceChildren();
+    for (const name of (Array.isArray(profile.platforms) ? profile.platforms : []).slice(0,8)) {
+      const tag = document.createElement('span');
+      tag.textContent = String(name);
+      platforms.append(tag);
+    }
+    platforms.hidden = !platforms.children.length;
+    const links = $('artistSummaryLinks');
+    links.replaceChildren();
+    const addLink = (href, label) => {
+      try {
+        const url = new URL(href);
+        if (url.protocol !== 'https:' || url.username || url.password) return;
+        const item = document.createElement('a');
+        item.href = url.href;
+        item.rel = 'noopener noreferrer nofollow';
+        item.target = '_blank';
+        item.textContent = cutloopzPlatformName(url.hostname) + ' · ' + label;
+        links.append(item);
+      } catch {}
+    };
+    if (profile.artistPageUrl) addLink(profile.artistPageUrl, 'Artist website');
+    for (const href of (Array.isArray(profile.videoLinks) ? profile.videoLinks : []).slice(0,8)) addLink(href, 'Watch music video');
+    for (const href of (Array.isArray(profile.socialLinks) ? profile.socialLinks : []).slice(0,6)) addLink(href, 'Music & social');
+    links.hidden = !links.children.length;
+    details.hidden = false;
+  } catch (error) {
+    if (signedIn && generation === accountGeneration) status.textContent =
+      'Your profile could not be loaded. Tap Edit Profile to try again.';
+  }
+}
+
 function showUser(user, newlyRegistered = false) {
   signedIn = true;
   accountGeneration++;
 
   document.body.classList.remove('cutloopz-auth');
+  $('accountLoading').classList.add('hidden');
   $('authPanel').classList.add('hidden');
   $('profilePanel').classList.remove('hidden');
 
   const firstName = String(user.name || 'Hitmaker')
     .trim().split(/\s+/)[0];
 
-  const [heading, greeting] = chooseGreeting(
-    newlyRegistered ? 'newProfile' : 'profile'
-  );
-
-  $('profileHeading').textContent =
-    heading.replace('{name}', firstName);
-  $('profileGreeting').textContent = greeting;
+  $('profileHeading').textContent = 'My Profile';
+  $('profileGreeting').textContent = 'Your artist identity and creative tools, all in one place.';
 
   $('welcome').textContent =
     'Signed in as ' +
@@ -938,6 +1078,7 @@ function showUser(user, newlyRegistered = false) {
     ' (' + String(user.email || '') + ').';
 
   message('');
+  void loadArtistSummary(accountGeneration);
   void loadOrderHistory();
 }
 
@@ -947,6 +1088,7 @@ function showAuth() {
   historyRequest++;
 
   document.body.classList.add('cutloopz-auth');
+  $('accountLoading').classList.add('hidden');
   $('profilePanel').classList.add('hidden');
   $('authPanel').classList.remove('hidden');
 
@@ -983,11 +1125,15 @@ async function request(route, options = {}) {
 function afterAuthentication(user, newlyRegistered = false) {
   // Only a successful new-account registration triggers the one-time floating welcome.
   // Signing in, refreshing, and restoring an existing session never trigger it.
-  if (newlyRegistered) window.CutLoopzWelcome?.queue(user);
+  if (newlyRegistered) {
+    window.CutLoopzWelcome?.queue(user);
+    // A newly registered artist first lands on the main homepage.
+    window.location.replace('/customer.html');
+    return;
+  }
   if (new URLSearchParams(location.search).get('return')==='rewards'){window.location.replace('/hit-maker-rewards.html');return;}
   if (pageParams.get('return')==='studio') {window.location.replace('/my-studio.html?source=upload');return;}
   showUser(user, newlyRegistered);
-  if (newlyRegistered) window.CutLoopzWelcome?.consume();
 }
 
 $('loginTab').addEventListener('click', () => setMode('login'));
@@ -1108,7 +1254,7 @@ request('me')
       afterAuthentication(data.user);
     }
   })
-  .catch(() => {});
+  .catch(() => { if (!signedIn && !busy) { showAuth(); setMode(pageParams.get('mode') === 'signup' ? 'register' : 'login'); } });
 
 </script>
 </body>

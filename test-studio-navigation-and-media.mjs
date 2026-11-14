@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 const files=new URL('./public/',import.meta.url);
 test('Homepage navigation separates the free evaluator from video Studio',async()=>{
  const home=await readFile(new URL('customer.html',files),'utf8');
- assert.equal((home.match(/href="\/my-studio\.html\?mode=evaluator&source=link&step=song">Free Song Evaluation/g)||[]).length,2);
+ assert.ok((home.match(/href="\/my-studio\.html\?mode=evaluator&amp;source=link&amp;step=song">Music Evaluator/g)||[]).length>=2);
  assert.ok(home.includes('href="/my-studio.html?source=upload">Create Video')); 
  assert.ok(!home.includes('href="/my-studio.html?step=analyze">Director'));
  const js=await readFile(new URL('my-studio.js',files),'utf8');

@@ -32,7 +32,7 @@
     const description=document.createElement('p');description.className='cutloopz-welcome__desc';description.textContent='Your Studio is ready. Upload your song, explore the free Director, and turn your vision into a storyboard.';
     const closeButton=document.createElement('button');closeButton.className='cutloopz-welcome__close';closeButton.type='button';closeButton.setAttribute('aria-label','Dismiss welcome message');closeButton.textContent='×';closeButton.addEventListener('click',close);
     const actions=document.createElement('div');actions.className='cutloopz-welcome__actions';
-    const studio=document.createElement('a');studio.className='cutloopz-welcome__primary';studio.href='/my-studio.html';studio.textContent='Explore My Studio';
+    const studio=document.createElement('a');studio.className='cutloopz-welcome__primary';studio.href='/my-studio.html?source=upload';studio.textContent='Create Video';
     studio.addEventListener('click',()=>{ if(location.pathname==='/my-studio.html'){close();} });
     const later=document.createElement('button');later.className='cutloopz-welcome__later';later.type='button';later.textContent='Maybe later';later.addEventListener('click',close);
     actions.append(studio,later);

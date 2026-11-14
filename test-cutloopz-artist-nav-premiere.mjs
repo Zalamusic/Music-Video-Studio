@@ -26,7 +26,7 @@ test('Creator Directory offers compact clickable cards; public profile fetches p
   assert.match(artist,/textContent/);assert.match(html,/Listen &amp; Watch/);assert.match(html,/CutLoopz does not store public showcase videos/);
   assert.match(server,/profile\.visibility !== 'public'/);
   const owner=read('public/creator-profile.html'),ownerClient=read('public/creator-profile.js');
-  assert.match(owner,/My Hit Maker Rewards/);assert.match(ownerClient,/\/artist\.html\?id=/);
+  assert.match(read('public/account.html'),/My Hit Maker Rewards/);assert.match(owner,/href="\/account\.html"/);assert.match(ownerClient,/viewMyProfile/);
 });
 
 test('Cinema branding is a private premiere without changing token-based access',()=>{

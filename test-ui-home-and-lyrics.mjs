@@ -17,7 +17,8 @@ test('Home shortcut is accessible, fixed and included across all customer pages'
  assert.match(home,/bottom: max\(/);
  assert.match(home,/safe-area-inset-bottom/);
  assert.match(home,/aria-label', 'Go to CutLoopz Home'/);
- assert.match(home,/\/customer\.html#home/);
+ assert.match(home,/link\.href = '\/customer\.html';/);
+ assert.doesNotMatch(home,/\/customer\.html#home/);
  assert.doesNotMatch(home,/fetch\(|\/api\/local\/jobs|\/api\/paypal/);
 });
 
