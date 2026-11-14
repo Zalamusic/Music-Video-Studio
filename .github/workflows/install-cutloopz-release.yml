@@ -69,3 +69,4 @@ jobs:
             git push origin HEAD:cutloopz-production-test
           fi
 # Install latest CutLoopz upgrade
+# Install CutLoopz private reviews update
