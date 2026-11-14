@@ -9,27 +9,68 @@
   $('artistPageUrl').value=profile?.artistPageUrl||'';$('videoLinks').value=(profile?.videoLinks||[]).join('\n');
   $('socialLinks').value=(profile?.socialLinks||[]).join('\n');$('visibility').value=profile?.visibility||'private';
   document.querySelectorAll('#platformChoices input').forEach(el=>el.checked=(profile?.platforms||[]).includes(el.value));
-  const view=$('viewPublicProfile'); view.hidden=profile?.visibility!=='public';
-  if(!view.hidden && /^[0-9a-f-]{36}$/i.test(publicId||'')){view.href='/artist.html?id='+encodeURIComponent(publicId);}else view.hidden=true;
  }
  function showAvatar(){
    const box=$('avatarPreview');box.replaceChildren();
    if(avatarData){const pic=document.createElement('img');pic.src=avatarData;pic.alt='Your profile picture';box.append(pic);}
    else box.textContent='♫';
  }
- $('removeAvatar').addEventListener('click',()=>{avatarData='';$('avatarFile').value='';showAvatar();});
+ const crop=$('avatarCropOverlay'),cropCanvas=$('avatarCropCanvas'),cropCtx=cropCanvas.getContext('2d');
+ const zoomInput=$('avatarZoom');
+ let workingImage=null, zoom=1,offsetX=0,offsetY=0,previousFocus=null;
+ const pointers=new Map(),D=cropCanvas.width;
+ function limit(){
+   if(!workingImage)return;
+   const scale=Math.max(D/workingImage.width,D/workingImage.height)*zoom;
+   offsetX=Math.max(-(workingImage.width*scale-D)/2,Math.min((workingImage.width*scale-D)/2,offsetX));
+   offsetY=Math.max(-(workingImage.height*scale-D)/2,Math.min((workingImage.height*scale-D)/2,offsetY));
+ }
+ function paint(ctx,size,circle){
+   if(!workingImage)return;
+   const scale=Math.max(size/workingImage.width,size/workingImage.height)*zoom;
+   const sx=size/D;
+   ctx.clearRect(0,0,size,size);ctx.save();
+   if(circle){ctx.beginPath();ctx.arc(size/2,size/2,size/2-2,0,Math.PI*2);ctx.clip();}
+   ctx.drawImage(workingImage,(size-workingImage.width*scale)/2+offsetX*sx,(size-workingImage.height*scale)/2+offsetY*sx,workingImage.width*scale,workingImage.height*scale);
+   ctx.restore();
+   if(circle){ctx.strokeStyle='#edcb83';ctx.lineWidth=3;ctx.beginPath();ctx.arc(size/2,size/2,size/2-2,0,Math.PI*2);ctx.stroke();}
+ }
+ function renderCrop(){limit();paint(cropCtx,D,true);zoomInput.value=String(zoom);}
+ function closeCrop(){crop.hidden=true;pointers.clear();if(workingImage){workingImage.close?.();workingImage=null;}$('avatarFile').value='';previousFocus?.focus?.();}
+ $('removeAvatar').addEventListener('click',()=>{avatarData='';$('avatarFile').value='';showAvatar();status.textContent='Picture removed. Save your artist profile to keep this change.';});
  $('avatarFile').addEventListener('change',async()=>{
-  const file=$('avatarFile').files?.[0];if(!file)return;
-  if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>8*1024*1024){status.textContent='Choose a PNG, JPEG or WebP picture smaller than 8 MB.';return;}
-  try{
-   const img=await createImageBitmap(file);
-   const side=Math.min(img.width,img.height);const canvas=document.createElement('canvas');
-   canvas.width=160;canvas.height=160;const ctx=canvas.getContext('2d');
-   ctx.drawImage(img,(img.width-side)/2,(img.height-side)/2,side,side,0,0,160,160);img.close?.();
-   const resized=canvas.toDataURL('image/jpeg',0.72);
-   if(resized.length>76000)throw Error('Profile picture is too large after resizing.');
-   avatarData=resized;showAvatar();status.textContent='Picture ready. Tap Save Artist Profile to keep it.';
-  }catch(error){status.textContent='Could not process picture: '+error.message;}
+   const file=$('avatarFile').files?.[0];if(!file)return;
+   if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>8*1024*1024){status.textContent='Choose a PNG, JPEG or WebP picture smaller than 8 MB.';$('avatarFile').value='';return;}
+   try{
+     workingImage=await createImageBitmap(file);
+     if(!workingImage.width||!workingImage.height||workingImage.width*workingImage.height>25000000)throw Error('Picture dimensions are unsupported.');
+     previousFocus=document.activeElement;zoom=1;offsetX=0;offsetY=0;crop.hidden=false;renderCrop();cropCanvas.focus();
+     status.textContent='Adjust the image, then choose Use This Photo.';
+   }catch(error){if(workingImage){workingImage.close?.();workingImage=null;}crop.hidden=true;status.textContent='Could not open picture: '+error.message;$('avatarFile').value='';}
+ });
+ function canvasPoint(e){const r=cropCanvas.getBoundingClientRect();return{x:(e.clientX-r.left)*D/r.width,y:(e.clientY-r.top)*D/r.height};}
+ const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+ cropCanvas.addEventListener('pointerdown',e=>{if(!workingImage)return;e.preventDefault();cropCanvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,canvasPoint(e));});
+ cropCanvas.addEventListener('pointermove',e=>{
+   if(!pointers.has(e.pointerId)||!workingImage)return;
+   e.preventDefault();const old=pointers.get(e.pointerId),next=canvasPoint(e);
+   if(pointers.size===1){offsetX+=next.x-old.x;offsetY+=next.y-old.y;}
+   else {const other=[...pointers.entries()].find(([id])=>id!==e.pointerId)?.[1];if(other){const d0=distance(old,other),d1=distance(next,other);if(d0>1)zoom=Math.min(3,Math.max(1,zoom*d1/d0));}}
+   pointers.set(e.pointerId,next);renderCrop();
+ });
+ for(const name of ['pointerup','pointercancel','lostpointercapture'])cropCanvas.addEventListener(name,e=>pointers.delete(e.pointerId));
+ cropCanvas.addEventListener('keydown',e=>{const step=e.shiftKey?15:5;if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();if(e.key==='ArrowLeft')offsetX-=step;if(e.key==='ArrowRight')offsetX+=step;if(e.key==='ArrowUp')offsetY-=step;if(e.key==='ArrowDown')offsetY+=step;renderCrop();}});
+ zoomInput.addEventListener('input',()=>{zoom=Number(zoomInput.value);renderCrop();});
+ $('avatarCropCancel').addEventListener('click',closeCrop);
+ crop.addEventListener('click',e=>{if(e.target===crop)closeCrop();});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!crop.hidden)closeCrop();});
+ $('avatarCropConfirm').addEventListener('click',()=>{
+   if(!workingImage)return;
+   const output=document.createElement('canvas');output.width=160;output.height=160;
+   paint(output.getContext('2d'),160,false);
+   const value=output.toDataURL('image/jpeg',0.72);
+   if(value.length>76000){status.textContent='This picture could not be compressed enough. Choose another.';return;}
+   avatarData=value;showAvatar();closeCrop();status.textContent='Picture adjusted. Tap Save Artist Profile to save it.';
  });
  async function init(){try{
   const r=await fetch('/api/customer-auth/creator-profile',{credentials:'same-origin',cache:'no-store'});

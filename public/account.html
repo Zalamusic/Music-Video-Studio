@@ -462,6 +462,19 @@ body.zala-themed .zala-theme-control {
 @media(prefers-reduced-motion:reduce) {
   .progress-fill {transition:none}
 }
+
+/* One central signed-in hub. Rewards data appears only on its dedicated page. */
+.account-hub{margin-top:23px;padding:20px;border:1px solid #bba06a;border-radius:16px;background:linear-gradient(155deg,#21191b,#100f13);color:#f8e9c8}
+.account-hub h2{font-size:21px;margin:0;color:#f1cf84}
+.account-hub p{color:#d6cabe;margin:5px 0 17px;font-size:14px}
+.account-hub-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.account-hub .hub-tile{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0;padding:14px 12px;border:1px solid #80683f;border-radius:12px;background:#302528;color:#f5dbab;text-decoration:none}
+.account-hub .hub-tile span{font-size:23px;color:#f1ca7d}
+.account-hub .hub-tile strong{font-size:14px;line-height:1.25}
+.account-hub .hub-tile small{font-size:12px;color:#d1c4b4;line-height:1.4}
+.account-hub .hub-tile:hover,.account-hub .hub-tile:focus-visible{border-color:#f0ce84;background:#3c3030}
+@media(max-width:570px){.account-hub{padding:15px}.account-hub-grid{grid-template-columns:1fr}.account-hub .hub-tile{display:grid;grid-template-columns:33px 1fr;column-gap:9px;row-gap:2px;align-items:center}.account-hub .hub-tile span{grid-row:span 2}.account-hub .hub-tile small{grid-column:2}}
+
 </style>
 <link rel="stylesheet" href="/cutloopz-auth-premiere.css">
 <script src="/cutloopz-floating-home.js" defer></script>
@@ -574,65 +587,19 @@ body.zala-themed .zala-theme-control {
   <p id="profileGreeting">Your next masterpiece is waiting.</p>
   <p id="welcome"></p>
 
-  <div class="loyalty" id="loyaltyPanel"
-    aria-labelledby="loyaltyTitle">
-    <div class="loyalty-head">
-      <div class="loyalty-symbol" aria-hidden="true">🏆</div>
-      <div>
-        <h2 id="loyaltyTitle">Platinum Hitmaker</h2>
-        <p class="loyalty-sub">
-          Your music. Your milestones. Your rewards.
-        </p>
-      </div>
+  <section class="account-hub" aria-label="My creative home">
+    <h2>My Creative Home</h2>
+    <p>Everything you need, without jumping between menus.</p>
+    <div class="account-hub-grid">
+      <a class="hub-tile" href="/creator-profile.html"><span aria-hidden="true">♫</span><strong>My Artist Profile</strong><small>Edit your bio, photo and music links. Find My Hit Maker Rewards here.</small></a>
+      <a class="hub-tile" href="#historyTitle"><span aria-hidden="true">▣</span><strong>My Videos</strong><small>View your orders and production history below.</small></a>
+      <a class="hub-tile" href="/my-studio.html?source=upload"><span aria-hidden="true">▶</span><strong>Create Video</strong><small>Open the five-step Music Video Studio.</small></a>
     </div>
-
-    <div class="loyalty-progress-head">
-      <span>Your progress</span>
-      <span id="progressText">0 of 6 videos</span>
-    </div>
-
-    <div class="progress-track"
-      id="progressTrack"
-      role="progressbar"
-      aria-label="Qualifying completed paid videos"
-      aria-valuemin="0"
-      aria-valuemax="6"
-      aria-valuenow="0">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-
-    <div class="milestones" aria-hidden="true">
-      <span class="milestone">1</span>
-      <span class="milestone">2</span>
-      <span class="milestone">3</span>
-      <span class="milestone">4</span>
-      <span class="milestone">5</span>
-      <span class="milestone">6</span>
-    </div>
-
-    <div class="reward">
-      🎁 <strong>Your reward:</strong>
-      Complete 6 qualifying paid music videos
-      to unlock a one-time
-      <strong>20% discount on your 7th video.</strong>
-    </div>
-
-    <div class="prestige">
-      <span aria-hidden="true">🏅</span>
-      <span id="prestigeText">
-        <strong>Platinum Hitmaker insignia</strong>
-        — unlocks permanently after your sixth qualifying video.
-      </span>
-    </div>
-
-    <p class="loyalty-note" id="loyaltyNote">
-      Loading your verified progress...
-    </p>
-  </div>
+  </section>
 
   <section class="history" aria-labelledby="historyTitle">
     <div class="history-heading">
-      <h2 id="historyTitle">🎬 My Studio — Video Orders</h2>
+      <h2 id="historyTitle">🎬 My Videos</h2>
       <button type="button" class="refresh" id="refreshOrders">
         Refresh
       </button>
@@ -657,7 +624,6 @@ body.zala-themed .zala-theme-control {
   </section>
 
   <div class="account-actions">
-    <a href="/my-studio.html">🎬 Create a Video</a>
     <button type="button" id="logoutButton">Sign out</button>
   </div>
 </section>
@@ -666,7 +632,7 @@ body.zala-themed .zala-theme-control {
   role="status" aria-live="polite"></p>
 
 <div class="foot">
-  <a href="/creator-profile.html" style="display:inline-block;margin:10px 12px 10px 0;font-weight:800">✦ Edit My Artist Profile</a><a href="/creator-directory.html" style="display:inline-block;margin:10px 12px 10px 0;font-weight:800">Browse Creator Directory</a><p></p><a href="/my-studio.html">← Back to My Studio</a>
+  <a href="/customer.html">← CutLoopz Home</a>
 </div>
 
 </main>
@@ -712,8 +678,6 @@ const messages = {
 };
 
 const pageParams = new URLSearchParams(location.search);
-const studioView = pageParams.get('view') === 'studio';
-
 let mode = pageParams.get('mode') === 'signup'
   ? 'register'
   : 'login';
@@ -804,56 +768,6 @@ $('togglePassword').addEventListener('click', () => {
     ? '<path d="M3 3l18 18M10.6 5.1A11.7 11.7 0 0 1 12 5c6.5 0 10 7 10 7a15.6 15.6 0 0 1-3.2 4.1M6.2 6.2C3.5 8.2 2 12 2 12s3.5 7 10 7a10.6 10.6 0 0 0 4.2-.9M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'
     : '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>';
 });
-
-function resetLoyalty() {
-  $('progressText').textContent = '0 of 6 videos';
-  $('progressFill').style.width = '0%';
-  $('progressTrack').setAttribute('aria-valuenow', '0');
-  $('loyaltyPanel').classList.remove('unlocked');
-
-  document.querySelectorAll('.milestone').forEach(
-    element => element.classList.remove('complete')
-  );
-
-  $('prestigeText').textContent =
-    'Platinum Hitmaker insignia — unlocks permanently after your sixth qualifying video.';
-
-  $('loyaltyNote').textContent =
-    'Verified progress will appear here when available. Rewards and discounts are not currently being issued.';
-}
-
-function updateLoyalty(loyalty) {
-  if (!loyalty || typeof loyalty !== 'object') {
-    resetLoyalty();
-    return;
-  }
-
-  const count = Math.floor(Math.max(
-    0,
-    Math.min(6, Number(loyalty.qualifyingVideos) || 0)
-  ));
-
-  const unlocked = loyalty.platinumUnlocked === true;
-
-  $('progressText').textContent = count + ' of 6 videos';
-  $('progressFill').style.width = (count / 6 * 100) + '%';
-  $('progressTrack').setAttribute('aria-valuenow', String(count));
-  $('loyaltyPanel').classList.toggle('unlocked', unlocked);
-
-  document.querySelectorAll('.milestone').forEach(
-    (element, index) => {
-      element.classList.toggle('complete', index < count);
-    }
-  );
-
-  $('prestigeText').textContent = unlocked
-    ? '🏅 Platinum Hitmaker milestone reached!'
-    : 'Platinum Hitmaker insignia — unlocks after your sixth qualifying video.';
-
-  $('loyaltyNote').textContent = unlocked
-    ? 'You have reached the Platinum Hitmaker milestone. Automatic badge issuance and seventh-video discount redemption are not yet active.'
-    : 'Progress reflects qualifying paid and completed videos verified by the server. Automatic rewards and checkout discounts are not yet active.';
-}
 
 function friendlyDate(value) {
   if (!value) return 'Date unavailable';
@@ -982,13 +896,11 @@ async function loadOrderHistory() {
 
     if (!isCurrent()) return;
 
-    updateLoyalty(data.loyalty);
     renderOrders(data.orders);
 
   } catch (error) {
     if (!isCurrent()) return;
 
-    resetLoyalty();
     $('orderHistory').className = 'history-message';
     $('orderHistory').textContent =
       'Unable to load order history. ' +
@@ -1026,7 +938,6 @@ function showUser(user, newlyRegistered = false) {
     ' (' + String(user.email || '') + ').';
 
   message('');
-  resetLoyalty();
   void loadOrderHistory();
 }
 
@@ -1041,7 +952,6 @@ function showAuth() {
 
   $('refreshOrders').disabled = false;
   $('orderHistory').replaceChildren();
-  resetLoyalty();
   setMode('login');
 }
 
@@ -1075,12 +985,9 @@ function afterAuthentication(user, newlyRegistered = false) {
   // Signing in, refreshing, and restoring an existing session never trigger it.
   if (newlyRegistered) window.CutLoopzWelcome?.queue(user);
   if (new URLSearchParams(location.search).get('return')==='rewards'){window.location.replace('/hit-maker-rewards.html');return;}
-  if (studioView) {
-    showUser(user, newlyRegistered);
-    if (newlyRegistered) window.CutLoopzWelcome?.consume();
-  } else {
-    window.location.replace('/my-studio.html');
-  }
+  if (pageParams.get('return')==='studio') {window.location.replace('/my-studio.html?source=upload');return;}
+  showUser(user, newlyRegistered);
+  if (newlyRegistered) window.CutLoopzWelcome?.consume();
 }
 
 $('loginTab').addEventListener('click', () => setMode('login'));

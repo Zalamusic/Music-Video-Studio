@@ -25,3 +25,18 @@
 .avatar-edit-controls input{padding:8px;min-height:46px;margin-bottom:8px}
 .avatar-edit-controls .btn{padding:8px 12px;min-height:38px}
 .owner-preview-label{color:#f0d294;border:1px solid #826539;background:#211a16;border-radius:10px;padding:10px 13px;max-width:740px}
+
+/* Compact private profile links and mobile-first circular avatar crop */
+.profile-private-nav{border-top:1px solid var(--line);padding-top:13px;margin-top:19px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.profile-private-nav .hint{width:100%;margin:0;font-size:12px}
+.profile-private-nav a{font-size:14px;font-weight:750;text-decoration:none}
+.avatar-crop-overlay[hidden]{display:none!important}
+.avatar-crop-overlay{position:fixed;inset:0;z-index:10020;background:rgba(0,0,0,.86);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.avatar-crop-dialog{background:#1a171b;border:1px solid #a98c59;box-shadow:0 18px 70px #000a;border-radius:18px;width:min(100%,400px);max-height:95dvh;overflow:auto;padding:20px;color:var(--text)}
+.avatar-crop-dialog h2{color:#f1cb81;font-size:22px}.avatar-crop-dialog .hint{margin:0 0 13px}
+.avatar-crop-canvas{display:block;width:min(100%,300px);aspect-ratio:1/1;height:auto;margin:0 auto 12px;border-radius:50%;background:#30282b;touch-action:none;user-select:none;cursor:grab}
+.avatar-crop-canvas:active{cursor:grabbing}
+.avatar-crop-dialog label{font-weight:750;display:block;margin-bottom:6px}
+.avatar-crop-dialog input[type=range]{display:block;width:100%;accent-color:#e8bc65;min-height:40px}
+.avatar-crop-actions{margin-top:14px}
+@media(max-width:420px){.avatar-crop-dialog{padding:14px}.avatar-crop-actions .btn{flex:1;padding:10px 9px;font-size:14px}}
