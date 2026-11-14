@@ -27,6 +27,21 @@ jobs:
           from zipfile import ZipFile
 
           archive = Path("CUTLOOPZ_EVALUATOR_TWO_TABS_READY.zip")
+          
+          from tarfile import open as open_tar
+          source = Path("CUTLOOPZ_ARTIST_BUTTONS_ONE_ROW.tar.gz")
+          if not source.is_file():
+              raise SystemExit("TAR.GZ file missing")
+          with open_tar(source, "r:gz") as tar, ZipFile(archive, "w") as out:
+              total = 0
+              for member in tar:
+                  if not member.isfile():
+                      raise SystemExit("Unexpected archive entry")
+                  total += member.size
+                  if total > 40000000:
+                      raise SystemExit("Archive too large")
+                  out.writestr(member.name, tar.extractfile(member).read())
+
           prefix = "Music-Video-Studio-cutloopz-production-test/"
 
           if not archive.is_file():
