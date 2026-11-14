@@ -1,0 +1,6 @@
+/* Clear, unobtrusive navigation cue on narrow screens. Native swiping remains available. */
+.nav-scroll-control{display:flex;align-items:center;justify-content:flex-end;min-height:24px;margin:2px 0 5px}
+.nav-scroll-button{appearance:none;border:0;background:transparent;color:#d6aa55;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.025em;min-height:30px;padding:2px 6px;cursor:pointer;text-decoration:underline;text-decoration-color:#73552d;text-underline-offset:3px}
+.nav-scroll-button[hidden],.nav-scroll-control[hidden]{display:none!important}
+.nav-scroll-button:focus-visible{outline:2px solid #f4ce77;outline-offset:2px;border-radius:4px}
+@media(min-width:960px){.nav-scroll-control{display:none!important}}

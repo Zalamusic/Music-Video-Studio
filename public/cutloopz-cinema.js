@@ -1,5 +1,6 @@
 'use strict';(()=>{
  const params=new URLSearchParams(location.search),share=params.get('share'),job=params.get('job');
+ const expired=document.getElementById('cinemaExpired');
  const video=document.getElementById('reviewVideo'),empty=document.getElementById('emptyScreen'),status=document.getElementById('cinemaStatus'),download=document.getElementById('downloadCinemaVideo'),shareButton=document.getElementById('shareCinemaVideo');
  const isId=s=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s||'');
  let activeShareUrl=isId(share)?location.origin+'/watch/'+encodeURIComponent(share):null;
@@ -7,10 +8,10 @@
  const url=isId(share)?'/stream/'+encodeURIComponent(share):'/api/cutloopz-production/local/jobs/'+encodeURIComponent(job)+'/video';
  const downloadUrl=isId(share)?'/download/'+encodeURIComponent(share):url;
  status.textContent='Checking your video access…';
- video.addEventListener('loadedmetadata',()=>{empty.hidden=true;video.classList.add('is-ready');download.hidden=false;download.href=downloadUrl;status.textContent='Your video is ready to review.';
+ video.addEventListener('loadedmetadata',()=>{expired.hidden=true;empty.hidden=true;video.classList.add('is-ready');download.hidden=false;download.href=downloadUrl;status.textContent='Your video is ready to review.';
   shareButton.hidden=false;shareButton.textContent=isId(share)?'Share review link':'Create 7-day review link';
  });
- video.addEventListener('error',()=>{video.classList.remove('is-ready');empty.hidden=false;status.textContent='This video is unavailable, the review link expired, or this account is not authorized. Sign in to the owner account or request a new link.';download.hidden=true;shareButton.hidden=true;});
+ video.addEventListener('error',()=>{expired.hidden=false;video.classList.remove('is-ready');empty.hidden=false;status.textContent='This video is unavailable, the review link expired, or this account is not authorized. Sign in to the owner account or request a new link.';download.hidden=true;shareButton.hidden=true;});
  video.src=url;
  shareButton.addEventListener('click',async()=>{
   if(!activeShareUrl){

@@ -762,7 +762,7 @@ export function createCustomerAuthRouter({
   router.get('/creator-profile', (req,res)=>{
     const identity=findSession(req);
     if (!identity) return res.status(401).json({ok:false,error:'Sign in to edit your artist profile.'});
-    res.json({ok:true,profile:identity.user.creatorProfile||null});
+    res.json({ok:true,profile:identity.user.creatorProfile||null,publicId:identity.user.id});
   });
   router.put('/creator-profile', async (req,res)=>{
     const identity=findSession(req);
@@ -795,7 +795,7 @@ export function createCustomerAuthRouter({
       platforms,visibility,artistPageUrl,socialLinks,videoLinks,
       updatedAt:new Date().toISOString()};
     identity.user.creatorProfile=profile;
-    try{await save();res.json({ok:true,profile});}
+    try{await save();res.json({ok:true,profile,publicId:identity.user.id});}
     catch(error){console.error('Creator profile save failed:',error);res.status(503).json({ok:false,error:'Profile could not be saved.'});}
   });
   router.get('/creators', (_req,res)=>{
