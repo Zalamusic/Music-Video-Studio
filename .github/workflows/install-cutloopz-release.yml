@@ -1,4 +1,3 @@
-
 name: Install CutLoopz Release
 
 on:
@@ -12,45 +11,22 @@ on:
 permissions:
   contents: write
 
-jobs:
-  install:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Extract website
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path, PurePosixPath
-          from zipfile import ZipFile
-
-          
-name: Install CutLoopz Release
-
-on:
-  push:
-    branches:
-      - cutloopz-production-test
-    paths:
-      - .github/workflows/install-cutloopz-release.yml
-  workflow_dispatch:
-
-permissions:
-  contents: write
+concurrency:
+  group: cutloopz-release-install
+  cancel-in-progress: false
 
 jobs:
   install:
     if: github.ref == 'refs/heads/cutloopz-production-test'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
-
     steps:
       - name: Checkout CutLoopz
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
-      - name: Extract latest website
+      - name: Extract final website release
         shell: bash
         run: |
           python3 - <<'PY'
@@ -60,57 +36,42 @@ jobs:
 
           archive = Path("CUTLOOPZ_FINAL_POLISH_NOV14_2026.zip")
           prefix = "Music-Video-Studio-cutloopz-production-test/"
-
           if not archive.is_file():
-              raise SystemExit("CutLoopz release ZIP not found")
+              raise SystemExit("CutLoopz final polish ZIP not found")
 
           with ZipFile(archive) as z:
-              entries = [i for i in z.infolist() if not i.is_dir()]
-              names = {i.filename for i in entries}
+              files = [entry for entry in z.infolist() if not entry.is_dir()]
+              names = {entry.filename for entry in files}
+              for required in ("server.js", "package.json", "public/index.html"):
+                  if prefix + required not in names:
+                      raise SystemExit("Missing release file: " + required)
+              if len(names) != len(files):
+                  raise SystemExit("Duplicate ZIP entries detected")
+              if sum(entry.file_size for entry in files) > 100_000_000:
+                  raise SystemExit("Release is too large")
 
-              required = [
-                  "server.js",
-                  "package.json",
-                  "public/index.html"
-              ]
-
-              for name in required:
-                  if prefix + name not in names:
-                      raise SystemExit("Missing: " + name)
-
-              if sum(i.file_size for i in entries) > 100000000:
-                  raise SystemExit("Archive too large")
-
-              for item in entries:
-                  name = item.filename
-
-                  if not name.startswith(prefix):
-                      raise SystemExit("Unexpected archive path")
-
+              for entry in files:
+                  name = entry.filename
+                  if not name.startswith(prefix) or "\\" in name:
+                      raise SystemExit("Unexpected release path")
                   rel = PurePosixPath(name[len(prefix):])
-
-                  if (not rel.parts or rel.is_absolute()
-                      or ".." in rel.parts or "\\" in str(rel)):
-                      raise SystemExit("Unsafe archive path")
-
-                  if stat.S_IFMT(item.external_attr >> 16) == stat.S_IFLNK:
-                      raise SystemExit("Symlinks not allowed")
-
-                  if rel.parts[0] in (".github", ".git", "tmp"):
+                  if not rel.parts or rel.is_absolute() or ".." in rel.parts:
+                      raise SystemExit("Unsafe ZIP path")
+                  if stat.S_IFMT(entry.external_attr >> 16) == stat.S_IFLNK:
+                      raise SystemExit("Symlink not permitted")
+                  if rel.parts[0] in (".git", ".github", "tmp"):
                       continue
-
                   if rel.name.startswith(".env"):
-                      raise SystemExit("Private configuration detected")
-
+                      raise SystemExit("Secret config file in ZIP")
                   target = Path(*rel.parts)
                   target.parent.mkdir(parents=True, exist_ok=True)
-                  target.write_bytes(z.read(item))
+                  target.write_bytes(z.read(entry))
 
           archive.unlink()
-          print("CutLoopz website installed successfully")
+          print("CutLoopz final polish release installed")
           PY
 
-      - name: Validate server
+      - name: Validate Node server syntax
         run: node --check server.js
 
       - name: Commit installed website
@@ -119,67 +80,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-
           if ! git diff --cached --quiet; then
             git commit -m "Install CutLoopz final polish [skip ci]"
             git push origin HEAD:cutloopz-production-test
           fi
-
-          
-          from tarfile import open as open_tar
-          source = Path("CUTLOOPZ_ARTIST_BUTTONS_ONE_ROW.tar.gz")
-          if not source.is_file():
-              raise SystemExit("TAR.GZ file missing")
-          with open_tar(source, "r:gz") as tar, ZipFile(archive, "w") as out:
-              total = 0
-              for member in tar:
-                  if not member.isfile():
-                      raise SystemExit("Unexpected archive entry")
-                  total += member.size
-                  if total > 40000000:
-                      raise SystemExit("Archive too large")
-                  out.writestr(member.name, tar.extractfile(member).read())
-
-          prefix = "Music-Video-Studio-cutloopz-production-test/"
-
-          if not archive.is_file():
-              raise SystemExit("Release ZIP not found")
-
-          with ZipFile(archive) as z:
-              names = set(z.namelist())
-              for name in ("server.js", "package.json", "public/index.html"):
-                  if prefix + name not in names:
-                      raise SystemExit("Missing " + name)
-
-              for item in z.infolist():
-                  if item.is_dir():
-                      continue
-                  if not item.filename.startswith(prefix):
-                      raise SystemExit("Unexpected ZIP structure")
-                  rel = PurePosixPath(item.filename[len(prefix):])
-                  if not rel.parts or rel.is_absolute() or ".." in rel.parts:
-                      raise SystemExit("Unsafe ZIP path")
-                  if rel.parts[0] in (".github", ".git", "tmp"):
-                      continue
-                  target = Path(*rel.parts)
-                  target.parent.mkdir(parents=True, exist_ok=True)
-                  target.write_bytes(z.read(item))
-
-          archive.unlink()
-          print("Release extracted successfully")
-          PY
-
-      - name: Validate server
-        run: node --check server.js
-
-      - name: Commit website files
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if ! git diff --cached --quiet; then
-            git commit -m "Install CutLoopz release [skip ci]"
-            git push origin HEAD:cutloopz-production-test
-          fi
-# Install latest CutLoopz upgrade
-# Install CutLoopz private reviews update
