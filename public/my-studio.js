@@ -1,10 +1,11 @@
 'use strict';
 (() => {
  const $=id=>document.getElementById(id);
+ const evaluatorMode=new URLSearchParams(location.search).get('mode')==='evaluator';
  const fieldNames=['songLink','title','duration','lyrics','visualStyle','format','sceneSeconds','direction','characterNotes'];
  const pageTitles=['Your Song & Artist','Song Analyzer','Listening Director','Your Storyboard','Review Your Vision'];
  const pageDescriptions=['Bring your music into the Studio.','Learn its rhythm and energy.','Shape the story and visual performance.','Fine-tune each numbered scene.','Check every creative choice before production.'];
- const storagePrefix='cutloopz:artist-studio:v1:';
+ const storagePrefix=evaluatorMode?'cutloopz:free-evaluator:v1:':'cutloopz:artist-studio:v1:';
  const MEDIA_DB_NAME='cutloopz-studio-media-v1';
  // Audio and photos are kept in browser-owned IndexedDB, never in localStorage or
  // the account text-draft API. A browser may refuse storage; in that case the file
@@ -66,7 +67,7 @@
  let storageKey=storagePrefix+'guest', account=null, saveTimer=null, serverTimer=null;
  let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false, photoPreviewUrl=null;
  let analysisSourceKey='', storyboardSourceKey='', pendingRestore=null, sourceVersion=0;
- let selectedSource='upload'; // Exactly one active music input method; stored with each draft.
+ let selectedSource=evaluatorMode?'link':'upload'; // Free evaluator and video Studio use separate local drafts.
  let productionJobId=null,productionPollTimer=null,engineReady=false;
  const productionBase='/api/cutloopz-production';
  const productionStorageKey=()=>storageKey+':lastLocalJob';
@@ -188,7 +189,7 @@
    catch{notify('saveStatus','Storage is full. Draft not saved.',true);return false;}
  }
  async function saveServer(){
-   if(!account)return;
+   if(!account||evaluatorMode)return false;
    try{
     const response=await fetch('/api/customer-auth/studio/draft',{method:'PUT',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({draft:serializable()})});
     if(!response.ok)throw Error('Cloud draft unavailable');
@@ -203,7 +204,7 @@
      const ok=saveLocal();
      if(ok)notify('saveStatus',account?'Saved on device · syncing…':'Saved on this device');
    },220);
-   if(account)serverTimer=setTimeout(saveServer,1600);
+   if(account&&!evaluatorMode)serverTimer=setTimeout(saveServer,1600);
  }
  // Explicit project controls supplement autosave. Backups contain only a
  // portable creative draft: audio/photo and account credentials NEVER leave
@@ -226,7 +227,7 @@
    if(!saveLocal())return;
    notify('saveStatus','Saved on this device');
    notify('projectTransferStatus','Your creative work was saved on this device.');
-   if(account){
+   if(account&&!evaluatorMode){
      const synced=await saveServer();
      notify('projectTransferStatus',synced?'Saved to your CutLoopz account and this device.':'Saved on this device; account sync was unavailable. Download a backup for extra protection.',!synced);
    }
@@ -279,7 +280,7 @@
    renderAnalysis();updateProjectActions();
    showPage(scenes.length?3:0,{reposition:false});
    const locallySaved=saveLocal();
-   if(account&&locallySaved)await saveServer();
+   if(account&&!evaluatorMode&&locallySaved)await saveServer();
    let message=`Project restored${scenes.length?` with ${scenes.length} editable scenes`:''}. Reattach your MP3/WAV and artist photo before generation.`;
    if(mediaClear.some(r=>r.status==='rejected'))message+=' Browser file cleanup failed; clear this site’s storage if you need to remove old media.';
    notify('projectTransferStatus',message,!locallySaved);
@@ -287,7 +288,7 @@
  function hydrate(draft){
    if(!draft || typeof draft!=='object')return;
    restoring=true;
-   selectedSource=draft.source==='link'||(!draft.source && draft.songLink && !draft.songName)?'link':'upload';
+   selectedSource=evaluatorMode?'link':(draft.source==='link'||(!draft.source && draft.songLink && !draft.songName)?'link':'upload');
    $('songLink').value=selectedSource==='link'?safeText(draft.songLink).slice(0,2048):'';
    syncSourceDisplay();
    renderLinkStatus(false);
@@ -324,10 +325,10 @@
     if(res.ok){const d=await res.json();account=d.user||d.customer||null;}
    }catch{}
    storageKey=storagePrefix+(account?.id?'account:'+account.id:'guest');
-   $('signInStatus').textContent=account?`Signed in: ${account.name||account.email||'Artist'}`:'Guest Studio · Free tools';
+   $('signInStatus').textContent=evaluatorMode?'Free creative planning · No video':(account?`Signed in: ${account.name||account.email||'Artist'}`:'Guest Studio · Free tools');
    try{const saved=JSON.parse(localStorage.getItem(storageKey)||'null');localDraft=saved?.draft||null;localUpdatedAt=Number(saved?.at)||0;}catch{}
    let serverDraft=null;
-   if(account){try{const r=await fetch('/api/customer-auth/studio/draft',{credentials:'same-origin',cache:'no-store'});if(r.ok){const response=await r.json();serverDraft=response.draft;serverUpdatedAt=Date.parse(response.updatedAt)||0;}}catch{}}
+   if(account&&!evaluatorMode){try{const r=await fetch('/api/customer-auth/studio/draft',{credentials:'same-origin',cache:'no-store'});if(r.ok){const response=await r.json();serverDraft=response.draft;serverUpdatedAt=Date.parse(response.updatedAt)||0;}}catch{}}
    // Use the most recent draft when account sync and local edits differ.
    hydrate(localDraft && (localUpdatedAt>=serverUpdatedAt || !serverDraft)?localDraft:serverDraft);
    const restoredName=$('songAudio').dataset.previousName;
@@ -354,30 +355,34 @@
    }
    renderAnalysis();updateProjectActions();if(page===3)renderScenes();
    const sourceParam=new URLSearchParams(location.search).get('source');
-   if(sourceParam==='link'||['suno','udio','youtube','spotify','soundcloud','tiktok'].includes(sourceParam)){
+   if(evaluatorMode){selectedSource='link';}
+   else if(sourceParam==='link'||['suno','udio','youtube','spotify','soundcloud','tiktok'].includes(sourceParam)){
      if(!lastSongFile&&!$('songAudio').dataset.previousName)selectedSource='link';
-   }else if(sourceParam==='upload' && !$('songLink').value.trim()){selectedSource='upload';}
+   }else {selectedSource='upload';}
    syncSourceDisplay();updateUploadLabels();refreshAnalysisIntro();scheduleSave();
+   if(evaluatorMode)showPage(page,{reposition:false});
    if(selectedSource==='link'&&sourceParam)$('songLink').focus({preventScroll:true});
    // Deep links override the saved page, but do not reset any project fields.
    const urlPage=new URLSearchParams(location.search).get('step');
    const destination={song:0,analyze:1,director:2,storyboard:3,review:4}[urlPage];
    if(Number.isInteger(destination))showPage(destination,{reposition:false});
-   notify('saveStatus',account?'Account draft ready':'Draft saved on this device');
+   notify('saveStatus',evaluatorMode?'Evaluation saved on this device':account?'Account draft ready':'Draft saved on this device');
    $('saveNow').disabled=false;$('downloadProjectBackup').disabled=false;$('restoreProjectBackup').disabled=false;$('restoreProjectQuick').disabled=false;
-   recoverGeneration();
+   if(!evaluatorMode)recoverGeneration();
  }
  // A saved song URL is not an analyzed audio file. Link-only projects bypass
  // the audio-only page; users can still supply lyrics and a photo on Page 1.
  function validSongLink(){return selectedSource==='link'&&window.CutLoopzSongLink?.inspect($('songLink').value)?.ok===true;}
  function linkOnlyProject(){return selectedSource==='link'&&validSongLink();}
  function pageAfter(action){
+   if(evaluatorMode && page===0 && action==='next')return 2;
+   if(evaluatorMode && page===2 && action==='back')return 0;
    return window.CutLoopzSongLink.navigation(page,action,{
      hasAudio: Boolean(lastSongFile),linkAccepted:validSongLink()
    });
  }
  function updateStepNavigation(){
-   $('nextBtn').textContent=page===4?'Back to Start':page===0 && linkOnlyProject()?'Next: Listening Director →':'Next →';
+   $('nextBtn').textContent=page===4?'Back to Start':page===0 && (evaluatorMode||linkOnlyProject())?'Next: Listening Director →':'Next →';
    $('backBtn').textContent=page===2 && linkOnlyProject()?'← Song & Artist':'← Back';
    const note=$('directorSourceNotice');
    const link=selectedSource==='link'?window.CutLoopzSongLink?.inspect($('songLink').value):null;
@@ -392,15 +397,19 @@
    page=Math.max(0,Math.min(4,index));
    document.querySelectorAll('.wizard-step').forEach(section=>{section.hidden=Number(section.dataset.step)!==page});
    $('stepTitle').textContent=pageTitles[page];$('stepSubtitle').textContent=pageDescriptions[page];
-   $('stepTag').textContent=`PAGE ${String(page+1).padStart(2,'0')} / 05`;
-   $('stepCounter').textContent=`Page ${page+1} of 5`;
-   $('stepProgress').setAttribute('aria-valuenow',String(page+1));
-   $('progressFill').style.width=`${20*(page+1)}%`;
+   // The free link evaluator skips the audio-only step: four visible stages.
+   const visibleNumber=evaluatorMode?({0:1,2:2,3:3,4:4}[page]||1):page+1;
+   const visibleTotal=evaluatorMode?4:5;
+   $('stepTag').textContent=`PAGE ${String(visibleNumber).padStart(2,'0')} / ${String(visibleTotal).padStart(2,'0')}`;
+   $('stepCounter').textContent=`Page ${visibleNumber} of ${visibleTotal}`;
+   $('stepProgress').setAttribute('aria-valuemax',String(visibleTotal));
+   $('stepProgress').setAttribute('aria-valuenow',String(visibleNumber));
+   $('progressFill').style.width=`${100*visibleNumber/visibleTotal}%`;
    $('backBtn').disabled=page===0;updateStepNavigation();
    if(page===0)window.CutLoopzLyricsBoard?.refresh();
    if(page===1)refreshAnalysisIntro();
    updateActionAttention();
-   if(page===3)renderScenes();if(page===4){renderReview();checkEngine();}
+   if(page===3)renderScenes();if(page===4){renderReview();if(!evaluatorMode)checkEngine();}
    scheduleSave();
    if(reposition){
      const visibleHeading=page===0?$('songHeading'):document.querySelector(`.wizard-step[data-step="${page}"] h3`);
@@ -451,6 +460,7 @@
    }
  }
  function changeSongSource(mode){
+   if(evaluatorMode&&mode!=='link')return;
    if(mode===selectedSource)return;
    const currentHasSong=selectedSource==='upload'
      ?Boolean(lastSongFile||$('songAudio').dataset.previousName)
@@ -549,7 +559,7 @@
  function renderReview(){
   $('reviewSummary').replaceChildren();
   const linked=selectedSource==='link'?window.CutLoopzSongLink?.inspect($('songLink').value):null;
-  addReview('Music source',lastSongFile?'Uploaded MP3/WAV':linked?.ok?`${linked.name} link (audio upload required)`:'Not attached');if(linked?.ok)addReview('Song share link',linked.url);
+  addReview('Music source',evaluatorMode?(linked?.ok?`${linked.name} reference (free evaluation only)`:'Not attached'):lastSongFile?'Uploaded MP3/WAV':linked?.ok?`${linked.name} link (audio upload required)`:'Not attached');if(linked?.ok)addReview('Song share link',linked.url);
   addReview('Song',$('title').value||'Untitled');addReview('Duration',`${selectedDuration()} seconds`);
   addReview('Style',$('visualStyle').value);addReview('Format',$('format').value==='landscape'?'16:9 Landscape':'9:16 Vertical');
   addReview('Director direction',$('direction').value.slice(0,350));addReview('Scenes',`${scenes.length} editable scenes`);
@@ -559,9 +569,9 @@
    if(!window.confirm('Start a new project? Your current saved draft will be cleared.'))return;
    const oldKey=storageKey;localStorage.removeItem(oldKey);
    Promise.all([mediaWrite('audio',null),mediaWrite('photo',null)]).catch(()=>notify('saveStatus','Project reset; stored files could not be cleared. Clear site data in browser settings.',true));
-   if(account)fetch('/api/customer-auth/studio/draft',{method:'DELETE',credentials:'same-origin'}).catch(()=>{});
+   if(account&&!evaluatorMode)fetch('/api/customer-auth/studio/draft',{method:'DELETE',credentials:'same-origin'}).catch(()=>{});
    for(const id of fieldNames){const element=$(id);element.value=element.tagName==='SELECT'?element.options[0].value:'';}
-   selectedSource='upload';syncSourceDisplay();
+   selectedSource=evaluatorMode?'link':'upload';syncSourceDisplay();
    $('songLinkStatus').textContent='Paste a public song link for free creative planning (not for video generation).';$('songLinkStatus').style.color='';$('openSongLink').hidden=true;$('openSongLink').removeAttribute('href');
    $('duration').value='30';$('customTime').value='';syncCustomTime();$('sceneSeconds').value='15';$('format').value='vertical';$('songAudio').value='';$('artistPhoto').value='';
    $('songAudio').dataset.previousName='';$('artistPhoto').dataset.previousName='';lastSongFile=null;lastPhotoFile=null;
@@ -611,6 +621,7 @@
  $('nextBtn').addEventListener('click',()=>{
    if(page===0){
      if(!Number.isFinite(selectedDuration())){alert('Enter a valid custom duration between 0:15 and 6:00.');return;}
+     if(evaluatorMode&&!validSongLink()){renderLinkStatus(true);$('songLink').focus();return;}
      // Do not quietly discard a malformed URL or lead the user into an MP3-only screen.
      if($('songLink').value.trim()&&!renderLinkStatus(true)&&!lastSongFile){$('songLink').focus();return;}
    }
@@ -630,6 +641,18 @@
  $('checkEngine').addEventListener('click',checkEngine);$('generateVideo').addEventListener('click',generateVideo);
  $('resumeGeneration').addEventListener('click',resumeProduction);
  $('editSong').addEventListener('click',()=>showPage(0));$('editDirector').addEventListener('click',()=>showPage(2));$('editStoryboard').addEventListener('click',()=>showPage(3));$('newProject').addEventListener('click',newProject);
+ if(evaluatorMode){
+   document.title='Free Song Evaluation | CutLoopz Media';
+   $('navCreateVideo').classList.remove('active');$('navFreeEvaluation').classList.add('active');
+   $('studioMainTitle').textContent='Free Song Evaluation';
+   $('studioMainIntro').textContent='One song link. Your lyrics. A free creative Director concept — no MP3 or video generation.';
+   $('songHeading').textContent='01 · Evaluate your song';
+   $('durationLabel').textContent='Storyboard concept length';
+   $('evaluationWelcome').hidden=false;
+   $('reviewIntro').textContent='Review your free creative concept. Save or download your storyboard — no video is being generated.';
+   pageTitles[0]='Evaluate Your Song';pageDescriptions[0]='Paste your song link and add lyrics for a free Director concept.';
+   pageDescriptions[4]='Save your free creative planning and storyboard.';
+ }
  const lyricsField=$('lyrics');
  lyricsField.addEventListener('paste',()=>requestAnimationFrame(()=>{lyricsField.scrollTop=0;}));
  lyricsField.addEventListener('blur',()=>{lyricsField.scrollTop=0;});

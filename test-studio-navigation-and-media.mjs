@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 const files=new URL('./public/',import.meta.url);
-test('Homepage Director opens Studio stage 3, while My Studio opens the central workspace',async()=>{
+test('Homepage navigation separates the free evaluator from video Studio',async()=>{
  const home=await readFile(new URL('customer.html',files),'utf8');
- assert.equal((home.match(/href="\/my-studio\.html\?step=director">Director/g)||[]).length,2);
- assert.ok(home.includes('href="/my-studio.html">My Studio'));
+ assert.equal((home.match(/href="\/my-studio\.html\?mode=evaluator&source=link&step=song">Free Song Evaluation/g)||[]).length,2);
+ assert.ok(home.includes('href="/my-studio.html?source=upload">Create Video')); 
  assert.ok(!home.includes('href="/my-studio.html?step=analyze">Director'));
  const js=await readFile(new URL('my-studio.js',files),'utf8');
  assert.match(js,/director:2/);

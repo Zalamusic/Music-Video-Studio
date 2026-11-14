@@ -47,14 +47,14 @@ test('V5 Studio uses link intake, account sync, truthful audio controls and exis
  assert.match(js,/lastSongFile/);
  assert.match(js,/mediaWrite\('audio',f\)/);
  assert.match(auth,/'songLink','songName'/);
- assert.match(home,/class="cutloopz-suno">SUNO<\/a>/);assert.match(home,/href="\/my-studio\.html\?source=suno"/);
+ assert.match(home,/class="cutloopz-suno">SUNO<\/a>/);assert.match(home,/href="\/my-studio\.html\?mode=evaluator&amp;source=suno/);
  assert.match(home,/name="description"/);assert.match(home,/property="og:title"/);
  assert.match(server,/CUTLOOPZ_PUBLIC_LAUNCH!=='true'/);
 });
 test('V5 marketing does not claim third-party audio extraction, payments or GPU completion',async()=>{
  const [html,home,js]=await Promise.all([read('./public/my-studio.html'),read('./public/customer.html'),read('./public/my-studio.js')]);
  assert.match(html,/does not rip or download audio/);
- assert.match(home,/Private owner production tests are available/i);
+ assert.match(home,/The separate Create Video Studio uses your own authorized MP3\/WAV/i);
  assert.match(js,/if\(!lastSongFile\)/);
  assert.match(html,/id="generateVideo"/);
  assert.match(home,/Your music deserves a video/);

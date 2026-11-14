@@ -8,17 +8,15 @@ const studio=read('./public/my-studio.html');
 const styles=read('./public/my-studio.css');
 const js=read('./public/my-studio.js');
 const link=read('./public/cutloopz-song-link.js');
-test('free link evaluation and MP3 production are distinct sections, and not adjacent choices',()=>{
+test('homepage uses the evaluator first and places Create Video only in navigation',()=>{
   const evaluation=home.match(/<div class="cutloopz-evaluation-card"[\s\S]*?<\/div>/)?.[0];
   assert.ok(evaluation);
   assert.match(evaluation,/Evaluate Your Song — Free/);
   assert.match(evaluation,/Song links do not create videos/);
   assert.doesNotMatch(evaluation,/>MP3\s*\/\s*WAV</);
-  assert.match(home,/<section class="content cutloopz-create-section" id="create"/);
-  assert.match(home,/Create My Video · MP3\/WAV/);
-  assert.ok(home.indexOf('cutloopz-evaluation-card') < home.indexOf('cutloopz-create-section'));
-  assert.match(home,/\.cutloopz-create-section\{[^}]*margin-top:22px/);
-  assert.match(home,/video ordering is still in preview/i);
+  assert.doesNotMatch(home,/<section class="content cutloopz-create-section" id="create"/);
+  assert.match(home,/href="\/my-studio\.html\?mode=evaluator&amp;source=link&amp;step=song"/);
+  assert.match(home,/href="\/my-studio\.html\?source=upload">Create Video<\/a>/);
 });
 test('Studio preserves source toggle but explains the two paths with separated cards',()=>{
   assert.match(studio,/FREE EVALUATION · NO VIDEO/);
@@ -43,5 +41,14 @@ test('TikTok public video and short links accepted as references, not audio, and
   for(const url of ['https://tiktok.com.evil.example/@artist/video/7334567890123456789','http://www.tiktok.com/@artist/video/7334567890123456789','https://www.tiktok.com/@artist','https://vt.tiktok.com/private/account','https://www.tiktok.com:81/@artist/video/7334567890123456789']){
     assert.equal(inspect(url).ok,false,url);
   }
-  assert.match(home,/my-studio\.html\?source=tiktok/);
+  assert.match(home,/my-studio\.html\?mode=evaluator&amp;source=tiktok/);
+});
+
+test('the evaluator hides video-production controls and isolates drafts',()=>{
+  assert.match(styles,/\.evaluation-mode #productionPanel/);
+  assert.match(styles,/\.evaluation-mode #audioSourcePanel/);
+  assert.match(styles,/\.source-mode-field\{display:none!important/);
+  assert.match(js,/storagePrefix=evaluatorMode\?'cutloopz:free-evaluator:v1:'/);
+  assert.match(js,/if\(!account\|\|evaluatorMode\)return false/);
+  assert.match(js,/if\(!evaluatorMode\)recoverGeneration\(\)/);
 });

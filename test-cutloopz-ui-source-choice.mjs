@@ -26,8 +26,8 @@ class FakeElement{
  scrollIntoView(){}
  focus(){}
 }
-const idRegex=/<(input|select|textarea|button|div|section|span|p|a|img)[^>]*\bid="([^"]+)"/g;
-function boot(){
+const idRegex=/<(input|select|textarea|button|div|section|span|p|a|img|h1|h2|h3|h4|label)[^>]*\bid="([^"]+)"/g;
+function boot(search=""){
  const html=fs.readFileSync(path.join(root,'my-studio.html'),'utf8');
  const code=fs.readFileSync(path.join(root,'my-studio.js'),'utf8');
  const els={};for(const m of html.matchAll(idRegex))els[m[2]]=new FakeElement(m[1].toUpperCase());
@@ -49,7 +49,7 @@ function boot(){
    navigation(page,action,{hasAudio,linkAccepted}){if(action==='next'){if(page===0&&linkAccepted&&!hasAudio)return 2;return Math.min(4,page+1)}if(action==='back'){if(page===2&&linkAccepted&&!hasAudio)return 0;return Math.max(0,page-1)}return page}
  }};
  const fetch=async url=>({ok:false,status:401,async json(){return {ok:false}}});
- const sandbox={document,window,localStorage,fetch,URL,URLSearchParams,Blob,File,FormData,setTimeout,clearTimeout,requestAnimationFrame:fn=>fn(),location:{search:''},alert(){},console};
+ const sandbox={document,window,localStorage,fetch,URL,URLSearchParams,Blob,File,FormData,setTimeout,clearTimeout,requestAnimationFrame:fn=>fn(),location:{search},alert(){},console};
  vm.createContext(sandbox);vm.runInContext(code,sandbox);
  return {els,sections,localStorage,changeConfirm:v=>confirmDecision=v};
 }
@@ -89,10 +89,28 @@ test('Homepage source options are working Studio links; typography and motion ar
  const home=fs.readFileSync(path.join(root,'customer.html'),'utf8');
  const html=fs.readFileSync(path.join(root,'my-studio.html'),'utf8');
  const css=fs.readFileSync(path.join(root,'my-studio.css'),'utf8');
- for(const source of ['suno','udio','youtube','spotify','upload'])assert.match(home,new RegExp(`my-studio\\.html\\?source=${source}`));
+ for(const source of ['suno','udio','youtube','spotify'])assert.match(home,new RegExp(`my-studio\\.html\\?mode=evaluator&amp;source=${source}`));
+ assert.match(home,/my-studio\.html\?source=upload/);
  assert.match(home,/\.cutloopz-source-tags a:focus-visible/);
  assert.match(home,/NO CREDITS\. JUST VIDEO\./);
  assert.match(html,/id="direction"[^>]+rows="11"/);
  assert.match(html,/id="lyrics"[^>]+rows="10"/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\).*action-needs-attention/);
+});
+
+test('Free evaluator starts in link-only mode, never enters MP3 analyzer, and saves locally',async()=>{
+  const {els,sections,localStorage}=boot('?mode=evaluator&source=suno&step=song');await flush();
+  assert.equal(els.audioSourcePanel.hidden,true);
+  assert.equal(els.songLinkPanel.hidden,false);
+  assert.equal(els.studioMainTitle.textContent,'Free Song Evaluation');
+  assert.equal(els.navFreeEvaluation.classList.contains('active'),true);
+  assert.equal(els.navCreateVideo.classList.contains('active'),false);
+  els.nextBtn.click();
+  assert.equal(sections[0].hidden,false,'Cannot advance without a valid reference link');
+  els.songLink.value='https://suno.com/song/123456';els.useSongLink.click();
+  els.nextBtn.click();
+  assert.equal(sections[2].hidden,false,'Valid link bypasses audio-only analyzer and opens Director');
+  assert.equal(sections[1].hidden,true);
+  els.title.value='My reference song';els.title.dispatch('input');await new Promise(r=>setTimeout(r,260));
+  assert.ok(localStorage.getItem('cutloopz:free-evaluator:v1:guest'));
 });

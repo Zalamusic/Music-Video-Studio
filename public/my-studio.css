@@ -144,3 +144,18 @@ textarea{padding:15px 14px;vertical-align:top;overflow:auto}
 #audioSourcePanel{margin-top:21px;padding:20px;border:1px solid #6985a4;background:#181c25;border-radius:14px}
 #audioSourcePanel label{color:#f2d79c}
 @media(max-width:620px){.source-mode{gap:19px}.studio-journey-card{padding:14px}.studio-journey-card .source-mode-btn{font-size:15px;min-height:54px}#audioSourcePanel{padding:15px}}
+
+/* Dedicated free evaluator mode. Production is a separate navigation destination. */
+.evaluation-mode .source-mode-field,
+.evaluation-mode #audioSourcePanel,
+.evaluation-mode .photo-upload-panel,
+.evaluation-mode .studio-no-credits,
+.evaluation-mode #productionPanel {display:none !important}
+.evaluation-mode .evaluation-welcome{display:block !important;background:#20251f;border:1px solid #756239;border-left:4px solid #e7c67e;border-radius:12px;color:#efe5d5;padding:15px;line-height:1.6;margin:12px 0 18px}
+.evaluation-mode .evaluation-welcome strong{color:#f1d28f}
+.evaluation-mode .song-link-panel{display:block}
+.evaluation-mode .below-studio{display:none}
+
+/* The customer never needs to choose between two workflows inside one form.
+   The global navigation is the single authoritative entry point. */
+.source-mode-field{display:none!important}
