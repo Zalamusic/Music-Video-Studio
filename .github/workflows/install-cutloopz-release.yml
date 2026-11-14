@@ -26,7 +26,7 @@ jobs:
           from pathlib import Path, PurePosixPath
           from zipfile import ZipFile
 
-          archive = Path("CUTLOOPZ_EVALUATOR_SEPARATE_RELEASE.zip")
+          archive = Path("CUTLOOPZ_FREE_BEAT_ANALYSIS_UPDATE.zip")
           prefix = "Music-Video-Studio-cutloopz-production-test/"
 
           if not archive.is_file():
