@@ -1,0 +1,117 @@
+name: Install CutLoopz Release
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - .github/workflows/install-cutloopz-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cutloopz-release-install
+  cancel-in-progress: false
+
+jobs:
+  install:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout CutLoopz
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Install account hub and avatar release
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+          import tarfile, stat
+
+          zip_name = Path('CUTLOOPZ_ONE_HUB_AVATAR_CROP_NOV14.zip')
+          tar_name = Path('CUTLOOPZ_ONE_HUB_AVATAR_CROP_NOV14.tar.gz')
+          prefix = 'Music-Video-Studio-cutloopz-production-test/'
+
+          def safe_relative(name):
+              if not name.startswith(prefix) or '\\' in name:
+                  raise SystemExit('Unexpected release path')
+              relative = PurePosixPath(name[len(prefix):])
+              if not relative.parts or relative.is_absolute() or '..' in relative.parts:
+                  raise SystemExit('Unsafe release path')
+              return relative
+
+          if zip_name.is_file():
+              with ZipFile(zip_name) as archive:
+                  entries = [item for item in archive.infolist() if not item.is_dir()]
+                  names = [item.filename for item in entries]
+                  if len(names) != len(set(names)):
+                      raise SystemExit('Duplicate release paths')
+                  if sum(item.file_size for item in entries) > 100_000_000:
+                      raise SystemExit('Archive too large')
+                  for item in entries:
+                      if stat.S_IFMT(item.external_attr >> 16) == stat.S_IFLNK:
+                          raise SystemExit('Symlink not permitted')
+                  read = lambda entry: archive.read(entry)
+                  install = [(item.filename, item) for item in entries]
+                  def save_entries():
+                      for name, item in install:
+                          rel = safe_relative(name)
+                          if rel.parts[0] in ('.git', '.github', 'tmp'):
+                              continue
+                          if rel.name.startswith('.env'):
+                              raise SystemExit('Private config detected')
+                          target = Path(*rel.parts)
+                          target.parent.mkdir(parents=True, exist_ok=True)
+                          target.write_bytes(read(item))
+                      return set(names)
+                  names_set = save_entries()
+              zip_name.unlink()
+          elif tar_name.is_file():
+              with tarfile.open(tar_name, 'r:gz') as archive:
+                  entries = archive.getmembers()
+                  if not all(item.isfile() for item in entries):
+                      raise SystemExit('Non-file archive member detected')
+                  names = [item.name for item in entries]
+                  if len(names) != len(set(names)):
+                      raise SystemExit('Duplicate release paths')
+                  if sum(item.size for item in entries) > 100_000_000:
+                      raise SystemExit('Archive too large')
+                  for item in entries:
+                      rel = safe_relative(item.name)
+                      if rel.parts[0] in ('.git', '.github', 'tmp'):
+                          continue
+                      if rel.name.startswith('.env'):
+                          raise SystemExit('Private config detected')
+                      target = Path(*rel.parts)
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      target.write_bytes(archive.extractfile(item).read())
+                  names_set = set(names)
+              tar_name.unlink()
+          else:
+              raise SystemExit('CutLoopz account hub / avatar release not uploaded')
+
+          for required in ('server.js', 'package.json', 'public/index.html'):
+              if prefix + required not in names_set:
+                  raise SystemExit('Missing release file: ' + required)
+          print('CutLoopz account hub and avatar release installed')
+          PY
+
+      - name: Validate Node server syntax
+        run: node --check server.js
+
+      - name: Commit installed website
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Install CutLoopz account hub avatar [skip ci]"
+            git push origin HEAD:cutloopz-production-test
+          fi
