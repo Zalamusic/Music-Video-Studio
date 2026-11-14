@@ -26,7 +26,105 @@ jobs:
           from pathlib import Path, PurePosixPath
           from zipfile import ZipFile
 
-          archive = Path("CUTLOOPZ_EVALUATOR_TWO_TABS_READY.zip")
+          
+name: Install CutLoopz Release
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - .github/workflows/install-cutloopz-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout CutLoopz
+        uses: actions/checkout@v4
+
+      - name: Extract latest website
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+          import stat
+
+          archive = Path("CUTLOOPZ_FINAL_POLISH_NOV14_2026.zip")
+          prefix = "Music-Video-Studio-cutloopz-production-test/"
+
+          if not archive.is_file():
+              raise SystemExit("CutLoopz release ZIP not found")
+
+          with ZipFile(archive) as z:
+              entries = [i for i in z.infolist() if not i.is_dir()]
+              names = {i.filename for i in entries}
+
+              required = [
+                  "server.js",
+                  "package.json",
+                  "public/index.html"
+              ]
+
+              for name in required:
+                  if prefix + name not in names:
+                      raise SystemExit("Missing: " + name)
+
+              if sum(i.file_size for i in entries) > 100000000:
+                  raise SystemExit("Archive too large")
+
+              for item in entries:
+                  name = item.filename
+
+                  if not name.startswith(prefix):
+                      raise SystemExit("Unexpected archive path")
+
+                  rel = PurePosixPath(name[len(prefix):])
+
+                  if (not rel.parts or rel.is_absolute()
+                      or ".." in rel.parts or "\\" in str(rel)):
+                      raise SystemExit("Unsafe archive path")
+
+                  if stat.S_IFMT(item.external_attr >> 16) == stat.S_IFLNK:
+                      raise SystemExit("Symlinks not allowed")
+
+                  if rel.parts[0] in (".github", ".git", "tmp"):
+                      continue
+
+                  if rel.name.startswith(".env"):
+                      raise SystemExit("Private configuration detected")
+
+                  target = Path(*rel.parts)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(item))
+
+          archive.unlink()
+          print("CutLoopz website installed successfully")
+          PY
+
+      - name: Validate server
+        run: node --check server.js
+
+      - name: Commit installed website
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          if ! git diff --cached --quiet; then
+            git commit -m "Install CutLoopz final polish [skip ci]"
+            git push origin HEAD:cutloopz-production-test
+          fi
+
           
           from tarfile import open as open_tar
           source = Path("CUTLOOPZ_ARTIST_BUTTONS_ONE_ROW.tar.gz")
