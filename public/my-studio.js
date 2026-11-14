@@ -49,7 +49,12 @@
  }
  function refreshAnalysisIntro(){
    const label=$('analysisIntro');if(!label)return;
-   if(lastSongFile){label.textContent=`Ready to analyze: ${lastSongFile.name}. The audio was selected on Page 1; no second upload needed.`;return;}
+   if(evaluatorMode && selectedSource==='link'){
+     const linked=window.CutLoopzSongLink?.inspect($('songLink').value);
+     label.textContent=linked?.ok?'Song link selected for creative direction. No audio analysis was performed.':'Choose a song link on Page 1, then continue to the Director.';
+     return;
+   }
+   if(activeSongFile()){label.textContent=`Ready to analyze: ${activeSongFile().name}. The audio was selected on Page 1; no second upload needed.`;return;}
    const name=$('songAudio').dataset.previousName;
    const link=window.CutLoopzSongLink?.inspect($('songLink').value);
    if(link?.ok){label.textContent=`${link.name} link is saved. Beat analysis requires an authorized MP3/WAV on Page 1. You can continue to the Listening Director with your lyrics now.`;return;}
@@ -67,7 +72,8 @@
  let storageKey=storagePrefix+'guest', account=null, saveTimer=null, serverTimer=null;
  let page=0, scenePage=0, scenes=[], musicResult=null, lastSongFile=null, lastPhotoFile=null, restoring=false, photoPreviewUrl=null;
  let analysisSourceKey='', storyboardSourceKey='', pendingRestore=null, sourceVersion=0;
- let selectedSource=evaluatorMode?'link':'upload'; // Free evaluator and video Studio use separate local drafts.
+ let selectedSource=evaluatorMode?'link':'upload'; // The free evaluator remembers its selected input independently.
+ const activeSongFile=()=>evaluatorMode&&selectedSource!=='upload'?null:lastSongFile;
  let productionJobId=null,productionPollTimer=null,engineReady=false;
  const productionBase='/api/cutloopz-production';
  const productionStorageKey=()=>storageKey+':lastLocalJob';
@@ -167,7 +173,7 @@
    return `${text.length}:${(a>>>0).toString(16)}:${(b>>>0).toString(16)}`;
  }
  const fileIdentity=file=>file?[file.name,file.size,file.lastModified]:null;
- const musicKey=()=>fingerprint([$('title').value.trim(),selectedSource,$('songLink').value.trim(),fileIdentity(lastSongFile)]);
+ const musicKey=()=>fingerprint([$('title').value.trim(),selectedSource,selectedSource==='link'?$('songLink').value.trim():'',fileIdentity(activeSongFile())]);
  const storyKey=()=>fingerprint([musicKey(),$('lyrics').value,$('direction').value,$('characterNotes').value,
    selectedDuration(),Number($('sceneSeconds').value),$('visualStyle').value,$('format').value,fileIdentity(lastPhotoFile),analysisSourceKey]);
  function invalidateSongOutputs({music=false}={}){
@@ -182,7 +188,7 @@
    scheduleSave();
  }
 
- const serializable=()=>({source:selectedSource,songLink:selectedSource==='link'?(window.CutLoopzSongLink?.inspect($('songLink').value)?.url||''):'',title:$('title').value,lyrics:$('lyrics').value,songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),style:$('visualStyle').value,format:$('format').value,direction:$('direction').value,
+ const serializable=()=>({source:selectedSource,songLink:(evaluatorMode||selectedSource==='link')?$('songLink').value.trim().slice(0,2048):'',title:$('title').value,lyrics:$('lyrics').value,songSeconds:selectedDuration(),sceneSeconds:Number($('sceneSeconds').value),style:$('visualStyle').value,format:$('format').value,direction:$('direction').value,
   characterNotes:$('characterNotes').value,songName:lastSongFile?.name||(evaluatorMode?$('evaluationAudio').dataset.previousName:$('songAudio').dataset.previousName)||'',photoName:lastPhotoFile?.name||$('artistPhoto').dataset.previousName||'',page,scenePage,scenes,musicResult,analysisSourceKey,storyboardSourceKey});
  function saveLocal(){
    try{localStorage.setItem(storageKey,JSON.stringify({at:Date.now(),draft:serializable()}));return true;}
@@ -288,8 +294,8 @@
  function hydrate(draft){
    if(!draft || typeof draft!=='object')return;
    restoring=true;
-   selectedSource=evaluatorMode?'link':(draft.source==='link'||(!draft.source && draft.songLink && !draft.songName)?'link':'upload');
-   $('songLink').value=selectedSource==='link'?safeText(draft.songLink).slice(0,2048):'';
+   selectedSource=evaluatorMode?(draft.source==='upload'?'upload':'link'):(draft.source==='link'||(!draft.source && draft.songLink && !draft.songName)?'link':'upload');
+   $('songLink').value=(evaluatorMode||selectedSource==='link')?safeText(draft.songLink).slice(0,2048):'';
    syncSourceDisplay();
    renderLinkStatus(false);
    $('title').value=safeText(draft.title).slice(0,120);
@@ -357,13 +363,17 @@
    }
    renderAnalysis();updateProjectActions();if(page===3)renderScenes();
    const sourceParam=new URLSearchParams(location.search).get('source');
-   if(evaluatorMode){selectedSource='link';}
+   if(evaluatorMode){
+     const selected=new URLSearchParams(location.search).get('source');
+     if(selected==='upload'||selected==='audio'||selected==='mp3')selectedSource='upload';
+     else if(selected==='link'||['suno','udio','youtube','spotify','soundcloud','tiktok'].includes(selected))selectedSource='link';
+   }
    else if(sourceParam==='link'||['suno','udio','youtube','spotify','soundcloud','tiktok'].includes(sourceParam)){
      if(!lastSongFile&&!$('songAudio').dataset.previousName)selectedSource='link';
    }else {selectedSource='upload';}
    syncSourceDisplay();updateUploadLabels();refreshAnalysisIntro();scheduleSave();
    if(evaluatorMode)showPage(page,{reposition:false});
-   if(evaluatorMode)notify('evaluationAudioStatus',lastSongFile?`Ready for beat analysis: ${lastSongFile.name}`:restoredName?`Please reselect ${restoredName} to analyze beats.`:'Upload an MP3/WAV for beat analysis, or use links and lyrics for creative direction.');
+   if(evaluatorMode)notify('evaluationAudioStatus',activeSongFile()?`Ready for beat analysis: ${activeSongFile().name}`:restoredName?`Please reselect ${restoredName} to analyze beats.`:'Choose an MP3 or WAV to analyze actual song audio.');
    if(selectedSource==='link'&&sourceParam)$('songLink').focus({preventScroll:true});
    // Deep links override the saved page, but do not reset any project fields.
    const urlPage=new URLSearchParams(location.search).get('step');
@@ -381,7 +391,7 @@
    if(evaluatorMode && page===0 && action==='next')return 2;
    if(evaluatorMode && page===2 && action==='back')return 0;
    return window.CutLoopzSongLink.navigation(page,action,{
-     hasAudio: Boolean(lastSongFile),linkAccepted:validSongLink()
+     hasAudio: Boolean(activeSongFile()),linkAccepted:validSongLink()
    });
  }
  function updateStepNavigation(){
@@ -389,7 +399,7 @@
    $('backBtn').textContent=page===2 && linkOnlyProject()?'← Song & Artist':'← Back';
    const note=$('directorSourceNotice');
    const link=selectedSource==='link'?window.CutLoopzSongLink?.inspect($('songLink').value):null;
-   if(page===2 && link?.ok && !lastSongFile){
+   if(page===2 && link?.ok && !activeSongFile()){
      note.textContent=`${link.name} link saved. The audio has not been analyzed and lyrics have not been imported automatically. Use your lyrics and creative direction, or go Back to Page 1 to add them.`;
      note.hidden=false;
    }else{note.hidden=true;note.textContent='';}
@@ -448,7 +458,7 @@
      return false;
    }
    status.style.color='';
-   status.textContent=`${parsed.name} link saved as a reference. ${lastSongFile?'Your optional uploaded MP3/WAV can be analyzed below.':'For real tempo and beat analysis, optionally upload an authorized MP3/WAV below.'} This link does not supply audio or create a video.`;
+   status.textContent=`${parsed.name} link saved for creative evaluation. This link does not supply audio or generate a video.`;
    open.href=parsed.url;open.hidden=false;
    if(announce){scheduleSave();refreshAnalysisIntro();}
    updateStepNavigation();
@@ -457,13 +467,30 @@
  function syncSourceDisplay(){
    $('audioSourcePanel').hidden=selectedSource!=='upload';
    $('songLinkPanel').hidden=selectedSource!=='link';
+   if(evaluatorMode){
+     $('evaluationSourceTabs').hidden=false;
+     $('freeBeatPanel').hidden=selectedSource!=='upload';
+     for(const [mode,id] of [['link','evaluationLinkTab'],['upload','evaluationUploadTab']]){
+       const tab=$(id),active=selectedSource===mode;
+       tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;
+     }
+   }
    for(const [mode,id] of [['upload','sourceUploadBtn'],['link','sourceLinkBtn']]){
      const button=$(id),active=selectedSource===mode;
      button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active));
    }
  }
  function changeSongSource(mode){
-   if(evaluatorMode&&mode!=='link')return;
+   if(evaluatorMode){
+     if(mode===selectedSource)return;
+     selectedSource=mode;
+     // Preserve the text of each input, but never combine them for evaluation.
+     // Changing methods invalidates an analysis/storyboard from the other source.
+     const url=new URL(window.location.href);url.searchParams.set('source',mode);
+     window.history.replaceState(null,'',url.pathname+url.search+url.hash);
+     invalidateSongOutputs({music:true});syncSourceDisplay();refreshAnalysisIntro();updateStepNavigation();scheduleSave();
+     return;
+   }
    if(mode===selectedSource)return;
    const currentHasSong=selectedSource==='upload'
      ?Boolean(lastSongFile||$('songAudio').dataset.previousName)
@@ -504,9 +531,9 @@
  }
  async function analyze(){
    const statusId=evaluatorMode?'evaluationAudioStatus':'analyzeStatus';
-   if(!lastSongFile){notify(statusId,evaluatorMode?'Choose an MP3 or WAV above to analyze its beats. Or continue with your link and lyrics for creative direction.':'The actual MP3/WAV file is missing. Tap Back, select it on Page 1, then return here. Or skip analysis and use the Director.',true);return;}
+   if(!activeSongFile()){notify(statusId,evaluatorMode?'Select the MP3 / WAV tab and choose an audio file for beat analysis.':'The actual MP3/WAV file is missing. Tap Back, select it on Page 1, then return here. Or skip analysis and use the Director.',true);return;}
    if(lastSongFile.size>25*1024*1024){notify(statusId,'The song must be smaller than 25 MB.',true);return;}
-   const form=new FormData();form.append('audio',lastSongFile);
+   const form=new FormData();form.append('audio',activeSongFile());
    const btn=$(evaluatorMode?'evaluationAnalyzeBtn':'analyzeBtn');btn.disabled=true;notify(statusId,'Analyzing rhythm and intensity…');
    const expectedKey=musicKey(),version=sourceVersion;
    try{
@@ -570,7 +597,7 @@
  function renderReview(){
   $('reviewSummary').replaceChildren();
   const linked=selectedSource==='link'?window.CutLoopzSongLink?.inspect($('songLink').value):null;
-  addReview('Music source',evaluatorMode?([linked?.ok?`${linked.name} link reference`:null,lastSongFile?'MP3/WAV uploaded for beat analysis':null].filter(Boolean).join(' + ')||'Not attached'):lastSongFile?'Uploaded MP3/WAV':linked?.ok?`${linked.name} link (audio upload required)`:'Not attached');if(linked?.ok)addReview('Song share link',linked.url);
+  addReview('Music source',evaluatorMode?(selectedSource==='link'?(linked?.ok?`${linked.name} link reference`:'No link selected'):(activeSongFile()?'MP3/WAV for beat analysis':'No audio selected')):lastSongFile?'Uploaded MP3/WAV':linked?.ok?`${linked.name} link (audio upload required)`:'Not attached');if(linked?.ok)addReview('Song share link',linked.url);
   addReview('Song',$('title').value||'Untitled');addReview('Duration',`${selectedDuration()} seconds`);
   addReview('Style',$('visualStyle').value);addReview('Format',$('format').value==='landscape'?'16:9 Landscape':'9:16 Vertical');
   addReview('Director direction',$('direction').value.slice(0,350));addReview('Scenes',`${scenes.length} editable scenes`);
@@ -586,7 +613,7 @@
    $('songLinkStatus').textContent='Paste a public song link for free creative planning (not for video generation).';$('songLinkStatus').style.color='';$('openSongLink').hidden=true;$('openSongLink').removeAttribute('href');
    $('duration').value='30';$('customTime').value='';syncCustomTime();$('sceneSeconds').value='15';$('format').value='vertical';$('songAudio').value='';$('evaluationAudio').value='';$('artistPhoto').value='';
    $('songAudio').dataset.previousName='';$('evaluationAudio').dataset.previousName='';$('artistPhoto').dataset.previousName='';lastSongFile=null;lastPhotoFile=null;
-   notify('evaluationAudioStatus','Upload an MP3/WAV for beat analysis, or continue with links and lyrics.');
+   notify('evaluationAudioStatus','Choose an MP3 or WAV to analyze actual song audio.');
    $('audioLabel').textContent='Choose an audio file for beat-informed analysis. Maximum 25 MB.';
    $('photoLabel').textContent='JPG, PNG or WebP · Max 12 MB · One reference photo in the standard Studio.';
    updatePhotoPreview(null);
@@ -601,6 +628,16 @@
      else scheduleSave();
    });
    input.addEventListener('change',()=>scheduleSave());
+ }
+ // Both sources are mutually exclusive in the free evaluator. Arrow keys work like standard tabs.
+ for(const [mode,id] of [['link','evaluationLinkTab'],['upload','evaluationUploadTab']]){
+   $(id).addEventListener('click',()=>changeSongSource(mode));
+   $(id).addEventListener('keydown',event=>{
+     if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+     event.preventDefault();
+     const next=event.key==='Home'?'link':event.key==='End'?'upload':mode==='link'?'upload':'link';
+     changeSongSource(next);$(next==='link'?'evaluationLinkTab':'evaluationUploadTab').focus();
+   });
  }
  $('sourceUploadBtn').addEventListener('click',()=>changeSongSource('upload'));
  $('sourceLinkBtn').addEventListener('click',()=>changeSongSource('link'));
@@ -621,7 +658,7 @@
    mediaWrite('audio',f).catch(()=>notify('audioLabel',`Selected: ${f?.name||'none'}. Browser could not retain this file after refresh; keep this page open until analysis.`,true));
  });
  $('evaluationAudio').addEventListener('change',()=>{
-   if(!evaluatorMode)return;
+   if(!evaluatorMode||selectedSource!=='upload')return;
    const f=$('evaluationAudio').files?.[0]||null;
    if(f && (!/\.(mp3|wav)$/i.test(f.name)||f.size>25*1024*1024||!f.size)){
      notify('evaluationAudioStatus','Choose an MP3 or WAV under 25 MB.',true);
@@ -647,9 +684,14 @@
  $('nextBtn').addEventListener('click',()=>{
    if(page===0){
      if(!Number.isFinite(selectedDuration())){alert('Enter a valid custom duration between 0:15 and 6:00.');return;}
-     if(evaluatorMode&&!validSongLink()&&!lastSongFile){notify('songLinkStatus','Paste a supported song link or upload an MP3/WAV for free evaluation.',true);$('songLink').focus();return;}
-     // Do not quietly discard a malformed URL or lead the user into an MP3-only screen.
-     if($('songLink').value.trim()&&!renderLinkStatus(true)&&!lastSongFile){$('songLink').focus();return;}
+     if(evaluatorMode){
+       if(selectedSource==='link'&&!renderLinkStatus(true)){$('songLink').focus();return;}
+       if(selectedSource==='upload'&&!activeSongFile()){
+         notify('evaluationAudioStatus','Choose an MP3 or WAV to evaluate, or switch to Song Link.',true);$('evaluationAudio').focus();return;
+       }
+     }
+     // Only validate the link when it is the selected input.
+     if(!evaluatorMode && selectedSource==='link' && $('songLink').value.trim()&&!renderLinkStatus(true)){$('songLink').focus();return;}
    }
    showPage(pageAfter('next'));
  });
@@ -671,13 +713,12 @@
    document.title='Free Song Evaluation | CutLoopz Media';
    $('navCreateVideo').classList.remove('active');$('navFreeEvaluation').classList.add('active');
    $('studioMainTitle').textContent='Free Song Evaluation';
-   $('studioMainIntro').textContent='Explore your music with a song link and lyrics, or optionally upload an MP3/WAV for real beat analysis. No video is generated.';
+   $('studioMainIntro').textContent='Choose Song Link or MP3 / WAV to evaluate your music for free. Each method has its own instructions. No video is created.';
    $('songHeading').textContent='01 · Evaluate your song';
    $('durationLabel').textContent='Storyboard concept length';
    $('evaluationWelcome').hidden=false;
    $('reviewIntro').textContent='Review your free creative concept. Save or download your storyboard — no video is being generated.';
-   pageTitles[0]='Evaluate Your Song';pageDescriptions[0]='Paste a song link or upload audio for free analysis, then add lyrics for your Director concept.';
-   $('freeBeatPanel').hidden=false;
+   pageTitles[0]='Evaluate Your Song';pageDescriptions[0]='Choose one source, then add lyrics for your Director concept.';
    $('studioPrivacyNote').textContent='Your free evaluation draft saves on this device. Uploaded audio is temporarily processed for beat analysis and deleted from the server afterward; your browser may retain a local copy for this project. No video is generated. Save your storyboard or project backup before clearing this browser.';
    pageDescriptions[4]='Save your free creative planning and storyboard.';
  }

@@ -21,7 +21,7 @@ test('Page 2 reuses Page 1 song and retained media stays private in browser',asy
  assert.match(js,/lastSongFile=f/);
  assert.match(js,/mediaWrite\('audio',f\)/);
  assert.match(js,/mediaRead\('audio'\)/);
- assert.match(js,/form\.append\('audio',lastSongFile\)/);
+ assert.match(js,/form\.append\('audio',activeSongFile\(\)\)/);
  assert.match(js,/if\(page===1\)refreshAnalysisIntro\(\)/);
  assert.ok(!js.includes('localStorage.setItem(storageKey,JSON.stringify({at:Date.now(),draft:serializable(),file:'));
 });

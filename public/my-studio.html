@@ -32,19 +32,23 @@
   <div class="workspace-content">
    <section class="wizard-step" data-step="0" aria-labelledby="songHeading">
     <h3 id="songHeading">01 · Song details</h3>
-    <p id="evaluationWelcome" class="evaluation-welcome" hidden><strong>FREE Song Evaluation</strong> — Paste a song link and add lyrics for a creative Director concept. Want real beat and tempo analysis? Optionally upload your authorized MP3/WAV below. No video is generated here.</p>
+    <p id="evaluationWelcome" class="evaluation-welcome" hidden><strong>Free Song Evaluation.</strong> Choose one way to evaluate your song. No payment or video creation.</p>
+    <div class="evaluation-source-tabs" id="evaluationSourceTabs" role="tablist" aria-label="Choose an evaluation method" hidden>
+      <button type="button" id="evaluationLinkTab" role="tab" aria-selected="true" aria-controls="songLinkPanel" tabindex="0">Song Link</button>
+      <button type="button" id="evaluationUploadTab" role="tab" aria-selected="false" aria-controls="freeBeatPanel" tabindex="-1">MP3 / WAV</button>
+    </div>
     <div class="song-link-panel" id="songLinkPanel" aria-labelledby="songLinkHeading" hidden>
-      <div class="song-link-heading"><span class="song-link-glyph" aria-hidden="true">↗</span><div><label id="songLinkHeading" for="songLink">Free Song-Link Evaluation</label><p class="hint"><strong class="studio-platform studio-suno">SUNO</strong> · <strong class="studio-platform">Udio</strong> · <strong class="studio-platform">YouTube</strong> · <strong class="studio-platform">Spotify</strong> · <strong class="studio-platform">SoundCloud</strong> · <strong class="studio-platform">TikTok</strong></p></div></div>
+      <div class="song-link-heading"><span class="song-link-glyph" aria-hidden="true">↗</span><div><label id="songLinkHeading" for="songLink">Song Link · Creative Evaluation</label><p class="hint"><strong class="studio-platform studio-suno">SUNO</strong> · <strong class="studio-platform">Udio</strong> · <strong class="studio-platform">YouTube</strong> · <strong class="studio-platform">Spotify</strong> · <strong class="studio-platform">SoundCloud</strong> · <strong class="studio-platform">TikTok</strong></p></div></div>
       <div class="song-link-input-row"><input id="songLink" type="url" maxlength="2048" inputmode="url" placeholder="https://suno.com/song/…" autocomplete="off" spellcheck="false"><button type="button" class="gold" id="useSongLink">Use Link</button></div>
       <p id="songLinkStatus" class="operation-status" role="status">Paste a public song link for free creative planning (not for video generation).</p>
       <a id="openSongLink" href="#" rel="noopener noreferrer" target="_blank" hidden>Open original song ↗</a>
-      <p class="hint">Song links are references for lyrics-based creative direction, not audio analysis. With a link alone, the song link takes you directly to the Listening Director. CutLoopz does not rip or download audio from streaming platforms. For actual audio, upload your authorized MP3/WAV just below for free beat analysis. No video is made on this page.</p>
+      <p class="hint">Use this link and your lyrics to develop a creative Director concept. Streaming audio is <strong>not</strong> imported or analyzed. For real beat analysis, choose the MP3 / WAV tab above.</p>
     </div>
     <div class="free-beat-panel" id="freeBeatPanel" hidden>
-      <label for="evaluationAudio">For Beat Analysis, Upload an MP3 File <span class="optional">(optional · free)</span></label>
+      <label for="evaluationAudio">For Beat Analysis, Upload an MP3 File <span class="optional">(MP3 or WAV · free)</span></label>
       <input type="file" id="evaluationAudio" accept=".mp3,.wav,audio/mpeg,audio/wav" aria-describedby="evaluationAudioHelp">
       <p class="hint" id="evaluationAudioHelp">MP3 or WAV, up to 25 MB, from a song you have permission to use. CutLoopz analyzes the audio's estimated beat, tempo and energy. No video generation or payment.</p>
-      <p id="evaluationAudioStatus" class="operation-status" role="status">Upload a song to enable beat analysis, or continue with your link and lyrics.</p>
+      <p id="evaluationAudioStatus" class="operation-status" role="status">Choose an MP3 or WAV to analyze actual song audio.</p>
       <button type="button" class="gold" id="evaluationAnalyzeBtn">Analyze Beats — Free</button>
       <div class="free-beat-results" id="evaluationBeatResult" hidden aria-live="polite">
         <div class="metric-grid">

@@ -41,8 +41,8 @@ test('V5 Studio uses link intake, account sync, truthful audio controls and exis
   read('./public/my-studio.html'),read('./public/my-studio.js'),read('./customer-auth.js'),read('./public/customer.html'),read('./server.js')]);
  for(const id of ['songLink','useSongLink','songLinkStatus','openSongLink','songAudio','artistPhoto','analyzeBtn','directorBtn'])assert.ok(html.includes(`id="${id}"`));
  assert.ok(html.indexOf('id="songLink"')<html.indexOf('id="songAudio"'));
- assert.match(html,/actual audio, upload your authorized MP3\/WAV/);
- assert.match(js,/songLink:selectedSource==='link'/);
+ assert.match(html,/For Beat Analysis, Upload an MP3 File/);
+ assert.match(js,/songLink:\(evaluatorMode\|\|selectedSource==='link'\)/);
  assert.match(js,/draft\.songLink/);
  assert.match(js,/lastSongFile/);
  assert.match(js,/mediaWrite\('audio',f\)/);
@@ -53,9 +53,9 @@ test('V5 Studio uses link intake, account sync, truthful audio controls and exis
 });
 test('V5 marketing does not claim third-party audio extraction, payments or GPU completion',async()=>{
  const [html,home,js]=await Promise.all([read('./public/my-studio.html'),read('./public/customer.html'),read('./public/my-studio.js')]);
- assert.match(html,/does not rip or download audio/);
+ assert.match(html,/Streaming audio is <strong>not<\/strong> imported or analyzed/);
  assert.match(home,/The separate Create Video Studio uses your own authorized MP3\/WAV/i);
- assert.match(js,/if\(!lastSongFile\)/);
+ assert.match(js,/if\(!activeSongFile\(\)\)/);
  assert.match(html,/id="generateVideo"/);
  assert.match(home,/Your music deserves a video/);
 });
@@ -83,12 +83,12 @@ test('V5C uploaded audio still visits analyzer even when a link is saved',async(
 test('V5C Studio routes link-only projects and explains missing audio and lyrics',async()=>{
  const [html,js,helper]=await Promise.all([read('./public/my-studio.html'),read('./public/my-studio.js'),read('./public/cutloopz-song-link.js')]);
  assert.match(html,/id="directorSourceNotice"/);
- assert.match(html,/song link takes you directly to the Listening Director/i);
+ assert.match(html,/Use this link and your lyrics to develop a creative Director concept/i);
  assert.match(js,/showPage\(pageAfter\('next'\)\)/);
  assert.match(js,/showPage\(pageAfter\('back'\)\)/);
  assert.match(js,/Next: Listening Director/);
  assert.match(js,/lyrics have not been imported automatically/i);
- assert.match(js,/!renderLinkStatus\(true\)&&!lastSongFile/);
+ assert.match(js,/selectedSource==='link' && \$\('songLink'\)\.value\.trim\(\)&&!renderLinkStatus\(true\)/);
  assert.match(helper,/linkAccepted && !hasAudio/);
  assert.doesNotMatch(js,/fetch\(['"]https:\/\/suno\.com/);
 });

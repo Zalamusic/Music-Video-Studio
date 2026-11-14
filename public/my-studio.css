@@ -171,3 +171,13 @@ textarea{padding:15px 14px;vertical-align:top;overflow:auto}
 @media(max-width:620px){.free-beat-panel{padding:14px}.free-beat-panel label{font-size:16px}.free-beat-panel .metric-grid strong{font-size:17px}}
 
 .evaluation-mode #directorPhotoHint{display:none!important}
+
+/* Free evaluator: exclusive, keyboard-accessible side-by-side source tabs. */
+.evaluation-source-tabs[hidden],.evaluation-mode #songLinkPanel[hidden],.evaluation-mode #freeBeatPanel[hidden]{display:none!important}
+.evaluation-source-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:6px 0 18px}
+.evaluation-source-tabs button{font:inherit;font-size:16px;font-weight:750;min-height:52px;min-width:0;padding:10px 9px;border-radius:10px;border:1px solid #82704d;background:#17161b;color:#e7d4b5;cursor:pointer}
+.evaluation-source-tabs button[aria-selected="true"]{background:#dcb76c;color:#1b160c;border-color:#f5d897;box-shadow:0 0 0 2px #e5c27c55}
+.evaluation-source-tabs button:focus-visible{outline:3px solid #f4d99e;outline-offset:3px}
+.evaluation-mode .song-link-panel,.evaluation-mode .free-beat-panel{margin:0 0 20px}
+.evaluation-mode .song-link-panel .hint,.evaluation-mode .free-beat-panel .hint{line-height:1.55}
+@media(max-width:440px){.evaluation-source-tabs{gap:7px}.evaluation-source-tabs button{font-size:15px;padding:9px 5px}}

@@ -7,11 +7,18 @@ const css = read('./public/my-studio.css');
 const js = read('./public/my-studio.js');
 const router = read('./cutloopz-creative-preview.mjs');
 
-test('free evaluation offers optional beat-analysis MP3/WAV directly below song link', () => {
+test('free evaluator has exclusive accessible Song Link and MP3/WAV tabs', () => {
   const link = page.indexOf('id="songLinkPanel"');
   const beat = page.indexOf('id="freeBeatPanel"');
   const title = page.indexOf('id="title"');
-  assert.ok(link >= 0 && beat > link && title > beat, 'beat input must appear between link and title');
+  const tabs = page.indexOf('id="evaluationSourceTabs"');
+  assert.ok(tabs >= 0 && link > tabs && beat > link && title > beat);
+  assert.match(page, /id="evaluationLinkTab" role="tab" aria-selected="true"/);
+  assert.match(page, /id="evaluationUploadTab" role="tab" aria-selected="false"/);
+  assert.match(page, /aria-controls="songLinkPanel"/);
+  assert.match(page, /aria-controls="freeBeatPanel"/);
+  assert.match(css, /\.evaluation-mode #songLinkPanel\[hidden\]/);
+  assert.match(css, /\.evaluation-mode #freeBeatPanel\[hidden\]/);
   assert.match(page, /For Beat Analysis, Upload an MP3 File/);
   assert.match(page, /id="evaluationAudio"[^>]*accept="\.mp3,\.wav/);
   assert.match(page, /id="evaluationAnalyzeBtn"/);
@@ -20,12 +27,17 @@ test('free evaluation offers optional beat-analysis MP3/WAV directly below song 
 });
 test('the free evaluator and video Studio retain separate uploads and modes', () => {
   assert.match(js, /storagePrefix=evaluatorMode\?'cutloopz:free-evaluator:v1:'/);
-  assert.match(js, /\$\('freeBeatPanel'\)\.hidden=false/);
+  assert.match(js, /\$\('freeBeatPanel'\)\.hidden=selectedSource!=='upload'/);
+  assert.match(js, /\$\('evaluationSourceTabs'\)\.hidden=false/);
+  assert.match(js, /selectedSource=evaluatorMode\?\(draft\.source==='upload'\?'upload':'link'\)/);
   assert.match(css, /\.free-beat-panel\[hidden\]/);
   assert.match(css, /\.evaluation-mode #audioSourcePanel/);
   assert.match(js, /if\(\(selectedSource==='upload'\|\|evaluatorMode\)\&\&audio/);
   assert.match(js, /if\(selectedSource==='link'\&\&!evaluatorMode\&\&audio\)/);
-  assert.match(js, /if\(evaluatorMode\&\&!validSongLink\(\)\&\&!lastSongFile\)/);
+  assert.match(js, /if\(selectedSource==='link'&&!renderLinkStatus\(true\)\)/);
+  assert.match(js, /if\(selectedSource==='upload'&&!activeSongFile\(\)\)/);
+  assert.match(js, /window\.history\.replaceState/);
+  assert.match(js, /fileIdentity\(activeSongFile\(\)\)/);
 });
 test('the beat-analysis action uses existing bounded free endpoint and displays estimates', () => {
   assert.match(js, /\$\('evaluationAnalyzeBtn'\)\.addEventListener\('click',\(\)=>analyze\(\)\)/);
