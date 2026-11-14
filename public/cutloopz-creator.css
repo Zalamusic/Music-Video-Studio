@@ -14,3 +14,14 @@
 .artist-external-arrow{flex:none;font-size:19px}.artist-external-link:hover{background:#30251a}
 .owner-profile-tools{margin-top:6px;margin-bottom:15px;display:flex;flex-wrap:wrap;gap:10px}.owner-profile-tools .btn{font-size:14px}
 @media(max-width:640px){.card-grid{grid-template-columns:1fr}.creator-result{min-height:76px}.artist-avatar{width:55px;height:55px;font-size:30px}}
+
+/* Profile avatar: a tiny image, not hosted showcase video. */
+.artist-avatar{overflow:hidden;border-radius:50%;flex-shrink:0}
+.artist-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.creator-mini-avatar{width:42px;height:42px;font-size:22px}
+.avatar-edit{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.avatar-preview{width:84px;height:84px}
+.avatar-edit-controls{flex:1;min-width:190px}
+.avatar-edit-controls input{padding:8px;min-height:46px;margin-bottom:8px}
+.avatar-edit-controls .btn{padding:8px 12px;min-height:38px}
+.owner-preview-label{color:#f0d294;border:1px solid #826539;background:#211a16;border-radius:10px;padding:10px 13px;max-width:740px}

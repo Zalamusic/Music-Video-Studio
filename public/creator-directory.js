@@ -17,7 +17,9 @@
    details.append(el('h2',creator.artistName));
    if(creator.genre)details.append(el('p',creator.genre,'small'));
    if(creator.platforms?.length)details.append(el('p',creator.platforms.slice(0,3).join(' · '),'small creator-result-platforms'));
-   card.append(details,el('span','›','creator-result-arrow'));
+   const avatar=el('span','♫','artist-avatar creator-mini-avatar');
+   if(typeof creator.avatar==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(creator.avatar)&&creator.avatar.length<=76000){const img=el('img');img.src=creator.avatar;img.alt='';avatar.replaceChildren(img);}
+   card.append(avatar,details,el('span','›','creator-result-arrow'));
    list.append(card);
   }
  }

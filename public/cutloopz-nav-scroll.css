@@ -4,3 +4,21 @@
 .nav-scroll-button[hidden],.nav-scroll-control[hidden]{display:none!important}
 .nav-scroll-button:focus-visible{outline:2px solid #f4ce77;outline-offset:2px;border-radius:4px}
 @media(min-width:960px){.nav-scroll-control{display:none!important}}
+
+/* Match the rounded navigation pills on small screens. */
+.nav-scroll-control .nav-scroll-button {
+  border-radius: 12px !important;
+  min-height: 39px;
+  padding: 7px 13px;
+  border: 1px solid #8a6b3c;
+  background: #1b191e;
+  color: #edc676;
+  text-decoration: none;
+  box-shadow: none;
+  line-height: 1.2;
+}
+.nav-scroll-control .nav-scroll-button:focus-visible {
+  border-radius: 12px !important;
+  outline: 3px solid #f4ce77;
+  outline-offset: 2px;
+}

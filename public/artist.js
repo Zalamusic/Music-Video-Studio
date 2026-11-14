@@ -1,6 +1,7 @@
 'use strict';(()=>{
  const $=id=>document.getElementById(id),status=$('artistStatus');
  const id=new URLSearchParams(location.search).get('id')||'';
+ const ownerPreview=new URLSearchParams(location.search).get('preview')==='mine';
  const validId=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
  const el=(tag,text,cls)=>{const node=document.createElement(tag);if(cls)node.className=cls;node.textContent=text;return node;};
  function addLink(container,value,kind){
@@ -13,12 +14,15 @@
   }catch{}
  }
  async function show(){
-  if(!validId){status.textContent='This artist profile link is invalid. Browse the Creator Directory to find an artist.';return;}
+  if(!ownerPreview&&!validId){status.textContent='This artist profile link is invalid. Browse the Creator Directory to find an artist.';return;}
   try{
-   const response=await fetch('/api/customer-auth/creators/'+encodeURIComponent(id),{cache:'no-store'});
+   const response=await fetch(ownerPreview?'/api/customer-auth/creator-preview':'/api/customer-auth/creators/'+encodeURIComponent(id),{cache:'no-store',credentials:'same-origin'});
    const data=await response.json();
    if(!response.ok||!data.ok||!data.creator)throw Error('This profile is private, unpublished, or no longer available.');
    const profile=data.creator;
+   if(ownerPreview && profile.visibility!=='public')$('ownerPrivateNotice').hidden=false;
+   const avatar=$('publicArtistAvatar');
+   if(typeof profile.avatar==='string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(profile.avatar) && profile.avatar.length<=76000){const img=document.createElement('img');img.alt='';img.src=profile.avatar;avatar.replaceChildren(img);}
    $('publicArtistName').textContent=profile.artistName||'Independent Artist';
    document.title=(profile.artistName||'Artist')+' | CutLoopz Media';
    $('publicArtistGenre').textContent=profile.genre||'Independent Music Artist';

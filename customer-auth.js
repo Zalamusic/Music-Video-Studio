@@ -20,8 +20,7 @@ const MAX_ATTEMPTS = 10;
 const ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
 const RESET_MINUTES = 30;
 
-const APP_URL =
-  'https://zala-music-video-studio.onrender.com';
+const APP_URL = String(process.env.CUTLOOPZ_APP_URL || process.env.RENDER_EXTERNAL_URL || 'https://cutloopz-preview.onrender.com').replace(/\/$/, '');
 
 const attempts = new Map();
 
@@ -160,41 +159,23 @@ async function sendResetEmail(email, name, token) {
 
   await transporter.sendMail({
     from: {
-      name: 'Cut Loopz Media',
+      name: 'CutLoopz Media',
       address: process.env.SMTP_USER
     },
     to: email,
-    subject: 'Reset Your Cut Loopz Media Password',
+    subject: 'Your CutLoopz Password Reset Link',
     text:
       `Hello ${name},\n\n` +
       'We received a request to reset your ' +
-      'Cut Loopz Media password.\n\n' +
+      'CutLoopz Media password.\n\n' +
       'Open this secure link:\n' +
       link + '\n\n' +
       'This link expires in 30 minutes ' +
       'and can only be used once.\n\n' +
       'If you did not request this change, ' +
       'you can ignore this email.\n\n' +
-      'Cut Loopz Media',
-    html:
-      '<div style="font-family:Arial,sans-serif;' +
-      'max-width:540px;margin:auto;' +
-      'padding:24px;color:#222">' +
-      '<h2 style="color:#b48b36">' +
-      'Cut Loopz Media</h2>' +
-      '<p>We received a request to reset ' +
-      'your account password.</p>' +
-      '<p><a href="' + link + '" ' +
-      'style="display:inline-block;' +
-      'padding:14px 22px;' +
-      'background:#171717;color:#fff;' +
-      'text-decoration:none;border-radius:8px">' +
-      'Reset My Password</a></p>' +
-      '<p>This link expires in 30 minutes ' +
-      'and can only be used once.</p>' +
-      '<p>If you did not request this change, ' +
-      'you can ignore this email.</p>' +
-      '<p>Cut Loopz Media</p></div>'
+      'CutLoopz Media',
+    html: `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#09090e;padding:30px 12px;font-family:Arial,sans-serif;color:#f6eddb"><table role="presentation" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;margin:auto;border:1px solid #675034;border-radius:18px;background:#171318"><tr><td style="padding:30px 25px;text-align:center"><div style="font-size:14px;letter-spacing:3px;color:#e9c87d;font-weight:bold">✦ CUTLOOPZ MEDIA</div><h1 style="font-size:28px;line-height:1.3;color:#f8e7c4;margin:24px 0 12px">Your Creative Journey Is Still Here.</h1><p style="font-size:16px;line-height:1.7;color:#ddd2c4">We received a request to reset your CutLoopz password. Tap below to securely choose a new one.</p><p style="margin:28px 0"><a href="${link}" style="display:inline-block;padding:15px 25px;border-radius:11px;background:#e2bb6d;color:#211809;text-decoration:none;font-weight:bold">Reset My Password</a></p><p style="font-size:13px;line-height:1.6;color:#cfc2ad">This secure link expires in 30 minutes and can be used only once. If you didn't request it, you can safely ignore this email.</p><p style="font-size:13px;color:#e0c486;margin-top:25px">Your Music. Your Vision. Your Video.</p></td></tr></table></body></html>`
   });
 }
 
@@ -738,6 +719,7 @@ export function createCustomerAuthRouter({
   // Images/audio/video are not accepted or copied into CutLoopz storage.
   const CREATOR_PLATFORMS = Object.freeze(['Suno','Udio','YouTube','Spotify','SoundCloud','Traditional Studio','Other']);
   const creatorSaveAttempts = new Map();
+  const safeAvatar = value => typeof value==='string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(value) && value.length<=76000 ? value : '';
   const cleanText = (value, max) => typeof value === 'string' ? value.trim().slice(0,max) : '';
   function cleanExternalUrl(value) {
     if (typeof value !== 'string' || value.length > 2048) return null;
@@ -756,13 +738,22 @@ export function createCustomerAuthRouter({
     if (!profile || profile.visibility !== 'public') return null;
     return { id:user.id, artistName:profile.artistName, bio:profile.bio,
       genre:profile.genre, platforms:profile.platforms, artistPageUrl:profile.artistPageUrl,
-      socialLinks:profile.socialLinks, videoLinks:profile.videoLinks,
+      socialLinks:profile.socialLinks, videoLinks:profile.videoLinks, avatar:profile.avatar||'',
       updatedAt:profile.updatedAt };
   }
   router.get('/creator-profile', (req,res)=>{
     const identity=findSession(req);
     if (!identity) return res.status(401).json({ok:false,error:'Sign in to edit your artist profile.'});
     res.json({ok:true,profile:identity.user.creatorProfile||null,publicId:identity.user.id});
+  });
+  router.get('/creator-preview', (req,res)=>{
+    const identity=findSession(req);
+    if(!identity)return res.status(401).json({ok:false,error:'Sign in to view your private artist profile.'});
+    const profile=identity.user.creatorProfile;
+    if(!profile)return res.status(404).json({ok:false,error:'Create and save your artist profile first.'});
+    const {artistName,bio,genre,platforms,artistPageUrl,socialLinks,videoLinks,avatar,visibility}=profile;
+    res.set('Cache-Control','private, no-store');
+    return res.json({ok:true,creator:{artistName,bio,genre,platforms,artistPageUrl,socialLinks,videoLinks,avatar,visibility},ownerPreview:true});
   });
   router.put('/creator-profile', async (req,res)=>{
     const identity=findSession(req);
@@ -774,6 +765,7 @@ export function createCustomerAuthRouter({
     const next=!attempt||now-attempt.start>900000?{start:now,count:1}:{start:attempt.start,count:attempt.count+1};
     creatorSaveAttempts.set(key,next);
     if(next.count>60)return res.status(429).json({ok:false,error:'Too many profile changes. Please try again later.'});
+    if(raw.avatar!=null && raw.avatar!=='' && !safeAvatar(raw.avatar))return res.status(400).json({ok:false,error:'Upload a smaller JPEG profile picture.'});
     const artistName=cleanText(raw.artistName,80);
     if(artistName.length<2)return res.status(400).json({ok:false,error:'Enter an artist name of at least 2 characters.'});
     const visibility=['public','private','hidden'].includes(raw.visibility)?raw.visibility:'private';
@@ -792,7 +784,7 @@ export function createCustomerAuthRouter({
     const artistPageUrl=raw.artistPageUrl?cleanExternalUrl(raw.artistPageUrl):'';
     if(raw.artistPageUrl&&!artistPageUrl)return res.status(400).json({ok:false,error:'Artist page must be a valid https:// link.'});
     const profile={artistName,bio:cleanText(raw.bio,1000),genre:cleanText(raw.genre,100),
-      platforms,visibility,artistPageUrl,socialLinks,videoLinks,
+      platforms,visibility,artistPageUrl,socialLinks,videoLinks,avatar:safeAvatar(raw.avatar||''),
       updatedAt:new Date().toISOString()};
     identity.user.creatorProfile=profile;
     try{await save();res.json({ok:true,profile,publicId:identity.user.id});}

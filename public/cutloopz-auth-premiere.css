@@ -1,0 +1,24 @@
+/* Authentication-only CutLoopz private premiere look. Keeps the existing functional forms. */
+body.cutloopz-auth{background:radial-gradient(ellipse at 50% 0%,#3d2920 0%,#171116 45%,#09090d 100%);color:#f8f1e3;min-height:100vh}
+body.cutloopz-auth main{max-width:590px;padding:28px 16px 55px}
+body.cutloopz-auth header{border-bottom:1px solid #604b31;padding:0 0 18px}
+body.cutloopz-auth .brand{color:#f3d189;font-size:19px}
+body.cutloopz-auth .sub{color:#bdb0a2;letter-spacing:1.4px}
+body.cutloopz-auth a,body.cutloopz-auth .studio-link{color:#f0ce82}
+body.cutloopz-auth .panel{background:linear-gradient(155deg,#241b1e,#141217 55%);border:1px solid #95734b;box-shadow:0 16px 60px #0008;border-radius:22px;padding:28px 24px}
+body.cutloopz-auth #authPanel h1,body.cutloopz-auth #authPanel h2{color:#f9e7be;font-weight:800;line-height:1.2}
+body.cutloopz-auth p,body.cutloopz-auth #description,body.cutloopz-auth .status{color:#d5c6b7}
+body.cutloopz-auth label{color:#f1e3d2}
+body.cutloopz-auth input{background:#0c0d12;border:1px solid #8e734d;color:#fff}
+body.cutloopz-auth input:focus{border-color:#edc980}
+body.cutloopz-auth button.submit,body.cutloopz-auth #sendResetButton{background:linear-gradient(135deg,#f0d18e,#c39242);color:#201709;border:0}
+body.cutloopz-auth .tabs button{background:#171218;border:1px solid #8c6c42;color:#f1d18c}
+body.cutloopz-auth .tabs button[aria-pressed="true"]{background:#e6bc70;color:#1b1410;border:1px solid #e6bc70}
+body.cutloopz-auth .eye-button{background:transparent;color:#e8c477;border:0}
+body.cutloopz-auth #forgotPasswordButton,body.cutloopz-auth #backToLoginButton{color:#e8c477!important}
+body.cutloopz-auth .auth-eyebrow{text-align:center;color:#ebc67f;letter-spacing:2px;font-size:12px;font-weight:800;margin-bottom:14px}
+body.cutloopz-auth .reset-icon{text-align:center;color:#f0cf8a;font-size:32px}
+.cutloopz-review-footer{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:32px 22px 110px!important;line-height:1.5;color:#c8bbaa;overflow-wrap:anywhere;max-width:100%}
+.cutloopz-review-footer .cutloopz-review-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;border:1px solid #af8449;border-radius:12px;padding:9px 19px;color:#f1d18c;background:#1c1718;font-weight:800;text-decoration:none;white-space:nowrap;max-width:100%}
+.cutloopz-review-footer .cutloopz-review-link:hover{background:#2c2220}
+@media(max-width:390px){body.cutloopz-auth .panel{padding:21px 17px}}

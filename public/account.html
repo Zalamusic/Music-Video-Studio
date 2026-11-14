@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#100e12">
 <title>Your Account | CutLoopz Media</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -463,12 +463,13 @@ body.zala-themed .zala-theme-control {
   .progress-fill {transition:none}
 }
 </style>
+<link rel="stylesheet" href="/cutloopz-auth-premiere.css">
 <script src="/cutloopz-floating-home.js" defer></script>
 <script src="/cutloopz-studio-helper.js" defer></script>
 <script src="/cutloopz-floating-home.js" defer></script>
 </head>
 
-<body>
+<body class="cutloopz-auth">
 <main>
 
 <header>
@@ -487,7 +488,7 @@ body.zala-themed .zala-theme-control {
 </header>
 
 <section class="panel" id="authPanel">
-  <h1 id="heading">Welcome back, hitmaker!</h1>
+  <div class="auth-eyebrow">✦ YOUR CREATIVE HOME ✦</div><h1 id="heading">Welcome back, Hit Maker!</h1>
   <p id="description">
     Ready to make another hit? Sign in and let the creativity continue.
   </p>
@@ -549,8 +550,8 @@ body.zala-themed .zala-theme-control {
   </div>
 
   <form id="forgotForm" class="hidden">
-    <h2 style="font-size:20px">Reset your password</h2>
-    <p>Enter your account email address. We'll send you a secure reset link.</p>
+    <div class="reset-icon" aria-hidden="true">✉</div><h2 style="font-size:22px">Let’s Get You Back to Creating.</h2>
+    <p>Enter your account email and we’ll send a private, one-time link. Your music and creative work will be ready when you return.</p>
 
     <label for="forgotEmail">Email address</label>
     <input id="forgotEmail" type="email"
@@ -669,7 +670,7 @@ body.zala-themed .zala-theme-control {
 </div>
 
 </main>
-
+<footer class="cutloopz-review-footer"><span>CutLoopz Media — Your Music. Your Vision. Your Video.</span><a class="cutloopz-review-link" href="/cutloopz-reviews.html">✦ Leave a Review</a></footer>
 <script>
 'use strict';
 
@@ -1004,6 +1005,7 @@ function showUser(user, newlyRegistered = false) {
   signedIn = true;
   accountGeneration++;
 
+  document.body.classList.remove('cutloopz-auth');
   $('authPanel').classList.add('hidden');
   $('profilePanel').classList.remove('hidden');
 
@@ -1033,6 +1035,7 @@ function showAuth() {
   accountGeneration++;
   historyRequest++;
 
+  document.body.classList.add('cutloopz-auth');
   $('profilePanel').classList.add('hidden');
   $('authPanel').classList.remove('hidden');
 
@@ -1071,6 +1074,7 @@ function afterAuthentication(user, newlyRegistered = false) {
   // Only a successful new-account registration triggers the one-time floating welcome.
   // Signing in, refreshing, and restoring an existing session never trigger it.
   if (newlyRegistered) window.CutLoopzWelcome?.queue(user);
+  if (new URLSearchParams(location.search).get('return')==='rewards'){window.location.replace('/hit-maker-rewards.html');return;}
   if (studioView) {
     showUser(user, newlyRegistered);
     if (newlyRegistered) window.CutLoopzWelcome?.consume();
@@ -1151,15 +1155,7 @@ $('logoutButton').addEventListener('click', async () => {
 });
 
 $('forgotPasswordButton').addEventListener('click', () => {
-  $('authForm').classList.add('hidden');
-  $('forgotLinkArea').classList.add('hidden');
-  $('forgotForm').classList.remove('hidden');
-  document.querySelector('.tabs').classList.add('hidden');
-  $('heading').textContent = 'Forgot your password?';
-  $('description').textContent =
-    "We'll email you a secure link to create a new password.";
-  $('forgotEmail').value = $('email').value.trim();
-  message('');
+  window.location.href = '/forgot-password.html';
 });
 
 $('backToLoginButton').addEventListener('click', () => {
