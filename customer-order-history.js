@@ -3,6 +3,7 @@ import express from 'express';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { createHash, timingSafeEqual } from 'node:crypto';
+import { readCustomerAccountState } from './cutloopz-account-store.js';
 
 const QUALIFYING_VIDEOS = 6;
 
@@ -97,22 +98,7 @@ export function createCustomerOrderHistoryRouter({
         .update(token)
         .digest('hex');
 
-      const users = await readJson(
-        path.join(accountsDirectory, 'users.json'),
-        []
-      );
-
-      const sessions = await readJson(
-        path.join(accountsDirectory, 'sessions.json'),
-        []
-      );
-
-      if (
-        !Array.isArray(users) ||
-        !Array.isArray(sessions)
-      ) {
-        throw new Error('Invalid account storage.');
-      }
+      const { users, sessions } = await readCustomerAccountState(storageDirectory);
 
       const session = sessions.find(item =>
         safeEqual(item?.tokenHash, tokenHash) &&

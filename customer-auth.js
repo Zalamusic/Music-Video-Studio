@@ -1,8 +1,7 @@
 
 import express from 'express';
 import nodemailer from 'nodemailer';
-import { promises as fs } from 'node:fs';
-import path from 'node:path';
+import { readCustomerAccountState, writeCustomerAccountState } from './cutloopz-account-store.js';
 import {
   randomUUID,
   randomBytes,
@@ -184,15 +183,6 @@ export function createCustomerAuthRouter({
 } = {}) {
   const router = express.Router();
 
-  const directory = path.join(
-    storageDirectory,
-    'customer-accounts'
-  );
-
-  const usersFile = path.join(directory, 'users.json');
-  const sessionsFile = path.join(directory, 'sessions.json');
-  const draftsFile = path.join(directory, 'studio-drafts.json');
-
   let users = [];
   let sessions = [];
   let drafts = [];
@@ -201,79 +191,28 @@ export function createCustomerAuthRouter({
   let initializationPromise = null;
   let writeQueue = Promise.resolve();
 
-  async function readJson(file) {
-    try {
-      return JSON.parse(
-        await fs.readFile(file, 'utf8')
-      );
-    } catch (error) {
-      if (error.code === 'ENOENT') return [];
-      throw error;
-    }
-  }
-
   async function initialize() {
     if (initialized) return;
-
     if (!initializationPromise) {
-      initializationPromise = (async () => {
-        await fs.mkdir(directory, {
-          recursive: true,
-          mode: 0o700
+      initializationPromise = readCustomerAccountState(storageDirectory)
+        .then(state => {
+          users = state.users;
+          sessions = state.sessions;
+          drafts = state.drafts;
+          initialized = true;
+        })
+        .catch(error => {
+          initializationPromise = null;
+          throw error;
         });
-
-        const loadedUsers = await readJson(usersFile);
-        const loadedSessions = await readJson(sessionsFile);
-        const loadedDrafts = await readJson(draftsFile);
-
-        if (
-          !Array.isArray(loadedUsers) ||
-          !Array.isArray(loadedSessions) ||
-          !Array.isArray(loadedDrafts)
-        ) {
-          throw new Error(
-            'Invalid customer account storage.'
-          );
-        }
-
-        users = loadedUsers;
-        sessions = loadedSessions;
-        drafts = loadedDrafts;
-        initialized = true;
-      })().catch(error => {
-        initializationPromise = null;
-        throw error;
-      });
     }
-
     await initializationPromise;
   }
 
   function save() {
-    const operation = writeQueue.then(async () => {
-      await fs.mkdir(directory, {
-        recursive: true,
-        mode: 0o700
-      });
-
-      const writeAtomic = async (file, data) => {
-        const temp =
-          file + '.' + randomUUID() + '.tmp';
-
-        await fs.writeFile(
-          temp,
-          JSON.stringify(data, null, 2),
-          { mode: 0o600 }
-        );
-
-        await fs.rename(temp, file);
-      };
-
-      await writeAtomic(usersFile, users);
-      await writeAtomic(sessionsFile, sessions);
-      await writeAtomic(draftsFile, drafts);
-    });
-
+    const operation = writeQueue.then(() =>
+      writeCustomerAccountState({users, sessions, drafts}, storageDirectory)
+    );
     writeQueue = operation.catch(() => {});
     return operation;
   }
