@@ -34,7 +34,7 @@ jobs:
           from zipfile import ZipFile
           import stat
 
-          archive = Path("CUTLOOPZ_MY_PROFILE_SMOOTH_NAV_NOV14.zip")
+          archive = Path("CUTLOOPZ_MY_PROFILE_SMOOTH_NAV_NOV14(1).zip")
           prefix = "Music-Video-Studio-cutloopz-production-test/"
           if not archive.is_file():
               raise SystemExit("CutLoopz final polish ZIP not found")
