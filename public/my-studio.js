@@ -769,7 +769,25 @@
  lyricsField.addEventListener('input',()=>{
    if(document.activeElement===lyricsField)fitMainTextarea(lyricsField,245);
  });
- lyricsField.addEventListener('paste',()=>requestAnimationFrame(()=>{lyricsField.scrollTop=0;}));
+ // Mobile browsers can retain a stale scroll offset after paste, draft restore,
+ // or a wizard-page transition. Keep the first lines visible without resizing.
+ function showLyricsFromStart(){
+   lyricsField.scrollTop=0;
+   requestAnimationFrame(()=>{lyricsField.scrollTop=0;});
+ }
+ lyricsField.addEventListener('paste',()=>{
+   // Let the browser insert the clipboard first, then reveal the beginning.
+   setTimeout(showLyricsFromStart,0);
+   setTimeout(showLyricsFromStart,100);
+ });
+ lyricsField.addEventListener('change',showLyricsFromStart);
+ // The wizard may restore the textarea while its page is hidden.
+ const lyricsVisibilityObserver=new MutationObserver(()=>{
+   if(lyricsField.getClientRects().length && document.activeElement!==lyricsField)
+     showLyricsFromStart();
+ });
+ lyricsVisibilityObserver.observe(document.querySelector('.studio-frame')||document.body,{attributes:true,subtree:true,attributeFilter:['hidden','class','style']});
+ window.addEventListener('pageshow',()=>setTimeout(showLyricsFromStart,0));
  lyricsField.addEventListener('blur',()=>{
    lyricsField.style.removeProperty('height');
    lyricsField.classList.remove('lyrics-expanded');
