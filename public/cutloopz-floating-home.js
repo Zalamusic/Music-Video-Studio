@@ -1,3 +1,4 @@
+
 /* CutLoopz: accessible, always-visible Home shortcut across customer pages.
  * Navigates to the actual home page; does not discard Studio drafts or invoke generation.
  */
@@ -11,7 +12,7 @@
       #cutloopzFloatingHome {
         position: fixed;
         z-index: 950;
-        left: max(15px, env(safe-area-inset-left, 0px));
+        left: calc(50% - 83px);
         bottom: max(17px, env(safe-area-inset-bottom, 0px));
         width: 50px;
         height: 50px;
@@ -35,15 +36,15 @@
         #cutloopzFloatingHome {
           width: 48px;
           height: 48px;
-          left: max(12px, env(safe-area-inset-left, 0px));
+          left: calc(50% - 83px);
           bottom: max(14px, env(safe-area-inset-bottom, 0px));
         }
       }
       #cutloopzProfileReturn {
         position: fixed;
         z-index: 950;
-        left: max(12px, env(safe-area-inset-left, 0px));
-        bottom: max(81px, calc(env(safe-area-inset-bottom, 0px) + 70px));
+        left: calc(50% - 23px);
+        bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 7px));
         display: inline-flex;
         justify-content: center;
         align-items: center;
