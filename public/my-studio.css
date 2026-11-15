@@ -222,3 +222,31 @@ textarea{padding:15px 14px;vertical-align:top;overflow:auto}
 #lyrics {overflow-y:hidden; resize:none; touch-action:pan-y;}
 #lyrics.lyrics-expanded {max-height:none;overflow-y:hidden;}
 #direction, #characterNotes {overflow-y:hidden;max-height:none;resize:none;touch-action:pan-y;overscroll-behavior-y:auto;}
+
+/* Fixed-size mobile editing fields — never expand on focus, input or paste. */
+.scene-card .scene-auto-grow,
+.scene-card textarea {
+  height: 116px !important;
+  min-height: 116px !important;
+  max-height: 116px !important;
+  resize: none !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: auto !important;
+  touch-action: pan-y;
+}
+#lyrics, #lyrics.lyrics-expanded {
+  height: 220px !important;
+  min-height: 220px !important;
+  max-height: 220px !important;
+  resize: none !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: auto !important;
+}
+#direction, #characterNotes {
+  height: 116px !important;
+  min-height: 116px !important;
+  max-height: 116px !important;
+  resize: none !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: auto !important;
+}

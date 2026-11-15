@@ -575,22 +575,20 @@
     showPage(3);
    }catch(error){notify('directorStatus',error.message,true)}finally{btn.disabled=false}
  }
- // Textareas grow with their content rather than trapping a finger swipe in
- // an inner scrolling box. This keeps the *page* scrollable over scene fields.
+ // Fixed-height storyboard editors: never resize as text is entered.
+ // Native text editing remains available; the page scrolls on touch gestures.
  function fitSceneTextarea(input){
-   if(!input || !Number.isFinite(input.scrollHeight) || input.scrollHeight<=0)return;
-   input.style.height='auto';
-   input.style.height=`${Math.max(104,input.scrollHeight+2)}px`;
+   if(!input)return;
+   input.style.removeProperty('height');
  }
  const lineField=(title,value,change,textarea=false,maxLength=textarea?4000:800)=>{
    const wrap=document.createElement('label');wrap.textContent=title;
    const input=document.createElement(textarea?'textarea':'input');if(textarea)input.rows=3;
    input.value=value||'';input.setAttribute('aria-label',title);input.maxLength=maxLength;
-   input.addEventListener('input',()=>{change(input.value);if(textarea)fitSceneTextarea(input);scheduleSave()});
+   input.addEventListener('input',()=>{change(input.value);scheduleSave()});
    if(textarea){
      input.classList.add('scene-auto-grow');
-     // Measure after insertion into the actual layout, not while detached.
-     setTimeout(()=>{if(input.isConnected)fitSceneTextarea(input)},0);
+     // Fixed dimensions are controlled by CSS, not content length.
    }
    wrap.appendChild(input);return wrap;
  };
@@ -753,9 +751,7 @@
  // reveal the complete editable lyrics without an inner scroll trap, then
  // collapse on blur. Director notes always fit their text on the active page.
  function fitMainTextarea(field,minHeight){
-   if(!field || !field.isConnected || !field.getClientRects().length)return;
-   field.style.height='auto';
-   field.style.height=`${Math.max(minHeight,field.scrollHeight+2)}px`;
+   if(field)field.style.removeProperty('height');
  }
  function fitDirectorFields(){
    fitMainTextarea($('direction'),260);
