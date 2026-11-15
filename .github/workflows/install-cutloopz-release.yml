@@ -84,3 +84,5 @@ jobs:
             git commit -m "Install CutLoopz final polish [skip ci]"
             git push origin HEAD:cutloopz-production-test
           fi
+
+          # Install uploaded CutLoopz ZIP
