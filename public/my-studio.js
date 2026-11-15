@@ -321,7 +321,7 @@
    // drafts with no signatures are not allowed to carry creative output.
    pendingRestore={musicResult:draft.musicResult,analysisSourceKey:safeText(draft.analysisSourceKey),
      storyboardSourceKey:safeText(draft.storyboardSourceKey),scenePage:Number(draft.scenePage)||0,
-     scenes:Array.isArray(draft.scenes)?draft.scenes.slice(0,40).map(s=>({number:Number(s.number)||1,startSeconds:Number(s.startSeconds)||0,endSeconds:Number(s.endSeconds)||0,emotion:safeText(s.emotion).slice(0,55),location:safeText(s.location).slice(0,500),action:safeText(s.action).slice(0,800),prompt:safeText(s.prompt).slice(0,4000)})):[]};
+     scenes:Array.isArray(draft.scenes)?draft.scenes.slice(0,40).map(s=>({number:Number(s.number)||1,startSeconds:Number(s.startSeconds)||0,endSeconds:Number(s.endSeconds)||0,emotion:safeText(s.emotion).slice(0,55),lyricExcerpt:safeText(s.lyricExcerpt).slice(0,1000),location:safeText(s.location).slice(0,500),action:safeText(s.action).slice(0,800),prompt:safeText(s.prompt).slice(0,4000)})):[]};
    musicResult=null;analysisSourceKey='';scenes=[];storyboardSourceKey='';$('storyEmotion').textContent='';
    scenePage=Math.max(0,Math.min(Math.ceil(scenes.length/2)-1,Number(draft.scenePage)||0));
    page=Math.max(0,Math.min(4,Number(draft.page)||0));
@@ -422,6 +422,7 @@
    $('backBtn').disabled=page===0;updateStepNavigation();
    if(page===0)window.CutLoopzLyricsBoard?.refresh();
    if(page===1)refreshAnalysisIntro();
+   if(page===2)setTimeout(fitDirectorFields,0);
    updateActionAttention();
    if(page===3)renderScenes();if(page===4){renderReview();if(!evaluatorMode)checkEngine();}
    scheduleSave();
@@ -567,18 +568,30 @@
       notify('directorStatus','Inputs changed while creating the storyboard. Old result discarded.',true);return;
     }
     if(scenes.length&&!window.confirm('Replace the existing storyboard, including any manual edits?')){notify('directorStatus','Existing storyboard preserved.');return;}
-    scenes=(data.plan.scenes||[]).map(s=>({number:s.number,startSeconds:s.startSeconds,endSeconds:s.endSeconds,emotion:s.emotion,location:s.location,action:s.action,prompt:s.prompt}));
+    scenes=(data.plan.scenes||[]).map(s=>({number:s.number,startSeconds:s.startSeconds,endSeconds:s.endSeconds,emotion:s.emotion,lyricExcerpt:s.lyricExcerpt||'',location:s.location,action:s.action,prompt:s.prompt}));
     scenePage=0;storyboardSourceKey=expectedKey;updateActionAttention();updateProjectActions();
     $('storyEmotion').textContent=`Emotional direction: ${data.plan.storyEmotion||'unclassified'}`;
     notify('directorStatus',`Storyboard ready · ${scenes.length} editable scenes. No video created.`);
     showPage(3);
    }catch(error){notify('directorStatus',error.message,true)}finally{btn.disabled=false}
  }
- const lineField=(title,value,change,textarea=false)=>{
+ // Textareas grow with their content rather than trapping a finger swipe in
+ // an inner scrolling box. This keeps the *page* scrollable over scene fields.
+ function fitSceneTextarea(input){
+   if(!input || !Number.isFinite(input.scrollHeight) || input.scrollHeight<=0)return;
+   input.style.height='auto';
+   input.style.height=`${Math.max(104,input.scrollHeight+2)}px`;
+ }
+ const lineField=(title,value,change,textarea=false,maxLength=textarea?4000:800)=>{
    const wrap=document.createElement('label');wrap.textContent=title;
-   const input=document.createElement(textarea?'textarea':'input');if(textarea)input.rows=5;
-   input.value=value||'';input.setAttribute('aria-label',title);input.maxLength=textarea?4000:800;
-   input.addEventListener('input',()=>{change(input.value);scheduleSave()});
+   const input=document.createElement(textarea?'textarea':'input');if(textarea)input.rows=3;
+   input.value=value||'';input.setAttribute('aria-label',title);input.maxLength=maxLength;
+   input.addEventListener('input',()=>{change(input.value);if(textarea)fitSceneTextarea(input);scheduleSave()});
+   if(textarea){
+     input.classList.add('scene-auto-grow');
+     // Measure after insertion into the actual layout, not while detached.
+     setTimeout(()=>{if(input.isConnected)fitSceneTextarea(input)},0);
+   }
    wrap.appendChild(input);return wrap;
  };
  function renderScenes(){
@@ -594,9 +607,13 @@
     const card=document.createElement('article');card.className='scene-card';
     const heading=document.createElement('h4');heading.textContent=`Scene ${scene.number}`;card.appendChild(heading);
     const meta=document.createElement('div');meta.className='scene-meta';meta.textContent=`${scene.startSeconds}s – ${scene.endSeconds}s · ${scene.emotion||'Director preview'}`;card.appendChild(meta);
-    card.appendChild(lineField('Location',scene.location,val=>{scene.location=val}));
-    card.appendChild(lineField('Action',scene.action,val=>{scene.action=val},true));
-    card.appendChild(lineField('Director Prompt',scene.prompt,val=>{scene.prompt=val},true));
+    // Lyrics are a scene cue, not an exact vocal transcription or timing.
+    if(scene.lyricExcerpt){
+      card.appendChild(lineField('Lyric cue (approximate)',scene.lyricExcerpt,val=>{scene.lyricExcerpt=val},true,1000));
+    }
+    card.appendChild(lineField('Location',scene.location,val=>{scene.location=val},false,500));
+    card.appendChild(lineField('Action',scene.action,val=>{scene.action=val},true,800));
+    card.appendChild(lineField('Director Prompt',scene.prompt,val=>{scene.prompt=val},true,4000));
     host.appendChild(card);
    }
  }
@@ -653,7 +670,10 @@
  $('songLink').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();renderLinkStatus(true);}});
  $('duration').addEventListener('change',()=>{syncCustomTime();invalidateSongOutputs()});
  $('customTime').addEventListener('input',()=>invalidateSongOutputs());
- window.addEventListener('resize',()=>{if(page===3)renderScenes()});
+ // Do not rebuild scene inputs on resize. On Android the on-screen keyboard
+ // changes the viewport height, and rebuilding would destroy the focused
+ // input immediately (the keyboard flashes open then closed). CSS alone
+ // handles scene column changes across orientations and screen widths.
  $('songAudio').addEventListener('change',()=>{
    if(selectedSource!=='upload')return;
    $('songLink').value='';
@@ -729,9 +749,36 @@
    $('studioPrivacyNote').textContent='Your free evaluation draft saves on this device. Uploaded audio is temporarily processed for beat analysis and deleted from the server afterward; your browser may retain a local copy for this project. No video is generated. Save your storyboard or project backup before clearing this browser.';
    pageDescriptions[4]='Save your free creative planning and storyboard.';
  }
+ // Keep the lyrics preview short when simply reading the form. On tap,
+ // reveal the complete editable lyrics without an inner scroll trap, then
+ // collapse on blur. Director notes always fit their text on the active page.
+ function fitMainTextarea(field,minHeight){
+   if(!field || !field.isConnected || !field.getClientRects().length)return;
+   field.style.height='auto';
+   field.style.height=`${Math.max(minHeight,field.scrollHeight+2)}px`;
+ }
+ function fitDirectorFields(){
+   fitMainTextarea($('direction'),260);
+   fitMainTextarea($('characterNotes'),90);
+ }
+ for(const field of [$('direction'),$('characterNotes')]){
+   field.addEventListener('input',fitDirectorFields);
+   field.addEventListener('focus',fitDirectorFields);
+ }
  const lyricsField=$('lyrics');
+ lyricsField.addEventListener('focus',()=>{
+   lyricsField.classList.add('lyrics-expanded');
+   fitMainTextarea(lyricsField,245);
+ });
+ lyricsField.addEventListener('input',()=>{
+   if(document.activeElement===lyricsField)fitMainTextarea(lyricsField,245);
+ });
  lyricsField.addEventListener('paste',()=>requestAnimationFrame(()=>{lyricsField.scrollTop=0;}));
- lyricsField.addEventListener('blur',()=>{lyricsField.scrollTop=0;});
+ lyricsField.addEventListener('blur',()=>{
+   lyricsField.style.removeProperty('height');
+   lyricsField.classList.remove('lyrics-expanded');
+   lyricsField.scrollTop=0;
+ });
  syncSourceDisplay();updateActionAttention();
  const backToTop=$('backToTop');
  function updateBackToTop(){backToTop.hidden=window.scrollY<180;}

@@ -44,6 +44,7 @@
         startSeconds: number(s?.startSeconds, i * 15, 0, 360),
         endSeconds: number(s?.endSeconds, (i + 1) * 15, 0, 360),
         emotion: text(s?.emotion, 55),
+        lyricExcerpt: text(s?.lyricExcerpt, 1000),
         location: text(s?.location, 500),
         action: text(s?.action, 800),
         prompt: text(s?.prompt, 4000)
@@ -89,6 +90,7 @@
     for (const s of d.scenes) {
       lines.push('', `SCENE ${s.number} · ${s.startSeconds}s–${s.endSeconds}s`,
         `Emotion: ${s.emotion || 'Director choice'}`,
+        `Lyric cue (estimated): ${s.lyricExcerpt || 'Not provided'}`,
         `Location: ${s.location || 'Not specified'}`,
         `Action: ${s.action || 'Not specified'}`,
         `Director prompt: ${s.prompt || 'Not specified'}`);

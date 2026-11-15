@@ -22,12 +22,17 @@ test('Home shortcut is accessible, fixed and included across all customer pages'
  assert.doesNotMatch(home,/fetch\(|\/api\/local\/jobs|\/api\/paypal/);
 });
 
-test('Lyrics board stays compact, scrolls within the editor and resets to first verse after paste or restoration',()=>{
+test('Lyrics stay compact until focused, then expand without trapping page swipes; paste resets to first verse',()=>{
  const html=read('my-studio.html'),css=read('my-studio.css'),js=read('my-studio.js'),library=read('cutloopz-lyrics-board.js');
  assert.match(html,/src="\/cutloopz-lyrics-board\.js"/);
  assert.match(html,/id="lyrics"[^>]*maxlength="12000"[^>]*aria-describedby="lyricsBoardHelp"/);
- assert.match(html,/The box stays compact; scroll inside it/);
+ assert.match(html,/Tap the box to expand and edit the complete song/);
  assert.match(css,/#lyrics \{height:260px;min-height:230px;max-height:min\(65vh,450px\);overflow-y:auto;/);
+ assert.match(css,/#lyrics \{overflow-y:hidden; resize:none; touch-action:pan-y;\}/);
+ assert.match(css,/#lyrics\.lyrics-expanded \{max-height:none;overflow-y:hidden;\}/);
+ assert.match(js,/lyricsField\.addEventListener\('focus'/);
+ assert.match(js,/lyricsField\.classList\.add\('lyrics-expanded'\)/);
+ assert.match(js,/lyricsField\.addEventListener\('blur'/);
  assert.match(js,/if\(page===0\)window\.CutLoopzLyricsBoard\?\.refresh\(\)/);
  assert.match(library,/lyrics\.scrollTop = 0/);
  assert.match(library,/lyrics\.addEventListener\('paste'/);

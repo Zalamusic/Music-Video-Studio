@@ -194,3 +194,31 @@ textarea{padding:15px 14px;vertical-align:top;overflow:auto}
 @media(prefers-reduced-motion:reduce) {
   .wizard-step, .progress span { transition: none !important; }
 }
+
+
+/* Nov 15 Android storyboard touch/keyboard fix.
+   Natural page scrolling even when swiping across a scene editor.
+   Do not create inner scrolling regions or re-render focused fields. */
+.scene-card .scene-auto-grow {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  overflow-y: hidden;
+  max-height: none;
+  resize: none;
+  touch-action: pan-y;
+  overscroll-behavior-y: auto;
+  line-height: 1.5;
+  min-height: 104px;
+}
+.scene-card input {touch-action: pan-y;}
+.scene-card label {margin-top: 12px;line-height: 1.35;}
+.scene-card label:first-of-type {margin-top: 6px;}
+/* Let a swipe continue to the surrounding page at the edge of long lyrics. */
+#lyrics {overscroll-behavior-y: auto;}
+
+/* Page 1: brief lyric preview when idle, full-height editing on tap.
+   Page 3: Director fields grow with text. All three allow page swiping. */
+#lyrics {overflow-y:hidden; resize:none; touch-action:pan-y;}
+#lyrics.lyrics-expanded {max-height:none;overflow-y:hidden;}
+#direction, #characterNotes {overflow-y:hidden;max-height:none;resize:none;touch-action:pan-y;overscroll-behavior-y:auto;}
