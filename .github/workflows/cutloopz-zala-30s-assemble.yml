@@ -1,0 +1,162 @@
+name: CutLoopz - Assemble Zala 30s (private CPU only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cutloopz-zala-30s-assembly
+  cancel-in-progress: false
+
+jobs:
+  assemble-private:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GITHUB_REPOSITORY_PRIVATE: ${{ github.event.repository.private }}
+      CUTLOOPZ_PRIVATE_MEDIA_JSON: ${{ secrets.CUTLOOPZ_BADDIE_MEDIA_JSON }}
+    steps:
+      - name: Verify private repository and tools
+        shell: bash
+        run: |
+          test "$GITHUB_REPOSITORY_PRIVATE" = "true" || (echo 'Private repository required to protect media' >&2; exit 1)
+          test -n "$CUTLOOPZ_PRIVATE_MEDIA_JSON" || (echo 'Set CUTLOOPZ_BADDIE_MEDIA_JSON secret first' >&2; exit 1)
+          command -v ffmpeg
+          command -v ffprobe
+      - name: Assemble six approved shots with original master audio
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+          import sys
+          import tempfile
+          import time
+          import urllib.parse
+          import urllib.request
+
+
+          def run(args):
+              p = subprocess.run(args, text=True, capture_output=True)
+              if p.returncode:
+                  raise RuntimeError('FFmpeg command failed: ' + p.stderr[-1000:])
+              return p.stdout
+
+
+          def probe(file):
+              return json.loads(run(['ffprobe','-v','error','-show_entries',
+                   'format=duration:stream=codec_type,width,height','-of','json',str(file)]))
+
+
+          def download(url, path):
+              parsed = urllib.parse.urlsplit(url)
+              if parsed.scheme != 'https' or parsed.hostname not in ('v3b.fal.media', 'fal.media'):
+                  raise RuntimeError('Unexpected video host or non-HTTPS media URL')
+              for attempt in range(3):
+                  try:
+                      req = urllib.request.Request(url, headers={'User-Agent': 'CutLoopz-PrivateAssembler/1.0'})
+                      with urllib.request.urlopen(req, timeout=90) as response, path.open('wb') as out:
+                          shutil.copyfileobj(response, out)
+                      if path.stat().st_size < 15000:
+                          raise RuntimeError('Media response was suspiciously small')
+                      return
+                  except Exception:
+                      path.unlink(missing_ok=True)
+                      if attempt == 2:
+                          raise RuntimeError('A media download failed. Confirm the private fal URLs remain accessible.')
+                      time.sleep(3*(attempt+1))
+
+
+          def validate(path, stream):
+              if not path.is_file():
+                  raise RuntimeError('Missing required media file')
+              obj=probe(path)
+              if stream not in [x.get('codec_type') for x in obj.get('streams', [])]:
+                  raise RuntimeError('Media file has no '+stream+' stream')
+              return obj
+
+
+          def main():
+              if os.environ.get('GITHUB_REPOSITORY_PRIVATE') != 'true':
+                  raise RuntimeError('Refusing to assemble private artist media in a PUBLIC repository')
+              media_json=os.environ.get('CUTLOOPZ_PRIVATE_MEDIA_JSON','')
+              if not media_json:
+                  raise RuntimeError('Missing CUTLOOPZ_BADDIE_MEDIA_JSON repository secret')
+              try:
+                  media=json.loads(media_json)
+                  urls=media['clip_urls']
+                  audio_url=media['audio_url']
+              except (ValueError, KeyError, TypeError):
+                  raise RuntimeError('Invalid secret format. Use the one-line JSON in PRIVATE_SECRET_VALUE.txt')
+              if not isinstance(urls,list) or len(urls)!=6 or not all(isinstance(u,str) for u in urls):
+                  raise RuntimeError('The manifest must list exactly six video URLs in sequence')
+              if not isinstance(audio_url,str):
+                  raise RuntimeError('Missing master audio URL')
+              if not shutil.which('ffmpeg') or not shutil.which('ffprobe'):
+                  raise RuntimeError('FFmpeg and FFprobe must be available on the runner')
+              out_dir=Path(os.environ.get('GITHUB_WORKSPACE','.') )/'cutloopz-output'
+              out_dir.mkdir(parents=True,exist_ok=True)
+              result=out_dir/'CutLoopz_Zala_QI_Im_A_Baddie_30s.mp4'
+              with tempfile.TemporaryDirectory(prefix='cutloopz-final-') as d:
+                  temp=Path(d)
+                  audio=temp/'master.mp3'
+                  print('Downloading private original master audio...')
+                  download(audio_url,audio)
+                  aud=validate(audio,'audio')
+                  if float(aud.get('format',{}).get('duration') or 0)<30:
+                      raise RuntimeError('Original audio does not cover the full 30 seconds')
+                  norm=[]
+                  for n,url in enumerate(urls,1):
+                      source=temp/f'scene_{n:02}.mp4'
+                      dest=temp/f'fixed_{n:02}.mp4'
+                      print(f'Processing approved scene {n}/6...')
+                      download(url,source)
+                      validate(source,'video')
+                      filt=('scale=720:1280:force_original_aspect_ratio=decrease,'
+                            'pad=720:1280:(ow-iw)/2:(oh-ih)/2:black,setsar=1,'
+                            'fps=24,tpad=stop_mode=clone:stop_duration=1,'
+                            'trim=duration=5,setpts=PTS-STARTPTS,format=yuv420p')
+                      run(['ffmpeg','-hide_banner','-loglevel','error','-y',
+                           '-i',str(source),'-an','-vf',filt,
+                           '-c:v','libx264','-preset','veryfast','-crf','20',
+                           '-r','24','-movflags','+faststart',str(dest)])
+                      dmeta=validate(dest,'video')
+                      if abs(float(dmeta.get('format',{}).get('duration') or 0)-5)>0.07:
+                          raise RuntimeError(f'Normalized scene {n} is not 5 seconds')
+                      norm.append(dest)
+                  concat=temp/'scenes.txt'
+                  concat.write_text(''.join("file '"+str(f)+"'\n" for f in norm))
+                  print('Combining six scenes with the original continuous song...')
+                  run(['ffmpeg','-hide_banner','-loglevel','error','-y',
+                       '-f','concat','-safe','0','-i',str(concat),
+                       '-i',str(audio),'-map','0:v:0','-map','1:a:0',
+                       '-c:v','copy','-c:a','aac','-b:a','192k','-ar','48000',
+                       '-t','30','-movflags','+faststart',str(result)])
+              obj=validate(result,'video')
+              validate(result,'audio')
+              duration=float(obj.get('format',{}).get('duration') or 0)
+              if not 29.9<=duration<=30.1:
+                  raise RuntimeError(f'Assembled video has unexpected duration: {duration:.3f}')
+              print(f'SUCCESS: 30-second final MP4, duration {duration:.3f}s; {result.stat().st_size:,} bytes')
+
+
+          if __name__=='__main__':
+              try:
+                  main()
+              except Exception as e:
+                  print('ASSEMBLY STOPPED: '+str(e),file=sys.stderr)
+                  sys.exit(1)
+          PY
+      - name: Deliver downloadable 30-second MP4
+        uses: actions/upload-artifact@v4
+        with:
+          name: CutLoopz_Zala_QI_Im_A_Baddie_30s
+          path: cutloopz-output/CutLoopz_Zala_QI_Im_A_Baddie_30s.mp4
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
