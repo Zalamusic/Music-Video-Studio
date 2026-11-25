@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<title>CutLoopz Recovery Studio</title>
+<title>CutLoopz Cinematic Studio V3</title>
 <style>
 * { box-sizing: border-box; }
 body {
@@ -14,9 +14,9 @@ body {
   margin: 0;
 }
 main {
-  max-width: 680px;
+  max-width: 720px;
   margin: auto;
-  padding: 24px;
+  padding: 20px;
 }
 h1 { color: #e5c477; }
 section {
@@ -30,18 +30,21 @@ label {
   display: block;
   margin: 20px 0 10px;
 }
-input, textarea, button {
+input, textarea, button, select {
   width: 100%;
   padding: 15px;
   font: inherit;
   border-radius: 10px;
 }
-input, textarea {
+input, textarea, select {
   background: #242424;
   color: white;
   border: 1px solid #555;
 }
-textarea { min-height: 200px; }
+textarea {
+  min-height: 180px;
+  line-height: 1.5;
+}
 button {
   background: #e5c477;
   color: #111;
@@ -53,58 +56,84 @@ button:disabled { opacity: .4; }
 pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  font-size: 15px;
 }
 video, progress { width: 100%; }
 input[type=checkbox] {
   width: 24px;
   height: 24px;
+  vertical-align: middle;
 }
+.shot {
+  border-top: 1px solid #444;
+  margin-top: 24px;
+  padding-top: 12px;
+}
+.gold { color: #e5c477; }
+[hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <main>
+
 <h1>CUTLOOPZ</h1>
-<p>Cinematic Recovery Studio</p>
+<p>Cinematic Recovery Studio V3</p>
 
 <section>
 <h2>Administrator</h2>
+
 <label for="key">Video Administrator Key</label>
 <input id="key" type="password" autocomplete="off">
+
 <button id="check">Check Engine</button>
 <pre id="engine">Engine not checked.</pre>
 </section>
 
 <section>
-<h2>Opening Shot Test</h2>
-<p>7 seconds · 768P · Vertical</p>
+<h2>Music Video Production</h2>
+
+<label for="duration">Video Duration</label>
+<select id="duration">
+<option value="60" selected>60 Seconds — Full Production</option>
+<option value="7">7 Seconds — Opening Test</option>
+</select>
 
 <label for="photo">Artist Reference Photo</label>
-<input id="photo" type="file" accept="image/png,image/jpeg,image/webp">
+<input id="photo" type="file"
+accept="image/png,image/jpeg,image/webp">
 
 <label for="audio">Original Song</label>
-<input id="audio" type="file" accept="audio/*,.mp3,.wav,.flac">
+<input id="audio" type="file"
+accept="audio/*,.mp3,.wav,.flac">
 
-<label for="prompt">Scene Description</label>
-<textarea id="prompt" maxlength="3000"></textarea>
+<p id="audioNote" class="gold">
+Upload a song containing at least 60 seconds.
+</p>
 
-<p>Estimated base cost: $0.35. Additional charges may apply.</p>
+<h2>Scene Plan</h2>
+<div id="scenes"></div>
+
+<p id="cost" class="gold"></p>
 
 <label>
 <input id="approve" type="checkbox">
-I approve one paid seven-second test.
+<span id="approvalText"></span>
 </label>
 
 <button id="render" disabled>
-Generate 7-Second Test
+Generate 60-Second Video
 </button>
 
-<p>Precision Director disabled. Full-minute rendering locked.</p>
+<p>MiniMax H3 Turbo · 768P · Vertical</p>
+<p>Precision Director disabled.</p>
 </section>
 
 <section>
 <h2>Rendering Progress</h2>
-<progress id="progress" max="1" value="0"></progress>
-<pre id="status">Waiting for test.</pre>
+
+<progress id="progress" max="8" value="0"></progress>
+
+<pre id="status">Waiting for production.</pre>
 
 <label for="job">Recovery Job ID</label>
 <input id="job" type="text">
@@ -112,7 +141,8 @@ Generate 7-Second Test
 <button id="resume">Check Existing Job</button>
 
 <video id="player" controls playsinline hidden></video>
-<button id="download" hidden>Save Test Video</button>
+<button id="download" hidden>Save Music Video</button>
+
 </section>
 </main>
 
@@ -125,14 +155,173 @@ const BASE = '/api/cinematic-recovery';
 let ready = false;
 let busy = false;
 let polling = false;
+let unresolved = false;
 let videoUrl = null;
 let currentJob = null;
 
+const MODEL =
+  'fal-ai/minimax-h3-turbo/reference-to-video';
+
+const COMMON = `
+Photorealistic luxury R&B music video.
+Image 1 defines the artist's exact identity.
+Preserve her facial features, hairstyle,
+skin tone, body proportions, designer mini
+dress, heels and diamond jewelry.
+Natural anatomy, realistic hands, expressive
+eyes, authentic skin texture and fluid
+human movement. Premium ARRI Alexa cinematic
+aesthetic. Warm golden lighting and realistic
+shadows. Maintain wardrobe, accessories,
+character identity and physical continuity.
+Continue the preceding action when a
+reference video is supplied. Never restart
+the storyline. No duplicated characters,
+deformed anatomy or unnatural movements.
+`;
+
+const PLAN = [
+{
+  duration: 7,
+  title: '0–7 seconds: Private Jet Opening',
+  prompt: COMMON + `
+Open immediately on a luxurious airport
+tarmac at golden sunset. A large white
+Gulfstream private jet is clearly visible.
+The artist walks confidently toward the
+aircraft stairs carrying a black Prada bag.
+Smooth low-angle cinematic tracking shot.
+Natural walking mechanics, subtle hair
+movement and realistic facial expressions.
+Remain on the tarmac throughout this shot.
+End near the aircraft stairs.
+No recording studio.
+`
+},
+{
+  duration: 8,
+  title: '7–15 seconds: Boarding the Jet',
+  prompt: COMMON + `
+Continue from the aircraft stairs.
+The artist naturally ascends the stairs,
+still carrying the same black Prada bag.
+Show realistic foot placement and balance.
+Use a smooth following camera.
+She reaches the aircraft doorway and
+enters the luxurious private jet cabin.
+Transition from golden exterior sunlight
+to warm amber cabin lighting.
+Do not repeat the tarmac entrance.
+`
+},
+{
+  duration: 7,
+  title: '15–22 seconds: Inside the Cabin',
+  prompt: COMMON + `
+Continue inside the same private jet.
+The artist turns naturally and walks down
+the cabin aisle. Cream leather seats,
+polished wood and warm luxury lighting.
+She places her black Prada bag securely
+on a leather seat and releases it.
+Two distinct girlfriends are nearby.
+The bag remains on the seat afterward.
+Use a medium cinematic tracking shot.
+Do not return outside the aircraft.
+`
+},
+{
+  duration: 7,
+  title: '22–29 seconds: First Girlfriend',
+  prompt: COMMON + `
+Continue inside the same cabin.
+The artist approaches her first girlfriend
+with a genuine smile. They greet each
+other warmly and share a natural hug.
+Show believable arm placement, physical
+contact and affectionate expressions.
+They separate naturally after the hug.
+The second girlfriend remains nearby.
+The Prada bag stays on the leather seat.
+`
+},
+{
+  duration: 7,
+  title: '29–36 seconds: Second Girlfriend',
+  prompt: COMMON + `
+Continue directly after the first hug.
+The artist turns toward her second,
+distinct girlfriend and warmly greets her.
+They share a natural affectionate hug,
+then separate and smile.
+The first girlfriend remains nearby.
+Preserve the same two girlfriends,
+cabin layout, clothing and lighting.
+Do not repeat the first greeting.
+The Prada bag remains on the seat.
+`
+},
+{
+  duration: 8,
+  title: '36–44 seconds: Singing Performance',
+  prompt: COMMON + `
+The artist turns toward the camera
+inside the same luxury private jet.
+She performs the supplied song segment
+with confident, playful R&B expressions.
+Natural mouth articulation, subtle head
+movement and expressive hand gestures.
+Use a medium close-up and smooth camera
+movement. Maintain eye contact naturally.
+The girlfriends remain in the background.
+`
+},
+{
+  duration: 8,
+  title: '44–52 seconds: Performance Close-Up',
+  prompt: COMMON + `
+Continue the singing performance without
+restarting the action. The artist performs
+the current supplied song segment.
+Use natural mouth movements, relaxed
+shoulders, expressive eyes and gestures
+that complement the musical rhythm.
+Gradually move from a medium shot into
+an intimate cinematic close-up.
+Maintain the same cabin and wardrobe.
+`
+},
+{
+  duration: 8,
+  title: '52–60 seconds: Hero Ending',
+  prompt: COMMON + `
+Continue the performance in a cinematic
+hero close-up. The artist finishes the
+supplied musical phrase with natural
+mouth articulation and confident emotion.
+Warm amber cabin lighting highlights
+her face and diamond jewelry.
+Finish with a playful wink and genuine
+smile toward the camera.
+Hold the final expression naturally.
+No abrupt scene reset or location change.
+`
+}
+];
+
+const drafts = PLAN.map(s => s.prompt.trim());
+
+function seconds() {
+  return Number($('duration').value);
+}
+
 function headers() {
   const key = $('key').value.trim();
+
   if (!key) {
     throw Error('Enter administrator key.');
   }
+
   return {
     'X-Video-Admin-Key': key
   };
@@ -145,25 +334,107 @@ async function api(url, options = {}) {
     cache: 'no-store'
   });
 
-  const data = await response.json();
+  const raw = await response.text();
+
+  let data;
+
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    throw Error(
+      'Server response unavailable. HTTP ' +
+      response.status
+    );
+  }
 
   if (!response.ok) {
-    throw Error(data.error || 'Request failed');
+    throw Error(
+      data.error ||
+      'Request failed: ' + response.status
+    );
   }
 
   return data;
 }
 
+function status(message) {
+  $('status').textContent = message;
+}
+
 function update() {
+  const prompts = Array.from(
+    $('scenes').querySelectorAll('textarea')
+  );
+
+  const complete =
+    prompts.length === (seconds() === 60 ? 8 : 1) &&
+    prompts.every(
+      p => p.value.trim().length >= 12
+    );
+
   $('render').disabled =
     !ready ||
     busy ||
     polling ||
-    !$('approve').checked;
+    unresolved ||
+    !$('approve').checked ||
+    !$('photo').files[0] ||
+    !$('audio').files[0] ||
+    !complete;
+
+  $('duration').disabled = busy || polling;
+  $('check').disabled = busy || polling;
+  $('resume').disabled = busy || polling;
 }
 
-function status(message) {
-  $('status').textContent = message;
+function showScenes() {
+  $('scenes').replaceChildren();
+
+  const count = seconds() === 60 ? 8 : 1;
+
+  for (let i = 0; i < count; i++) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'shot';
+
+    const label = document.createElement('label');
+    label.textContent = PLAN[i].title;
+    label.htmlFor = 'scene-' + i;
+
+    const field = document.createElement('textarea');
+    field.id = 'scene-' + i;
+    field.maxLength = 3000;
+    field.value = drafts[i];
+
+    field.oninput = () => {
+      drafts[i] = field.value;
+      update();
+    };
+
+    wrapper.append(label, field);
+    $('scenes').append(wrapper);
+  }
+
+  const full = seconds() === 60;
+
+  $('cost').textContent = full
+    ? 'Estimated base cost: $3.00. Additional charges may apply.'
+    : 'Estimated base cost: $0.35. Additional charges may apply.';
+
+  $('audioNote').textContent =
+    'Upload a song containing at least ' +
+    seconds() + ' seconds.';
+
+  $('approvalText').textContent =
+    'I approve one paid ' +
+    seconds() + '-second render.';
+
+  $('render').textContent = full
+    ? 'Generate 60-Second Video'
+    : 'Generate 7-Second Test';
+
+  $('approve').checked = false;
+
+  update();
 }
 
 function resetVideo() {
@@ -178,13 +449,32 @@ function resetVideo() {
   $('download').hidden = true;
 }
 
+function rememberJob(id) {
+  currentJob = id;
+  $('job').value = id;
+
+  try {
+    localStorage.setItem(
+      'cutloopz-recovery-job',
+      id
+    );
+  } catch {}
+}
+
+function validId(id) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
+
 $('key').oninput = () => {
   ready = false;
   $('engine').textContent = 'Check engine again.';
   update();
 };
 
+$('duration').onchange = showScenes;
 $('approve').onchange = update;
+$('photo').onchange = update;
+$('audio').onchange = update;
 
 $('check').onclick = async () => {
   ready = false;
@@ -195,18 +485,25 @@ $('check').onclick = async () => {
     const data = await api(BASE + '/preflight');
 
     ready =
-      data.version === 'recovery-v2' &&
+      data.version === 'recovery-v3' &&
       data.enabled === true &&
+      data.model === MODEL &&
       data.precisionDirector === false &&
-      data.openingTestSeconds === 7 &&
+      data.fullMinuteEnabled === true &&
       !data.activeJob;
 
     $('engine').textContent =
       JSON.stringify(data, null, 2) +
       '\n\n' +
       (ready
-        ? 'Ready for controlled test.'
-        : 'Rendering disabled or unavailable.');
+        ? 'Ready for production.'
+        : 'Rendering unavailable or job active.');
+
+    if (data.activeJob) {
+      rememberJob(data.activeJob);
+      unresolved = true;
+      await monitor(data.activeJob);
+    }
 
   } catch (error) {
     $('engine').textContent = error.message;
@@ -240,23 +537,54 @@ async function loadVideo(id) {
   $('download').hidden = false;
 }
 
+const wait = ms =>
+  new Promise(resolve => setTimeout(resolve, ms));
+
 async function monitor(id) {
   if (polling) return;
 
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+  if (!validId(id)) {
     status('Invalid job ID.');
     return;
   }
 
   polling = true;
-  currentJob = id;
+  unresolved = true;
+  rememberJob(id);
   update();
+
+  let connectionFailures = 0;
 
   try {
     while (true) {
-      const data = await api(
-        BASE + '/jobs/' + id
-      );
+      let data;
+
+      try {
+        data = await api(
+          BASE + '/jobs/' + id
+        );
+
+        connectionFailures = 0;
+
+      } catch (error) {
+        connectionFailures++;
+
+        status(
+          'Connection interrupted.\n' +
+          'Checking existing job again.\n' +
+          'Do not submit another render.\n' +
+          error.message
+        );
+
+        if (connectionFailures >= 12) {
+          throw Error(
+            'Connection unavailable. Use Check Existing Job.'
+          );
+        }
+
+        await wait(10000);
+        continue;
+      }
 
       $('progress').max =
         data.totalShots || 1;
@@ -264,19 +592,34 @@ async function monitor(id) {
       $('progress').value =
         data.finished || 0;
 
-      status(JSON.stringify(data, null, 2));
+      status(
+        'Completed shots: ' +
+        (data.finished || 0) +
+        ' / ' + (data.totalShots || 1) +
+        '\nRendered seconds: ' +
+        (data.renderedSeconds || 0) +
+        ' / ' + data.seconds +
+        '\n\n' +
+        JSON.stringify(data, null, 2)
+      );
 
       if (data.status === 'review_required') {
+        unresolved = false;
+
         await loadVideo(id);
 
         status(
-          'Test completed. Review identity, realism, movement, anatomy and lip sync.'
+          data.seconds +
+          '-second video completed.\n' +
+          'Review the complete video before approval.'
         );
 
         break;
       }
 
       if (data.status === 'failed') {
+        unresolved = false;
+
         status(
           'Rendering failed.\n' +
           (data.error || 'Unknown error') +
@@ -286,16 +629,16 @@ async function monitor(id) {
         break;
       }
 
-      await new Promise(resolve =>
-        setTimeout(resolve, 5000)
-      );
+      await wait(5000);
     }
 
   } catch (error) {
     status(
       error.message +
-      '\nCheck Existing Job. Do not submit another render.'
+      '\nUse Check Existing Job.' +
+      '\nDo not submit another render.'
     );
+
   } finally {
     polling = false;
     ready = false;
@@ -304,41 +647,61 @@ async function monitor(id) {
 }
 
 $('render').onclick = async () => {
-  if (
-    busy ||
-    polling ||
-    !ready ||
-    !$('approve').checked
-  ) return;
+  if ($('render').disabled) return;
 
   const photo = $('photo').files[0];
   const audio = $('audio').files[0];
-  const prompt = $('prompt').value.trim();
+  const duration = seconds();
 
-  if (!photo || !audio) {
-    status('Select artist photo and song.');
+  const count = duration === 60 ? 8 : 1;
+
+  const shots = PLAN.slice(0, count).map(
+    (shot, i) => ({
+      duration: shot.duration,
+      prompt: drafts[i].trim()
+    })
+  );
+
+  const total = shots.reduce(
+    (sum, shot) => sum + shot.duration,
+    0
+  );
+
+  if (
+    total !== duration ||
+    shots.some(s =>
+      s.prompt.length < 12 ||
+      s.prompt.length > 3000
+    )
+  ) {
+    status('Invalid scene plan.');
     return;
   }
 
-  if (prompt.length < 12) {
-    status('Enter the opening scene description.');
-    return;
-  }
+  const estimatedCost =
+    duration === 60 ? '$3.00' : '$0.35';
 
-  if (!confirm('Approve one paid 7-second render?')) {
+  if (!confirm(
+    'Approve one paid ' +
+    duration +
+    '-second render?\nEstimated base cost: ' +
+    estimatedCost
+  )) {
     return;
   }
 
   busy = true;
   ready = false;
+  unresolved = true;
   $('approve').checked = false;
 
   update();
   resetVideo();
 
+  $('progress').max = count;
   $('progress').value = 0;
 
-  status('Submitting controlled test...');
+  status('Submitting production...');
 
   try {
     const form = new FormData();
@@ -348,17 +711,14 @@ $('render').onclick = async () => {
 
     form.append(
       'confirm',
-      'APPROVE_7_SECONDS_FAL_COST'
+      duration === 60
+        ? 'APPROVE_60_SECONDS_FAL_COST'
+        : 'APPROVE_7_SECONDS_FAL_COST'
     );
 
     form.append(
       'shots',
-      JSON.stringify([
-        {
-          duration: 7,
-          prompt
-        }
-      ])
+      JSON.stringify(shots)
     );
 
     const job = await api(
@@ -369,16 +729,35 @@ $('render').onclick = async () => {
       }
     );
 
-    $('job').value = job.id;
-    currentJob = job.id;
+    rememberJob(job.id);
 
     await monitor(job.id);
 
   } catch (error) {
     status(
       error.message +
-      '\nNo automatic retry. Check for an active job.'
+      '\nNo automatic retry.' +
+      '\nCheck Engine for an active job.'
     );
+
+    try {
+      const check = await api(
+        BASE + '/preflight'
+      );
+
+      if (check.activeJob) {
+        rememberJob(check.activeJob);
+        await monitor(check.activeJob);
+      } else {
+        status(
+          error.message +
+          '\nNo active job reported.' +
+          '\nVerify the submission outcome before retrying.'
+        );
+      }
+
+    } catch {}
+
   } finally {
     busy = false;
     update();
@@ -397,12 +776,24 @@ $('download').onclick = () => {
 
   link.href = videoUrl;
   link.download =
-    'CutLoopz-Opening-' +
+    'CutLoopz-Music-Video-' +
     currentJob +
     '.mp4';
 
   link.click();
 };
+
+try {
+  const saved = localStorage.getItem(
+    'cutloopz-recovery-job'
+  );
+
+  if (saved && validId(saved)) {
+    $('job').value = saved;
+  }
+} catch {}
+
+showScenes();
 </script>
 </body>
 </html>
