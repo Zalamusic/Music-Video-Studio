@@ -1,4 +1,3 @@
-
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -226,15 +225,15 @@ export function registerCinematicRecovery({
     '/api/cinematic-recovery/preflight',
     auth,
     (_req, res) => res.json({
-      version: 'recovery-v2',
+      version: 'recovery-v3',
       model: MODEL,
       enabled: enabled(),
       availableDurations: [7, 60],
       openingTestSeconds: 7,
+      fullMinuteEnabled: true,
       precisionDirector: false,
       targetAudioSupported: true,
       audioDrivenLipSyncVerified: false,
-      liveModelAccessVerified: false,
       frameRate: FPS,
       activeJob
     })
@@ -283,12 +282,6 @@ export function registerCinematicRecovery({
         if (req.body.confirm !== confirmation) {
           throw Error(
             'Explicit paid-render approval required'
-          );
-        }
-
-        if (totalSeconds === 60) {
-          throw Error(
-            'Full rendering remains locked until the opening test is reviewed'
           );
         }
 
@@ -351,6 +344,11 @@ export function registerCinematicRecovery({
         };
 
         await saveState(folder, state);
+
+        await fs.writeFile(
+          path.join(folder, 'shot-plan.json'),
+          JSON.stringify(shots, null, 2)
+        );
 
         jobs.set(id, state);
 
@@ -463,6 +461,7 @@ export function registerCinematicRecovery({
               offset += shot.duration;
 
               state.finished = clips.length;
+              state.renderedSeconds = offset;
 
               await saveState(folder, state);
             }
@@ -506,7 +505,7 @@ export function registerCinematicRecovery({
             state.status = 'review_required';
 
             state.note =
-              'Technical checks passed. Review identity, anatomy, realism, movement and lip sync before further rendering.';
+              'Technical checks passed. Review identity, anatomy, realism, movement, scene continuity and lip sync before approval.';
 
           } catch (e) {
             state.status = 'failed';
