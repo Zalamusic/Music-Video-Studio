@@ -11,32 +11,51 @@ const exec = promisify(execFile);
 export const MODEL =
   'fal-ai/minimax-h3-turbo/reference-to-video';
 
+const FPS = 24;
+
 export function validateShots(shots) {
   if (
     !Array.isArray(shots) ||
-    shots.length !== 8 ||
+    ![1, 8].includes(shots.length) ||
     shots.some(s =>
       !s ||
       ![7, 8].includes(s.duration) ||
       typeof s.prompt !== 'string' ||
       s.prompt.trim().length < 12 ||
       s.prompt.length > 3000
-    ) ||
-    shots.reduce((n, s) => n + s.duration, 0) !== 60
+    )
   ) {
-    throw Error(
-      'Provide eight approved 7–8 second shots totaling 60 seconds.'
-    );
+    throw Error('Invalid shot configuration');
   }
+
+  const total = shots.reduce(
+    (n, s) => n + s.duration, 0
+  );
+
+  if (
+    (shots.length === 1 && total !== 7) ||
+    (shots.length === 8 && total !== 60)
+  ) {
+    throw Error('Expected 7 or 60 seconds');
+  }
+
   return shots;
 }
 
-export function shotInput(shot, reference, previous) {
+export function shotInput(
+  shot,
+  reference,
+  previous,
+  audioUrl
+) {
   return {
     prompt: shot.prompt,
     reference_image_urls: [reference],
     ...(previous
       ? { reference_video_urls: [previous] }
+      : {}),
+    ...(audioUrl
+      ? { target_audio_url: audioUrl }
       : {}),
     prompt_expansion_mode: 'quality',
     duration: shot.duration,
@@ -53,7 +72,107 @@ async function probe(file) {
     '-of', 'json',
     file
   ]);
+
   return JSON.parse(stdout);
+}
+
+async function prepareAudio(
+  song,
+  output,
+  start,
+  duration
+) {
+  await exec('ffmpeg', [
+    '-y',
+    '-v', 'error',
+    '-i', song,
+    '-ss', String(start),
+    '-t', String(duration),
+    '-vn',
+    '-ar', '32000',
+    '-ac', '2',
+    '-c:a', 'pcm_s16le',
+    output
+  ]);
+
+  const info = await probe(output);
+
+  if (
+    !info.streams.some(
+      s => s.codec_type === 'audio'
+    ) ||
+    Math.abs(
+      Number(info.format.duration) - duration
+    ) > 0.1
+  ) {
+    throw Error('Audio segment validation failed');
+  }
+
+  return output;
+}
+
+async function normalizeClip(
+  source,
+  output,
+  duration
+) {
+  const info = await probe(source);
+
+  const video = info.streams.find(
+    s => s.codec_type === 'video'
+  );
+
+  if (!video) {
+    throw Error('Provider returned no video');
+  }
+
+  const actual = Number(
+    video.duration || info.format.duration
+  );
+
+  if (
+    !Number.isFinite(actual) ||
+    actual < duration - 0.1 ||
+    actual > duration + 1
+  ) {
+    throw Error(
+      `Unexpected provider duration: ${actual}`
+    );
+  }
+
+  const frames = Math.round(duration * FPS);
+
+  await exec('ffmpeg', [
+    '-y',
+    '-v', 'error',
+    '-i', source,
+    '-map', '0:v:0',
+    '-an',
+    '-vf',
+    `fps=${FPS},tpad=stop_mode=clone:stop_duration=0.15`,
+    '-frames:v', String(frames),
+    '-c:v', 'libx264',
+    '-preset', 'fast',
+    '-crf', '18',
+    '-pix_fmt', 'yuv420p',
+    '-movflags', '+faststart',
+    output
+  ]);
+
+  const checked = await probe(output);
+
+  if (
+    !checked.streams.some(
+      s => s.codec_type === 'video'
+    ) ||
+    Math.abs(
+      Number(checked.format.duration) - duration
+    ) > 0.05
+  ) {
+    throw Error('Normalized clip validation failed');
+  }
+
+  return output;
 }
 
 export function registerCinematicRecovery({
@@ -65,6 +184,17 @@ export function registerCinematicRecovery({
 }) {
   const jobs = new Map();
 
+  const root = path.resolve(
+    outputDirectory,
+    'cinematic-recovery'
+  );
+
+  let activeJob = null;
+
+  const enabled = () =>
+    process.env.CUTLOOPZ_CINEMATIC_RECOVERY_ENABLED === 'true' &&
+    !!process.env.FAL_KEY;
+
   const auth = (req, res, next) =>
     isVideoAdmin(req)
       ? next()
@@ -72,17 +202,41 @@ export function registerCinematicRecovery({
           error: 'Administrator required'
         });
 
+  const validId = id =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+  async function saveState(folder, state) {
+    const temporary = path.join(
+      folder,
+      'state.tmp'
+    );
+
+    await fs.writeFile(
+      temporary,
+      JSON.stringify(state, null, 2)
+    );
+
+    await fs.rename(
+      temporary,
+      path.join(folder, 'state.json')
+    );
+  }
+
   app.get(
     '/api/cinematic-recovery/preflight',
     auth,
     (_req, res) => res.json({
+      version: 'recovery-v2',
       model: MODEL,
-      enabled:
-        process.env.CUTLOOPZ_CINEMATIC_RECOVERY_ENABLED === 'true' &&
-        !!process.env.FAL_KEY,
-      seconds: 60,
+      enabled: enabled(),
+      availableDurations: [7, 60],
+      openingTestSeconds: 7,
       precisionDirector: false,
-      audioDrivenLipSync: false
+      targetAudioSupported: true,
+      audioDrivenLipSyncVerified: false,
+      liveModelAccessVerified: false,
+      frameRate: FPS,
+      activeJob
     })
   );
 
@@ -94,29 +248,49 @@ export function registerCinematicRecovery({
       { name: 'audio', maxCount: 1 }
     ]),
     async (req, res) => {
-      if (
-        process.env.CUTLOOPZ_CINEMATIC_RECOVERY_ENABLED !== 'true' ||
-        !process.env.FAL_KEY
-      ) {
+      if (!enabled()) {
         return res.status(503).json({
           error: 'Recovery rendering disabled'
         });
       }
 
-      if (
-        req.body.confirm !== 'APPROVE_60_SECONDS_FAL_COST'
-      ) {
-        return res.status(400).json({
-          error: 'Explicit paid-render approval required'
+      if (activeJob) {
+        return res.status(409).json({
+          error: 'Another recovery job is active',
+          id: activeJob
         });
       }
 
       let folder;
+      let id;
+      let accepted = false;
 
       try {
         const shots = validateShots(
           JSON.parse(req.body.shots)
         );
+
+        const totalSeconds = shots.reduce(
+          (n, s) => n + s.duration,
+          0
+        );
+
+        const confirmation =
+          totalSeconds === 7
+            ? 'APPROVE_7_SECONDS_FAL_COST'
+            : 'APPROVE_60_SECONDS_FAL_COST';
+
+        if (req.body.confirm !== confirmation) {
+          throw Error(
+            'Explicit paid-render approval required'
+          );
+        }
+
+        if (totalSeconds === 60) {
+          throw Error(
+            'Full rendering remains locked until the opening test is reviewed'
+          );
+        }
 
         const photo = req.files?.photo?.[0];
         const audio = req.files?.audio?.[0];
@@ -132,13 +306,10 @@ export function registerCinematicRecovery({
           );
         }
 
-        const id = randomUUID();
+        id = randomUUID();
+        activeJob = id;
 
-        folder = path.join(
-          outputDirectory,
-          'cinematic-recovery',
-          id
-        );
+        folder = path.join(root, id);
 
         await fs.mkdir(folder, {
           recursive: true,
@@ -151,44 +322,88 @@ export function registerCinematicRecovery({
 
         const info = await probe(song);
 
+        const audioDuration = Number(
+          info.format.duration
+        );
+
         if (
           !info.streams.some(
             s => s.codec_type === 'audio'
           ) ||
-          Number(info.format.duration) < 60
+          !Number.isFinite(audioDuration) ||
+          audioDuration < totalSeconds
         ) {
           throw Error(
-            'Original audio must contain at least 60 seconds'
+            `Original audio must contain at least ${totalSeconds} seconds`
           );
         }
 
         const state = {
           id,
           status: 'running',
-          finished: 0
+          model: MODEL,
+          seconds: totalSeconds,
+          finished: 0,
+          totalShots: shots.length,
+          precisionDirector: false,
+          lipSyncVerified: false,
+          createdAt: new Date().toISOString()
         };
+
+        await saveState(folder, state);
 
         jobs.set(id, state);
 
         res.status(202).json(state);
+        accepted = true;
 
         void (async () => {
           try {
-            const reference = await fal.storage.upload(
-              new Blob([photo.buffer], {
-                type: photo.mimetype
-              })
-            );
+            const reference =
+              await fal.storage.upload(
+                new Blob([photo.buffer], {
+                  type: photo.mimetype
+                })
+              );
 
             let previous;
+            let offset = 0;
+
             const clips = [];
 
-            for (const [i, shot] of shots.entries()) {
+            for (
+              const [i, shot] of shots.entries()
+            ) {
+              const audioFile = path.join(
+                folder,
+                `audio-${i + 1}.wav`
+              );
+
+              await prepareAudio(
+                song,
+                audioFile,
+                offset,
+                shot.duration
+              );
+
+              const audioUrl =
+                await fal.storage.upload(
+                  new Blob(
+                    [await fs.readFile(audioFile)],
+                    { type: 'audio/wav' }
+                  )
+                );
+
               const input = shotInput(
                 shot,
                 reference,
-                previous
+                previous,
+                audioUrl
               );
+
+              state.currentShot = i + 1;
+
+              await saveState(folder, state);
 
               const result = await fal.subscribe(
                 MODEL,
@@ -198,56 +413,58 @@ export function registerCinematicRecovery({
               previous = result.data?.video?.url;
 
               if (
-                !previous ||
+                typeof previous !== 'string' ||
                 !previous.startsWith('https://')
               ) {
-                throw Error('Missing provider video');
+                throw Error(
+                  'Missing provider video'
+                );
               }
 
-              const response = await fetch(previous, {
-                signal: AbortSignal.timeout(120000)
-              });
+              const response = await fetch(
+                previous,
+                {
+                  signal:
+                    AbortSignal.timeout(120000)
+                }
+              );
 
               if (!response.ok) {
-                throw Error('Clip download failed');
+                throw Error(
+                  'Clip download failed'
+                );
               }
 
-              const file = path.join(
+              const raw = path.join(
                 folder,
-                `shot-${i + 1}.mp4`
+                `raw-${i + 1}.mp4`
               );
 
               await fs.writeFile(
-                file,
+                raw,
                 Buffer.from(
                   await response.arrayBuffer()
                 )
               );
 
-              const p = await probe(file);
+              const normalized = path.join(
+                folder,
+                `shot-${i + 1}.mp4`
+              );
 
-              if (
-                !p.streams.some(
-                  s => s.codec_type === 'video'
-                ) ||
-                Math.abs(
-                  Number(p.format.duration) -
-                  shot.duration
-                ) > 0.25
-              ) {
-                throw Error(
-                  'Clip duration or video stream failed'
-                );
-              }
+              await normalizeClip(
+                raw,
+                normalized,
+                shot.duration
+              );
 
-              clips.push(file);
+              clips.push(normalized);
+
+              offset += shot.duration;
 
               state.finished = clips.length;
 
-              await fs.writeFile(
-                path.join(folder, 'state.json'),
-                JSON.stringify(state)
-              );
+              await saveState(folder, state);
             }
 
             const outputFile = path.join(
@@ -260,20 +477,24 @@ export function registerCinematicRecovery({
               songFile: song,
               outputFile,
               format: 'vertical',
-              songSeconds: 60,
+              songSeconds: totalSeconds,
               workDirectory: folder
             });
 
-            const p = await probe(outputFile);
+            const final = await probe(outputFile);
 
             if (
+              !Number.isFinite(
+                Number(final.format.duration)
+              ) ||
               Math.abs(
-                Number(p.format.duration) - 60
+                Number(final.format.duration) -
+                totalSeconds
               ) > 0.25 ||
-              !p.streams.some(
+              !final.streams.some(
                 s => s.codec_type === 'audio'
               ) ||
-              !p.streams.some(
+              !final.streams.some(
                 s => s.codec_type === 'video'
               )
             ) {
@@ -285,23 +506,47 @@ export function registerCinematicRecovery({
             state.status = 'review_required';
 
             state.note =
-              'Technical checks only; anatomy, continuity and lip sync require review';
+              'Technical checks passed. Review identity, anatomy, realism, movement and lip sync before further rendering.';
 
           } catch (e) {
             state.status = 'failed';
-            state.error = String(e.message).slice(0, 300);
+
+            state.error = String(
+              e.message || e
+            ).slice(0, 300);
+
           } finally {
-            await fs.writeFile(
-              path.join(folder, 'state.json'),
-              JSON.stringify(state)
+            state.completedAt =
+              new Date().toISOString();
+
+            await saveState(
+              folder,
+              state
             ).catch(() => {});
+
+            activeJob = null;
           }
         })();
 
       } catch (e) {
-        return res.status(400).json({
-          error: String(e.message).slice(0, 300)
-        });
+        if (activeJob === id) {
+          activeJob = null;
+        }
+
+        if (folder && !accepted) {
+          await fs.rm(folder, {
+            recursive: true,
+            force: true
+          }).catch(() => {});
+        }
+
+        if (!res.headersSent) {
+          return res.status(400).json({
+            error: String(
+              e.message || e
+            ).slice(0, 300)
+          });
+        }
       }
     }
   );
@@ -310,27 +555,26 @@ export function registerCinematicRecovery({
     '/api/cinematic-recovery/jobs/:id',
     auth,
     async (req, res) => {
-      if (
-        !/^[0-9a-f-]{36}$/.test(req.params.id)
-      ) {
+      if (!validId(req.params.id)) {
         return res.sendStatus(404);
       }
 
       try {
-        res.json(
+        const state =
           jobs.get(req.params.id) ||
           JSON.parse(
             await fs.readFile(
               path.join(
-                outputDirectory,
-                'cinematic-recovery',
+                root,
                 req.params.id,
                 'state.json'
               ),
               'utf8'
             )
-          )
-        );
+          );
+
+        res.json(state);
+
       } catch {
         res.sendStatus(404);
       }
@@ -341,27 +585,26 @@ export function registerCinematicRecovery({
     '/api/cinematic-recovery/jobs/:id/video',
     auth,
     async (req, res) => {
-      if (
-        !/^[0-9a-f-]{36}$/.test(req.params.id)
-      ) {
+      if (!validId(req.params.id)) {
         return res.sendStatus(404);
       }
 
       try {
         const dir = path.join(
-          outputDirectory,
-          'cinematic-recovery',
+          root,
           req.params.id
         );
 
-        const s = JSON.parse(
+        const state = JSON.parse(
           await fs.readFile(
             path.join(dir, 'state.json'),
             'utf8'
           )
         );
 
-        if (s.status !== 'review_required') {
+        if (
+          state.status !== 'review_required'
+        ) {
           return res.sendStatus(409);
         }
 
