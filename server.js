@@ -2684,6 +2684,16 @@ registerCutLoopzUnifiedProduction({
   outputDirectory: OUT
 });
 
+import { registerCinematicRecovery } from './cutloopz-cinematic-recovery.js';
+
+registerCinematicRecovery({
+  app,
+  isVideoAdmin,
+  outputDirectory: OUT,
+  fal,
+  upload
+});
+
 import { registerCutLoopzGlamourRoutes } from './cutloopz-glamour-routes.js';
 
 registerCutLoopzGlamourRoutes({
