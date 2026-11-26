@@ -1,0 +1,71 @@
+name: Install CutLoopz Phase 18
+'on':
+  push:
+    branches:
+    - cutloopz-production-test
+    paths:
+    - CutLoopz-phase18-runtime-readiness.zip
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Verify archive and install guarded changes
+      run: |
+        python3 - <<'PYINSTALL'
+        MANIFEST = '{"PHASE9-TESTS.txt": {"old": null, "new": "cd9fe10e3c97e7978405bb0a0133ae262843b07da855936a2cb675611f4cbab1"}, "cutloopz-job-control.js": {"old": null, "new": "2c5079b8ed8be636943282782bfe666d77b7aaf39e5b8fa79260e7ee02264f42"}, "test-cutloopz-runtime-readiness.js": {"old": null, "new": "0dc2005d5f667d9f683854fcf95043f2684064fa231b8ac8a5f2494beb938665"}, "PHASE11-TESTS.txt": {"old": null, "new": "ce6fda38d0b495874da6113e048e4093a443723e6bd5be7e86b34e965bcdaf3e"}, "PHASE10-NOTES.txt": {"old": null, "new": "85f5124215c5486879d67265962fcc88448020f0251cc48cdd4229dea827efc1"}, "test-cutloopz-offline-integration.js": {"old": null, "new": "0226d4678acf480837eba3123acdc82034b7c51165700925fe1cfd149d3f85e8"}, "cinematic-editing-engine.js": {"old": "204a9c85fb8576d2f80a76c63366260c2f29fee369bf1d251198997383ec4a61", "new": "1ccc7c9f10c5392ed3402b0f697a2957036a726c25bbb66a1bcb31375defc874"}, "PHASE8-NOTES.txt": {"old": null, "new": "907a28b493e7c0d90d3eb50d507374f7697bcebe66cda183cf33655aec15d9cd"}, "cutloopz-60s-route.js": {"old": null, "new": "8c876b17f01e2cca66eacd531abadba906eda217dd0ba4db91b4c453f5814c3f"}, "PHASE12-NOTES.txt": {"old": null, "new": "f64cf004732249196a7691c0a295d62b8ab31ed8eb2d10105026861fff1f77c8"}, "PHASE18-NOTES.txt": {"old": null, "new": "23d53158f3a465d5a2b4eea9e70de9f153d83c174bc8666c38c6d80861f80a39"}, "PHASE11-NOTES.txt": {"old": null, "new": "bbde0e1ce876a18d7a7264ce20119f7d3ac911837d6ad62e6359a7e2f5876f09"}, "test-cutloopz-provider-execution.js": {"old": null, "new": "4c34eed120ea6b82f0cec142a4b322a1ac78e7934306eb76802647eb34b2314d"}, "test-cutloopz-provider-readiness.js": {"old": null, "new": "47cef45d1374c6100d1da6d2c075496d8bb7f0a29d9fa9b08cc0de690d11bffd"}, "OFFLINE-INTEGRATION-NOTES.txt": {"old": null, "new": "90043d552bb92bdf8d41b10a77fe0a9b68a560f8c102edf94ac1d5bcc19add47"}, "PHASE10-TESTS.txt": {"old": null, "new": "13602817b601c3d13e61f4ba6e7fe5583c4d5b7f1c5d147d2871a1a23497bd54"}, "PHASE17-NOTES.txt": {"old": null, "new": "84eaf35975df604ae1a731fc033fafd0970719c60b1cc3cd8191e48fa202946a"}, "cutloopz-provider-readiness.js": {"old": null, "new": "2bf36432b8ff09fef79d5e9a9925695bd41d6f1526da56e781f88522493513b2"}, "cutloopz-offline-integration.js": {"old": null, "new": "af69a6968dbadb7f83847b281a676f50c0bdd278fabb23901270b36f591dc27c"}, "cutloopz-60s-preflight.js": {"old": null, "new": "ea2696a92f2d2402488e2e21959698a79863dd9f4c75502e86126bc4a953aad8"}, "cutloopz-raw-assembly.js": {"old": null, "new": "88566c02eab6353afd825987ebf4f9e1450786c9cade0c40547ca0edcc094e32"}, "cutloopz-production-monitor.js": {"old": null, "new": "d8faf7aa265d5ae5ea0de02eb887fcbe458c99282043972f23de23dbf3660a80"}, "server.js": {"old": "c463c57d570efd93001022cfd8d5494b4aead757bf4ab3b77ecf07ba910a16b5", "new": "e8237b58ffcd659c4e997e44aa108347cc3c91f0a1a46808befadaa2bd9b35a4"}, "test-cutloopz-60s-preflight.js": {"old": null, "new": "b0b62e992221572a4ab653e3300267000280e9be2387f2e2859aa4cc42abe4da"}, "test-cutloopz-render-routing.js": {"old": null, "new": "6debdb01ef2a10dc70ed844cf21a98ed7f4b92063d643847d06e8edc802f1255"}, "PHASE7-TESTS.txt": {"old": null, "new": "dcba510e8e68541908f5c77c84ee5106392a1631165fead40d2f04163e47b50a"}, "OFFLINE-TEST-RESULTS.txt": {"old": null, "new": "2e5ddbb73316135913678339c38428c0849e19b9030c96548de3c341b20500bd"}, "cutloopz-unified-production.js": {"old": "238708a590d28d65cca9c20e3762f7896d155ff5a5bf7df02a7b23ba0e4019a3", "new": "25eb7f91351309d4e7a1c3652b5158a3a94693901bed576c462a3817f540111c"}, "cutloopz-runtime-readiness.js": {"old": null, "new": "4fb8af86a24de6f87e8fb5b3abc43d86ef1d4dbf247292414f7f93611f542a94"}, "test-cutloopz-full-assembly.js": {"old": null, "new": "d5682313a4fa786e43660199e137e13a5095794fafc0c1e9d7fcae5d66c2b29f"}, "PHASE8-TESTS.txt": {"old": null, "new": "8c2968f10c238f5efb4963a23711f2d01994925014e622274f0beb4a542a0e37"}, "test-cutloopz-raw-assembly.js": {"old": null, "new": "2b30f183ae327ec6e90805d76143cdafd22efbe981edee3fb8bf758952c0e1d5"}, "PHASE18-TESTS.txt": {"old": null, "new": "45622e88b90b380100134ea18cc6d079f8901359c0193a5f3a71e1eff55f72e5"}, "cutloopz-render-routing.js": {"old": null, "new": "f42100443ef27eb3ad8557122a9af387aef97b7acb4d5e720db6aef41c2c0b2c"}, "PHASE7-NOTES.txt": {"old": null, "new": "e71a8e15ef83c11206022d81d4b89236aa0f989378ca7c69961144fc2a71fdb2"}, "PHASE9-NOTES.txt": {"old": null, "new": "a56a5c65c45e7b37c16d9de814bbfbb7472061f419eae68ba39a052b6291ec8d"}, "cutloopz-performance-preparation.js": {"old": null, "new": "3bc27dbd3cac4982c67c41fbbfc662df19a1749470980b99f414609ac316077c"}, "test-cutloopz-performance-preparation.js": {"old": null, "new": "b95523ebd1c07fbf18ea359ee7f93c5663e9a80b26411f37a33af46ec78c22e5"}, "public/admin-unified-production.html": {"old": "f253910ed17eb7897c4b2d54758aef5aba007c42df4f50ad5b0967368a4d64a2", "new": "46f47837051e73d863cc2eb0eee274e199bba6be96115e32293a659ee8dd871f"}, "cutloopz-provider-execution.js": {"old": null, "new": "87cb8609a9cb0dc14a4385a8df05a659328e6ea3ce6902a3522c56c54d467786"}, "test-cutloopz-strict-edit.js": {"old": null, "new": "e7260a458b2313a1f7549f9be7d01718d7754fb226f1dc2e0d01ad2b6c7b4336"}}'
+        import pathlib, zipfile, hashlib, json
+        p=pathlib.Path('.')
+        manifest=json.loads(MANIFEST)
+        h=lambda b:hashlib.sha256(b).hexdigest()
+        with zipfile.ZipFile('CutLoopz-phase18-runtime-readiness.zip') as z:
+            assert z.testzip() is None
+            for name, hashes in manifest.items():
+                target=p/name
+                assert not target.is_symlink() and not any(x.is_symlink() for x in target.parents), name
+                assert h(z.read(name)) == hashes['new'], name
+                actual=h(target.read_bytes()) if target.exists() else None
+                if actual not in (hashes['old'],hashes['new']):
+                    raise SystemExit('Branch conflict; no files installed: '+name)
+            for name in manifest:
+                target=p/name
+                target.parent.mkdir(parents=True,exist_ok=True)
+                target.write_bytes(z.read(name))
+        print('Verified and installed',len(manifest),'files')
+        PYINSTALL
+    - name: Check changed JavaScript syntax
+      run: |-
+        node --check cutloopz-job-control.js
+        node --check test-cutloopz-runtime-readiness.js
+        node --check test-cutloopz-offline-integration.js
+        node --check cinematic-editing-engine.js
+        node --check cutloopz-60s-route.js
+        node --check test-cutloopz-provider-execution.js
+        node --check test-cutloopz-provider-readiness.js
+        node --check cutloopz-provider-readiness.js
+        node --check cutloopz-offline-integration.js
+        node --check cutloopz-60s-preflight.js
+        node --check cutloopz-raw-assembly.js
+        node --check cutloopz-production-monitor.js
+        node --check server.js
+        node --check test-cutloopz-60s-preflight.js
+        node --check test-cutloopz-render-routing.js
+        node --check cutloopz-unified-production.js
+        node --check cutloopz-runtime-readiness.js
+        node --check test-cutloopz-full-assembly.js
+        node --check test-cutloopz-raw-assembly.js
+        node --check cutloopz-render-routing.js
+        node --check cutloopz-performance-preparation.js
+        node --check test-cutloopz-performance-preparation.js
+        node --check cutloopz-provider-execution.js
+        node --check test-cutloopz-strict-edit.js
+    - name: Commit tested source changes
+      run: |-
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add -- PHASE9-TESTS.txt cutloopz-job-control.js test-cutloopz-runtime-readiness.js PHASE11-TESTS.txt PHASE10-NOTES.txt test-cutloopz-offline-integration.js cinematic-editing-engine.js PHASE8-NOTES.txt cutloopz-60s-route.js PHASE12-NOTES.txt PHASE18-NOTES.txt PHASE11-NOTES.txt test-cutloopz-provider-execution.js test-cutloopz-provider-readiness.js OFFLINE-INTEGRATION-NOTES.txt PHASE10-TESTS.txt PHASE17-NOTES.txt cutloopz-provider-readiness.js cutloopz-offline-integration.js cutloopz-60s-preflight.js cutloopz-raw-assembly.js cutloopz-production-monitor.js server.js test-cutloopz-60s-preflight.js test-cutloopz-render-routing.js PHASE7-TESTS.txt OFFLINE-TEST-RESULTS.txt cutloopz-unified-production.js cutloopz-runtime-readiness.js test-cutloopz-full-assembly.js PHASE8-TESTS.txt test-cutloopz-raw-assembly.js PHASE18-TESTS.txt cutloopz-render-routing.js PHASE7-NOTES.txt PHASE9-NOTES.txt cutloopz-performance-preparation.js test-cutloopz-performance-preparation.js public/admin-unified-production.html cutloopz-provider-execution.js test-cutloopz-strict-edit.js
+        git diff --cached --quiet && exit 0
+        git commit -m "Install CutLoopz Phase 18 guarded update"
+        git push
