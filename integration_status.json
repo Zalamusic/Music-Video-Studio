@@ -1,0 +1,18 @@
+{
+  "included": [
+    "package.json",
+    "server.js",
+    "cutloopz-production-router.mjs",
+    "video-intelligence-engine.js",
+    "visual-continuity-engine.js",
+    "scene-preparation-engine.js",
+    "cinematic-editing-engine.js",
+    "realism-engine.js",
+    "hybrid-video-engine.js",
+    "cutloopz-unified-production.js",
+    "cutloopz-performance-dispatch.js",
+    "cutloopz-local-model-service.mjs"
+  ],
+  "missing": [],
+  "production_modified": false
+}

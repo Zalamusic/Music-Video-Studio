@@ -1,0 +1,474 @@
+{
+  "engine": "CutLoopz Human Intelligence",
+  "version": "0.1",
+  "mode": "research_adapter",
+  "production_enabled": false,
+  "motion_data": {
+    "Stage038I_Tracking.npz": {
+      "sha256": "626da52d4f852fbe061b0e530d7b0793691d10c9d7caaa23d8802a8411682b19",
+      "arrays": {
+        "coordinates": {
+          "shape": [
+            237,
+            144,
+            2
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "connections": {
+          "shape": [
+            21,
+            2
+          ],
+          "dtype": "int64",
+          "finite": true
+        },
+        "projected_lengths": {
+          "shape": [
+            237,
+            21
+          ],
+          "dtype": "float64",
+          "finite": true
+        }
+      }
+    },
+    "Stage038J_Normalized.npz": {
+      "sha256": "e6e9eeee8077f16b987abacfb2aff6c85391972186034e93512d8d99bf9e527a",
+      "arrays": {
+        "original": {
+          "shape": [
+            237,
+            144,
+            2
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "normalized": {
+          "shape": [
+            237,
+            144,
+            2
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "center": {
+          "shape": [
+            237,
+            2
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "scale": {
+          "shape": [
+            237
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "connections": {
+          "shape": [
+            21,
+            2
+          ],
+          "dtype": "int64",
+          "finite": true
+        },
+        "before": {
+          "shape": [
+            21
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "after": {
+          "shape": [
+            21
+          ],
+          "dtype": "float64",
+          "finite": true
+        }
+      }
+    },
+    "Stage038K_Temporal.npz": {
+      "sha256": "e9d51a5e934a0d9130e0eb7dbff2db7fb142ca9e71e0d0fc277fda373694f48f",
+      "arrays": {
+        "velocity": {
+          "shape": [
+            236,
+            144
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "acceleration": {
+          "shape": [
+            235,
+            144
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "flagged_events": {
+          "shape": [
+            235,
+            22
+          ],
+          "dtype": "bool",
+          "finite": null
+        },
+        "flagged_frames": {
+          "shape": [
+            3
+          ],
+          "dtype": "int64",
+          "finite": true
+        }
+      }
+    },
+    "Stage038M_Diagnostics.npz": {
+      "sha256": "2098ac24e7ea90f73288588fe99aa9e91923ad8c8e9a42afbd1a7c4ef5495d46",
+      "arrays": {
+        "body": {
+          "shape": [
+            237,
+            22,
+            2
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "speed": {
+          "shape": [
+            236,
+            22
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "flagged_events": {
+          "shape": [
+            3,
+            2
+          ],
+          "dtype": "int64",
+          "finite": true
+        },
+        "bone_variation": {
+          "shape": [
+            21,
+            3
+          ],
+          "dtype": "float64",
+          "finite": true
+        }
+      }
+    },
+    "Stage038N_Candidate.npz": {
+      "sha256": "a1623d8cb4349f53b87b47e79171dd506b60c0b5130e98b9a14b22c595107d03",
+      "arrays": {
+        "original": {
+          "shape": [
+            237,
+            144,
+            2
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "candidate": {
+          "shape": [
+            237,
+            144,
+            2
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "corrected_frames": {
+          "shape": [
+            3
+          ],
+          "dtype": "int64",
+          "finite": true
+        },
+        "acceleration_before": {
+          "shape": [
+            235
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "acceleration_after": {
+          "shape": [
+            235
+          ],
+          "dtype": "float64",
+          "finite": true
+        }
+      }
+    },
+    "Stage038O_Integrity.npz": {
+      "sha256": "503af01fc73698c2ac7b2752406a8495a6b87eb18c2b205ff00138d731c85484",
+      "arrays": {
+        "velocity_before": {
+          "shape": [
+            236,
+            22
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "velocity_after": {
+          "shape": [
+            236,
+            22
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "acceleration_before": {
+          "shape": [
+            235,
+            22
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "acceleration_after": {
+          "shape": [
+            235,
+            22
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "passed": {
+          "shape": [],
+          "dtype": "bool",
+          "finite": null
+        }
+      }
+    },
+    "Stage038Q_Validation.npz": {
+      "sha256": "3f46e34d5e7cb691d5bd645e2835c757693e28f9773b6a6e49a0f8b0eb831729",
+      "arrays": {
+        "peak_reduction": {
+          "shape": [],
+          "dtype": "float64",
+          "finite": true
+        },
+        "energy_reduction": {
+          "shape": [],
+          "dtype": "float64",
+          "finite": true
+        },
+        "preserved": {
+          "shape": [],
+          "dtype": "bool",
+          "finite": null
+        },
+        "passed": {
+          "shape": [],
+          "dtype": "bool",
+          "finite": null
+        }
+      }
+    },
+    "Stage038R_GeometryAudit.npz": {
+      "sha256": "a252b34f5f5bca2dc114d4b7b5a1b336bdcfbc9673fff1c1bb4de7c8f3c79e94",
+      "arrays": {
+        "results": {
+          "shape": [
+            4,
+            3
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "neighbors": {
+          "shape": [
+            4
+          ],
+          "dtype": "int64",
+          "finite": true
+        }
+      }
+    },
+    "Stage038V_CameraData.npz": {
+      "sha256": "60e862b88f7dadc285d11dc8df1f87fcf60f01b8508f91c2d4aa442da73ebcf2",
+      "arrays": {
+        "camera": {
+          "shape": [
+            237,
+            10
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "frame_indices": {
+          "shape": [
+            237
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "source_sample": {
+          "shape": [],
+          "dtype": "<U38",
+          "finite": null
+        },
+        "camera_sample": {
+          "shape": [],
+          "dtype": "<U46",
+          "finite": null
+        },
+        "aligned": {
+          "shape": [],
+          "dtype": "bool",
+          "finite": null
+        }
+      }
+    },
+    "Stage038X_CameraMatrices.npz": {
+      "sha256": "ac87052151875627e61b9ab45725b9b37fa5b136bf9f07c2209417454202d8d6",
+      "arrays": {
+        "frame_indices": {
+          "shape": [
+            237
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "translation": {
+          "shape": [
+            237,
+            3
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "quaternion": {
+          "shape": [
+            237,
+            4
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "rotation": {
+          "shape": [
+            237,
+            3,
+            3
+          ],
+          "dtype": "float64",
+          "finite": true
+        },
+        "focal": {
+          "shape": [
+            237,
+            2
+          ],
+          "dtype": "float64",
+          "finite": true
+        }
+      }
+    },
+    "Stage038Z_SourceChannels.npz": {
+      "sha256": "6df323e5f653ca3dd7f348e2c9cacb7a804b9d46896d65f8b25a6a9aff7fb148",
+      "arrays": {
+        "gtkps": {
+          "shape": [
+            237,
+            144,
+            3
+          ],
+          "dtype": "float32",
+          "finite": true
+        },
+        "frame_idxs": {
+          "shape": [
+            237
+          ],
+          "dtype": "int64",
+          "finite": true
+        }
+      }
+    }
+  },
+  "audit_data": {
+    "motion_audit.json": {
+      "processed": 50091,
+      "valid": 50091,
+      "frames": 9540982,
+      "keypoints": 1373901408,
+      "finite_xy_points": 1373901408,
+      "nonconsecutive_sequences": 0,
+      "errors": [],
+      "layouts": {
+        "(144, 3)": 50091
+      }
+    },
+    "camera_alignment.json": {
+      "motion_files": 50091,
+      "camera_files": 50091,
+      "unique_matches": 50091,
+      "unmatched_motion": 0,
+      "unmatched_camera": 0,
+      "examples": [
+        {
+          "sequence": "3d_video_1/seq_000000",
+          "motion_frames": 130,
+          "third_channel_min": 1.0,
+          "third_channel_max": 1.0,
+          "camera_rows": 130,
+          "camera_columns": 10,
+          "frame_indices_match": true
+        },
+        {
+          "sequence": "3d_video_1/seq_000001",
+          "motion_frames": 237,
+          "third_channel_min": 1.0,
+          "third_channel_max": 1.0,
+          "camera_rows": 237,
+          "camera_columns": 10,
+          "frame_indices_match": true
+        },
+        {
+          "sequence": "3d_video_1/seq_000002",
+          "motion_frames": 237,
+          "third_channel_min": 1.0,
+          "third_channel_max": 1.0,
+          "camera_rows": 237,
+          "camera_columns": 10,
+          "frame_indices_match": true
+        },
+        {
+          "sequence": "3d_video_1/seq_000003",
+          "motion_frames": 169,
+          "third_channel_min": 1.0,
+          "third_channel_max": 1.0,
+          "camera_rows": 169,
+          "camera_columns": 10,
+          "frame_indices_match": true
+        },
+        {
+          "sequence": "3d_video_1/seq_000004",
+          "motion_frames": 247,
+          "third_channel_min": 1.0,
+          "third_channel_max": 1.0,
+          "camera_rows": 247,
+          "camera_columns": 10,
+          "frame_indices_match": true
+        }
+      ]
+    }
+  },
+  "interaction_status": "pilot_reviewed",
+  "renderer_control_verified": false
+}

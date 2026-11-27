@@ -17,9 +17,12 @@ export async function assemblePerformanceJob(job,{originalSongPath,outputPath,wo
  // Normalize each clip to the requested five-second window; concat without audio to avoid
  // gaps or doubled sound, then lay the original recording across the complete result.
  const normalized=[];
+ let cursor=0;
+ for(const c of clips){if(Math.abs(c.startSeconds-cursor)>1e-6||!Number.isFinite(c.endSeconds)||c.endSeconds<=cursor)throw Error("Invalid clip timeline");cursor=c.endSeconds;}
+ if(Math.abs(cursor-manifest.durationSeconds)>1e-6)throw Error("Incomplete timeline");
  for(const c of clips){
   const p=path.join(workDir,`normalized-${String(c.number).padStart(3,'0')}.mp4`);
-  await runCommand('ffmpeg',['-hide_banner','-loglevel','error','-y','-i',c.videoPath,'-an','-vf',`fps=24,scale=${videoWidth}:${videoHeight}:force_original_aspect_ratio=decrease,pad=${videoWidth}:${videoHeight}:(ow-iw)/2:(oh-ih)/2,setsar=1,tpad=stop_mode=clone:stop_duration=5`,'-t','5','-c:v','libx264','-preset','ultrafast','-pix_fmt','yuv420p',p]);
+  await runCommand('ffmpeg',['-hide_banner','-loglevel','error','-y','-i',c.videoPath,'-an','-vf',`fps=24,scale=${videoWidth}:${videoHeight}:force_original_aspect_ratio=decrease,pad=${videoWidth}:${videoHeight}:(ow-iw)/2:(oh-ih)/2,setsar=1,tpad=stop_mode=clone:stop_duration=${c.endSeconds-c.startSeconds}`,'-t',String(c.endSeconds-c.startSeconds),'-c:v','libx264','-preset','ultrafast','-pix_fmt','yuv420p',p]);
   normalized.push(p);
  }
  const list=path.join(workDir,'concat.txt');

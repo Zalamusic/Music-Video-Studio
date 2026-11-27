@@ -58,7 +58,7 @@ export function createLocalGeneratorAdapter({endpoint,remoteHost,remoteToken,fet
    const form=new FormData();
    form.set('song',new Blob([song],{type:wav?'audio/wav':'audio/mpeg'}),wav?'song.wav':'song.mp3');
    form.set('photo',new Blob([photo],{type:png?'image/png':webp?'image/webp':'image/jpeg'}),png?'photo.png':webp?'photo.webp':'photo.jpg');
-   form.set('startSeconds',String(startSeconds));form.set('durationSeconds','5');form.set('format',format);form.set('creativePrompt',String(creativePrompt||'').slice(0,2000));
+   form.set('startSeconds',String(startSeconds));form.set('durationSeconds','5');form.set('format',format);form.set('creativePrompt',String(creativePrompt||'').slice(0,8000));
    const b=await request('jobs',{method:'POST',body:form});if(!uuid.test(b.id||'')||!['queued','processing'].includes(b.status))throw Error('Invalid generator job receipt');return b;
   },
   async status(id){if(!uuid.test(id||''))throw Error('Invalid job ID');const b=await request(`jobs/${id}`);if(!['queued','processing','ready','failed'].includes(b.status))throw Error('Invalid generator status');return b},

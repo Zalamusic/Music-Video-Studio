@@ -40,7 +40,7 @@ app.post('/jobs',upload.fields([{name:'song',maxCount:1},{name:'photo',maxCount:
  const start=Number(req.body?.startSeconds),duration=Number(req.body?.durationSeconds);
  if(!Number.isInteger(start)||start<0||start>355||start%5||duration!==5)return res.status(400).json({ok:false,error:'Invalid five-second segment'});
  const format=req.body?.format||'landscape';
- const creativePrompt=String(req.body?.creativePrompt||'').slice(0,2000);
+ const creativePrompt=String(req.body?.creativePrompt||'').slice(0,8000);
  if(!['landscape','vertical'].includes(format))return res.status(400).json({ok:false,error:'Invalid video orientation'});
  const song=req.files?.song?.[0],photo=req.files?.photo?.[0];
  if(!song||!photo)return res.status(400).json({ok:false,error:'Song and photo required'});

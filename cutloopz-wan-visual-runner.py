@@ -24,14 +24,14 @@ def build_command(args):
     if not generator.is_file():
         raise ValueError("Wan generator missing")
     prompt = os.environ.get("CUTLOOPZ_VISUAL_PROMPT", "Cinematic close-up of the artist, subtle natural movement, realistic lighting")
-    if len(prompt) > 2000 or not prompt.strip():
+    if len(prompt) > 8000 or not prompt.strip():
         raise ValueError("Invalid prompt")
-    return [sys.executable, str(generator), "--prompt", prompt, "--seconds", "5", "--format", os.environ.get("CUTLOOPZ_VIDEO_FORMAT", "landscape"), "--image-file", str(Path(args.photo).resolve()), "--output", str(output)]
+    return [sys.executable, str(generator), "--prompt", prompt, "--seconds", "5", "--format", args.format, "--image-file", str(Path(args.photo).resolve()), "--output", str(output)]
 
 
 def main():
     parser = argparse.ArgumentParser()
-    for flag in ("song", "photo", "start", "seconds", "output"):
+    for flag in ("song", "photo", "start", "seconds", "output", "format"):
         parser.add_argument("--" + flag, required=True, type=int if flag in ("start", "seconds") else str)
     args = parser.parse_args()
     try:

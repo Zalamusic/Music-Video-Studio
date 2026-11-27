@@ -1,0 +1,38 @@
+{
+  "video-intelligence-engine.js": {
+    "sha256": "f8b0d500b4834a231cd02d14d5d9209f1088a681249dbd611bc98cdbfa655b24",
+    "exports": [
+      "export async function analyzeVideo(videoFile, options = {}) {",
+      "export default analyzeVideo;"
+    ],
+    "source_modified": false
+  },
+  "visual-continuity-engine.js": {
+    "sha256": "b41de0f011f7a7946df5d6dd69cfef518c88f310db5957354902514f5923f60a",
+    "exports": [
+      "export { captureSceneFrames };"
+    ],
+    "source_modified": false
+  },
+  "scene-preparation-engine.js": {
+    "sha256": "3e60b554ecd432b7a37af0f74ba5ef7ec0e28b176942b5e5b64e4cdb016af658",
+    "exports": [
+      "export async function prepareSceneImage({"
+    ],
+    "source_modified": false
+  },
+  "cinematic-editing-engine.js": {
+    "sha256": "204a9c85fb8576d2f80a76c63366260c2f29fee369bf1d251198997383ec4a61",
+    "exports": [
+      "export async function createCinematicEdit({"
+    ],
+    "source_modified": false
+  },
+  "realism-engine.js": {
+    "sha256": "58e844ef37d1d08ef3df41cd138e63e209230eb44465a189774c5d656ad60006",
+    "exports": [
+      "export {"
+    ],
+    "source_modified": false
+  }
+}

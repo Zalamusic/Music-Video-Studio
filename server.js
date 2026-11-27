@@ -171,7 +171,7 @@ app.use('/api/performance-pilot', createPerformancePilotRouter({
 }));
 
 // Administrator-only persistent full-song production (disabled unless explicitly enabled).
-app.use('/api/cutloopz-production', createProductionRouter({
+app.use('/api/cutloopz-production', createProductionRouter({fal,
   express, multer,
   baseDir: path.join(OUT, 'cutloopz-production'),
   authorize: isOwnerOrAdmin,

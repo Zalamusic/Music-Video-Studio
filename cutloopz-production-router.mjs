@@ -1,3 +1,4 @@
+import {createLtxAdapter} from './cutloopz-ltx-adapter.mjs';
 import path from 'node:path';
 import {promises as fs} from 'node:fs';
 import {randomUUID} from 'node:crypto';
@@ -34,15 +35,16 @@ export function probeSongDuration(songPath){
 }
 
 // Explicit admin-only orchestration API. No paid calls from create or status.
-export function createProductionRouter({express,multer,baseDir,authorize,origin,adminKey,enabled=()=>false}={}){
+export function createProductionRouter({express,multer,baseDir,authorize,origin,adminKey,fal,enabled=()=>false}={}){
  if(!express||!multer||!path.isAbsolute(baseDir||'')||typeof authorize!=='function')throw Error('Missing production router dependencies');
  const router=express.Router();
- const upload=multer({storage:multer.memoryStorage(),limits:{fileSize:40*1024*1024,files:2}});
- const adapter=createPilotHttpAdapter({origin,adminKey});
+ const upload=multer({storage:multer.memoryStorage(),limits:{fileSize:40*1024*1024,files:7}});
+ const useLtx=process.env.CUTLOOPZ_LTX_ENABLED==='true';
+ const adapter=useLtx?createLtxAdapter({fal}):createPilotHttpAdapter({origin,adminKey});
  const configuredPrice=Number(process.env.CUTLOOPZ_VERIFIED_CLIP_PRICE_USD);
- const pricingVerified=process.env.CUTLOOPZ_PROVIDER_PRICE_VERIFIED==='true' && Number.isFinite(configuredPrice) && configuredPrice>0;
+ const pricingVerified=process.env.CUTLOOPZ_PROVIDER_PRICE_VERIFIED==='true' && Number.isFinite(configuredPrice) && configuredPrice>0 && (!useLtx || (configuredPrice===0.5 && !!process.env.FAL_KEY));
  const unitPriceUSD=pricingVerified?configuredPrice:0.5;
- const coordinator=createPilotOrchestrator({baseDir,adapter,unitPriceUSD,pricingVerified});
+ const coordinator=createPilotOrchestrator({baseDir,adapter,unitPriceUSD,pricingVerified,variableClips:useLtx});
  // Every production endpoint, including read-only GPU readiness, is private.
  router.use(async(req,res,next)=>{
   try {
@@ -161,13 +163,14 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
  });
  router.post('/local/jobs/:id/assemble',async(req,res)=>{try{const {adapter,coordinator,autoRunner}=getLocal();if(autoRunner.snapshot(req.params.id).state==='running')return res.status(409).json({ok:false,error:'Automatic local run is active; finalization will occur automatically'});const receipt=await finalizePilotJob({orchestrator:coordinator,adapter,jobId:req.params.id,baseDir:path.join(baseDir,'local')});res.json({ok:true,receipt})}catch(e){res.status(409).json({ok:false,error:String(e.message||e)})}});
  router.get('/local/jobs/:id/video',async(req,res)=>{try{const {coordinator}=getLocal();const job=await coordinator.read(req.params.id);const dir=path.join(baseDir,'local',job.id);const receipt=JSON.parse(await fs.readFile(path.join(dir,'assembly.json'),'utf8'));const video=path.join(dir,'final.mp4');if(receipt.jobId!==job.id||receipt.outputPath!==video)throw Error('Invalid assembly receipt');const stat=await fs.stat(video);if(!stat.isFile()||stat.size<1000)throw Error('No video');res.set('Cache-Control','private, no-store');res.set('X-Content-Type-Options','nosniff');res.type('mp4');res.sendFile(video)}catch{res.status(404).json({ok:false,error:'Local video unavailable'})}});
- router.get('/status',(_req,res)=>res.json({ok:true,enabled:enabled(),paidRequestsRequireApproval:true,pricingVerified, paidGenerationLocked:!pricingVerified, generationBackend:'external-performance-pilot', independentGenerationReady:false, liveProductionReady:false, clipSeconds:5, minimumDurationSeconds:15, maximumDurationSeconds:360, durationStepSeconds:5, warning:'This route uses an external paid provider. It is not the independent CutLoopz generation backend.'}));
- router.post('/jobs',upload.fields([{name:'song',maxCount:1},{name:'photo',maxCount:1}]),async(req,res)=>{
+ router.get('/status',(_req,res)=>res.json({ok:true,enabled:enabled(),paidRequestsRequireApproval:true,pricingVerified, paidGenerationLocked:!pricingVerified, generationBackend:useLtx?'ltx-2.3':'external-performance-pilot', independentGenerationReady:false, liveProductionReady:false, clipSeconds:useLtx?null:5, defaultClipSeconds:5, sixtySecondSchedule:{shotCount:useLtx?8:12,clipSeconds:useLtx?7.5:5}, maximumReferencePhotos:useLtx?6:1, estimatedUSDPerSecond:unitPriceUSD/5, minimumDurationSeconds:15, maximumDurationSeconds:360, durationStepSeconds:5, warning:'This route uses an external paid provider. It is not the independent CutLoopz generation backend.'}));
+ router.post('/jobs',upload.fields([{name:'song',maxCount:1},{name:'photo',maxCount:6}]),async(req,res)=>{
   let stage=null;
   try{
    if(!enabled())return res.status(503).json({ok:false,error:'Production is not enabled'});
    if(!pricingVerified)return res.status(503).json({ok:false,error:'External provider price has not been verified; paid production is locked'});
-   const song=req.files?.song?.[0],photo=req.files?.photo?.[0];
+   const song=req.files?.song?.[0],photos=req.files?.photo||[],photo=photos[0];
+   if(!useLtx&&photos.length>1)throw Error('Multiple references require LTX');
    if(!song||!photo)throw Error('Song and reference photo required');
    const durationSeconds=Number(req.body?.durationSeconds);
    const maximumEstimatedUSD=Number(req.body?.maximumEstimatedUSD);
@@ -181,9 +184,11 @@ export function createProductionRouter({express,multer,baseDir,authorize,origin,
    const songPath=path.join(stage,'song'+(song.originalname.toLowerCase().endsWith('.wav')?'.wav':'.mp3'));
    const photoPath=path.join(stage,'photo.'+ext);
    await fs.writeFile(songPath,song.buffer);await fs.writeFile(photoPath,photo.buffer);
+   const photoPaths=[photoPath];
+   for(const [i,p] of photos.slice(1).entries()){const ext=p.buffer[0]===255&&p.buffer[1]===216?"jpg":p.buffer.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))?"png":p.buffer.toString("ascii",0,4)==="RIFF"&&p.buffer.toString("ascii",8,12)==="WEBP"?"webp":null;if(!ext||p.buffer.length<1000)throw Error("Invalid reference image");const dest=path.join(stage,`photo-${i+2}.${ext}`);await fs.writeFile(dest,p.buffer);photoPaths.push(dest);}
    const actualSongSeconds=await probeSongDuration(songPath);
    if(actualSongSeconds+0.25<durationSeconds)throw Error(`Song is ${actualSongSeconds.toFixed(2)} seconds; requested video is ${durationSeconds} seconds`);
-   const job=await coordinator.create({durationSeconds,approved:true,photoPath,songPath,maximumEstimatedUSD});
+   const job=await coordinator.create({durationSeconds,approved:true,photoPath,photoPaths,referenceIndices:JSON.parse(req.body?.referenceIndices||"[]"),songPath,maximumEstimatedUSD,format:req.body?.format||'landscape',creativeDirection:String(req.body?.creativeDirection||''),scenePrompts:JSON.parse(req.body?.scenePrompts||'[]')});
    res.status(201).json({ok:true,jobId:job.id,status:job.status,estimatedUSD:job.estimatedUSD,clips:job.clips.length});
   }catch(e){if(stage)await fs.rm(stage,{recursive:true,force:true}).catch(()=>{});res.status(400).json({ok:false,error:String(e.message||e)});}
  });

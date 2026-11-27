@@ -14,7 +14,7 @@ export async function finalizePilotJob({orchestrator,adapter,jobId,baseDir,assem
  for(const clip of job.clips){
   const dest=path.join(dir,`clip-${String(clip.number).padStart(3,'0')}.mp4`);
   try{await fs.access(dest)}catch{await adapter.download(clip.pilotId,dest)}
-  clips.push({number:clip.number,videoPath:dest,startSeconds:clip.startSeconds,endSeconds:clip.startSeconds+5});
+  clips.push({number:clip.number,videoPath:dest,startSeconds:clip.startSeconds,endSeconds:clip.startSeconds+(clip.durationSeconds??5)});
  }
  const out=path.join(dir,'final.mp4');
  const manifestJob={...job,status:'awaiting-assembly',totalClips:clips.length,clips:clips.map(c=>({...c,status:'ready'}))};
