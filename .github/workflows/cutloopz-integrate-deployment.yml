@@ -1,0 +1,77 @@
+name: CutLoopz Deployment Integration
+
+on:
+  push:
+    branches:
+      - cutloopz-production-test
+    paths:
+      - '.github/workflows/cutloopz-integrate-deployment.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    if: github.ref == 'refs/heads/cutloopz-production-test'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract and integrate
+        run: |
+          python - <<'PY'
+          import zipfile
+          from pathlib import Path
+          import stat
+
+          root = Path.cwd().resolve()
+          archive = root / "CutLoopz-render-deployment.zip"
+
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None
+              names = set(z.namelist())
+              assert "server.js" in names
+              assert "package.json" in names
+
+              for item in z.infolist():
+                  path = Path(item.filename)
+                  assert not path.is_absolute()
+                  assert ".." not in path.parts
+                  assert not stat.S_ISLNK(item.external_attr >> 16)
+
+              for item in z.infolist():
+                  path = Path(item.filename)
+                  if any(p in {".git", ".github", "node_modules", "__pycache__"} for p in path.parts):
+                      continue
+                  if any(p.startswith(".env") for p in path.parts):
+                      continue
+                  if path.suffix == ".zip":
+                      continue
+                  z.extract(item, root)
+
+          print("Extraction completed")
+          PY
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate production code
+        run: |
+          node --check server.js
+          node --check cutloopz-production-router.mjs
+          node --check cutloopz-pilot-orchestrator.mjs
+          node --check cutloopz-ltx-adapter.mjs
+
+      - name: Commit integrated build
+        run: |
+          git config user.name "CutLoopz Integration"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Already integrated"
+          else
+            git commit -m "Integrate CutLoopz production deployment"
+            git push origin HEAD:cutloopz-production-test
+          fi
